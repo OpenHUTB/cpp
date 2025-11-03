@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>3. 添加静态网格文件 - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "3. \u6dfb\u52a0\u9759\u6001\u7f51\u683c\u6587\u4ef6";
+        var mkdocs_page_input_path = "tutorial/add_mesh_from_file.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">3. 添加静态网格文件</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/tutorial/add_mesh_from_file.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="3">3. 添加静态网格文件</h1>
+<p>接上一节的教程，让我们首先创建一个名为 AddMeshFromFile 的新 Actor 子类。</p>
+<p>我们不需要在头文件中做任何事情。下面是创建新类时生成的默认头文件<code>AddMeshFromFile.h</code>。</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#pragma once</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;CoreMinimal.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;GameFramework/Actor.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;AddMeshFromFile.generated.h&quot;</span>
+<span class="n">UCLASS</span><span class="p">()</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UNREALCPP_API</span><span class="w"> </span><span class="n">AAddMeshFromFile</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">publicAActor</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">GENERATED_BODY</span><span class="p">()</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="c1">// Sets default values for this actor&#39;s properties</span>
+<span class="w">    </span><span class="n">AAddMeshFromFile</span><span class="p">();</span>
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">    </span><span class="c1">// Called when the game starts or when spawned</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">BeginPlay</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="c1">// Called every frame</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">Tick</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div>
+<p>为了以编程方式添加一个特定的网格，我们必须包含头文件 <a href="https://github.com/OpenHUTB/engine/blob/hutb/Engine/Source/Runtime/CoreUObject/Public/UObject/ConstructorHelpers.h"><code>ConstructorHelpers.h</code></a> 。</p>
+<p>代码如下，在 Actor 子类头文件后包含该头文件。</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;AddMeshFromFile.h&quot;</span>
+<span class="c1">// add constructor header</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;UObject/ConstructorHelpers.h&quot;</span>
+</code></pre></div>
+<p>接下来，在 Actor 子类的构造函数中，我们将设置要添加到 actor 中的网格的默认值。创建一个 <code>UStaticMeshComponent</code> 指针，并将其设置为 <code>RootComponent</code> 。</p>
+<div class="highlight"><pre><span></span><code><span class="n">AAddMeshFromFile</span><span class="o">::</span><span class="n">AAddMeshFromFile</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Set this actor to call Tick() every frame. You can turn this off to improve performance if you don&#39;t need it.</span>
+<span class="w">    </span><span class="n">PrimaryActorTick</span><span class="p">.</span><span class="n">bCanEverTick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// add Cylinder to root</span>
+<span class="w">    </span><span class="n">UStaticMeshComponent</span><span class="o">*</span><span class="w"> </span><span class="n">Cylinder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">UStaticMeshComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;VisualRepresentation&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">Cylinder</span><span class="o">-&gt;</span><span class="n">SetupAttachment</span><span class="p">(</span><span class="n">RootComponent</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>在初始化设置之后，下一步是添加我想要的网格到我们的角色。我们将使用 <code>ConstructorHelpers</code> 中的方法 <code>FObjectFinder</code> 来定位我们的网格。在这个例子中，我构造并调用了变量 <code>CylinderAsset</code>，并传入了由初学者内容提供的圆柱体形状的路径。我们传入的路径是 <code>/Game/StarterContent/Shapes/Shape_Cylinder.Shape_Cylinder</code> 。</p>
+<div class="highlight"><pre><span></span><code><span class="n">AAddMeshFromFile</span><span class="o">::</span><span class="n">AAddMeshFromFile</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Set this actor to call Tick() every frame. You can turn this off to improve performance if you don&#39;t need it.</span>
+<span class="w">    </span><span class="n">PrimaryActorTick</span><span class="p">.</span><span class="n">bCanEverTick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">// add Cylinder to root</span>
+<span class="w">    </span><span class="n">UStaticMeshComponent</span><span class="o">*</span><span class="w"> </span><span class="n">Cylinder</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">UStaticMeshComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;VisualRepresentation&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">Cylinder</span><span class="o">-&gt;</span><span class="n">SetupAttachment</span><span class="p">(</span><span class="n">RootComponent</span><span class="p">);</span>
+<span class="w">   </span><span class="k">static</span><span class="w"> </span><span class="n">ConstructorHelpers</span><span class="o">::</span><span class="n">FObjectFinder</span><span class="o">&lt;</span><span class="n">UStaticMesh</span><span class="o">&gt;</span><span class="w"> </span><span class="n">CylinderAsset</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;/Game/StarterContent/Shapes/Shape_Cylinder.Shape_Cylinder&quot;</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>接下来，让我们做一个错误检查，以确保我们成功地获得网格。
+<div class="highlight"><pre><span></span><code><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">CylinderAsset</span><span class="p">.</span><span class="n">Succeeded</span><span class="p">())</span><span class="w"> </span><span class="p">{}</span>
+</code></pre></div></p>
+<p>如果该检查语句通过的话，让我们接着在圆柱体组件上执行下面三句话</p>
+<ul>
+<li>设置静态网格：SetStaticMesh</li>
+<li>设置相对位置：SetRelativeLocation</li>
+<li>设置缩放：SetWorldScale3D</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">CylinderAsset</span><span class="p">.</span><span class="n">Succeeded</span><span class="p">())</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Cylinder</span><span class="o">-&gt;</span><span class="n">SetStaticMesh</span><span class="p">(</span><span class="n">CylinderAsset</span><span class="p">.</span><span class="n">Object</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Cylinder</span><span class="o">-&gt;</span><span class="n">SetRelativeLocation</span><span class="p">(</span><span class="n">FVector</span><span class="p">(</span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">));</span>
+<span class="w">    </span><span class="n">Cylinder</span><span class="o">-&gt;</span><span class="n">SetWorldScale3D</span><span class="p">(</span><span class="n">FVector</span><span class="p">(</span><span class="mf">1.f</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>最后完整的 cpp 为 <a href="../../src/tutorial/AddMeshFromFile.cpp">AddMeshFromFile.cpp</a></p>
+<p>将新建的 actor 子类拖入场景中，最后的结果如下：</p>
+<p><img alt="" src="../../img/add_mesh_from_file.jpg" /></p>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../js/umlconvert.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
