@@ -70,7 +70,9 @@
               
                 <h1 id="5">5.打印调式信息</h1>
 <p>新创建一个名为 ConsoleLog 的新 Actor 子类（不需要在头文件中执行任何操作）。</p>
-<p><strong>ConsoleLog.h</strong>
+<details>
+<summary><b>AddBillboardComp.h</b> </summary>
+
 <div class="highlight"><pre><span></span><code><span class="cp">#pragma once</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;CoreMinimal.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;GameFramework/Actor.h&quot;</span>
@@ -89,8 +91,73 @@
 <span class="w">    </span><span class="c1">// Called every frame</span>
 <span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">Tick</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <span class="p">};</span>
+</code></pre></div>
+</details>
+<p><br></p>
+<p>接着我们将在 .cpp 文件中打印日志消息。对于这个例子，我们将在 BeginPlay 方法中打印该消息。所以，当游戏开始时，消息将打印出来。</p>
+<p>下面是打印消息的 3 种方法。</p>
+<ul>
+<li>打印到控制台</li>
+<li>打印到屏幕：<a href="https://github.com/OpenHUTB/engine/blob/1413799f28af699ad0e6139ea25853b66c719c7d/Engine/Source/Runtime/Engine/Private/UnrealEngine.cpp#L9458">AddOnScreenDebugMessage()</a></li>
+<li>打印的数据格式为向量</li>
+</ul>
+<p>分别如下所示：
+<div class="highlight"><pre><span></span><code><span class="n">UE_LOG</span><span class="p">(</span><span class="n">LogTemp</span><span class="p">,</span><span class="w"> </span><span class="n">Warning</span><span class="p">,</span><span class="w"> </span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;I just started running&quot;</span><span class="p">));</span>
 </code></pre></div></p>
-<p>为了避免每次需要重启引擎编辑器使修改的代码生效，可以参考<a href="./hot_reload.md">热重载</a>。</p>
+<div class="highlight"><pre><span></span><code>GEngine-&gt;AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT(&quot;Screen Message&quot;));
+</code></pre></div>
+<div class="highlight"><pre><span></span><code>GEngine-&gt;AddOnScreenDebugMessage(-1, 5.f, FColor::Orange, FString::Printf(TEXT(&quot;My Location is: %s&quot;), *GetActorLocation().ToString()));
+</code></pre></div>
+<p>下面是完整的 C++ 文件（使用宏定义可以简化打印调试信息的步骤）</p>
+<details>
+<summary><b>AddBillboardComp.cpp</b> </summary>
+
+<div class="highlight"><pre><span></span><code><span class="c1">// Copyright (c) 2025 OpenHUTB at the Human University of Technology and Business (HUTB). This work is licensed under the terms of the MIT license. For a copy, see &lt;https://opensource.org/licenses/MIT&gt;.</span>
+
+<span class="cp">#define print(text) if (GEngine) GEngine-&gt;AddOnScreenDebugMessage(-1, 5.f, FColor::Green, text)</span>
+<span class="cp">#define printFString(text, fstring) if (GEngine) GEngine-&gt;AddOnScreenDebugMessage(-1, 5.f, FColor::Magenta, FString::Printf(TEXT(text), fstring))</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Tutorial/ConsoleLog.h&quot;</span>
+
+<span class="c1">// Sets default values</span>
+<span class="n">AConsoleLog</span><span class="o">::</span><span class="n">AConsoleLog</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don&#39;t need it.</span>
+<span class="w">    </span><span class="n">PrimaryActorTick</span><span class="p">.</span><span class="n">bCanEverTick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="p">}</span>
+
+<span class="c1">// Called when the game starts or when spawned</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">AConsoleLog</span><span class="o">::</span><span class="n">BeginPlay</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">BeginPlay</span><span class="p">();</span>
+<span class="w">    </span><span class="c1">// 标注的方式：输出到控制台</span>
+<span class="w">    </span><span class="n">UE_LOG</span><span class="p">(</span><span class="n">LogTemp</span><span class="p">,</span><span class="w"> </span><span class="n">Warning</span><span class="p">,</span><span class="w"> </span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;I just started running&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="c1">// 记录到屏幕上</span>
+<span class="w">    </span><span class="n">GEngine</span><span class="o">-&gt;</span><span class="n">AddOnScreenDebugMessage</span><span class="p">(</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mf">5.f</span><span class="p">,</span><span class="w"> </span><span class="n">FColor</span><span class="o">::</span><span class="n">Red</span><span class="p">,</span><span class="w"> </span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;Screen Message&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">FVector</span><span class="w"> </span><span class="n">MyVector</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FVector</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span><span class="w"> </span><span class="mi">100</span><span class="p">,</span><span class="w"> </span><span class="mi">900</span><span class="p">);</span>
+<span class="w">    </span><span class="n">GEngine</span><span class="o">-&gt;</span><span class="n">AddOnScreenDebugMessage</span><span class="p">(</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mf">5.f</span><span class="p">,</span><span class="w"> </span><span class="n">FColor</span><span class="o">::</span><span class="n">Orange</span><span class="p">,</span><span class="w"> </span><span class="n">FString</span><span class="o">::</span><span class="n">Printf</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;My Location is: %s&quot;</span><span class="p">),</span><span class="w"> </span><span class="o">*</span><span class="n">GetActorLocation</span><span class="p">().</span><span class="n">ToString</span><span class="p">()));</span>
+<span class="w">    </span><span class="n">print</span><span class="p">(</span><span class="s">&quot;Hello Engine&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">printFString</span><span class="p">(</span><span class="s">&quot;My Variable Vector is: %s&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">MyVector</span><span class="p">.</span><span class="n">ToString</span><span class="p">());</span>
+<span class="p">}</span>
+
+<span class="c1">// Called every frame</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">AConsoleLog</span><span class="o">::</span><span class="n">Tick</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">Tick</span><span class="p">(</span><span class="n">DeltaTime</span><span class="p">);</span>
+
+<span class="p">}</span>
+</code></pre></div>
+</details>
+<p><br></p>
+<p>执行的结果如下所示（先打印的在下，后打印的在上）：</p>
+<p><img alt="" src="../img/log_temp.jpg" /></p>
+<p><img alt="" src="../../img/log_screen.jpg" /></p>
+<div class="admonition 笔记">
+<p class="admonition-title">笔记</p>
+<p>1.为了避免每次需要重启引擎编辑器使修改的代码生效，可以参考<a href="./hot_reload.md">热重载</a>。
+2.引擎编辑器界面输出日志默认是没打开，打开方法：窗口-&gt;开发者工具-&gt;输出日志。</p>
+</div>
               
             </div>
           </div><footer>
