@@ -7,7 +7,7 @@ title: 主页
 
 * [__引擎 C++ 开发教程__](#dev)  
     * [UE 4 C++ 教程](#plugin)
-    
+* [__引擎源码解析__](#src) 
 
 ---
 
@@ -17,7 +17,7 @@ title: 主页
 
 
 
-### UE 4 C++ 教程 <span id="engine_cpp"></span>
+### 引擎 C++ 教程 <span id="engine_cpp"></span>
 
 [__1. 添加一个 Actor 子类__](./tutorial/add_actor_subclass.md)
 
@@ -29,6 +29,8 @@ title: 主页
 
 [__5. 打印调式信息__](tutorial/print_debug.md) — 向命令行、屏幕打印开发过程中的调式信息
 
+[__6.绘制辅助调试的形状__](./tutorial/draw_debug.md)
+
 
 ### 技巧
 
@@ -38,6 +40,6 @@ title: 主页
 
 
 
-
+____
 
 如果对文档中的任何问题可以在 [本文档的源码仓库](https://github.com/OpenHUTB/cpp) 中的 [问题](https://github.com/OpenHUTB/cpp/issues) 页面讨论或者提交 [拉取请求](https://zhuanlan.zhihu.com/p/153381521) 直接修改文档。
