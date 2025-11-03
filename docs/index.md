@@ -25,7 +25,7 @@ title: 主页
 
 [__3.添加静态网格文件__](./tutorial/add_mesh_from_file.md)
 
-# [__4.添加一个广告牌组件__](./tutorial/add_billboard.md)
+[__4.添加一个广告牌组件__](./tutorial/add_billboard.md)
 
 [__5. 打印调式信息__](tutorial/print_debug.md) — 向命令行、屏幕打印开发过程中的调式信息
 
