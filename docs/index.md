@@ -1,8 +1,8 @@
 title: 主页
 
-# [引擎实现文档](https://github.com/OpenHUTB/mujoco_plugin)
+# [引擎实现文档](https://github.com/OpenHUTB/cpp)
 
-欢迎使用 Mujoco 插件文档，该页面包含所有内容的索引。
+欢迎引擎的 C++ 实现文档，沟通[引擎使用文档](https://openhutb.github.io/engine_doc)和[源代码实现](https://github.com/OpenHUTB/engine)。
 
 
 * [__引擎 C++ 开发教程__](#dev)  
@@ -38,4 +38,4 @@ title: 主页
 
 
 
-如果对文档中的任何问题可以在 [本文档的源码仓库](https://github.com/OpenHUTB/locomotion) 中的 [问题](https://github.com/OpenHUTB/locomotion/issues) 页面讨论或者提交 [拉取请求](https://zhuanlan.zhihu.com/p/153381521) 直接修改文档。
+如果对文档中的任何问题可以在 [本文档的源码仓库](https://github.com/OpenHUTB/cpp) 中的 [问题](https://github.com/OpenHUTB/cpp/issues) 页面讨论或者提交 [拉取请求](https://zhuanlan.zhihu.com/p/153381521) 直接修改文档。
