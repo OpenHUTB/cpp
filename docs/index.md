@@ -31,21 +31,21 @@ title: 主页
 
 [__6.绘制辅助调试的形状__](./tutorial/draw_debug.md)
 
-[__7.寻找玩家的当前位置__](https://panda1234lee.blog.csdn.net/article/details/119102740)
+[__7.寻找玩家的当前位置__](./tutorial/find_player_position.md)
 
-[__8.隐藏并禁用的 Actor__](https://bbs.huaweicloud.com/blogs/310580)
+[__8.隐藏并禁用的 Actor__](./tutorial/hiden_actor.md)
 
-[__9.获取场景中小兵的个数__](https://bbs.huaweicloud.com/blogs/310578)
+[__9.获取场景中棋子的个数__](./tutorial/get_number_of_pawns.md)
 
-[__10.设置 Actor 的位置和朝向__](https://bbs.huaweicloud.com/blogs/310574)
+[__10.设置 Actor 的位置和朝向__](./tutorial/set_actor_location_and_rotation.md)
 
-[__12.立即切换玩家的相机（视图目标）到 Actor 位置__](https://bbs.huaweicloud.com/blogs/310576)
+[__12.立即切换玩家的相机（视图目标）到 Actor 位置__](./tutorial/set_view_target.md)
 
-[__13.平滑切换玩家的相机（视图目标）到 Actor 位置__](https://bbs.huaweicloud.com/blogs/310569)
+[__13.平滑切换玩家的相机（视图目标）到 Actor 位置__](./tutorial/set_view_target_blend.md)
 
-[__14.定时执行（定时器）的 Actor__](https://bbs.huaweicloud.com/blogs/310568)
+[__14.定时执行（定时器）的 Actor__](./tutorial/timer_manager.md)
 
-[__15.注册组件的 hit 事件__](https://panda1234lee.blog.csdn.net/article/details/119127452)
+[__15.注册组件的 hit 事件__](./tutorial/on_hit_component.md)
 
 [__16.扫描多线轨迹__](https://bbs.huaweicloud.com/blogs/310557)
 
