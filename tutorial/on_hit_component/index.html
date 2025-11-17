@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>注册组件的 hit 事件 - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "\u6ce8\u518c\u7ec4\u4ef6\u7684 hit \u4e8b\u4ef6";
+        var mkdocs_page_input_path = "tutorial/on_hit_component.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">注册组件的 hit 事件</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/tutorial/on_hit_component.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="hit">注册组件的 hit 事件</h1>
+<p>接上一节教程，在本教程中，我们将学习如何在组件上注册一个 hit 事件。创建一个新的 C++ Actor 子类并将其命名为 <code>OnComponentHit</code> 。在头文件中，将声明一个 <code>UBoxComponent</code> 变量和一个当组件注册一个 hit 事件时运行的 void 函数。</p>
+<p>下面是最终的头文件</p>
+<p><strong>OnHitComponent.h</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;CoreMinimal.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;GameFramework/Actor.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;OnComponentHit.generated.h&quot;</span>
+
+<span class="n">UCLASS</span><span class="p">()</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UNREALCPP_API</span><span class="w"> </span><span class="n">AOnComponentHit</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AActor</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">GENERATED_BODY</span><span class="p">()</span>
+
+<span class="k">public</span><span class="o">:</span><span class="w"> </span>
+<span class="w">    </span><span class="c1">// Sets default values for this actor&#39;s properties</span>
+<span class="w">    </span><span class="n">AOnComponentHit</span><span class="p">();</span>
+
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">    </span><span class="c1">// Called when the game starts or when spawned</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">BeginPlay</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span><span class="w"> </span>
+<span class="w">    </span><span class="c1">// Called every frame</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">Tick</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">UPROPERTY</span><span class="p">(</span><span class="n">VisibleAnywhere</span><span class="p">)</span>
+<span class="w">    </span><span class="k">class</span><span class="w"> </span><span class="nc">UBoxComponent</span><span class="o">*</span><span class="w"> </span><span class="n">MyComp</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">UFUNCTION</span><span class="p">()</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">OnCompHit</span><span class="p">(</span><span class="n">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">HitComp</span><span class="p">,</span><span class="w"> </span><span class="n">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">,</span><span class="w"> </span><span class="n">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">,</span><span class="w"> </span><span class="n">FVector</span><span class="w"> </span><span class="n">NormalImpulse</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">FHitResult</span><span class="o">&amp;</span><span class="w"> </span><span class="n">Hit</span><span class="p">);</span>
+
+<span class="p">};</span>
+</code></pre></div>
+<p>在 .cpp 文件中，首先 `</p>
+<h1 id="include-componentsboxcomponenth">include "Components/BoxComponent.h"` 头文件 。</h1>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;OnComponentHit.h&quot;</span>
+<span class="c1">// include files</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Components/BoxComponent.h&quot;</span>
+</code></pre></div>
+<p>接下来，我们将在 actor 的构造函数中为 actor 设置默认值。我们将用 <code>UBoxComponent</code> 初始化 actor，并将其设置为 <code>RootComponent</code> 。然后，我们将添加 <code>OnComponentHit</code> 到组件，并将它连接到我们的 <code>OnCompHit</code> 函数。我们将在下一步创建 <code>OnCompHit</code> （回调函数）。我还将默认的 <code>CollisionProfileName</code> 设置为 <code>BlockAllDynamic</code> ，这可以稍后在编辑器中更改。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Sets default values</span>
+<span class="n">AOnComponentHit</span><span class="o">::</span><span class="n">AOnComponentHit</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don&#39;t need it.</span>
+<span class="w">    </span><span class="n">PrimaryActorTick</span><span class="p">.</span><span class="n">bCanEverTick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// 使用球体作为简单的碰撞表示</span>
+<span class="w">    </span><span class="n">MyComp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">UBoxComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;BoxComp&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">MyComp</span><span class="o">-&gt;</span><span class="n">SetSimulatePhysics</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+<span class="w">    </span><span class="n">MyComp</span><span class="o">-&gt;</span><span class="n">SetNotifyRigidBodyCollision</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">MyComp</span><span class="o">-&gt;</span><span class="n">BodyInstance</span><span class="p">.</span><span class="n">SetCollisionProfileName</span><span class="p">(</span><span class="s">&quot;BlockAllDynamic&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">MyComp</span><span class="o">-&gt;</span><span class="n">OnComponentHit</span><span class="p">.</span><span class="n">AddDynamic</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">AOnComponentHit</span><span class="o">::</span><span class="n">OnCompHit</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 设置为根组件</span>
+<span class="w">    </span><span class="n">RootComponent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MyComp</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>现在让我们创建简单的 <code>OnCompHit</code> 函数，当我们的 actor 撞击它时，它将打印并显示其他 actor 的名字到屏幕上。关于 <code>OnComponentHit</code> 的更多信息，你可以在访问一些不错的 AnswerHub <a href="https://answers.unrealengine.com/questions/429353/cpp-on-component-hit-doesnt-fire.html">帖子1</a> 、<a href="https://answers.unrealengine.com/questions/429353/cpp-on-component-hit-doesnt-fire.html">帖子2</a> ，或者在这里访问 <a href="https://docs.unrealengine.com/latest/INT/API/Runtime/Engine/Components/UPrimitiveComponent/OnComponentHit/">ue4 文档</a> 。</p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">AOnComponentHit::OnCompHit</span><span class="p">(</span><span class="n">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">HitComp</span><span class="p">,</span><span class="w"> </span><span class="n">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">,</span><span class="w"> </span><span class="n">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">,</span><span class="w"> </span><span class="n">FVector</span><span class="w"> </span><span class="n">NormalImpulse</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">FHitResult</span><span class="o">&amp;</span><span class="w"> </span><span class="n">Hit</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">this</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">OtherComp</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">))</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">GEngine</span><span class="p">)</span><span class="w"> </span><span class="n">GEngine</span><span class="o">-&gt;</span><span class="n">AddOnScreenDebugMessage</span><span class="p">(</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mf">5.f</span><span class="p">,</span><span class="w"> </span><span class="n">FColor</span><span class="o">::</span><span class="n">Green</span><span class="p">,</span><span class="w"> </span><span class="n">FString</span><span class="o">::</span><span class="n">Printf</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;I Hit: %s&quot;</span><span class="p">),</span><span class="w"> </span><span class="o">*</span><span class="n">OtherActor</span><span class="o">-&gt;</span><span class="n">GetName</span><span class="p">()));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>以下就是最终完整的 .cpp 文件</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;OnComponentHit.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Components/BoxComponent.h&quot;</span>
+
+<span class="c1">// Sets default values</span>
+<span class="n">AOnComponentHit</span><span class="o">::</span><span class="n">AOnComponentHit</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don&#39;t need it.</span>
+<span class="w">    </span><span class="n">PrimaryActorTick</span><span class="p">.</span><span class="n">bCanEverTick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Use a sphere as a simple collision representation</span>
+<span class="w">    </span><span class="n">MyComp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">UBoxComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;BoxComp&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">MyComp</span><span class="o">-&gt;</span><span class="n">SetSimulatePhysics</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+<span class="w">    </span><span class="n">MyComp</span><span class="o">-&gt;</span><span class="n">SetNotifyRigidBodyCollision</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+<span class="w">    </span><span class="n">MyComp</span><span class="o">-&gt;</span><span class="n">BodyInstance</span><span class="p">.</span><span class="n">SetCollisionProfileName</span><span class="p">(</span><span class="s">&quot;BlockAllDynamic&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">MyComp</span><span class="o">-&gt;</span><span class="n">OnComponentHit</span><span class="p">.</span><span class="n">AddDynamic</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">AOnComponentHit</span><span class="o">::</span><span class="n">OnCompHit</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Set as root component</span>
+<span class="w">    </span><span class="n">RootComponent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MyComp</span><span class="p">;</span>
+
+<span class="p">}</span>
+
+<span class="c1">// Called when the game starts or when spawned</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">AOnComponentHit</span><span class="o">::</span><span class="n">BeginPlay</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">BeginPlay</span><span class="p">();</span>
+
+<span class="p">}</span>
+
+<span class="c1">// Called every frame</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">AOnComponentHit</span><span class="o">::</span><span class="n">Tick</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">Tick</span><span class="p">(</span><span class="n">DeltaTime</span><span class="p">);</span>
+
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">AOnComponentHit</span><span class="o">::</span><span class="n">OnCompHit</span><span class="p">(</span><span class="n">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">HitComp</span><span class="p">,</span><span class="w"> </span><span class="n">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">,</span><span class="w"> </span><span class="n">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">,</span><span class="w"> </span><span class="n">FVector</span><span class="w"> </span><span class="n">NormalImpulse</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">FHitResult</span><span class="o">&amp;</span><span class="w"> </span><span class="n">Hit</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">((</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">this</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">OtherComp</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="nb">NULL</span><span class="p">))</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">GEngine</span><span class="p">)</span><span class="w"> </span><span class="n">GEngine</span><span class="o">-&gt;</span><span class="n">AddOnScreenDebugMessage</span><span class="p">(</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mf">5.f</span><span class="p">,</span><span class="w"> </span><span class="n">FColor</span><span class="o">::</span><span class="n">Green</span><span class="p">,</span><span class="w"> </span><span class="n">FString</span><span class="o">::</span><span class="n">Printf</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;I Hit: %s&quot;</span><span class="p">),</span><span class="w"> </span><span class="o">*</span><span class="n">OtherActor</span><span class="o">-&gt;</span><span class="n">GetName</span><span class="p">()));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>编译代码。将 actor 拖放到游戏场景中。添加一个静态网格到该 actor，并调整尺寸以适应 hit 框。当你按下 play 时，actor 应该注册 hit 事件。</p>
+<p><img alt="" src="../../img/on_hit_component.jpg" /></p>
+<p>运行的结果</p>
+<p><img alt="" src="../../img/on_hit_component_result.jpg" /></p>
+<h2 id="_1">参考</h2>
+<ul>
+<li><a href="https://panda1234lee.blog.csdn.net/article/details/119127452">注册组件的 hit 事件【十五】</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../js/umlconvert.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
