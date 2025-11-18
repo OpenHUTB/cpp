@@ -47,9 +47,9 @@ title: 主页
 
 [__15.注册组件的 hit 事件__](./tutorial/on_hit_component.md)
 
-[__16.扫描多线轨迹__](https://bbs.huaweicloud.com/blogs/310557)
+[__16.扫描多线轨迹__](./tutorial/sweep_multi_by_channel.md)
 
-[__17.Actor 线轨迹__](https://bbs.huaweicloud.com/blogs/310558)
+[__17.Actor 线轨迹__](./tutorial/actor_line_trace.md)
 
 [__18.给 Actor 添加径向推力__](https://bbs.huaweicloud.com/blogs/310555)
 
