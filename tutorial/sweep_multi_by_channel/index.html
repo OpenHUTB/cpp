@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>扫描多线轨迹 - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "\u626b\u63cf\u591a\u7ebf\u8f68\u8ff9";
+        var mkdocs_page_input_path = "tutorial/sweep_multi_by_channel.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">扫描多线轨迹</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/tutorial/sweep_multi_by_channel.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="_1">扫描多线轨迹</h1>
+<p>接上一节教程，本教程将说明如何使用 SweepMultiByChannel 返回给定半径内的结果。</p>
+<p>创建一个新的 C++ Actor 子类并将其命名为 MySweepActor 。我们不会对默认头文件做任何修改。</p>
+<p>下面是最终的头文件。</p>
+<p><strong>MySweepActor.h</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;CoreMinimal.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;GameFramework/Actor.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;MySweepActor.generated.h&quot;</span>
+
+<span class="n">UCLASS</span><span class="p">()</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UNREALCPP_API</span><span class="w"> </span><span class="n">AMySweepActor</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AActor</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">GENERATED_BODY</span><span class="p">()</span>
+
+<span class="k">public</span><span class="o">:</span><span class="w"> </span>
+<span class="w">    </span><span class="c1">// Sets default values for this actor&#39;s properties</span>
+<span class="w">    </span><span class="n">AMySweepActor</span><span class="p">();</span>
+
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">    </span><span class="c1">// Called when the game starts or when spawned</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">BeginPlay</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span><span class="w"> </span>
+<span class="w">    </span><span class="c1">// Called every frame</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">Tick</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="p">};</span>
+</code></pre></div>
+<p>在我们编写代码的逻辑之前，我们必须首先 <code>#include "DrawDebugHelpers.h"</code> 文件来帮助我们可视化 actor 。</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;MySweepActor.h&quot;</span>
+<span class="c1">// include debug helpers</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;DrawDebugHelpers.h&quot;</span>
+</code></pre></div>
+<p>在这个例子中，我们将在 <code>BeginPlay()</code> 函数中执行所有的逻辑。</p>
+<p>首先，我们将创建一个由 <code>FHitResults</code> 组成的 <code>TArray</code> 撞击点数组，并将其命名为 <code>OutHits</code>。</p>
+<p>我们希望扫描球体在相同的位置开始和结束，并通过使用 <code>GetActorLocation</code> 使它与 actor 的位置相等。碰撞球体可以是不同的形状，在这个例子中，我们将使用 <code>FCollisionShape::makephere</code> 使它成为一个球体，我们将它的半径设置为 500 个虚幻单位。接下来，运行 DrawDebugSphere 来可视化扫描球体。</p>
+<p>然后，我们想要设置一个名为 <code>isHit</code> 的 <code>bool</code> 变量来检查我们的扫描是否击中了任何东西。</p>
+<p>我们运行 <code>GetWorld()-&gt;SweepMultiByChannel</code> 来执行扫描通道跟踪并返回命中情况到 <code>OutHits</code> 数组中。</p>
+<p>你可以在 <a href="https://docs.unrealengine.com/latest/INT/API/Runtime/Engine/Engine/UWorld/SweepMultiByChannel/">这里</a> 了解更多关于 <code>SweepMultiByChannel</code> 功能。如果 isHit 为真，我们将循环遍历 TArray 并打印出 hit actor 的名字和其他相关信息。</p>
+<p>你可以在 <a href="https://docs.unrealengine.com/latest/INT/Programming/UnrealArchitecture/TArrays/">这里</a> 了解更多关于 TArray 的信息。</p>
+<p>下面是最后的.cpp文件。</p>
+<p><strong>MySweepActor.cpp</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;MySweepActor.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;DrawDebugHelpers.h&quot;</span>
+
+
+<span class="c1">// Sets default values</span>
+<span class="n">AMySweepActor</span><span class="o">::</span><span class="n">AMySweepActor</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don&#39;t need it.</span>
+<span class="w">    </span><span class="n">PrimaryActorTick</span><span class="p">.</span><span class="n">bCanEverTick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="p">}</span>
+
+<span class="c1">// Called when the game starts or when spawned</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">AMySweepActor</span><span class="o">::</span><span class="n">BeginPlay</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">BeginPlay</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// 创建保存撞击点的数组 TArray</span>
+<span class="w">    </span><span class="n">TArray</span><span class="o">&lt;</span><span class="n">FHitResult</span><span class="o">&gt;</span><span class="w"> </span><span class="n">OutHits</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// 开始和结束位置</span>
+<span class="w">    </span><span class="n">FVector</span><span class="w"> </span><span class="n">SweepStart</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetActorLocation</span><span class="p">();</span>
+<span class="w">    </span><span class="n">FVector</span><span class="w"> </span><span class="n">SweepEnd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetActorLocation</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// 创建碰撞球</span>
+<span class="w">    </span><span class="n">FCollisionShape</span><span class="w"> </span><span class="n">MyColSphere</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FCollisionShape</span><span class="o">::</span><span class="n">MakeSphere</span><span class="p">(</span><span class="mf">500.0f</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 绘制碰撞球</span>
+<span class="w">    </span><span class="n">DrawDebugSphere</span><span class="p">(</span><span class="n">GetWorld</span><span class="p">(),</span><span class="w"> </span><span class="n">GetActorLocation</span><span class="p">(),</span><span class="w"> </span><span class="n">MyColSphere</span><span class="p">.</span><span class="n">GetSphereRadius</span><span class="p">(),</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="n">FColor</span><span class="o">::</span><span class="n">Purple</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 检查扫描过程中是否有物体被击中</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">isHit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetWorld</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">SweepMultiByChannel</span><span class="p">(</span><span class="n">OutHits</span><span class="p">,</span><span class="w"> </span><span class="n">SweepStart</span><span class="p">,</span><span class="w"> </span><span class="n">SweepEnd</span><span class="p">,</span><span class="w"> </span><span class="n">FQuat</span><span class="o">::</span><span class="n">Identity</span><span class="p">,</span><span class="w"> </span><span class="n">ECC_WorldStatic</span><span class="p">,</span><span class="w"> </span><span class="n">MyColSphere</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">isHit</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// 遍历 TArray</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">Hit</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">OutHits</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">GEngine</span><span class="p">)</span><span class="w"> </span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="c1">// 屏幕日志信息显示了被击中的内容</span>
+<span class="w">                </span><span class="n">GEngine</span><span class="o">-&gt;</span><span class="n">AddOnScreenDebugMessage</span><span class="p">(</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mf">5.f</span><span class="p">,</span><span class="w"> </span><span class="n">FColor</span><span class="o">::</span><span class="n">Green</span><span class="p">,</span><span class="w"> </span><span class="n">FString</span><span class="o">::</span><span class="n">Printf</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;Hit Result: %s&quot;</span><span class="p">),</span><span class="w"> </span><span class="o">*</span><span class="n">Hit</span><span class="p">.</span><span class="n">Actor</span><span class="o">-&gt;</span><span class="n">GetName</span><span class="p">()));</span>
+<span class="w">                </span><span class="c1">// 取消注释以查看更多关于该参与者的信息</span>
+<span class="w">                </span><span class="c1">// GEngine-&gt;AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT(&quot;All Hit Information: %s&quot;), *Hit.ToString()));</span>
+<span class="w">            </span><span class="p">}</span><span class="w">                       </span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="p">}</span>
+
+<span class="c1">// Called every frame</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">AMySweepActor</span><span class="o">::</span><span class="n">Tick</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">Tick</span><span class="p">(</span><span class="n">DeltaTime</span><span class="p">);</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>最终运行的效果如下所示</p>
+<p><img alt="" src="../../img/sweep_multi_by_channel.jpg" /></p>
+<h2 id="_2">参考</h2>
+<ul>
+<li><a href="https://panda1234lee.blog.csdn.net/article/details/119129460">扫描多线轨迹【十六】</a></li>
+<li><a href="https://unrealcpp.com/sweep-multi-line-trace/">英文原地址</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../js/umlconvert.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
