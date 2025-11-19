@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>为 Charactor 添加重叠事件 - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "\u4e3a Charactor \u6dfb\u52a0\u91cd\u53e0\u4e8b\u4ef6";
+        var mkdocs_page_input_path = "tutorial/on_overlap.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">为 Charactor 添加重叠事件</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/tutorial/on_overlap.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="charactor">为 Charactor 添加重叠事件</h1>
+<p>接上一节教程，我们继续在 Character.h 文件中，在 public 部分声明 <code>OnOverlapBegin</code> 和 <code>OnOverlapEnd</code> 方法。我在本教程中的头文件名为 <code>UnrealCPPCharacter.h</code> ，你的文件可能有不同的名称。你可以在这里了解更多关于 <a href="https://docs.unrealengine.com/latest/INT/API/Runtime/Engine/Components/UPrimitiveComponent/OnComponentBeginOverlap/index.html">OnComponentBeginOverlap</a> 和 <a href="https://docs.unrealengine.com/latest/INT/API/Runtime/Engine/Components/UPrimitiveComponent/OnComponentEndOverlap/index.html">OnComponentEndOverlap</a> 的信息。</p>
+<div class="highlight"><pre><span></span><code><span class="k">public</span>
+<span class="w">  </span><span class="p">...</span>
+
+<span class="w">  </span><span class="c1">// 声明重叠开始函数</span>
+<span class="w">    </span><span class="n">UFUNCTION</span><span class="p">()</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">OnOverlapBegin</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OverlappedComp</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">,</span><span class="w"> </span><span class="n">int32</span><span class="w"> </span><span class="n">OtherBodyIndex</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">bFromSweep</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">FHitResult</span><span class="o">&amp;</span><span class="w"> </span><span class="n">SweepResult</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 声明重叠结束函数</span>
+<span class="w">    </span><span class="n">UFUNCTION</span><span class="p">()</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">OnOverlapEnd</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OverlappedComp</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">,</span><span class="w"> </span><span class="n">int32</span><span class="w"> </span><span class="n">OtherBodyIndex</span><span class="p">);</span>
+</code></pre></div>
+<p>在本教程中，我们将为角色添加一个胶囊组件来专门处理触发事件。</p>
+<div class="highlight"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AUnrealCPPCharacter</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">ACharacter</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">GENERATED_BODY</span><span class="p">()</span>
+
+<span class="w">  </span><span class="p">...</span>
+
+<span class="w">    </span><span class="c1">// 创建触发胶囊</span>
+<span class="w">    </span><span class="n">UPROPERTY</span><span class="p">(</span><span class="n">VisibleAnywhere</span><span class="p">,</span><span class="w"> </span><span class="n">Category</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Trigger Capsule&quot;</span><span class="p">)</span>
+<span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">UCapsuleComponent</span><span class="o">*</span><span class="w"> </span><span class="n">TriggerCapsule</span><span class="p">;</span>
+</code></pre></div>
+<p>我们已经完成了头文件。继续把目光移动到 .cpp 文件。</p>
+<p>如果你还没有包含 <code>Components/CapsuleComponent.h</code> ，请在顶部包含这个文件。
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Components/CapsuleComponent.h&quot;</span>
+</code></pre></div></p>
+<p>在 Character 的构造函数中，我们将向其添加胶囊组件，并将其连接到重叠事件。</p>
+<p>要给我们的角色添加一个胶囊，我们首先通过 <code>CreateDefaultSubobject</code> 创建一个 UCapsuleComponent 组件，并给它起任何我们想要的名字。我称之为“触发胶囊(Trigger Capsule)”。</p>
+<p>接下来，我们必须初始化其大小，我使其大小与初始胶囊组件(在构造函数中声明的)相同。我们还可以使用 <code>SetCollisionProfileName</code> 设置这个组件的碰撞类型。我们将 <code>Trigger</code> Profile 文件名称添加到胶囊中，这将为组件提供类似于触发器胶囊的重叠事件。这也可以很容易地在编辑器中设置。最后将 <code>TriggerCapsule</code> 附加到 <code>RootComponent</code></p>
+<div class="highlight"><pre><span></span><code><span class="n">AUnrealCPPCharacter</span><span class="o">::</span><span class="n">AUnrealCPPCharacter</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="p">...</span>
+<span class="w">  </span><span class="c1">// 声明触发胶囊</span>
+<span class="w">    </span><span class="n">TriggerCapsule</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">UCapsuleComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;Trigger Capsule&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">TriggerCapsule</span><span class="o">-&gt;</span><span class="n">InitCapsuleSize</span><span class="p">(</span><span class="mf">55.f</span><span class="p">,</span><span class="w"> </span><span class="mf">96.0f</span><span class="p">);;</span>
+<span class="w">    </span><span class="n">TriggerCapsule</span><span class="o">-&gt;</span><span class="n">SetCollisionProfileName</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;Trigger&quot;</span><span class="p">));</span>
+<span class="w">  </span><span class="n">TriggerCapsule</span><span class="o">-&gt;</span><span class="n">SetupAttachment</span><span class="p">(</span><span class="n">RootComponent</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>我们通过调用 <code>OnComponentBeginOverlap</code> 和 <code>OnComponentEndOverlap</code> 将胶囊连接到重叠事件。</p>
+<div class="highlight"><pre><span></span><code><span class="p">...</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">AUnrealCPPCharacter</span><span class="o">::</span><span class="n">OnOverlapBegin</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OverlappedComp</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">,</span><span class="w"> </span><span class="n">int32</span><span class="w"> </span><span class="n">OtherBodyIndex</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">bFromSweep</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">FHitResult</span><span class="o">&amp;</span><span class="w"> </span><span class="n">SweepResult</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">this</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">)</span><span class="w"> </span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">GEngine</span><span class="o">-&gt;</span><span class="n">AddOnScreenDebugMessage</span><span class="p">(</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mf">5.f</span><span class="p">,</span><span class="w"> </span><span class="n">FColor</span><span class="o">::</span><span class="n">Red</span><span class="p">,</span><span class="w"> </span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;Overlap Begin&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span><span class="w"> </span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">AUnrealCPPCharacter</span><span class="o">::</span><span class="n">OnOverlapEnd</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OverlappedComp</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">,</span><span class="w"> </span><span class="n">int32</span><span class="w"> </span><span class="n">OtherBodyIndex</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">this</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">)</span><span class="w"> </span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">GEngine</span><span class="o">-&gt;</span><span class="n">AddOnScreenDebugMessage</span><span class="p">(</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mf">5.f</span><span class="p">,</span><span class="w"> </span><span class="n">FColor</span><span class="o">::</span><span class="n">Red</span><span class="p">,</span><span class="w"> </span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;Overlap End&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>我们手动在场景中添加一个 Triggger Box</p>
+<p><img alt="" src="../../img/triggger_box.jpg" /></p>
+<p>然后操控 Character 与其发生重叠，下面是最终运行效果</p>
+<p><img alt="" src="../../img/on_overlap.jpg" /></p>
+<h2 id="_1">参考</h2>
+<ul>
+<li><a href="https://blog.csdn.net/panda1234lee/article/details/119152036">为 Charactor 添加重叠事件【十九】</a></li>
+<li><a href="https://unrealcpp.com/on-overlap-begin/">英文原地址</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../js/umlconvert.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

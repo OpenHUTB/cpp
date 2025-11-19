@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>给 Actor 添加径向推力 - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "\u7ed9 Actor \u6dfb\u52a0\u5f84\u5411\u63a8\u529b";
+        var mkdocs_page_input_path = "tutorial/add_radial_force.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">给 Actor 添加径向推力</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/tutorial/add_radial_force.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="actor">给 Actor 添加径向推力</h1>
+<p>接上一节教程，本教程非常有趣，我们将通过在设定范围内的所有物体上添加径向推力来模拟爆炸。</p>
+<p>创建一个名为 <code>AddRadialForce</code> 的新角色。我们不需要对头文件做任何操作。下面是由虚幻生成的默认头文件。</p>
+<p><strong>AddRadialForce.h</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;CoreMinimal.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;GameFramework/Actor.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;AddRadialForce.generated.h&quot;</span>
+
+<span class="n">UCLASS</span><span class="p">()</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UNREALCPP_API</span><span class="w"> </span><span class="n">AAddRadialForce</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AActor</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">GENERATED_BODY</span><span class="p">()</span>
+
+<span class="k">public</span><span class="o">:</span><span class="w"> </span>
+<span class="w">    </span><span class="c1">// Sets default values for this actor&#39;s properties</span>
+<span class="w">    </span><span class="n">AAddRadialForce</span><span class="p">();</span>
+
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">    </span><span class="c1">// Called when the game starts or when spawned</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">BeginPlay</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span><span class="w"> </span>
+<span class="w">    </span><span class="c1">// Called every frame</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">Tick</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="p">};</span>
+</code></pre></div>
+<p>为了在调试过程中提供帮助，让我们将 <code>DrawDebugHelpers</code> 头文件添加到代码中。</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;AddRadialForce.h&quot;</span>
+<span class="c1">// add debug helpfers</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;DrawDebugHelpers.h&quot;</span>
+</code></pre></div>
+<p>在这个例子中，我们将在 <code>BeginPlay()</code> 函数中执行所有的逻辑。我们想要收集我们范围内的所有命中结果，并从范围的扫描中获得结果。为此，我们将使用 <code>TArray</code> 跟踪重叠的 actor。</p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">AAddRadialForce::BeginPlay</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">BeginPlay</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// create tarray for hit results</span>
+<span class="w">    </span><span class="n">TArray</span><span class="o">&lt;</span><span class="n">FHitResult</span><span class="o">&gt;</span><span class="w"> </span><span class="n">OutHits</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// crate tarray for sweep actors</span>
+<span class="w">    </span><span class="n">TArray</span><span class="o">&lt;</span><span class="n">AActor</span><span class="o">*&gt;</span><span class="w"> </span><span class="n">SweepActors</span><span class="p">;</span><span class="w">    </span>
+<span class="p">}</span>
+</code></pre></div>
+<p>接下来我们要声明 <code>TArray</code> 数组 <code>OutHits</code> 。我们希望扫描范围从 actor 的位置开始同时也从该位置结束，并让 <code>CollisionShape</code> 是一个 500 单位的球体。您可以使用 <code>GetActorLocation()</code> 来获取 actor 的位置，它返回一个向量。我们使用 <code>FCollisionShape::makephere(500.0f)</code> 来创建一个CollisionShape。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// 当游戏开始或生成时调用</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">AAddRadialForce::BeginPlay</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">BeginPlay</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// 为撞击结果创建 tarray 数组</span>
+<span class="w">    </span><span class="n">TArray</span><span class="o">&lt;</span><span class="n">FHitResult</span><span class="o">&gt;</span><span class="w"> </span><span class="n">OutHits</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// 获得 actor 的位置</span>
+<span class="w">    </span><span class="n">FVector</span><span class="w"> </span><span class="n">MyLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetActorLocation</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// 开始和结束位置。该球体会创建镜像扫描</span>
+<span class="w">    </span><span class="n">FVector</span><span class="w"> </span><span class="n">Start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MyLocation</span><span class="p">;</span>
+<span class="w">    </span><span class="n">FVector</span><span class="w"> </span><span class="n">End</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MyLocation</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// 创建碰撞球体</span>
+<span class="w">    </span><span class="n">FCollisionShape</span><span class="w"> </span><span class="n">MyColSphere</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FCollisionShape</span><span class="o">::</span><span class="n">MakeSphere</span><span class="p">(</span><span class="mf">500.0f</span><span class="p">);</span><span class="w">  </span>
+<span class="p">}</span>
+</code></pre></div>
+<p>为了可视化扫描的球体，我们将绘制一个调试球体。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Called when the game starts or when spawned</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">AAddRadialForce::BeginPlay</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">BeginPlay</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// create tarray for hit results</span>
+<span class="w">    </span><span class="n">TArray</span><span class="o">&lt;</span><span class="n">FHitResult</span><span class="o">&gt;</span><span class="w"> </span><span class="n">OutHits</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// get actor locations</span>
+<span class="w">    </span><span class="n">FVector</span><span class="w"> </span><span class="n">MyLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetActorLocation</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// start and end locations. The sphere will create the radial sweep.</span>
+<span class="w">    </span><span class="n">FVector</span><span class="w"> </span><span class="n">Start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MyLocation</span><span class="p">;</span>
+<span class="w">    </span><span class="n">FVector</span><span class="w"> </span><span class="n">End</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MyLocation</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// create a collision sphere</span>
+<span class="w">    </span><span class="n">FCollisionShape</span><span class="w"> </span><span class="n">MyColSphere</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FCollisionShape</span><span class="o">::</span><span class="n">MakeSphere</span><span class="p">(</span><span class="mf">500.0f</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// 绘制碰撞球体</span>
+<span class="w">    </span><span class="n">DrawDebugSphere</span><span class="p">(</span><span class="n">GetWorld</span><span class="p">(),</span><span class="w"> </span><span class="n">GetActorLocation</span><span class="p">(),</span><span class="w"> </span><span class="n">MyColSphere</span><span class="p">.</span><span class="n">GetSphereRadius</span><span class="p">(),</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="n">FColor</span><span class="o">::</span><span class="n">Cyan</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>如果 isHit 为真，我们将通过遍历数组 OutHits ，并向每个成功 cast 的 actor 的根组件添加径向推力。</p>
+<div class="highlight"><pre><span></span><code><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">isHit</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// loop through TArray</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">Hit</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">OutHits</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">UStaticMeshComponent</span><span class="o">*</span><span class="w"> </span><span class="n">MeshComp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Cast</span><span class="o">&lt;</span><span class="n">UStaticMeshComponent</span><span class="o">&gt;</span><span class="p">((</span><span class="n">Hit</span><span class="p">.</span><span class="n">GetActor</span><span class="p">())</span><span class="o">-&gt;</span><span class="n">GetRootComponent</span><span class="p">());</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">MeshComp</span><span class="p">)</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="c1">// alternivly you can use  ERadialImpulseFalloff::RIF_Linear for the impulse to get linearly weaker as it gets further from origin.</span>
+<span class="w">                </span><span class="c1">// set the float radius to 500 and the float strength to 2000.</span>
+<span class="w">                </span><span class="n">MeshComp</span><span class="o">-&gt;</span><span class="n">AddRadialImpulse</span><span class="p">(</span><span class="n">GetActorLocation</span><span class="p">(),</span><span class="w"> </span><span class="mf">500.f</span><span class="p">,</span><span class="w"> </span><span class="mf">2000.f</span><span class="p">,</span><span class="w"> </span><span class="n">ERadialImpulseFalloff</span><span class="o">::</span><span class="n">RIF_Constant</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<p>最终完整 cpp 代码如下：</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;AddRadialForce.h&quot;</span>
+<span class="c1">// add debug helpfers</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;DrawDebugHelpers.h&quot;</span>
+
+<span class="c1">// Sets default values</span>
+<span class="n">AAddRadialForce</span><span class="o">::</span><span class="n">AAddRadialForce</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don&#39;t need it.</span>
+<span class="w">    </span><span class="n">PrimaryActorTick</span><span class="p">.</span><span class="n">bCanEverTick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="p">}</span>
+
+<span class="c1">// Called when the game starts or when spawned</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">AAddRadialForce</span><span class="o">::</span><span class="n">BeginPlay</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">BeginPlay</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// create tarray for hit results</span>
+<span class="w">    </span><span class="n">TArray</span><span class="o">&lt;</span><span class="n">FHitResult</span><span class="o">&gt;</span><span class="w"> </span><span class="n">OutHits</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// get actor locations</span>
+<span class="w">    </span><span class="n">FVector</span><span class="w"> </span><span class="n">MyLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetActorLocation</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// start and end locations. The sphere will create the radial sweep.</span>
+<span class="w">    </span><span class="n">FVector</span><span class="w"> </span><span class="n">Start</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MyLocation</span><span class="p">;</span>
+<span class="w">    </span><span class="n">FVector</span><span class="w"> </span><span class="n">End</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MyLocation</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// create a collision sphere</span>
+<span class="w">    </span><span class="n">FCollisionShape</span><span class="w"> </span><span class="n">MyColSphere</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FCollisionShape</span><span class="o">::</span><span class="n">MakeSphere</span><span class="p">(</span><span class="mf">500.0f</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// draw collision sphere</span>
+<span class="w">    </span><span class="n">DrawDebugSphere</span><span class="p">(</span><span class="n">GetWorld</span><span class="p">(),</span><span class="w"> </span><span class="n">GetActorLocation</span><span class="p">(),</span><span class="w"> </span><span class="n">MyColSphere</span><span class="p">.</span><span class="n">GetSphereRadius</span><span class="p">(),</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="n">FColor</span><span class="o">::</span><span class="n">Cyan</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// check if something got hit in the sweep</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">isHit</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetWorld</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">SweepMultiByChannel</span><span class="p">(</span><span class="n">OutHits</span><span class="p">,</span><span class="w"> </span><span class="n">Start</span><span class="p">,</span><span class="w"> </span><span class="n">End</span><span class="p">,</span><span class="w"> </span><span class="n">FQuat</span><span class="o">::</span><span class="n">Identity</span><span class="p">,</span><span class="w"> </span><span class="n">ECC_WorldStatic</span><span class="p">,</span><span class="w"> </span><span class="n">MyColSphere</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">isHit</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// loop through TArray</span>
+<span class="w">        </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">Hit</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">OutHits</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">UStaticMeshComponent</span><span class="o">*</span><span class="w"> </span><span class="n">MeshComp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Cast</span><span class="o">&lt;</span><span class="n">UStaticMeshComponent</span><span class="o">&gt;</span><span class="p">((</span><span class="n">Hit</span><span class="p">.</span><span class="n">GetActor</span><span class="p">())</span><span class="o">-&gt;</span><span class="n">GetRootComponent</span><span class="p">());</span>
+
+<span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">MeshComp</span><span class="p">)</span>
+<span class="w">            </span><span class="p">{</span>
+<span class="w">                </span><span class="c1">// alternivly you can use  ERadialImpulseFalloff::RIF_Linear for the impulse to get linearly weaker as it gets further from origin.</span>
+<span class="w">                </span><span class="c1">// set the float radius to 500 and the float strength to 2000.</span>
+<span class="w">                </span><span class="n">MeshComp</span><span class="o">-&gt;</span><span class="n">AddRadialImpulse</span><span class="p">(</span><span class="n">GetActorLocation</span><span class="p">(),</span><span class="w"> </span><span class="mf">500.f</span><span class="p">,</span><span class="w"> </span><span class="mf">2000.f</span><span class="p">,</span><span class="w"> </span><span class="n">ERadialImpulseFalloff</span><span class="o">::</span><span class="n">RIF_Constant</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
+<span class="w">            </span><span class="p">}</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="p">}</span>
+
+<span class="c1">// Called every frame</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">AAddRadialForce</span><span class="o">::</span><span class="n">Tick</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">Tick</span><span class="p">(</span><span class="n">DeltaTime</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>实际运行起来的效果图如下：</p>
+<p><img alt="" src="../../img/add_radial_force.gif" /></p>
+<h2 id="_1">参考</h2>
+<ul>
+<li><a href="https://panda1234lee.blog.csdn.net/article/details/119140900">给 Actor 添加径向推力【十八】</a></li>
+<li><a href="https://unrealcpp.com/add-radial-impulse-to-actor/">英文原地址</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../js/umlconvert.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
