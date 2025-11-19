@@ -51,11 +51,11 @@ title: 主页
 
 [__17.Actor 线轨迹__](./tutorial/actor_line_trace.md)
 
-[__18.给 Actor 添加径向推力__](https://bbs.huaweicloud.com/blogs/310555)
+[__18.给 Actor 添加径向推力__](./tutorial/add_radial_force.md)
 
-[__19.为 Charactor 添加重叠事件__](https://blog.csdn.net/panda1234lee/article/details/119152036?spm=1001.2101.3001.10752)
+[__19.为 Charactor 添加重叠事件__](./tutorial/on_overlap.md)
 
-[__20.触发器框__](https://bbs.huaweicloud.com/blogs/310553)
+[__20.触发框__](https://panda1234lee.blog.csdn.net/article/details/119186637)
 
 [__21.指定 Actor 的触发器框__](https://blog.csdn.net/panda1234lee/article/details/119194477?spm=1001.2101.3001.10752 )
 
