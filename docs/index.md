@@ -55,15 +55,15 @@ title: 主页
 
 [__19.为 Charactor 添加重叠事件__](./tutorial/on_overlap.md)
 
-[__20.触发框__](https://panda1234lee.blog.csdn.net/article/details/119186637)
+[__20.触发框__](./tutorial/trigger_box.md)
 
-[__21.指定 Actor 的触发器框__](https://blog.csdn.net/panda1234lee/article/details/119194477?spm=1001.2101.3001.10752 )
+[__21.指定 Actor 的触发器框__](./tutorial/trigger_box_specific_actor.md)
 
-[__22.触发器体__](https://blog.csdn.net/panda1234lee/article/details/119195852?spm=1001.2101.3001.10752)
+[__22.触发器体__](./tutorial/trigger_volumn.md)
 
-[__23.触发区域的灯光切换__](https://blog.csdn.net/panda1234lee/article/details/119197716?spm=1001.2101.3001.10752)
+[__23.触发区域的灯光切换__](./tutorial/light_switch_trigger.md)
 
-[__24.为玩家绑定键盘事件__](https://blog.csdn.net/panda1234lee/article/details/119200569?ops_request_misc=&request_id=&biz_id=102&utm_term=%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84%20UE%204%20C++%20%E6%95%99%E7%A8%8B&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~sobaiduweb~default-0-119200569.nonecase&spm=1018.2226.3001.4450)
+[__24.为玩家绑定键盘事件__](./tutorial/character_bind_button.md)
 
 [__25.触发区域内的键盘响应开关灯__](https://bbs.huaweicloud.com/blogs/310546)
 
