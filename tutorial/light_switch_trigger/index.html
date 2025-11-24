@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>触发区域的灯光切换 - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "\u89e6\u53d1\u533a\u57df\u7684\u706f\u5149\u5207\u6362";
+        var mkdocs_page_input_path = "tutorial/light_switch_trigger.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">触发区域的灯光切换</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/tutorial/light_switch_trigger.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="_1">触发区域的灯光切换</h1>
+<p>接上一节教程，本教程需要注意的是，需要确保第一人称的 Character 是纯净的，即没有<a href="../on_overlap/">《为 Charactor 添加重叠事件》</a>添加的代码，否则触发灯光的开关可能会有冲突。</p>
+<p>在本教程中，我们将创建一个灯，当用户进入 actor 的 <code>USphereComponent</code> 时，它会打开或关闭。创建一个新的 C++ 角色类并将其命名为 <code>LightSwitchTrigger</code> 。在头文件中，我们将定义我们的 <code>PointLight</code>、<code>USphereComponent``、Overlap</code> 函数和 <code>ToggleLight</code> 函数。</p>
+<p><strong>LightSwitchTrigger.h</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;CoreMinimal.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;GameFramework/Actor.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;LightSwitchTrigger.generated.h&quot;</span>
+
+<span class="n">UCLASS</span><span class="p">()</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UNREALCPP_API</span><span class="w"> </span><span class="n">ALightSwitchTrigger</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AActor</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">GENERATED_BODY</span><span class="p">()</span>
+
+<span class="k">public</span><span class="o">:</span><span class="w"> </span>
+<span class="w">    </span><span class="c1">// Sets default values for this actor&#39;s properties</span>
+<span class="w">    </span><span class="n">ALightSwitchTrigger</span><span class="p">();</span>
+
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">    </span><span class="c1">// Called when the game starts or when spawned</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">BeginPlay</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span><span class="w"> </span>
+<span class="w">    </span><span class="c1">// Called every frame</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">Tick</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// declare point light comp</span>
+<span class="w">    </span><span class="n">UPROPERTY</span><span class="p">(</span><span class="n">VisibleAnywhere</span><span class="p">,</span><span class="w"> </span><span class="n">Category</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Light Switch&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="k">class</span><span class="w"> </span><span class="nc">UPointLightComponent</span><span class="o">*</span><span class="w"> </span><span class="n">PointLight</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// declare sphere comp</span>
+<span class="w">    </span><span class="n">UPROPERTY</span><span class="p">(</span><span class="n">VisibleAnywhere</span><span class="p">,</span><span class="w"> </span><span class="n">Category</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Light Switch&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="k">class</span><span class="w"> </span><span class="nc">USphereComponent</span><span class="o">*</span><span class="w"> </span><span class="n">LightSphere</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// declare light intensity variable</span>
+<span class="w">    </span><span class="n">UPROPERTY</span><span class="p">(</span><span class="n">VisibleAnywhere</span><span class="p">,</span><span class="w"> </span><span class="n">Category</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Light Switch&quot;</span><span class="p">)</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">LightIntensity</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// declare overlap begin function</span>
+<span class="w">    </span><span class="n">UFUNCTION</span><span class="p">()</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">OnOverlapBegin</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OverlappedComp</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">,</span><span class="w"> </span><span class="n">int32</span><span class="w"> </span><span class="n">OtherBodyIndex</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">bFromSweep</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">FHitResult</span><span class="o">&amp;</span><span class="w"> </span><span class="n">SweepResult</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// declare overlap end function</span>
+<span class="w">    </span><span class="n">UFUNCTION</span><span class="p">()</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">OnOverlapEnd</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OverlappedComp</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">,</span><span class="w"> </span><span class="n">int32</span><span class="w"> </span><span class="n">OtherBodyIndex</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// declare ToggleLight function</span>
+<span class="w">    </span><span class="n">UFUNCTION</span><span class="p">()</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">ToggleLight</span><span class="p">();</span>
+<span class="p">};</span>
+</code></pre></div>
+<p>接下来，在 .cpp 中，我们将 `</p>
+<h1 id="include-drawdebughelpersh">include "DrawDebugHelpers.h"`  来帮助我们可视化碰撞球体。</h1>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;LightSwitchTrigger.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Components/PointLightComponent.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Components/SphereComponent.h&quot;</span>
+<span class="c1">// include draw debu helpers header file</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;DrawDebugHelpers.h&quot;</span>
+</code></pre></div>
+<p>在 <code>LightSwitchTrigger</code> 初始函数中，我们将把光照强度设置为 3000.0f。接下来，我们将添加一个 <code>PointLight</code> 作为我们的 <code>RootComponent</code> 。然后，我们将为触发器球体 的 actor 添加一个<code>USphereComponent(LightSphere）</code>，并将其附加到 <code>RootComponent</code> 。然后将 <code>USphereComponent</code> 连接到我们稍后将创建的 <code>Overlap</code> 函数。</p>
+<p><strong>设置触发器中的灯光</strong></p>
+<p>```cpp
+ ALightSwitchTrigger::ALightSwitchTrigger()
+{
+    // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+    PrimaryActorTick.bCanEverTick = true;</p>
+<pre><code>LightIntensity = 3000.0f;
+
+PointLight = CreateDefaultSubobject&lt;UPointLightComponent&gt;(TEXT("Point Light"));
+PointLight-&gt;Intensity = LightIntensity;
+//PointLight-&gt;bVisible = true; 过时
+//PointLight-&gt;SetVisibleFlag(true);
+PointLight-&gt;SetVisibility(true);
+RootComponent = PointLight;
+
+LightSphere = CreateDefaultSubobject&lt;USphereComponent&gt;(TEXT("Light Sphere Component"));
+LightSphere-&gt;InitSphereRadius(300.0f);
+LightSphere-&gt;SetCollisionProfileName(TEXT("Trigger"));
+LightSphere-&gt;SetupAttachment(RootComponent);
+
+LightSphere-&gt;OnComponentBeginOverlap.AddDynamic(this, &amp;ALightSwitchTrigger::OnOverlapBegin);
+LightSphere-&gt;OnComponentEndOverlap.AddDynamic(this, &amp;ALightSwitchTrigger::OnOverlapEnd);
+</code></pre>
+<p>}
+ ```</p>
+<p>在 BeginPlay() 中添加一个与 LightSphere 半径相同的调试球体。
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">ALightSwitchTrigger::BeginPlay</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">BeginPlay</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">DrawDebugSphere</span><span class="p">(</span><span class="n">GetWorld</span><span class="p">(),</span><span class="w"> </span><span class="n">GetActorLocation</span><span class="p">(),</span><span class="w"> </span><span class="mf">300.f</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="n">FColor</span><span class="o">::</span><span class="n">Green</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+
+<span class="p">}</span>
+</code></pre></div></p>
+<p>创建一个名为 ToggleLight() 的函数，用于切换 PointLight 的可见性。</p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">ALightSwitchTrigger::ToggleLight</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">PointLight</span><span class="o">-&gt;</span><span class="n">ToggleVisibility</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>接下来，我们将创建两个重叠函数，它们都调用 ToggleLight 函数来切换灯光的可见性。</p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">ALightSwitchTrigger::OnOverlapBegin</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OverlappedComp</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">,</span><span class="w"> </span><span class="n">int32</span><span class="w"> </span><span class="n">OtherBodyIndex</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">bFromSweep</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">FHitResult</span><span class="o">&amp;</span><span class="w"> </span><span class="n">SweepResult</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">this</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">ToggleLight</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">ALightSwitchTrigger::OnOverlapEnd</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OverlappedComp</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">,</span><span class="w"> </span><span class="n">int32</span><span class="w"> </span><span class="n">OtherBodyIndex</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">this</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">ToggleLight</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>完整的 cpp 代码如下
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;LightSwitchTrigger.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Components/PointLightComponent.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Components/SphereComponent.h&quot;</span>
+<span class="c1">// include draw debu helpers header file</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;DrawDebugHelpers.h&quot;</span>
+
+<span class="c1">// Sets default values</span>
+<span class="n">ALightSwitchTrigger</span><span class="o">::</span><span class="n">ALightSwitchTrigger</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don&#39;t need it.</span>
+<span class="w">    </span><span class="n">PrimaryActorTick</span><span class="p">.</span><span class="n">bCanEverTick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">LightIntensity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">3000.0f</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">PointLight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">UPointLightComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;Point Light&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">PointLight</span><span class="o">-&gt;</span><span class="n">Intensity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LightIntensity</span><span class="p">;</span>
+<span class="w">    </span><span class="n">PointLight</span><span class="o">-&gt;</span><span class="n">bVisible</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">    </span><span class="n">RootComponent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PointLight</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">LightSphere</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">USphereComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;Light Sphere Component&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">LightSphere</span><span class="o">-&gt;</span><span class="n">InitSphereRadius</span><span class="p">(</span><span class="mf">300.0f</span><span class="p">);</span>
+<span class="w">    </span><span class="n">LightSphere</span><span class="o">-&gt;</span><span class="n">SetCollisionProfileName</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;Trigger&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">LightSphere</span><span class="o">-&gt;</span><span class="n">SetupAttachment</span><span class="p">(</span><span class="n">RootComponent</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">LightSphere</span><span class="o">-&gt;</span><span class="n">OnComponentBeginOverlap</span><span class="p">.</span><span class="n">AddDynamic</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ALightSwitchTrigger</span><span class="o">::</span><span class="n">OnOverlapBegin</span><span class="p">);</span>
+<span class="w">    </span><span class="n">LightSphere</span><span class="o">-&gt;</span><span class="n">OnComponentEndOverlap</span><span class="p">.</span><span class="n">AddDynamic</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ALightSwitchTrigger</span><span class="o">::</span><span class="n">OnOverlapEnd</span><span class="p">);</span><span class="w"> </span>
+
+<span class="p">}</span>
+
+<span class="c1">// Called when the game starts or when spawned</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">ALightSwitchTrigger</span><span class="o">::</span><span class="n">BeginPlay</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">BeginPlay</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">DrawDebugSphere</span><span class="p">(</span><span class="n">GetWorld</span><span class="p">(),</span><span class="w"> </span><span class="n">GetActorLocation</span><span class="p">(),</span><span class="w"> </span><span class="mf">300.f</span><span class="p">,</span><span class="w"> </span><span class="mi">50</span><span class="p">,</span><span class="w"> </span><span class="n">FColor</span><span class="o">::</span><span class="n">Green</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">);</span>
+
+<span class="p">}</span>
+
+<span class="c1">// Called every frame</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">ALightSwitchTrigger</span><span class="o">::</span><span class="n">Tick</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">Tick</span><span class="p">(</span><span class="n">DeltaTime</span><span class="p">);</span>
+
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">ALightSwitchTrigger</span><span class="o">::</span><span class="n">OnOverlapBegin</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OverlappedComp</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">,</span><span class="w"> </span><span class="n">int32</span><span class="w"> </span><span class="n">OtherBodyIndex</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">bFromSweep</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">FHitResult</span><span class="o">&amp;</span><span class="w"> </span><span class="n">SweepResult</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">this</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">ToggleLight</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">ALightSwitchTrigger</span><span class="o">::</span><span class="n">OnOverlapEnd</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OverlappedComp</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">,</span><span class="w"> </span><span class="n">int32</span><span class="w"> </span><span class="n">OtherBodyIndex</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">this</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">ToggleLight</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">ALightSwitchTrigger</span><span class="o">::</span><span class="n">ToggleLight</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">PointLight</span><span class="o">-&gt;</span><span class="n">ToggleVisibility</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p>最后，编译代码并将 LightSwitchTrigger 拖到场景中。现在当玩家进入球体区域时，灯光就会切换开启状态。</p>
+<p><img alt="" src="../../img/turn_on_light.jpg" /></p>
+<p><img alt="" src="../../img/light_switch_trigger.gif" /></p>
+<h2 id="_2">参考</h2>
+<ul>
+<li><a href="https://blog.csdn.net/panda1234lee/article/details/119197716?spm=1001.2101.3001.10752">触发区域的灯光切换【二十三】</a></li>
+<li><a href="https://unrealcpp.com/light-switch-trigger/">英文原地址</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../js/umlconvert.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>为玩家绑定键盘事件 - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "\u4e3a\u73a9\u5bb6\u7ed1\u5b9a\u952e\u76d8\u4e8b\u4ef6";
+        var mkdocs_page_input_path = "tutorial/character_bind_button.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">为玩家绑定键盘事件</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/tutorial/character_bind_button.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="_1">为玩家绑定键盘事件</h1>
+<p>在本教程中，让我们为角色添加一个 <strong>Action</strong> 键盘响应。首先，我们需要添加一个名为 Action 的输入选项，并将其绑定到键盘输入或控制器按钮上。在本例中，我们将把 Action 输入绑定到键盘的 F 键。转到 <strong>编辑&gt;项目设置（Edit &gt; Project Settings）</strong> 。然后选择 <strong>Input</strong> 选项。单击 <strong>Action Mappings</strong> 旁边的加号。调用新的输入 <strong>Action</strong> 并从下拉菜单中选择 <strong>F</strong> 。</p>
+<p><img alt="" src="../../img/keyboard_project_settings.jpg" /></p>
+<p><img alt="" src="../../img/input_F.jpg" /></p>
+<p>在 <code>xxxCharacter.h</code> 文件中，在 <code>OnFire</code> 方法下添加 <code>OnAction</code> 方法。</p>
+<div class="highlight"><pre><span></span><code><span class="k">protected</span><span class="o">:</span>
+
+<span class="w">    </span><span class="cm">/** Fires a projectile. */</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">OnFire</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// on action </span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">OnAction</span><span class="p">();</span>
+</code></pre></div>
+<p>接下来，在 <code>xxxCharacter.cpp</code> 文件中，我们将找到 <code>SetupPlayerInputComponent</code> 函数，并将 <code>Action</code> 映射与 <code>OnAction</code> 函数连接起来。我们之后马上会创建 <code>OnAction</code> 函数。我通过 <code>PlayerInputComponent</code> 中 的 <code>BindAction</code> 函数将控制器连接到 <code>OnAction</code> 函数。在这个例子中，每次按下键盘 <code>F</code> 时都会调用 <code>OnAction</code> 函数</p>
+<div class="highlight"><pre><span></span><code><span class="n">PlayerInputComponent</span><span class="o">-&gt;</span><span class="n">BindAction</span><span class="p">(</span><span class="s">&quot;Action&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">IE_Pressed</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">AUnrealCPPCharacter</span><span class="o">::</span><span class="n">OnAction</span><span class="p">);</span>
+</code></pre></div>
+<p>最后，我们将添加 <code>OnAction</code> 函数。这将是一个非常简单的函数，用于将消息记录到屏幕上。</p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">AUnrealCPPCharacter::OnAction</span><span class="p">()</span><span class="w"> </span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">GEngine</span><span class="p">)</span><span class="w"> </span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">GEngine</span><span class="o">-&gt;</span><span class="n">AddOnScreenDebugMessage</span><span class="p">(</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mf">5.f</span><span class="p">,</span><span class="w"> </span><span class="n">FColor</span><span class="o">::</span><span class="n">Red</span><span class="p">,</span><span class="w"> </span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;I&#39;m Pressing Action&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>游戏运行后，按下 F 键的效果图如下 </p>
+<p><img alt="" src="../../img/F_pressed.jpg" /></p>
+<h2 id="pawn">指定的任意的 Pawn 绑定键盘相应事件</h2>
+<p>除了给玩家接收键盘响应，也可以给我们指定的任意的 Pawn 绑定键盘相应事件</p>
+<p>首先，我们可以新建一个 MyPawn 类，注意其继承自 Pawn 类</p>
+<p><strong>MyPawn.h</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;CoreMinimal.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;GameFramework/Pawn.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;MyPawn.generated.h&quot;</span>
+
+<span class="n">UCLASS</span><span class="p">()</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UNREALCPP_API</span><span class="w"> </span><span class="n">AMyPawn</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">APawn</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">GENERATED_BODY</span><span class="p">()</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="c1">// Sets default values for this pawn&#39;s properties</span>
+<span class="w">    </span><span class="n">AMyPawn</span><span class="p">();</span>
+
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">    </span><span class="c1">// Called when the game starts or when spawned</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">BeginPlay</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="c1">// Called every frame</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">Tick</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaSeconds</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Called to bind functionality to input</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetupPlayerInputComponent</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">UInputComponent</span><span class="o">*</span><span class="w"> </span><span class="n">InputComponent</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">)</span>
+<span class="w">    </span><span class="n">USceneComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OurVisibleComponent</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Input functions</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">Move_XAxis</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">AxisValue</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">Move_YAxis</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">AxisValue</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">StartGrowing</span><span class="p">();</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">StopGrowing</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// Input variables</span>
+<span class="w">    </span><span class="n">FVector</span><span class="w"> </span><span class="n">CurrentVelocity</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">bGrowing</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div>
+<p>接着在编辑器中，我们创建一个名为 Grow 的 Action 映射，并将其绑定到 G 键， 用于缩放。然后创建两个 Axis 映射用于平移，并将它们命名为 MoveX 和 MoveY 。将轴的比例分别设置为 1 和 -1 。</p>
+<pre><code>1. MoveX
+
+I: Scale 1.0
+K: Scale -1.0
+
+2. MoveY
+J: Scale -1.0
+L: Scale 1.0
+
+3. Grow
+G
+</code></pre>
+<p>完整的 cpp 代码如下</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;MyPawn.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Camera/CameraComponent.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Components/InputComponent.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Components/StaticMeshComponent.h&quot;</span>
+
+<span class="c1">// Sets default values</span>
+<span class="n">AMyPawn</span><span class="o">::</span><span class="n">AMyPawn</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don&#39;t need it.</span>
+<span class="w">    </span><span class="n">PrimaryActorTick</span><span class="p">.</span><span class="n">bCanEverTick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Set this pawn to be controlled by the lowest-numbered player</span>
+<span class="w">    </span><span class="n">AutoPossessPlayer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EAutoReceiveInput</span><span class="o">::</span><span class="n">Player0</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Create a dummy root component we can attach things to.</span>
+<span class="w">    </span><span class="n">RootComponent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">USceneComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;RootComponent&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="c1">// Create a camera and a visible object</span>
+<span class="w">    </span><span class="n">UCameraComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OurCamera</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">UCameraComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;OurCamera&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">OurVisibleComponent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">UStaticMeshComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;OurVisibleComponent&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="c1">// Attach our camera and visible object to our root component. Offset and rotate the camera.</span>
+<span class="w">    </span><span class="n">OurCamera</span><span class="o">-&gt;</span><span class="n">SetupAttachment</span><span class="p">(</span><span class="n">RootComponent</span><span class="p">);</span>
+<span class="w">    </span><span class="n">OurCamera</span><span class="o">-&gt;</span><span class="n">SetRelativeLocation</span><span class="p">(</span><span class="n">FVector</span><span class="p">(</span><span class="mf">-250.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">250.0f</span><span class="p">));</span>
+<span class="w">    </span><span class="n">OurCamera</span><span class="o">-&gt;</span><span class="n">SetRelativeRotation</span><span class="p">(</span><span class="n">FRotator</span><span class="p">(</span><span class="mf">-45.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">));</span>
+<span class="w">    </span><span class="n">OurVisibleComponent</span><span class="o">-&gt;</span><span class="n">SetupAttachment</span><span class="p">(</span><span class="n">RootComponent</span><span class="p">);</span>
+
+<span class="p">}</span>
+
+<span class="c1">// Called every frame</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">AMyPawn</span><span class="o">::</span><span class="n">Tick</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">Tick</span><span class="p">(</span><span class="n">DeltaTime</span><span class="p">);</span>
+
+
+<span class="w">    </span><span class="c1">// Handle growing and shrinking based on our &quot;Grow&quot; action</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="kt">float</span><span class="w"> </span><span class="n">CurrentScale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OurVisibleComponent</span><span class="o">-&gt;</span><span class="n">GetComponentScale</span><span class="p">().</span><span class="n">X</span><span class="p">;</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">bGrowing</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="c1">// Grow to double size over the course of one second</span>
+<span class="w">            </span><span class="n">CurrentScale</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">else</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="c1">// Shrink half as fast as we grow</span>
+<span class="w">            </span><span class="n">CurrentScale</span><span class="w"> </span><span class="o">-=</span><span class="w"> </span><span class="p">(</span><span class="n">DeltaTime</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">0.5f</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="c1">// Make sure we never drop below our starting size, or increase past double size.</span>
+<span class="w">        </span><span class="n">CurrentScale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FMath</span><span class="o">::</span><span class="n">Clamp</span><span class="p">(</span><span class="n">CurrentScale</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">2.0f</span><span class="p">);</span>
+<span class="w">        </span><span class="n">OurVisibleComponent</span><span class="o">-&gt;</span><span class="n">SetWorldScale3D</span><span class="p">(</span><span class="n">FVector</span><span class="p">(</span><span class="n">CurrentScale</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Handle movement based on our &quot;MoveX&quot; and &quot;MoveY&quot; axes</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">CurrentVelocity</span><span class="p">.</span><span class="n">IsZero</span><span class="p">())</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">FVector</span><span class="w"> </span><span class="n">NewLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetActorLocation</span><span class="p">()</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="p">(</span><span class="n">CurrentVelocity</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">);</span>
+<span class="w">            </span><span class="n">SetActorLocation</span><span class="p">(</span><span class="n">NewLocation</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="p">}</span>
+
+<span class="c1">// Called to bind functionality to input</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">AMyPawn</span><span class="o">::</span><span class="n">SetupPlayerInputComponent</span><span class="p">(</span><span class="n">UInputComponent</span><span class="o">*</span><span class="w"> </span><span class="n">PlayerInputComponent</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">SetupPlayerInputComponent</span><span class="p">(</span><span class="n">InputComponent</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Respond when our &quot;Grow&quot; key is pressed or released.</span>
+<span class="w">    </span><span class="n">InputComponent</span><span class="o">-&gt;</span><span class="n">BindAction</span><span class="p">(</span><span class="s">&quot;Grow&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">IE_Pressed</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">AMyPawn</span><span class="o">::</span><span class="n">StartGrowing</span><span class="p">);</span>
+<span class="w">    </span><span class="n">InputComponent</span><span class="o">-&gt;</span><span class="n">BindAction</span><span class="p">(</span><span class="s">&quot;Grow&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">IE_Released</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">AMyPawn</span><span class="o">::</span><span class="n">StopGrowing</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Respond every frame to the values of our two movement axes, &quot;MoveX&quot; and &quot;MoveY&quot;.</span>
+<span class="w">    </span><span class="n">InputComponent</span><span class="o">-&gt;</span><span class="n">BindAxis</span><span class="p">(</span><span class="s">&quot;MoveX&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">AMyPawn</span><span class="o">::</span><span class="n">Move_XAxis</span><span class="p">);</span>
+<span class="w">    </span><span class="n">InputComponent</span><span class="o">-&gt;</span><span class="n">BindAxis</span><span class="p">(</span><span class="s">&quot;MoveY&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">AMyPawn</span><span class="o">::</span><span class="n">Move_YAxis</span><span class="p">);</span>
+
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">AMyPawn</span><span class="o">::</span><span class="n">Move_XAxis</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">AxisValue</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Move at 100 units per second forward or backward</span>
+<span class="w">    </span><span class="n">CurrentVelocity</span><span class="p">.</span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FMath</span><span class="o">::</span><span class="n">Clamp</span><span class="p">(</span><span class="n">AxisValue</span><span class="p">,</span><span class="w"> </span><span class="mf">-1.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0f</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">100.0f</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">AMyPawn</span><span class="o">::</span><span class="n">Move_YAxis</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">AxisValue</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Move at 100 units per second right or left</span>
+<span class="w">    </span><span class="n">CurrentVelocity</span><span class="p">.</span><span class="n">Y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FMath</span><span class="o">::</span><span class="n">Clamp</span><span class="p">(</span><span class="n">AxisValue</span><span class="p">,</span><span class="w"> </span><span class="mf">-1.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">1.0f</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">100.0f</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">AMyPawn</span><span class="o">::</span><span class="n">StartGrowing</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">bGrowing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="n">AMyPawn</span><span class="o">::</span><span class="n">StopGrowing</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">bGrowing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>效果图为</p>
+<p><img alt="" src="../img/bind_button.gif" /></p>
+<h2 id="_2">参考</h2>
+<ul>
+<li><a href="https://blog.csdn.net/panda1234lee/article/details/119200569">为玩家绑定键盘事件【二十四】</a></li>
+<li><a href="https://unrealcpp.com/character-bind-button/">英文原地址</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../js/umlconvert.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

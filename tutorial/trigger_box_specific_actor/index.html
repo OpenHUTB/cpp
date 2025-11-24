@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>指定 Actor 的触发器框 - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "\u6307\u5b9a Actor \u7684\u89e6\u53d1\u5668\u6846";
+        var mkdocs_page_input_path = "tutorial/trigger_box_specific_actor.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">指定 Actor 的触发器框</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/tutorial/trigger_box_specific_actor.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="actor">指定 Actor 的触发器框</h1>
+<p>接上一节教程，本教程将通过特定的 actor 触发重叠事件。</p>
+<p>创建一个新的 C++ TriggerBox 类，并将其命名为 TriggerBoxSpecificActor。在头文件中，我们将为特定的 actor 声明两个 void 重叠函数和 AActor 类。</p>
+<p>下面是最终的头代码。</p>
+<p><strong>TriggerBoxSpecificActor.h</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;CoreMinimal.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Engine/TriggerBox.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;TriggerBoxSpecificActor.generated.h&quot;</span>
+
+
+<span class="n">UCLASS</span><span class="p">()</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UNREALCPP_API</span><span class="w"> </span><span class="n">ATriggerBoxSpecificActor</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">ATriggerBox</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">GENERATED_BODY</span><span class="p">()</span>
+
+<span class="k">protected</span><span class="o">:</span>
+
+<span class="w">    </span><span class="c1">// Called when the game starts or when spawned</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">BeginPlay</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span>
+
+<span class="w">    </span><span class="c1">// constructor sets default values for this actor&#39;s properties</span>
+<span class="w">    </span><span class="n">ATriggerBoxSpecificActor</span><span class="p">();</span>
+
+<span class="w">    </span><span class="c1">// overlap begin function</span>
+<span class="w">    </span><span class="n">UFUNCTION</span><span class="p">()</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">OnOverlapBegin</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OverlappedActor</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// overlap end function</span>
+<span class="w">    </span><span class="n">UFUNCTION</span><span class="p">()</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">OnOverlapEnd</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OverlappedActor</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// specific actor for overlap</span>
+<span class="w">    </span><span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">)</span>
+<span class="w">    </span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">SpecificActor</span><span class="p">;</span>
+
+<span class="p">};</span>
+</code></pre></div>
+<p>在 .cpp 文件中，为了帮助我们可视化触发器框，我们必须 <code>#include "DrawDebugHelpers.h"</code> 文件。</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;TriggerBoxSpecificActor.h&quot;</span>
+<span class="c1">// include draw debug helpers header file</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;DrawDebugHelpers.h&quot;</span>
+</code></pre></div>
+<p>我们也可以 <strong>#define</strong> 一些调试日志的快捷方式。</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#define print(text) if (GEngine) GEngine-&gt;AddOnScreenDebugMessage(-1, 1.5, FColor::Green,text)</span>
+<span class="cp">#define printFString(text, fstring) if (GEngine) GEngine-&gt;AddOnScreenDebugMessage(-1, 5.f, FColor::Green, FString::Printf(TEXT(text), fstring))</span>
+</code></pre></div>
+<p>在 actor 的构造函数中，我们将向 <code>OnActorBeginOverlap.AddDynamic</code> 和 <code>OnActorEndOverlap.AddDynamic</code> 注册重叠事件。</p>
+<div class="highlight"><pre><span></span><code><span class="n">ATriggerBoxSpecificActor</span><span class="o">::</span><span class="n">ATriggerBoxSpecificActor</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">//Register Events</span>
+<span class="w">    </span><span class="n">OnActorBeginOverlap</span><span class="p">.</span><span class="n">AddDynamic</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ATriggerBoxSpecificActor</span><span class="o">::</span><span class="n">OnOverlapBegin</span><span class="p">);</span>
+<span class="w">    </span><span class="n">OnActorEndOverlap</span><span class="p">.</span><span class="n">AddDynamic</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ATriggerBoxSpecificActor</span><span class="o">::</span><span class="n">OnOverlapEnd</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>在 <strong>BeginPlay</strong> 上，我们将使用 <strong>DrawDebugBox</strong> 绘制调试框。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Called when the game starts or when spawned</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">ATriggerBoxSpecificActor::BeginPlay</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">BeginPlay</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">DrawDebugBox</span><span class="p">(</span><span class="n">GetWorld</span><span class="p">(),</span><span class="w"> </span><span class="n">GetActorLocation</span><span class="p">(),</span><span class="w"> </span><span class="n">GetComponentsBoundingBox</span><span class="p">().</span><span class="n">GetExtent</span><span class="p">(),</span><span class="w"> </span><span class="n">FColor</span><span class="o">::</span><span class="n">Green</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="p">);</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>接下来，我们将编写重叠函数，当特定的 actor 进入和退出 TriggerBox 时，它将向屏幕打印一条消息。在重叠函数中，我们通过 <code>OtherActor == SpecificActor</code> 来检查 TriggerBox 中的 actor 是否是我们的特定 actor。</p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">ATriggerBoxSpecificActor::OnOverlapBegin</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OverlappedActor</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">//if the overlapping actor is the specific actor we identified in the editor</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">this</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">OtherActor</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">SpecificActor</span><span class="w"> </span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">print</span><span class="p">(</span><span class="s">&quot;Overlap Begin&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">printFString</span><span class="p">(</span><span class="s">&quot;Overlapping Actor = %s&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">OtherActor</span><span class="o">-&gt;</span><span class="n">GetName</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">ATriggerBoxSpecificActor::OnOverlapEnd</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OverlappedActor</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">//if the overlapping actor is the specific actor we identified in the editor</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">this</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">OtherActor</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">SpecificActor</span><span class="w"> </span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">print</span><span class="p">(</span><span class="s">&quot;Overlap End&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">printFString</span><span class="p">(</span><span class="s">&quot;%s has left the Trigger Box&quot;</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">OtherActor</span><span class="o">-&gt;</span><span class="n">GetName</span><span class="p">());</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>编译代码。将新 actor 拖放到游戏中。</p>
+<p><img alt="" src="../../img/specific_actor_drag.png" /></p>
+<p>运行起来是这样的：</p>
+<p><img alt="" src="../../img/specific_actor_run.jpg" /></p>
+<p>在 actor 的详细信息面板中添加一个 actor，即特定 actor。</p>
+<p><img alt="" src="../../img/specific_actor_add_actor.jpg" /></p>
+<p>点击播放按钮，将特定的 actor <strong>进进出出</strong> TriggerBox 中以触发重叠事件。</p>
+<p>下面是<strong>进进出出</strong>的效果图：</p>
+<p><img alt="" src="../../img/specific_actor_in_ouit.jpg" /></p>
+<h2 id="_1">参考</h2>
+<ul>
+<li><a href="https://blog.csdn.net/panda1234lee/article/details/119194477?spm=1001.2101.3001.10752">指定 Actor 的触发器框【二十一】</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../js/umlconvert.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
