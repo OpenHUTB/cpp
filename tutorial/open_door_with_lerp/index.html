@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>31. 通过插值和重叠事件实现开门效果 - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "31. \u901a\u8fc7\u63d2\u503c\u548c\u91cd\u53e0\u4e8b\u4ef6\u5b9e\u73b0\u5f00\u95e8\u6548\u679c";
+        var mkdocs_page_input_path = "tutorial/open_door_with_lerp.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">31. 通过插值和重叠事件实现开门效果</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/tutorial/open_door_with_lerp.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="31">31. 通过插值和重叠事件实现开门效果</h1>
+<p>在本教程中，在这个引擎 C++ 教程中，我们将学习如何依据玩家的方向，通过使用插值(lerp)函数和重叠事件自动打开一扇门。创建一个新的 actor 类，比如叫它 <code>OpenDoorWithLerp</code> 。</p>
+<p>首先，在 .h 文件中，让我们在文件的顶部使用 `</p>
+<h1 id="include-componentsboxcomponenth-actor-generatedh">include "Components/BoxComponent.h"<code>。确保它出现在 Actor 的</code>generated.h` 文件之前。</h1>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;CoreMinimal.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;GameFramework/Actor.h&quot;</span>
+
+<span class="c1">// include before generated file</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Components/BoxComponent.h&quot;</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;OpenDoorWithLerp.generated.h&quot;</span>
+</code></pre></div>
+<p>接下来，我们将创建变量。我们将声明门 的 <code>UStaticMeshComponent</code>、<code>UBoxComponent</code>、我们的重叠函数、<code>bool</code>、<code>float</code> 和用于门旋转的 <code>FRotator</code> 变量。</p>
+<p>三个 <code>bool</code> 变量确定门的状态，四个 <code>float</code> 变量为门设置不同的数字。接下来，我们将添加用于切换门的函数和使用构建门本身的 <code>UStaticMeshComponent</code> 和 <code>UBoxComponent</code>。所有元素将放在头文件的公共部分之下。</p>
+<div class="highlight"><pre><span></span><code><span class="p">...</span>
+<span class="k">public</span><span class="o">:</span><span class="w"> </span>
+<span class="w">    </span><span class="c1">// Called every frame</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">Tick</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">)</span>
+<span class="w">    </span><span class="n">UStaticMeshComponent</span><span class="o">*</span><span class="w"> </span><span class="n">Door</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">)</span>
+<span class="w">    </span><span class="n">UBoxComponent</span><span class="o">*</span><span class="w"> </span><span class="n">MyBoxComponent</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// declare overlap begin function</span>
+<span class="w">    </span><span class="n">UFUNCTION</span><span class="p">()</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">OnOverlapBegin</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OverlappedComp</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">,</span><span class="w"> </span><span class="n">int32</span><span class="w"> </span><span class="n">OtherBodyIndex</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">bFromSweep</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">FHitResult</span><span class="o">&amp;</span><span class="w"> </span><span class="n">SweepResult</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// declare overlap end function</span>
+<span class="w">    </span><span class="n">UFUNCTION</span><span class="p">()</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">OnOverlapEnd</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OverlappedComp</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">,</span><span class="w"> </span><span class="n">int32</span><span class="w"> </span><span class="n">OtherBodyIndex</span><span class="p">);</span>
+
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">Open</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">RotateValue</span><span class="p">;</span>
+<span class="w">    </span><span class="n">FRotator</span><span class="w"> </span><span class="n">DoorRotation</span><span class="p">;</span>
+</code></pre></div>
+<p>接下来，我们将进入 Actor 的 .cpp 文件。我们首先要 <code>#include "Kismet/KismetMathLibrary.h"</code> 头文件。我们将在重叠函数中使用一个数学函数。
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Kismet/KismetMathLibrary.h&quot;</span>
+</code></pre></div></p>
+<p>在构造函数中，我们将设置默认变量。我们首先将门的 <code>Open</code> （bool 类型）设置为 <code>false</code>。接下来，我们将设置我们的 <code>UBoxComponent</code> 和 <code>UStaticMeshComponent</code> <code>。我们将UBoxComponent</code> 设置为我们的 <code>RootComponent</code> 。然后，将重叠函数连接到 <code>UBoxComponent</code> 。稍后，我们将创建它们正在调用的重叠函数。</p>
+<div class="highlight"><pre><span></span><code><span class="n">AOpenDoorWithLerp</span><span class="o">::</span><span class="n">AOpenDoorWithLerp</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don&#39;t need it.</span>
+<span class="w">    </span><span class="n">PrimaryActorTick</span><span class="p">.</span><span class="n">bCanEverTick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">Open</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">MyBoxComponent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">UBoxComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;My Box Component&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">MyBoxComponent</span><span class="o">-&gt;</span><span class="n">InitBoxExtent</span><span class="p">(</span><span class="n">FVector</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">));</span>
+<span class="w">    </span><span class="n">RootComponent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MyBoxComponent</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">Door</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">UStaticMeshComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;My Mesh&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">Door</span><span class="o">-&gt;</span><span class="n">SetRelativeLocation</span><span class="p">(</span><span class="n">FVector</span><span class="p">(</span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">50.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">-50.0f</span><span class="p">));</span>
+<span class="w">    </span><span class="n">Door</span><span class="o">-&gt;</span><span class="n">SetupAttachment</span><span class="p">(</span><span class="n">RootComponent</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">MyBoxComponent</span><span class="o">-&gt;</span><span class="n">OnComponentBeginOverlap</span><span class="p">.</span><span class="n">AddDynamic</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">AOpenDoorWithLerp</span><span class="o">::</span><span class="n">OnOverlapBegin</span><span class="p">);</span>
+<span class="w">    </span><span class="n">MyBoxComponent</span><span class="o">-&gt;</span><span class="n">OnComponentEndOverlap</span><span class="p">.</span><span class="n">AddDynamic</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">AOpenDoorWithLerp</span><span class="o">::</span><span class="n">OnOverlapEnd</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>在 <code>Tick</code> 函数中，我们将检查门是否打开，并运行 <code>lerp</code> 函数。必须在 <code>Tick</code> 函数中运行一个 <code>lerp</code> 函数。我们将通过使用 <code>Door-&gt;RelativeRotation</code> 来获取门的旋转，以返回门在每一帧上的旋转。在得到门的旋转后，我们将平滑地移动 yaw 到 90，-90，或 0。</p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">AOpenDoorWithLerp::Tick</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">Tick</span><span class="p">(</span><span class="n">DeltaTime</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">DoorRotation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Door</span><span class="o">-&gt;</span><span class="n">RelativeRotation</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">Open</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Door</span><span class="o">-&gt;</span><span class="n">SetRelativeRotation</span><span class="p">(</span><span class="n">FMath</span><span class="o">::</span><span class="n">Lerp</span><span class="p">(</span><span class="n">FQuat</span><span class="p">(</span><span class="n">DoorRotation</span><span class="p">),</span><span class="w"> </span><span class="n">FQuat</span><span class="p">(</span><span class="n">FRotator</span><span class="p">(</span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="n">RotateValue</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">)),</span><span class="w"> </span><span class="mf">0.01f</span><span class="p">));</span><span class="w">   </span>
+<span class="w">    </span><span class="p">}</span><span class="w"> </span>
+<span class="w">    </span><span class="k">else</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Door</span><span class="o">-&gt;</span><span class="n">SetRelativeRotation</span><span class="p">(</span><span class="n">FMath</span><span class="o">::</span><span class="n">Lerp</span><span class="p">(</span><span class="n">FQuat</span><span class="p">(</span><span class="n">DoorRotation</span><span class="p">),</span><span class="w"> </span><span class="n">FQuat</span><span class="p">(</span><span class="n">FRotator</span><span class="p">(</span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">)),</span><span class="w"> </span><span class="mf">0.01f</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>接下来，让我们创建重叠函数。<code>OnOverlapBegin</code> 将首先对空值进行条件检查，以确定函数是否应该继续。然后，该函数根据玩家和 actor 的位置和旋转来检查他们所面对的方向。在这个函数中，我们的玩家也就是我们的 Pawn 是传递给函数的 OtherActor 参数。我们用 Actor 的位置减去 Pawn 的位置，得到一个方向 <code>FVector</code>。然后我们需要考虑父组件的旋转，因此我们运行<code>UKismetMathLibrary::LessLess_VectorRotator</code>。这个方法取自引擎的示例内容。如果玩家在门前，则 <code>RotateValue</code> 将等于 90.0f，如果不是，则 <code>RotateValue</code> 将等于 -90.0f 。然后，最后我们将 <code>Open</code> 设为 true 。</p>
+<p><code>OnOnverlapEnd</code> 简单地将 <code>Open</code> 设置为 <code>false</code>。</p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">AOpenDoorWithLerp::OnOverlapBegin</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OverlappedComp</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">,</span><span class="w"> </span><span class="n">int32</span><span class="w"> </span><span class="n">OtherBodyIndex</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">bFromSweep</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">FHitResult</span><span class="o">&amp;</span><span class="w"> </span><span class="n">SweepResult</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">nullptr</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">this</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">OtherComp</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">nullptr</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">)</span><span class="w"> </span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">FVector</span><span class="w"> </span><span class="n">PawnLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">OtherActor</span><span class="o">-&gt;</span><span class="n">GetActorLocation</span><span class="p">();</span>
+<span class="w">        </span><span class="n">FVector</span><span class="w"> </span><span class="n">Direction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetActorLocation</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">PawnLocation</span><span class="p">;</span>
+<span class="w">        </span><span class="n">Direction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UKismetMathLibrary</span><span class="o">::</span><span class="n">LessLess_VectorRotator</span><span class="p">(</span><span class="n">Direction</span><span class="p">,</span><span class="w"> </span><span class="n">GetActorRotation</span><span class="p">());</span>
+
+<span class="w">        </span><span class="k">if</span><span class="p">(</span><span class="n">Direction</span><span class="p">.</span><span class="n">X</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">RotateValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">90.0f</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="k">else</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">RotateValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">-90.0f</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+
+<span class="w">        </span><span class="n">Open</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">AOpenDoorWithLerp::OnOverlapEnd</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OverlappedComp</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">,</span><span class="w"> </span><span class="n">int32</span><span class="w"> </span><span class="n">OtherBodyIndex</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">nullptr</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">this</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">OtherComp</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">nullptr</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">)</span><span class="w">  </span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Open</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>我们已经完成了代码。进入编辑器并编译。将角色拖放到游戏世界中。将 <code>BoxComponent</code> 的碰撞预设设置为 <code>Trigger</code> ，并从启动器内容中添加门静态网格作为 <code>UStaticMeshComponent</code> 。</p>
+<p>那么就可以得到如文章开头那样的效果</p>
+<p><img alt="" src="../../img/open_door_with_lerp.gif" /></p>
+<h2 id="_1">参考</h2>
+<ul>
+<li><a href="https://panda1234lee.blog.csdn.net/article/details/119295580">通过插值和重叠事件实现开门效果【三十一】</a></li>
+<li><a href="https://unrealcpp.com/open-door-with-lerp/">英文原地址</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../js/umlconvert.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

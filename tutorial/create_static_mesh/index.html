@@ -69,7 +69,8 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="2">2. 创建静态网格</h1>
-<p>接上一节教程，创建一个新的继承自 Actor 的 C++  类并将其命名为 <code>CreateStaticMesh</code> 。在头文件中添加<code>UStaticMeshComponent</code>，然后随意命名它。在这个例子中，我将其命名为 <code>SuperMesh</code>。我们将变量的 <code>UPROPERTY</code> 设置为 <code>VisibleAnywhere</code> ，这样我们就可以轻松地在编辑器中添加一个网格。</p>
+<p>接上一节教程，创建一个新的继承自 Actor 的 C++  类并将其命名为 <code>CreateStaticMesh</code> 。在头文件中添加<code>UStaticMeshComponent</code>，然后随意命名它。在这个例子中，我将其命名为 <code>SuperMesh</code>。我们将变量的 <code>UPROPERTY</code> 设置为 <code>VisibleAnywhere</code> ，这样我们就可以轻松地在编辑器中添加一个网格。如下图所示。</p>
+<p><img alt="" src="../../img/static_mesh.jpg" /></p>
 <p>下面是最终的头文件<code>CreateStaticMesh.h</code>的代码：</p>
 <div class="highlight"><pre><span></span><code><span class="cp">#pragma once</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;CoreMinimal.h&quot;</span>
@@ -116,6 +117,12 @@
 <span class="p">}</span>
 </code></pre></div>
 <p>现在在编辑器中，拖放您的新 actor。在 actor 的 Details面板中，选择你想要添加到 actor 的静态网格。 </p>
+<p><img alt="" src="../../img/added_static_mesh.jpg" /></p>
+<h2 id="_1">参考</h2>
+<ul>
+<li><a href="https://panda1234lee.blog.csdn.net/article/details/119089498">创建静态网格【二】</a></li>
+<li><a href="https://unrealcpp.com/create-static-mesh/">英文源地址</a></li>
+</ul>
               
             </div>
           </div><footer>

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>触发区域的灯光切换 - 引擎实现文档</title>
+    <title>23. 触发区域的灯光切换 - 引擎实现文档</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "\u89e6\u53d1\u533a\u57df\u7684\u706f\u5149\u5207\u6362";
+        var mkdocs_page_name = "23. \u89e6\u53d1\u533a\u57df\u7684\u706f\u5149\u5207\u6362";
         var mkdocs_page_input_path = "tutorial/light_switch_trigger.md";
         var mkdocs_page_url = null;
       </script>
@@ -58,7 +58,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">触发区域的灯光切换</li>
+      <li class="breadcrumb-item active">23. 触发区域的灯光切换</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/tutorial/light_switch_trigger.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -68,7 +68,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="_1">触发区域的灯光切换</h1>
+                <h1 id="23">23. 触发区域的灯光切换</h1>
 <p>接上一节教程，本教程需要注意的是，需要确保第一人称的 Character 是纯净的，即没有<a href="../on_overlap/">《为 Charactor 添加重叠事件》</a>添加的代码，否则触发灯光的开关可能会有冲突。</p>
 <p>在本教程中，我们将创建一个灯，当用户进入 actor 的 <code>USphereComponent</code> 时，它会打开或关闭。创建一个新的 C++ 角色类并将其命名为 <code>LightSwitchTrigger</code> 。在头文件中，我们将定义我们的 <code>PointLight</code>、<code>USphereComponent``、Overlap</code> 函数和 <code>ToggleLight</code> 函数。</p>
 <p><strong>LightSwitchTrigger.h</strong></p>
@@ -256,7 +256,7 @@ LightSphere-&gt;OnComponentEndOverlap.AddDynamic(this, &amp;ALightSwitchTrigger:
 <p>最后，编译代码并将 LightSwitchTrigger 拖到场景中。现在当玩家进入球体区域时，灯光就会切换开启状态。</p>
 <p><img alt="" src="../../img/turn_on_light.jpg" /></p>
 <p><img alt="" src="../../img/light_switch_trigger.gif" /></p>
-<h2 id="_2">参考</h2>
+<h2 id="_1">参考</h2>
 <ul>
 <li><a href="https://blog.csdn.net/panda1234lee/article/details/119197716?spm=1001.2101.3001.10752">触发区域的灯光切换【二十三】</a></li>
 <li><a href="https://unrealcpp.com/light-switch-trigger/">英文原地址</a></li>

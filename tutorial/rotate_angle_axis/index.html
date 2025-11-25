@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>26. 绕轴旋转 - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "26. \u7ed5\u8f74\u65cb\u8f6c";
+        var mkdocs_page_input_path = "tutorial/rotate_angle_axis.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">26. 绕轴旋转</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/tutorial/rotate_angle_axis.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="26">26. 绕轴旋转</h1>
+<p>接上一节教程，在本教程中，我们将学习如何使用 <strong>RotateAngleAxis</strong> 函数。首先创建一个新的 C++ Actor 类，并将其命名为 <code>RotateAngleAxis</code> 。在头文件中，我们将创建两个浮点变量和两个 <code>FVector</code> 变量，并将它们设置为 <code>EditAnywhere</code>，以便稍后在编辑器中编辑它们。</p>
+<p>下面是最终的头文件代码。</p>
+<p><strong>RotateAngleAxis.h</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;CoreMinimal.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;GameFramework/Actor.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;RotatingAngleAxis.generated.h&quot;</span>
+
+<span class="n">UCLASS</span><span class="p">()</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UNREALCPP_API</span><span class="w"> </span><span class="n">ARotatingAngleAxis</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AActor</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">GENERATED_BODY</span><span class="p">()</span>
+
+<span class="k">public</span><span class="o">:</span><span class="w"> </span>
+<span class="w">    </span><span class="c1">// Sets default values for this actor&#39;s properties</span>
+<span class="w">    </span><span class="n">ARotatingAngleAxis</span><span class="p">();</span>
+
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">    </span><span class="c1">// Called when the game starts or when spawned</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">BeginPlay</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span><span class="w"> </span>
+<span class="w">    </span><span class="c1">// Called every frame</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">Tick</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// declare our float variables</span>
+<span class="w">    </span><span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">,</span><span class="w"> </span><span class="n">Category</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Movement</span><span class="p">)</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">AngleAxis</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">,</span><span class="w"> </span><span class="n">Category</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Movement</span><span class="p">)</span>
+<span class="w">    </span><span class="n">FVector</span><span class="w"> </span><span class="n">Dimensions</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">,</span><span class="w"> </span><span class="n">Category</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Movement</span><span class="p">)</span>
+<span class="w">    </span><span class="n">FVector</span><span class="w"> </span><span class="n">AxisVector</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">,</span><span class="w"> </span><span class="n">Category</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Movement</span><span class="p">)</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">Multiplier</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></div>
+<p>在 .cpp 中，让我们首先为 actor 设置一些默认值。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Sets default values</span>
+<span class="n">ARotatingAngleAxis</span><span class="o">::</span><span class="n">ARotatingAngleAxis</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don&#39;t need it.</span>
+<span class="w">    </span><span class="n">PrimaryActorTick</span><span class="p">.</span><span class="n">bCanEverTick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">Dimensions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FVector</span><span class="w"> </span><span class="p">(</span><span class="mi">300</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"> </span><span class="c1">///&lt; 旋转半径</span>
+<span class="w">    </span><span class="n">AxisVector</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FVector</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Multiplier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">50.f</span><span class="p">;</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>我们所有的逻辑都在 Tick 函数中。在这个例子中，我们将使用一个固定的矢量点，所以每一帧我们都想通过将 <code>NewLocation</code> 设为固定的 <code>FVector</code> 来初始化我们的固定位置。</p>
+<p>接下来，我们想要添加到 <code>AngleAxis</code> 变量中，该变量将指示 actor 应该旋转的角度。我们添加了 <code>DeltaTime</code> 乘以我们的 Multiplier 来平滑移动。如果 <code>AngleAxis</code> 大于或等于 360，我们将 <code>AngleAxis</code> 重置为 0。</p>
+<p>接下来，我们将通过使用 <code>RotateAngleAxis</code> 函数从 <code>Dimensions</code> 位置（以它为半径旋转）来设置 <code>RotateValue</code>。
+这会返回将 actor 移动到下一个位置所需的单位数量。
+将 <code>RotateValue</code> 的 X、Y 和 Z 值相应地添加到 NewLocation 变量中。
+我们将把 RotateValue 和 AngleAxis 变量打印到屏幕上，以便实时查看这些值。</p>
+<p>最后，用 <code>SetActorLocation</code> 将角色的位置设置为 <code>NewLocation</code> 。</p>
+<div class="highlight"><pre><span></span><code><span class="n">FVector</span><span class="w"> </span><span class="n">RotateAngleAxis</span>
+<span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">AngleDeg</span><span class="p">,</span><span class="w"> </span><span class="c1">///&lt; 旋转的角度</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">FVector</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="n">Axis</span><span class="w">  </span><span class="c1">///&lt; 围绕的旋转轴</span>
+<span class="p">)</span>
+</code></pre></div>
+<p>Tick 函数的定义 </p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Called every frame</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">ARotatingAngleAxis::Tick</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">Tick</span><span class="p">(</span><span class="n">DeltaTime</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">FVector</span><span class="w"> </span><span class="n">NewLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FVector</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">800</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">AngleAxis</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">DeltaTime</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">Multiplier</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">AngleAxis</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mf">360.0f</span><span class="p">)</span><span class="w"> </span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">AngleAxis</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">FVector</span><span class="w"> </span><span class="n">RotateValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Dimensions</span><span class="p">.</span><span class="n">RotateAngleAxis</span><span class="p">(</span><span class="n">AngleAxis</span><span class="p">,</span><span class="w"> </span><span class="n">AxisVector</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">GEngine</span><span class="o">-&gt;</span><span class="n">AddOnScreenDebugMessage</span><span class="p">(</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mf">5.f</span><span class="p">,</span><span class="w"> </span><span class="n">FColor</span><span class="o">::</span><span class="n">Red</span><span class="p">,</span><span class="w"> </span><span class="n">FString</span><span class="o">::</span><span class="n">Printf</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;RotateValue: %s&quot;</span><span class="p">),</span><span class="w"> </span><span class="o">*</span><span class="n">RotateValue</span><span class="p">.</span><span class="n">ToString</span><span class="p">()));</span><span class="w">  </span>
+<span class="w">    </span><span class="n">GEngine</span><span class="o">-&gt;</span><span class="n">AddOnScreenDebugMessage</span><span class="p">(</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mf">5.f</span><span class="p">,</span><span class="w"> </span><span class="n">FColor</span><span class="o">::</span><span class="n">Green</span><span class="p">,</span><span class="w"> </span><span class="n">FString</span><span class="o">::</span><span class="n">Printf</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;AngleAxis: %f&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">AngleAxis</span><span class="p">));</span>
+
+<span class="w">    </span><span class="n">NewLocation</span><span class="p">.</span><span class="n">X</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">RotateValue</span><span class="p">.</span><span class="n">X</span><span class="p">;</span>
+<span class="w">    </span><span class="n">NewLocation</span><span class="p">.</span><span class="n">Y</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">RotateValue</span><span class="p">.</span><span class="n">Y</span><span class="p">;</span>
+<span class="w">    </span><span class="n">NewLocation</span><span class="p">.</span><span class="n">Z</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">RotateValue</span><span class="p">.</span><span class="n">Z</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">SetActorLocation</span><span class="p">(</span><span class="n">NewLocation</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">ETeleportType</span><span class="o">::</span><span class="n">None</span><span class="p">);</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>完整的 cpp 代码如下：</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;RotatingAngleAxis.h&quot;</span>
+
+<span class="c1">// Sets default values</span>
+<span class="n">ARotatingAngleAxis</span><span class="o">::</span><span class="n">ARotatingAngleAxis</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don&#39;t need it.</span>
+<span class="w">    </span><span class="n">PrimaryActorTick</span><span class="p">.</span><span class="n">bCanEverTick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">Dimensions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FVector</span><span class="w"> </span><span class="p">(</span><span class="mi">300</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<span class="w">    </span><span class="n">AxisVector</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FVector</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">);</span>
+<span class="w">    </span><span class="n">Multiplier</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">50.f</span><span class="p">;</span>
+
+<span class="p">}</span>
+
+<span class="c1">// Called when the game starts or when spawned</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">ARotatingAngleAxis</span><span class="o">::</span><span class="n">BeginPlay</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">BeginPlay</span><span class="p">();</span><span class="w"> </span>
+
+<span class="p">}</span>
+
+<span class="c1">// Called every frame</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">ARotatingAngleAxis</span><span class="o">::</span><span class="n">Tick</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">Tick</span><span class="p">(</span><span class="n">DeltaTime</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">FVector</span><span class="w"> </span><span class="n">NewLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FVector</span><span class="w"> </span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">800</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">AngleAxis</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">DeltaTime</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">Multiplier</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">AngleAxis</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mf">360.0f</span><span class="p">)</span><span class="w"> </span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">AngleAxis</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+
+<span class="w">    </span><span class="n">FVector</span><span class="w"> </span><span class="n">myCharacter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetWorld</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">GetFirstPlayerController</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">GetPawn</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">GetActorLocation</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">FVector</span><span class="w"> </span><span class="n">RotateValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Dimensions</span><span class="p">.</span><span class="n">RotateAngleAxis</span><span class="p">(</span><span class="n">AngleAxis</span><span class="p">,</span><span class="w"> </span><span class="n">AxisVector</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">GEngine</span><span class="o">-&gt;</span><span class="n">AddOnScreenDebugMessage</span><span class="p">(</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mf">5.f</span><span class="p">,</span><span class="w"> </span><span class="n">FColor</span><span class="o">::</span><span class="n">Red</span><span class="p">,</span><span class="w"> </span><span class="n">FString</span><span class="o">::</span><span class="n">Printf</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;RotateValue: %s&quot;</span><span class="p">),</span><span class="w"> </span><span class="o">*</span><span class="n">RotateValue</span><span class="p">.</span><span class="n">ToString</span><span class="p">()));</span><span class="w">  </span>
+<span class="w">    </span><span class="n">GEngine</span><span class="o">-&gt;</span><span class="n">AddOnScreenDebugMessage</span><span class="p">(</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mf">5.f</span><span class="p">,</span><span class="w"> </span><span class="n">FColor</span><span class="o">::</span><span class="n">Green</span><span class="p">,</span><span class="w"> </span><span class="n">FString</span><span class="o">::</span><span class="n">Printf</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;AngleAxis: %f&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">AngleAxis</span><span class="p">));</span>
+
+<span class="w">    </span><span class="n">NewLocation</span><span class="p">.</span><span class="n">X</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">RotateValue</span><span class="p">.</span><span class="n">X</span><span class="p">;</span>
+<span class="w">    </span><span class="n">NewLocation</span><span class="p">.</span><span class="n">Y</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">RotateValue</span><span class="p">.</span><span class="n">Y</span><span class="p">;</span>
+<span class="w">    </span><span class="n">NewLocation</span><span class="p">.</span><span class="n">Z</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">RotateValue</span><span class="p">.</span><span class="n">Z</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">/// @note 仅公转</span>
+<span class="w">    </span><span class="c1">///SetActorLocation(NewLocation, false, 0, ETeleportType::None);</span>
+
+
+<span class="w">    </span><span class="c1">/// @note 公转的同时还会绕自转</span>
+<span class="w">    </span><span class="n">FRotator</span><span class="w"> </span><span class="n">NewRotation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FRotator</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">AngleAxis</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"> </span><span class="c1">///&lt; pitch, yaw, roll</span>
+<span class="w">    </span><span class="n">FQuat</span><span class="w"> </span><span class="n">QuatRotation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FQuat</span><span class="p">(</span><span class="n">NewRotation</span><span class="p">);</span>
+<span class="w">    </span><span class="n">SetActorLocationAndRotation</span><span class="p">(</span><span class="n">NewLocation</span><span class="p">,</span><span class="w"> </span><span class="n">QuatRotation</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">ETeleportType</span><span class="o">::</span><span class="n">None</span><span class="p">);</span><span class="w"> </span><span class="c1">///&lt; 立即移动 actor 到指定的位置并旋转。</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>编译代码。将新 actor 拖放到游戏世界中。向 actor 添加一个静态网格组件（比如立方体）。当你按下 play 时，actor 会找到并绕着给定的矢量点旋转。。</p>
+<p>运行效果如下：</p>
+<p><img alt="" src="../../img/rotate_angle_axis.png" /></p>
+<h2 id="_1">参考</h2>
+<ul>
+<li><a href="https://panda1234lee.blog.csdn.net/article/details/119207396">绕轴旋转【二十六】</a></li>
+<li><a href="https://unrealcpp.com/rotate-angle-axis/">英文原地址</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../js/umlconvert.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

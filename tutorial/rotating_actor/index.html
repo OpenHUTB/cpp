@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>11.实时旋转 Actor - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "11.\u5b9e\u65f6\u65cb\u8f6c Actor";
+        var mkdocs_page_input_path = "tutorial/rotating_actor.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">11.实时旋转 Actor</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/tutorial/rotating_actor.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="11-actor">11.实时旋转 Actor</h1>
+<p>接上一节教程，在本教程中，我们将每帧都对一个 actor 进行旋转。创建一个新的 C++ Actor 类并将其命名为 <code>RotatingActor</code>。在头文件中，我们将创建 3 个浮点变量。我们将把它们的 <code>UPROPERTY</code> 设置为 <code>EditAnywhere</code>，这样我们就可以在编辑器中更改值，我们将把所有变量放在 <code>Movement</code> 类别中，以使它们在一起，并与其他属性分开。</p>
+<p>下面是最终的头文件。</p>
+<p><strong>RotatingActor.h</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;CoreMinimal.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;GameFramework/Actor.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;RotatingActor.generated.h&quot;</span>
+
+<span class="n">UCLASS</span><span class="p">()</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UNREALCPP_API</span><span class="w"> </span><span class="n">ARotatingActor</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AActor</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">GENERATED_BODY</span><span class="p">()</span>
+
+<span class="k">public</span><span class="o">:</span><span class="w"> </span>
+<span class="w">    </span><span class="c1">// Sets default values for this actor&#39;s properties</span>
+<span class="w">    </span><span class="n">ARotatingActor</span><span class="p">();</span>
+
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">    </span><span class="c1">// Called when the game starts or when spawned</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">BeginPlay</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span><span class="w"> </span>
+<span class="w">    </span><span class="c1">// Called every frame</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">Tick</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// declare our float variables  </span>
+<span class="w">    </span><span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">,</span><span class="w"> </span><span class="n">Category</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Movement</span><span class="p">)</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">PitchValue</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">,</span><span class="w"> </span><span class="n">Category</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Movement</span><span class="p">)</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">YawValue</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">,</span><span class="w"> </span><span class="n">Category</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Movement</span><span class="p">)</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">RollValue</span><span class="p">;</span>
+
+<span class="p">};</span>
+</code></pre></div>
+<p>在 .cpp 文件中将所有浮点变量的默认值设置为 0。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Sets default values</span>
+<span class="n">ARotatingActor</span><span class="o">::</span><span class="n">ARotatingActor</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don&#39;t need it.</span>
+<span class="w">    </span><span class="n">PrimaryActorTick</span><span class="p">.</span><span class="n">bCanEverTick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">PitchValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.f</span><span class="p">;</span>
+<span class="w">    </span><span class="n">YawValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.f</span><span class="p">;</span>
+<span class="w">    </span><span class="n">RollValue</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.f</span><span class="p">;</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>在 <code>Tick</code> 函数中创建一个名为 <code>NewRotation</code> 的 <code>FRotator</code> 变量，并将其设置为前面创建的浮点变量。接下来，创建一个 <code>FQuat</code> 变量（四元数），并将其设置为 <code>NewRotatoin</code> 。然后，我们要做的就是运行 <code>AddActorLocalRotation</code>，让 actor 旋转到位。</p>
+<p>下面是最终的.cpp 代码。</p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">ARotatingActor::Tick</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">Tick</span><span class="p">(</span><span class="n">DeltaTime</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// on every frame change rotationg for a smooth rotating actor</span>
+<span class="w">    </span><span class="n">FRotator</span><span class="w"> </span><span class="n">NewRotation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FRotator</span><span class="p">(</span><span class="n">PitchValue</span><span class="p">,</span><span class="w"> </span><span class="n">YawValue</span><span class="p">,</span><span class="w"> </span><span class="n">RollValue</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">FQuat</span><span class="w"> </span><span class="n">QuatRotation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FQuat</span><span class="p">(</span><span class="n">NewRotation</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">AddActorLocalRotation</span><span class="p">(</span><span class="n">QuatRotation</span><span class="p">,</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">ETeleportType</span><span class="o">::</span><span class="n">None</span><span class="p">);</span>
+
+
+<span class="w">    </span><span class="c1">// The below method causes a bug for the pitch value. The pitch value stops updating at 90 degrees</span>
+<span class="w">    </span><span class="c1">// this is a known bug in the Unreal Engine. </span>
+<span class="w">    </span><span class="c1">// solution found by ue4 user nutellis https://answers.unrealengine.com/questions/591752/pitch-rotation-stucks-at-90-90-c.html</span>
+
+<span class="w">    </span><span class="c1">// FRotator NewRotation = GetActorRotation();</span>
+
+<span class="w">    </span><span class="c1">// NewRotation.Pitch += PitchValue;</span>
+<span class="w">    </span><span class="c1">// NewRotation.Yaw += YawValue;</span>
+<span class="w">    </span><span class="c1">// NewRotation.Roll += RollValue;</span>
+
+<span class="w">    </span><span class="c1">// OR add values using the FRotator Add function</span>
+<span class="w">    </span><span class="c1">// FRotator NewRotation = GetActorRotation().Add(PitchValue, YawValue, RollValue);</span>
+
+
+<span class="w">    </span><span class="c1">// SetActorRotation(NewRotation);</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p><strong>效果图</strong></p>
+<p>为该 actor 添加 cube 组件，并设置 pitch 后，它就绕着 Y 轴旋转（UE4 是左手坐标系）</p>
+<p><img alt="" src="../../img/movement_value.jpg" /></p>
+<p><img alt="" src="../../img/movement_effect.jpg" /></p>
+<h2 id="_1">参考</h2>
+<ul>
+<li><a href="https://panda1234lee.blog.csdn.net/article/details/119123641">实时旋转 Actor【十一】</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../js/umlconvert.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

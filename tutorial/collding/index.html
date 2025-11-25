@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>29. 带碰撞和粒子特效的角色操控 - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "29. \u5e26\u78b0\u649e\u548c\u7c92\u5b50\u7279\u6548\u7684\u89d2\u8272\u64cd\u63a7";
+        var mkdocs_page_input_path = "tutorial/collding.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">29. 带碰撞和粒子特效的角色操控</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/tutorial/collding.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="29">29. 带碰撞和粒子特效的角色操控</h1>
+<p>效果图：
+<img alt="" src="../../img/collding_effect.gif" /></p>
+<p>在本教程中，创建一个新的 C++ 类，继承 <code>UPawnMovementComponent</code> 的父类，并将其命名为 <code>CollidingPawnMovementComponent</code> 。我们将在稍后创建的 pawn 中使用这个组件。</p>
+<p><img alt="" src="../../img/pawn_movement_component.jpg" /></p>
+<p><strong>CollidingPawnMovementComponent.h</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;CoreMinimal.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;GameFramework/PawnMovementComponent.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;CollidingPawnMovementComponent.generated.h&quot;</span>
+
+<span class="n">UCLASS</span><span class="p">()</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UNREALCPP_API</span><span class="w"> </span><span class="n">UCollidingPawnMovementComponent</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">UPawnMovementComponent</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">GENERATED_BODY</span><span class="p">()</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">TickComponent</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">,</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">ELevelTick</span><span class="w"> </span><span class="n">TickType</span><span class="p">,</span><span class="w"> </span><span class="n">FActorComponentTickFunction</span><span class="w"> </span><span class="o">*</span><span class="n">ThisTickFunction</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="p">};</span>
+</code></pre></div>
+<p>cpp 文件会把所有的逻辑放到 Tick 函数中来检查我们是否击中了什么。首先，确保它仍然是有效的移动。并把下面的 if 语句添加到 Tick 函数中。</p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">UCollidingPawnMovementComponent::TickComponent</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">,</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">ELevelTick</span><span class="w"> </span><span class="n">TickType</span><span class="p">,</span><span class="w"> </span><span class="n">FActorComponentTickFunction</span><span class="w"> </span><span class="o">*</span><span class="n">ThisTickFunction</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">TickComponent</span><span class="p">(</span><span class="n">DeltaTime</span><span class="p">,</span><span class="w"> </span><span class="n">TickType</span><span class="p">,</span><span class="w"> </span><span class="n">ThisTickFunction</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Make sure that everything is still valid, and that we are allowed to move.</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">PawnOwner</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="n">UpdatedComponent</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">ShouldSkipUpdate</span><span class="p">(</span><span class="n">DeltaTime</span><span class="p">))</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div>
+<p>接下来，我们想要得到 Pawn 产生的向量。我们稍后创建我们的 Pawn actor，但是 pawn 会在每一帧都生成一个位置向量。首先，我们想要通过使用 <code>ConsumeInputVector</code> 函数获得帧的向量。然后截断向量到 1.0f（不超过 1.f） ，然后乘以 <code>DeltaTime</code> 和 150.f 。这确保 pawn 在世界上以每秒 150 单位的最大速度平稳移动。然后我们检查移动量是否接近于 0，如果不是接近于 0（条件判断是  !false 才进入分支），我们会先安全移动 pawn ，如果它撞到了一个阻挡组件，则让它沿这被撞物体边缘移动 。</p>
+<p><strong>CollidingPawnMovementComponent.cpp</strong></p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">UCollidingPawnMovementComponent::TickComponent</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">,</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="nc">ELevelTick</span><span class="w"> </span><span class="n">TickType</span><span class="p">,</span><span class="w"> </span><span class="n">FActorComponentTickFunction</span><span class="w"> </span><span class="o">*</span><span class="n">ThisTickFunction</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">TickComponent</span><span class="p">(</span><span class="n">DeltaTime</span><span class="p">,</span><span class="w"> </span><span class="n">TickType</span><span class="p">,</span><span class="w"> </span><span class="n">ThisTickFunction</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Make sure that everything is still valid, and that we are allowed to move.</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">PawnOwner</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">!</span><span class="n">UpdatedComponent</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">ShouldSkipUpdate</span><span class="p">(</span><span class="n">DeltaTime</span><span class="p">))</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Get (and then clear) the movement vector that we set in ACollidingPawn::Tick</span>
+<span class="w">    </span><span class="n">FVector</span><span class="w"> </span><span class="n">DesiredMovementThisFrame</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ConsumeInputVector</span><span class="p">().</span><span class="n">GetClampedToMaxSize</span><span class="p">(</span><span class="mf">1.0f</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">DeltaTime</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mf">150.0f</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">DesiredMovementThisFrame</span><span class="p">.</span><span class="n">IsNearlyZero</span><span class="p">())</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">FHitResult</span><span class="w"> </span><span class="n">Hit</span><span class="p">;</span>
+<span class="w">        </span><span class="n">SafeMoveUpdatedComponent</span><span class="p">(</span><span class="n">DesiredMovementThisFrame</span><span class="p">,</span><span class="w"> </span><span class="n">UpdatedComponent</span><span class="o">-&gt;</span><span class="n">GetComponentRotation</span><span class="p">(),</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">Hit</span><span class="p">);</span>
+
+<span class="w">        </span><span class="c1">// If we bumped into something, try to slide along it</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">Hit</span><span class="p">.</span><span class="n">IsValidBlockingHit</span><span class="p">())</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">SlideAlongSurface</span><span class="p">(</span><span class="n">DesiredMovementThisFrame</span><span class="p">,</span><span class="w"> </span><span class="mf">1.f</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">Hit</span><span class="p">.</span><span class="n">Time</span><span class="p">,</span><span class="w"> </span><span class="n">Hit</span><span class="p">.</span><span class="n">Normal</span><span class="p">,</span><span class="w"> </span><span class="n">Hit</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">};</span>
+</code></pre></div>
+<p>现在，继续，创建一个新的 C++ 类，它继承自父类 <code>Pawn</code> ，并将其命名为 <code>CollidingPawn</code> 。</p>
+<p>在头文件中，我们要声明将在 .cpp 文件中使用的变量。我们将声明我们的移动函数以及我们的粒子系统和新创建的 <code>UCollidingPawnMovementComponent</code> 。</p>
+<p>我们将通过按键触发粒子。我们将在后面设置输入选项。</p>
+<p>下面是最终的 <code>CollidingPawn.h</code> 文件。</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;CoreMinimal.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;GameFramework/Pawn.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;CollidingPawn.generated.h&quot;</span>
+
+<span class="n">UCLASS</span><span class="p">()</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UNREALCPP_API</span><span class="w"> </span><span class="n">ACollidingPawn</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">APawn</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">GENERATED_BODY</span><span class="p">()</span>
+
+<span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="c1">// Sets default values for this pawn&#39;s properties</span>
+<span class="w">    </span><span class="n">ACollidingPawn</span><span class="p">();</span>
+
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">    </span><span class="c1">// Called when the game starts or when spawned</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">BeginPlay</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span><span class="w"> </span>
+
+<span class="w">    </span><span class="c1">// Called every frame</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">Tick</span><span class="p">(</span><span class="w"> </span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaSeconds</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Called to bind functionality to input</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetupPlayerInputComponent</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">UInputComponent</span><span class="o">*</span><span class="w"> </span><span class="n">InputComponent</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">UParticleSystemComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OurParticleSystem</span><span class="p">;</span>
+<span class="w">    </span><span class="k">class</span><span class="w"> </span><span class="nc">UCollidingPawnMovementComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OurMovementComponent</span><span class="p">;</span>
+
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="n">UPawnMovementComponent</span><span class="o">*</span><span class="w"> </span><span class="nf">GetMovementComponent</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">MoveForward</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">AxisValue</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">MoveRight</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">AxisValue</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">Turn</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">AxisValue</span><span class="p">);</span>
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">ParticleToggle</span><span class="p">();</span>
+
+<span class="p">};</span>
+</code></pre></div>
+<p>在 .cpp 文件中，首先我们要确保 #include 了将在整个代码中使用的所有必要脚本（头文件）。下面你将看到我们添加到 .cpp 文件顶部的组件和助手脚本，它们位于 pawn 的头文件下面。</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;CollidingPawn.h&quot;</span>
+<span class="c1">// include these in your file</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Camera/CameraComponent.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;CollidingPawnMovementComponent.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Components/InputComponent.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Components/StaticMeshComponent.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Components/SphereComponent.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;ConstructorHelpers.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;GameFramework/SpringArmComponent.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Particles/ParticleSystemComponent.h&quot;</span>
+</code></pre></div>
+<p>在我们的 pawn 的构造函数中，我们将设置所有必要的组件。首先，添加一个 <code>USphereComponent</code> 作为 <code>RootComponent</code> 。</p>
+<div class="highlight"><pre><span></span><code><span class="n">ACollidingPawn</span><span class="o">::</span><span class="n">ACollidingPawn</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">      </span><span class="c1">// Our root component will be a sphere that reacts to physics</span>
+<span class="w">    </span><span class="n">USphereComponent</span><span class="o">*</span><span class="w"> </span><span class="n">SphereComponent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">USphereComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;RootComponent&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">RootComponent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SphereComponent</span><span class="p">;</span>
+<span class="w">    </span><span class="n">SphereComponent</span><span class="o">-&gt;</span><span class="n">InitSphereRadius</span><span class="p">(</span><span class="mf">40.0f</span><span class="p">);</span>
+<span class="w">    </span><span class="n">SphereComponent</span><span class="o">-&gt;</span><span class="n">SetCollisionProfileName</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;Pawn&quot;</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>接下来，我们将添加一个球体网格来表示和可视化我们的 pawn。在代码中，我们使用<code>ConstructorHelper</code> 通过提供路径来查找球体网格。</p>
+<div class="highlight"><pre><span></span><code><span class="n">ACollidingPawn</span><span class="o">::</span><span class="n">ACollidingPawn</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="c1">// Create and position a mesh component so we can see where our sphere is</span>
+<span class="w">    </span><span class="n">UStaticMeshComponent</span><span class="o">*</span><span class="w"> </span><span class="n">SphereVisual</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">UStaticMeshComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;VisualRepresentation&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">SphereVisual</span><span class="o">-&gt;</span><span class="n">SetupAttachment</span><span class="p">(</span><span class="n">RootComponent</span><span class="p">);</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="n">ConstructorHelpers</span><span class="o">::</span><span class="n">FObjectFinder</span><span class="o">&lt;</span><span class="n">UStaticMesh</span><span class="o">&gt;</span><span class="w"> </span><span class="n">SphereVisualAsset</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">SphereVisualAsset</span><span class="p">.</span><span class="n">Succeeded</span><span class="p">())</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">SphereVisual</span><span class="o">-&gt;</span><span class="n">SetStaticMesh</span><span class="p">(</span><span class="n">SphereVisualAsset</span><span class="p">.</span><span class="n">Object</span><span class="p">);</span>
+<span class="w">        </span><span class="n">SphereVisual</span><span class="o">-&gt;</span><span class="n">SetRelativeLocation</span><span class="p">(</span><span class="n">FVector</span><span class="p">(</span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">-40.0f</span><span class="p">));</span>
+<span class="w">        </span><span class="n">SphereVisual</span><span class="o">-&gt;</span><span class="n">SetWorldScale3D</span><span class="p">(</span><span class="n">FVector</span><span class="p">(</span><span class="mf">0.8f</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>接下来，我们将粒子系统添加到 pawn 中。默认情况下，我们将设置它的 <code>bAutoActivate</code> 为 <code>false</code>，这样当我们开始播放时它就不会启动火焰。我们将用一个按键来控制它。另外，请注意，我们将这个粒子系统附加到 <code>SphereVisual</code> 网格上，而不是 <code>RootComponent</code> 。</p>
+<div class="highlight"><pre><span></span><code><span class="n">ACollidingPawn</span><span class="o">::</span><span class="n">ACollidingPawn</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="p">...</span>
+
+<span class="w">    </span><span class="c1">// Create a particle system that we can activate or deactivate</span>
+<span class="w">    </span><span class="n">OurParticleSystem</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">UParticleSystemComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;MovementParticles&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">OurParticleSystem</span><span class="o">-&gt;</span><span class="n">SetupAttachment</span><span class="p">(</span><span class="n">SphereVisual</span><span class="p">);</span>
+<span class="w">    </span><span class="n">OurParticleSystem</span><span class="o">-&gt;</span><span class="n">bAutoActivate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">    </span><span class="n">OurParticleSystem</span><span class="o">-&gt;</span><span class="n">SetRelativeLocation</span><span class="p">(</span><span class="n">FVector</span><span class="p">(</span><span class="mf">-20.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">20.0f</span><span class="p">));</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="n">ConstructorHelpers</span><span class="o">::</span><span class="n">FObjectFinder</span><span class="o">&lt;</span><span class="n">UParticleSystem</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ParticleAsset</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;/Game/StarterContent/Particles/P_Fire.P_Fire&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ParticleAsset</span><span class="p">.</span><span class="n">Succeeded</span><span class="p">())</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">OurParticleSystem</span><span class="o">-&gt;</span><span class="n">SetTemplate</span><span class="p">(</span><span class="n">ParticleAsset</span><span class="p">.</span><span class="n">Object</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>接下来，添加一个用于摄像机运动控制的 <code>USpringArmComponent</code> (弹簧臂组件)，并将其附加到 <code>RootComponent</code></p>
+<div class="highlight"><pre><span></span><code><span class="n">ACollidingPawn</span><span class="o">::</span><span class="n">ACollidingPawn</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="c1">// Use a spring arm to give the camera smooth, natural-feeling motion.</span>
+<span class="w">    </span><span class="n">USpringArmComponent</span><span class="o">*</span><span class="w"> </span><span class="n">SpringArm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">USpringArmComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;CameraAttachmentArm&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">SpringArm</span><span class="o">-&gt;</span><span class="n">SetupAttachment</span><span class="p">(</span><span class="n">RootComponent</span><span class="p">);</span>
+<span class="w">    </span><span class="n">SpringArm</span><span class="o">-&gt;</span><span class="n">RelativeRotation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FRotator</span><span class="p">(</span><span class="mf">-45.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">);</span>
+<span class="w">    </span><span class="n">SpringArm</span><span class="o">-&gt;</span><span class="n">TargetArmLength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">400.0f</span><span class="p">;</span>
+<span class="w">    </span><span class="n">SpringArm</span><span class="o">-&gt;</span><span class="n">bEnableCameraLag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">    </span><span class="n">SpringArm</span><span class="o">-&gt;</span><span class="n">CameraLagSpeed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">3.0f</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>接着我们创建一个 <code>UCameraComponent</code>，并将其附加到我们的 <code>SpringArm</code></p>
+<div class="highlight"><pre><span></span><code><span class="n">ACollidingPawn</span><span class="o">::</span><span class="n">ACollidingPawn</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="p">...</span>
+
+<span class="w">    </span><span class="c1">// Create a camera and attach to our spring arm</span>
+<span class="w">    </span><span class="n">UCameraComponent</span><span class="o">*</span><span class="w"> </span><span class="n">Camera</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">UCameraComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;ActualCamera&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">Camera</span><span class="o">-&gt;</span><span class="n">SetupAttachment</span><span class="p">(</span><span class="n">SpringArm</span><span class="p">,</span><span class="w"> </span><span class="n">USpringArmComponent</span><span class="o">::</span><span class="n">SocketName</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>接下来，让这个 pawn 立即控制玩家（<strong>成为玩家 0</strong>）。</p>
+<div class="highlight"><pre><span></span><code><span class="n">ACollidingPawn</span><span class="o">::</span><span class="n">ACollidingPawn</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="p">...</span>
+<span class="w">    </span><span class="c1">// Take control of the default player</span>
+<span class="w">    </span><span class="n">AutoPossessPlayer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EAutoReceiveInput</span><span class="o">::</span><span class="n">Player0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>然后添加我们之前自定义的碰撞移动组件到该 pawn 上</p>
+<div class="highlight"><pre><span></span><code><span class="n">ACollidingPawn</span><span class="o">::</span><span class="n">ACollidingPawn</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="p">...</span>
+
+<span class="w">    </span><span class="c1">// Create an instance of our movement component, and tell it to update our root component.</span>
+<span class="w">    </span><span class="n">OurMovementComponent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">UCollidingPawnMovementComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;CustomMovementComponent&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">OurMovementComponent</span><span class="o">-&gt;</span><span class="n">UpdatedComponent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RootComponent</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>下面是最终的 <code>ACollidingPawn()</code> 函数。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Sets default values</span>
+<span class="n">ACollidingPawn</span><span class="o">::</span><span class="n">ACollidingPawn</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don&#39;t need it.</span>
+<span class="w">    </span><span class="n">PrimaryActorTick</span><span class="p">.</span><span class="n">bCanEverTick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="w">        </span><span class="c1">// Our root component will be a sphere that reacts to physics</span>
+<span class="w">    </span><span class="n">USphereComponent</span><span class="o">*</span><span class="w"> </span><span class="n">SphereComponent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">USphereComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;RootComponent&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">RootComponent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SphereComponent</span><span class="p">;</span>
+<span class="w">    </span><span class="n">SphereComponent</span><span class="o">-&gt;</span><span class="n">InitSphereRadius</span><span class="p">(</span><span class="mf">40.0f</span><span class="p">);</span>
+<span class="w">    </span><span class="n">SphereComponent</span><span class="o">-&gt;</span><span class="n">SetCollisionProfileName</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;Pawn&quot;</span><span class="p">));</span>
+
+<span class="w">    </span><span class="c1">// Create and position a mesh component so we can see where our sphere is</span>
+<span class="w">    </span><span class="n">UStaticMeshComponent</span><span class="o">*</span><span class="w"> </span><span class="n">SphereVisual</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">UStaticMeshComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;VisualRepresentation&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">SphereVisual</span><span class="o">-&gt;</span><span class="n">SetupAttachment</span><span class="p">(</span><span class="n">RootComponent</span><span class="p">);</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="n">ConstructorHelpers</span><span class="o">::</span><span class="n">FObjectFinder</span><span class="o">&lt;</span><span class="n">UStaticMesh</span><span class="o">&gt;</span><span class="w"> </span><span class="n">SphereVisualAsset</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;/Game/StarterContent/Shapes/Shape_Sphere.Shape_Sphere&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">SphereVisualAsset</span><span class="p">.</span><span class="n">Succeeded</span><span class="p">())</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">SphereVisual</span><span class="o">-&gt;</span><span class="n">SetStaticMesh</span><span class="p">(</span><span class="n">SphereVisualAsset</span><span class="p">.</span><span class="n">Object</span><span class="p">);</span>
+<span class="w">        </span><span class="n">SphereVisual</span><span class="o">-&gt;</span><span class="n">SetRelativeLocation</span><span class="p">(</span><span class="n">FVector</span><span class="p">(</span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">-40.0f</span><span class="p">));</span>
+<span class="w">        </span><span class="n">SphereVisual</span><span class="o">-&gt;</span><span class="n">SetWorldScale3D</span><span class="p">(</span><span class="n">FVector</span><span class="p">(</span><span class="mf">0.8f</span><span class="p">));</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Create a particle system that we can activate or deactivate</span>
+<span class="w">    </span><span class="n">OurParticleSystem</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">UParticleSystemComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;MovementParticles&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">OurParticleSystem</span><span class="o">-&gt;</span><span class="n">SetupAttachment</span><span class="p">(</span><span class="n">SphereVisual</span><span class="p">);</span>
+<span class="w">    </span><span class="n">OurParticleSystem</span><span class="o">-&gt;</span><span class="n">bAutoActivate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">    </span><span class="n">OurParticleSystem</span><span class="o">-&gt;</span><span class="n">SetRelativeLocation</span><span class="p">(</span><span class="n">FVector</span><span class="p">(</span><span class="mf">-20.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0f</span><span class="p">,</span><span class="w"> </span><span class="mf">20.0f</span><span class="p">));</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="n">ConstructorHelpers</span><span class="o">::</span><span class="n">FObjectFinder</span><span class="o">&lt;</span><span class="n">UParticleSystem</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ParticleAsset</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;/Game/StarterContent/Particles/P_Fire.P_Fire&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">ParticleAsset</span><span class="p">.</span><span class="n">Succeeded</span><span class="p">())</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">OurParticleSystem</span><span class="o">-&gt;</span><span class="n">SetTemplate</span><span class="p">(</span><span class="n">ParticleAsset</span><span class="p">.</span><span class="n">Object</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="c1">// Use a spring arm to give the camera smooth, natural-feeling motion.</span>
+<span class="w">    </span><span class="n">USpringArmComponent</span><span class="o">*</span><span class="w"> </span><span class="n">SpringArm</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">USpringArmComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;CameraAttachmentArm&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">SpringArm</span><span class="o">-&gt;</span><span class="n">SetupAttachment</span><span class="p">(</span><span class="n">RootComponent</span><span class="p">);</span>
+<span class="w">    </span><span class="n">SpringArm</span><span class="o">-&gt;</span><span class="n">RelativeRotation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FRotator</span><span class="p">(</span><span class="mf">-45.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">,</span><span class="w"> </span><span class="mf">0.f</span><span class="p">);</span>
+<span class="w">    </span><span class="n">SpringArm</span><span class="o">-&gt;</span><span class="n">TargetArmLength</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">400.0f</span><span class="p">;</span>
+<span class="w">    </span><span class="n">SpringArm</span><span class="o">-&gt;</span><span class="n">bEnableCameraLag</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">    </span><span class="n">SpringArm</span><span class="o">-&gt;</span><span class="n">CameraLagSpeed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">3.0f</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Create a camera and attach to our spring arm</span>
+<span class="w">    </span><span class="n">UCameraComponent</span><span class="o">*</span><span class="w"> </span><span class="n">Camera</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">UCameraComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;ActualCamera&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">Camera</span><span class="o">-&gt;</span><span class="n">SetupAttachment</span><span class="p">(</span><span class="n">SpringArm</span><span class="p">,</span><span class="w"> </span><span class="n">USpringArmComponent</span><span class="o">::</span><span class="n">SocketName</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// Take control of the default player</span>
+<span class="w">    </span><span class="n">AutoPossessPlayer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EAutoReceiveInput</span><span class="o">::</span><span class="n">Player0</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// Create an instance of our movement component, and tell it to update our root component.</span>
+<span class="w">    </span><span class="n">OurMovementComponent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">UCollidingPawnMovementComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;CustomMovementComponent&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">OurMovementComponent</span><span class="o">-&gt;</span><span class="n">UpdatedComponent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">RootComponent</span><span class="p">;</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>用所有必要的组件设置完 pawn 后，让我们继续在 <code>SetupPlayerInputComponent</code> 函数中将输入绑定到 pawn。但是，首先让我们进入编辑器并创建 <code>Action</code> 和 <code>Axis</code> 输入。在 <code>Action Mappings</code> 中，添加一个名为 <code>ParticleToggle</code> 的映射，并将其绑定到 <code>P</code> 键。在轴映射中创建 <code>MoveForward</code> <code>、MoveRight</code> 和 <code>Turn</code> 输入。下面是它们对应的值。</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># MoveForward</span>
+W:<span class="w"> </span>Scale<span class="w"> </span><span class="m">1</span>.0
+S:<span class="w"> </span>Scale<span class="w"> </span>-1.0
+Up:<span class="w"> </span>Scale<span class="w"> </span><span class="m">1</span>.0
+Down:<span class="w"> </span>Scale<span class="w"> </span>-1.0
+Gamepad<span class="w"> </span>Left<span class="w"> </span>Thumbstick<span class="w"> </span>Y-Axis:<span class="w"> </span>Scale<span class="w"> </span><span class="m">1</span>.0
+
+<span class="c1"># MoveRight</span>
+A:<span class="w"> </span>Scale<span class="w"> </span>-1.0
+D:<span class="w"> </span>Scale<span class="w"> </span><span class="m">1</span>.0
+Left:<span class="w"> </span>Scale<span class="w"> </span>-1.0
+Right:<span class="w"> </span>Scale<span class="w"> </span><span class="m">1</span>.0
+Gamepad<span class="w"> </span>Left<span class="w"> </span>Thumbstick<span class="w"> </span>X-Axis:<span class="w"> </span>Scale<span class="w"> </span><span class="m">1</span>.0
+
+<span class="c1"># Turn</span>
+Mouse<span class="w"> </span>X:<span class="w"> </span>Scale<span class="w"> </span><span class="m">1</span>.0
+</code></pre></div>
+<p>让我们继续在 <code>SetupPlayerInputComponent</code> 函数中将输入绑定到我们的 pawn 。我们的输入将绑定到代码后面定义的函数。</p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">ACollidingPawn::SetupPlayerInputComponent</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">UInputComponent</span><span class="o">*</span><span class="w"> </span><span class="n">InputComponent</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">SetupPlayerInputComponent</span><span class="p">(</span><span class="n">InputComponent</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">InputComponent</span><span class="o">-&gt;</span><span class="n">BindAction</span><span class="p">(</span><span class="s">&quot;ParticleToggle&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">IE_Pressed</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ACollidingPawn</span><span class="o">::</span><span class="n">ParticleToggle</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">InputComponent</span><span class="o">-&gt;</span><span class="n">BindAxis</span><span class="p">(</span><span class="s">&quot;MoveForward&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ACollidingPawn</span><span class="o">::</span><span class="n">MoveForward</span><span class="p">);</span>
+<span class="w">    </span><span class="n">InputComponent</span><span class="o">-&gt;</span><span class="n">BindAxis</span><span class="p">(</span><span class="s">&quot;MoveRight&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ACollidingPawn</span><span class="o">::</span><span class="n">MoveRight</span><span class="p">);</span>
+<span class="w">    </span><span class="n">InputComponent</span><span class="o">-&gt;</span><span class="n">BindAxis</span><span class="p">(</span><span class="s">&quot;Turn&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ACollidingPawn</span><span class="o">::</span><span class="n">Turn</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>现在，我们要设置 <code>Action</code> 函数和 <code>Axis</code> 函数。</p>
+<p><code>MoveForward</code> 函数根据它的正向向量将 pawn 向前移动。</p>
+<p><code>MoveRight</code> 函数根据它的 RightVector 向前移动我们的 pawn。</p>
+<p><code>Turn</code> 函数使摄像机围绕 pawn 旋转。</p>
+<p><code>ParticleToggle</code> 函数是一个简单的函数，它将在真和假之间切换火粒子的活动状态。</p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">ACollidingPawn::MoveForward</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">AxisValue</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">OurMovementComponent</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">OurMovementComponent</span><span class="o">-&gt;</span><span class="n">UpdatedComponent</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">RootComponent</span><span class="p">))</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">OurMovementComponent</span><span class="o">-&gt;</span><span class="n">AddInputVector</span><span class="p">(</span><span class="n">GetActorForwardVector</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">AxisValue</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">ACollidingPawn::MoveRight</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">AxisValue</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">OurMovementComponent</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">OurMovementComponent</span><span class="o">-&gt;</span><span class="n">UpdatedComponent</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">RootComponent</span><span class="p">))</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">OurMovementComponent</span><span class="o">-&gt;</span><span class="n">AddInputVector</span><span class="p">(</span><span class="n">GetActorRightVector</span><span class="p">()</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">AxisValue</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">ACollidingPawn::Turn</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">AxisValue</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">FRotator</span><span class="w"> </span><span class="n">NewRotation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetActorRotation</span><span class="p">();</span>
+<span class="w">    </span><span class="n">NewRotation</span><span class="p">.</span><span class="n">Yaw</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">AxisValue</span><span class="p">;</span>
+<span class="w">    </span><span class="n">SetActorRotation</span><span class="p">(</span><span class="n">NewRotation</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span><span class="w"> </span><span class="nf">ACollidingPawn::ParticleToggle</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">OurParticleSystem</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">OurParticleSystem</span><span class="o">-&gt;</span><span class="n">Template</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">OurParticleSystem</span><span class="o">-&gt;</span><span class="n">ToggleActive</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>最后，拖放你的 pawn 到游戏场景中，你应该能够向本页面开头那样围绕世界移动球体并释放火焰粒子特效了。</p>
+<h2 id="_1">参考</h2>
+<ul>
+<li><a href="https://panda1234lee.blog.csdn.net/article/details/119242349">带碰撞和粒子特效的角色操控【二十九】</a></li>
+<li><a href="https://unrealcpp.com/colliding-pawn/">英文原地址</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../js/umlconvert.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>触发器体 - 引擎实现文档</title>
+    <title>22. 触发器体 - 引擎实现文档</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "\u89e6\u53d1\u5668\u4f53";
+        var mkdocs_page_name = "22. \u89e6\u53d1\u5668\u4f53";
         var mkdocs_page_input_path = "tutorial/trigger_volumn.md";
         var mkdocs_page_url = null;
       </script>
@@ -58,7 +58,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">触发器体</li>
+      <li class="breadcrumb-item active">22. 触发器体</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/tutorial/trigger_volumn.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -68,7 +68,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="_1">触发器体</h1>
+                <h1 id="22">22. 触发器体</h1>
 <p>接上一节教程，在本教程中，当 actor 与 TriggerVolume 重叠时将触发一个事件。本教程使用了TriggerBox，但过程应该是相似的。</p>
 <p>创建一个新的 C++ <code>TriggerVolume</code> 子类并将其命名为 <code>MyTriggerVolume</code> 。在头文件中添加 <code>OnOverlapBegin</code> 和 <code>OnOverlapEnd</code> 函数。</p>
 <p>下面是最终的头文件 <strong>MyTriggerVolume.h</strong> </p>

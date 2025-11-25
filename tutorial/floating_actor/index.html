@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>27. 漂浮的 Actor - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "27. \u6f02\u6d6e\u7684 Actor";
+        var mkdocs_page_input_path = "tutorial/floating_actor.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">27. 漂浮的 Actor</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/tutorial/floating_actor.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="27-actor">27. 漂浮的 Actor</h1>
+<p>接上一节教程，本教程创建一个新的 C++ Actor 子类并将其命名为 <code>FloatingActor</code>。在头文件中将创建四个浮点变量。我们将创建 <code>RunningTime</code>、<code>XValue</code>、<code>YValue</code> 和 <code>ZValue</code> 变量。</p>
+<p>下面是最终的头文件代码</p>
+<p><strong>FloatingActor.h</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;CoreMinimal.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;GameFramework/Actor.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;FloatingActor.generated.h&quot;</span>
+
+<span class="n">UCLASS</span><span class="p">()</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UNREALCPP_API</span><span class="w"> </span><span class="n">AFloatingActor</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AActor</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">GENERATED_BODY</span><span class="p">()</span>
+
+<span class="k">public</span><span class="o">:</span><span class="w"> </span>
+<span class="w">    </span><span class="c1">// Sets default values for this actor&#39;s properties</span>
+<span class="w">    </span><span class="n">AFloatingActor</span><span class="p">();</span>
+
+<span class="k">protected</span><span class="o">:</span>
+<span class="w">    </span><span class="c1">// Called when the game starts or when spawned</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">BeginPlay</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="k">public</span><span class="o">:</span><span class="w"> </span>
+<span class="w">    </span><span class="c1">// Called every frame</span>
+<span class="w">    </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">Tick</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">    </span><span class="c1">// declare our float variables </span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">RunningTime</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">,</span><span class="w"> </span><span class="n">Category</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Movement</span><span class="p">)</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">XValue</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">,</span><span class="w"> </span><span class="n">Category</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Movement</span><span class="p">)</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">YValue</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">,</span><span class="w"> </span><span class="n">Category</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Movement</span><span class="p">)</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">ZValue</span><span class="p">;</span>
+
+
+<span class="p">};</span>
+</code></pre></div>
+<p>接下来，我们将把所有的逻辑都放到 <code>Tick</code> 函数中。首先，让我们使用 <code>GetActorLocation</code> 在每一帧声明一个变量，该变量等于 actor 的当前位置。这将允许我们改变 actor 的 X, Y 和 Z 值，并在场景中移动。为了平滑的运动，我们将使用 <code>FMath:Sin</code> 来设置我们的 <code>DeltaHeight</code> 变量。</p>
+<div class="highlight"><pre><span></span><code><span class="kt">float</span><span class="w"> </span><span class="n">DeltaHeight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">FMath</span><span class="o">::</span><span class="n">Sin</span><span class="p">(</span><span class="n">RunningTime</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">FMath</span><span class="o">::</span><span class="n">Sin</span><span class="p">(</span><span class="n">RunningTime</span><span class="p">));</span>
+</code></pre></div>
+<p>接下来，我们将获取 actor 的位置 X、Y 和 Z 坐标，并将加上 <code>DeltaTIme * Value</code> 。在头文件中，我们让变量在任何地方都可以编辑，所以在编辑器中，我们可以轻松地调整角色移动的数量和方向。接下来，将 <code>RunningTime</code> 设置为 <code>DeltaHeight</code> 。最后将 actor 的位置设置为 <code>NewLocation</code> 。</p>
+<p>下面是。cpp的最终版本。</p>
+<p><strong>FloatingActor.cpp</strong></p>
+<div class="highlight"><pre><span></span><code><span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;FloatingActor.h&quot;</span>
+
+
+<span class="c1">// Sets default values</span>
+<span class="n">AFloatingActor</span><span class="o">::</span><span class="n">AFloatingActor</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don&#39;t need it.</span>
+<span class="w">    </span><span class="n">PrimaryActorTick</span><span class="p">.</span><span class="n">bCanEverTick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="p">}</span>
+
+<span class="c1">// Called when the game starts or when spawned</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">AFloatingActor</span><span class="o">::</span><span class="n">BeginPlay</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">BeginPlay</span><span class="p">();</span>
+
+<span class="p">}</span>
+
+<span class="c1">// Called every frame</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">AFloatingActor</span><span class="o">::</span><span class="n">Tick</span><span class="p">(</span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">Tick</span><span class="p">(</span><span class="n">DeltaTime</span><span class="p">);</span>
+
+<span class="w">    </span><span class="c1">// on every frame change location for a smooth floating actor</span>
+<span class="w">    </span><span class="n">FVector</span><span class="w"> </span><span class="n">NewLocation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetActorLocation</span><span class="p">();</span>
+<span class="w">    </span><span class="kt">float</span><span class="w"> </span><span class="n">DeltaHeight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">FMath</span><span class="o">::</span><span class="n">Sin</span><span class="p">(</span><span class="n">RunningTime</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">FMath</span><span class="o">::</span><span class="n">Sin</span><span class="p">(</span><span class="n">RunningTime</span><span class="p">));</span>
+<span class="w">    </span><span class="n">NewLocation</span><span class="p">.</span><span class="n">X</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">DeltaHeight</span><span class="w"> </span><span class="o">*</span><span class="w">  </span><span class="n">XValue</span><span class="p">;</span>
+<span class="w">    </span><span class="n">NewLocation</span><span class="p">.</span><span class="n">Y</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">DeltaHeight</span><span class="w"> </span><span class="o">*</span><span class="w">  </span><span class="n">YValue</span><span class="p">;</span>
+<span class="w">    </span><span class="n">NewLocation</span><span class="p">.</span><span class="n">Z</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">DeltaHeight</span><span class="w"> </span><span class="o">*</span><span class="w">  </span><span class="n">ZValue</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">RunningTime</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">DeltaTime</span><span class="p">;</span>
+<span class="w">    </span><span class="n">SetActorLocation</span><span class="p">(</span><span class="n">NewLocation</span><span class="p">);</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>运行起来后的效果图如下</p>
+<p><img alt="" src="../../img/floating_actor.gif" /></p>
+<h2 id="_1">参考</h2>
+<ul>
+<li><a href="https://panda1234lee.blog.csdn.net/article/details/119211224">漂浮的 Actor【二十七】</a></li>
+<li><a href="https://unrealcpp.com/floating-actor/">英文原地址</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../js/umlconvert.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

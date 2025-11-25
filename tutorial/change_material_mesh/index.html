@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>30. 触发改变网格的材质 - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "30. \u89e6\u53d1\u6539\u53d8\u7f51\u683c\u7684\u6750\u8d28";
+        var mkdocs_page_input_path = "tutorial/change_material_mesh.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">30. 触发改变网格的材质</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/tutorial/change_material_mesh.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="30">30. 触发改变网格的材质</h1>
+<p>在本教程中，当发生重叠事件时，我们将改变静态网格的材质。首先，创建一个新的 Actor 子类，在本教程中我叫它 <code>ChangeMaterialMesh</code>。</p>
+<p>首先，在 .h 文件中，我们将创建一个 <code>UStaticMeshComponent</code> 、两个 <code>UMaterial</code> 类和一个 <code>UBoxComponent</code>。将元素添加到头文件的公共部分。</p>
+<div class="highlight"><pre><span></span><code><span class="p">...</span>
+<span class="n">UPROPERTY</span><span class="p">(</span><span class="n">VisibleAnywhere</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UStaticMeshComponent</span><span class="o">*</span><span class="w"> </span><span class="n">MyMesh</span><span class="p">;</span>
+
+<span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UMaterial</span><span class="o">*</span><span class="w"> </span><span class="n">OnMaterial</span><span class="p">;</span>
+
+<span class="n">UPROPERTY</span><span class="p">(</span><span class="n">EditAnywhere</span><span class="p">)</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UMaterial</span><span class="o">*</span><span class="w"> </span><span class="n">OffMaterial</span><span class="p">;</span>
+
+<span class="n">UPROPERTY</span><span class="p">()</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">UBoxComponent</span><span class="o">*</span><span class="w"> </span><span class="n">MyBoxComponent</span><span class="p">;</span>
+
+<span class="n">UFUNCTION</span><span class="p">()</span>
+<span class="kt">void</span><span class="w"> </span><span class="n">OnOverlapBegin</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OverlappedComp</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">,</span><span class="w"> </span><span class="n">int32</span><span class="w"> </span><span class="n">OtherBodyIndex</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">bFromSweep</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">FHitResult</span><span class="o">&amp;</span><span class="w"> </span><span class="n">SweepResult</span><span class="p">);</span>
+</code></pre></div>
+<p>现在我们进入 .cpp 文件。首先，在顶部包含 DrawDebugHelpers.h  和Components/BoxComponent.h 文件，这样我们就可以可视化和使用我们的碰撞框。</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// include draw debug helpers header file</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;DrawDebugHelpers.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;Components/BoxComponent.h&quot;</span>
+</code></pre></div>
+<p>接下来，我们将设置构造函数并设置默认值。使用 <code>CreateDefaultSubobject&lt;UStaticMeshComponent&gt;</code> 创建静态网格，并将其设置为 <code>RootComponent</code> 。然后，通过 <code>CreateDefaultSubobject&lt;UBoxComponent&gt;</code> 创建盒子组件，我们将通过使用 <code>InitBoxExtent</code> 将它的大小范围设置为 <code>FVector(100,100,100)</code> 。盒子组件将初始化为一个名为 <code>Trigger</code> 的碰撞配置文件，并将被附加到 <code>RootComponent</code> 上。接下来，创建两个材质的网格之间切换，建立 bool 的默认值，最后连接重叠函数。</p>
+<p>下面是构造函数代码。</p>
+<div class="highlight"><pre><span></span><code><span class="n">AChangeMaterialMesh</span><span class="o">::</span><span class="n">AChangeMaterialMesh</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don&#39;t need it.</span>
+<span class="w">    </span><span class="n">PrimaryActorTick</span><span class="p">.</span><span class="n">bCanEverTick</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">MyMesh</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">UStaticMeshComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;MyMesh&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">RootComponent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MyMesh</span><span class="p">;</span>
+
+<span class="w">    </span><span class="n">MyBoxComponent</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">UBoxComponent</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;MyBoxComponent&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">MyBoxComponent</span><span class="o">-&gt;</span><span class="n">InitBoxExtent</span><span class="p">(</span><span class="n">FVector</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">));</span>
+<span class="w">    </span><span class="n">MyBoxComponent</span><span class="o">-&gt;</span><span class="n">SetCollisionProfileName</span><span class="p">(</span><span class="s">&quot;Trigger&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="n">MyBoxComponent</span><span class="o">-&gt;</span><span class="n">SetupAttachment</span><span class="p">(</span><span class="n">RootComponent</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">OnMaterial</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">UMaterial</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;OnMaterial&quot;</span><span class="p">));</span>
+<span class="w">    </span><span class="n">OffMaterial</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateDefaultSubobject</span><span class="o">&lt;</span><span class="n">UMaterial</span><span class="o">&gt;</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;OffMaterial&quot;</span><span class="p">));</span>
+
+<span class="w">    </span><span class="n">MyBoxComponent</span><span class="o">-&gt;</span><span class="n">OnComponentBeginOverlap</span><span class="p">.</span><span class="n">AddDynamic</span><span class="p">(</span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">AChangeMaterialMesh</span><span class="o">::</span><span class="n">OnOverlapBegin</span><span class="p">);</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>接下来，在 <code>BeginPlay()</code> 方法中，我们将使用 <code>DrawDebugBox</code> 绘制调试框，并使用 <code>SetMaterial</code> 设置网格的第一个材质。下面是 <code>BeginPlay()</code> 代码。</p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">AChangeMaterialMesh::BeginPlay</span><span class="p">()</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">Super</span><span class="o">::</span><span class="n">BeginPlay</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">DrawDebugBox</span><span class="p">(</span><span class="n">GetWorld</span><span class="p">(),</span><span class="w"> </span><span class="n">GetActorLocation</span><span class="p">(),</span><span class="w"> </span><span class="n">FVector</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">),</span><span class="w"> </span><span class="n">FColor</span><span class="o">::</span><span class="n">White</span><span class="p">,</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">);</span>
+
+<span class="w">    </span><span class="n">MyMesh</span><span class="o">-&gt;</span><span class="n">SetMaterial</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">OffMaterial</span><span class="p">);</span>
+
+<span class="p">}</span>
+</code></pre></div>
+<p>现在，我们将创建一个重叠函数来改变网格的材质。我们将检查 <code>OtherActor</code> 是否不为空，<code>OtherActor</code> 是否不是同一个 actor，以及 <code>OtherComp</code> 是否不为空。如果一切都通过了，我们将调用 <code>SetMaterial</code> 并传入新的材质，并将其设置为网格的第一个材质。</p>
+<p>下面是重叠函数。</p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">AChangeMaterialMesh::OnOverlapBegin</span><span class="p">(</span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OverlappedComp</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AActor</span><span class="o">*</span><span class="w"> </span><span class="n">OtherActor</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">UPrimitiveComponent</span><span class="o">*</span><span class="w"> </span><span class="n">OtherComp</span><span class="p">,</span><span class="w"> </span><span class="n">int32</span><span class="w"> </span><span class="n">OtherBodyIndex</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">bFromSweep</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">FHitResult</span><span class="o">&amp;</span><span class="w"> </span><span class="n">SweepResult</span><span class="p">)</span><span class="w"> </span>
+<span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">nullptr</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="n">OtherActor</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">this</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">OtherComp</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="k">nullptr</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">)</span><span class="w"> </span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">MyMesh</span><span class="o">-&gt;</span><span class="n">SetMaterial</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">OnMaterial</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>编译代码。将 actor 拖放到游戏世界中。在细节面板中添加一个网格，并向 actor 添加两个材质(这些材质是在父组件 (实例) 的细节面板中设置的)。现在当你按下播放时，网格将在发生重叠时改变材质。</p>
+<p><img alt="" src="../../img/change_material_mesh.jpg" /></p>
+<p>效果图如下：</p>
+<p><img alt="" src="../../img/change_material_mesh.gif" /></p>
+<h2 id="_1">参考</h2>
+<ul>
+<li><a href="https://panda1234lee.blog.csdn.net/article/details/119261664">触发改变网格的材质【三十】</a></li>
+<li><a href="https://unrealcpp.com/change-material-mesh/">英文原地址</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../js/umlconvert.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

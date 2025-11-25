@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>添加一个广告牌组件 - 引擎实现文档</title>
+    <title>4. 添加一个广告牌组件 - 引擎实现文档</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "\u6dfb\u52a0\u4e00\u4e2a\u5e7f\u544a\u724c\u7ec4\u4ef6";
+        var mkdocs_page_name = "4. \u6dfb\u52a0\u4e00\u4e2a\u5e7f\u544a\u724c\u7ec4\u4ef6";
         var mkdocs_page_input_path = "tutorial/add_billboard.md";
         var mkdocs_page_url = null;
       </script>
@@ -58,7 +58,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">添加一个广告牌组件</li>
+      <li class="breadcrumb-item active">4. 添加一个广告牌组件</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/tutorial/add_billboard.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -68,7 +68,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="_1">添加一个广告牌组件</h1>
+                <h1 id="4">4. 添加一个广告牌组件</h1>
 <p>接上一节，在本教程中，我们将添加一个广告牌组件（Billboard）到我们的 Actor 对象上。在 UE4 编辑器中也可以很容易地添加组件，但是这次让我们通过编程来实现。</p>
 <p>首先，我们将创建一个名为 <code>AddBillboardComp</code> 的新的 Actor 子类。请记住，如果您用不同的名字的话，请确保在使用了该头文件和 cpp 文件的地方都相应更改了名称。</p>
 <p>在头文件中，我们将创建一个继承自 <code>UBillboardComponent</code> 类的变量。这将允许我们添加一个广告牌组件并使用它的属性。</p>
@@ -111,6 +111,11 @@
 </code></pre></div></p>
 <p>最后完整的 cpp 代码位于 <a href="../../src/tutorial/AddBillboardComp.cpp">AddBillboardComp.cpp</a></p>
 <p>最终效果如图所示：</p>
+<p><img alt="" src="../../img/billboard.gif" /></p>
+<h2 id="_1">参考</h2>
+<ul>
+<li><a href="https://blog.csdn.net/panda1234lee/article/details/119095372">编程实现添加一个组件【四】</a></li>
+</ul>
               
             </div>
           </div><footer>
