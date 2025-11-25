@@ -77,7 +77,7 @@ title: 主页
 
 [__30.触发改变网格的材质__](https://bbs.huaweicloud.com/blogs/310537)
 
-[__31.通过插值和重叠事件实现开门效果__](https://bbs.huaweicloud.com/blogs/310538)
+[__31.通过插值和重叠事件实现开门效果__](https://bbs.huaweicloud.com/blogs/310538) - 开车门
 
 
 ### 技巧
