@@ -1,4 +1,4 @@
-# 触发区域内的键盘响应开关灯
+# 25. 触发区域内的键盘响应开关灯
 
 接上一节教程，创建一个新的 C++ Actor 子类并将其命名为 **LightSwitchPushButton** 。我们将在头文件中定义四个东西 —— 我们将定义一个 **UPointLightComponent**、**USphereComponent**、**float** 变量和 **void** 函数。
 

@@ -1,4 +1,4 @@
-# Actor 线轨迹（line trace）碰撞检测
+# 17. Actor 线轨迹（line trace）碰撞检测
 
 
 接上一节教程，创建一个新的 actor，在这个例子中，我们将新建的 Actor 子类称为 `ActorLineTrace` 。

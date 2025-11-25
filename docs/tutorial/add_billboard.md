@@ -1,4 +1,4 @@
-# 添加一个广告牌组件
+# 4. 添加一个广告牌组件
 
 
 接上一节，在本教程中，我们将添加一个广告牌组件（Billboard）到我们的 Actor 对象上。在 UE4 编辑器中也可以很容易地添加组件，但是这次让我们通过编程来实现。
@@ -65,4 +65,9 @@ RootComponent = MyBillboardComp;
 
 最终效果如图所示：
 
+![](../img/billboard.gif)
 
+
+## 参考
+
+* [编程实现添加一个组件【四】](https://blog.csdn.net/panda1234lee/article/details/119095372)

@@ -1,4 +1,4 @@
-# 设置 Actor 的位置和朝向
+# 10. 设置 Actor 的位置和朝向
 
 接上一节教程，在本教程中，我们将学习如何使用 **SetActorLocationAndRotation** 函数。创建一个新的 C++ Actor 子类并将其命名为 **SetActorLocationAndRotation**。在头文件中创建分别一个 **FVector** 和 **FQuat** 变量，通过设置 **UPROPERTY** 为 **EditAnywhere** 使它们可以在任何地方被编辑。同时将这些变量放在 **Location** 类别中，使它们在一起，并与其他属性分开。
 

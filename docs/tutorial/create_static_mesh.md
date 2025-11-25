@@ -1,8 +1,12 @@
 # 2. 创建静态网格
 
-接上一节教程，创建一个新的继承自 Actor 的 C++  类并将其命名为 `CreateStaticMesh` 。在头文件中添加`UStaticMeshComponent`，然后随意命名它。在这个例子中，我将其命名为 `SuperMesh`。我们将变量的 `UPROPERTY` 设置为 `VisibleAnywhere` ，这样我们就可以轻松地在编辑器中添加一个网格。
+接上一节教程，创建一个新的继承自 Actor 的 C++  类并将其命名为 `CreateStaticMesh` 。在头文件中添加`UStaticMeshComponent`，然后随意命名它。在这个例子中，我将其命名为 `SuperMesh`。我们将变量的 `UPROPERTY` 设置为 `VisibleAnywhere` ，这样我们就可以轻松地在编辑器中添加一个网格。如下图所示。
+
+![](../img/static_mesh.jpg)
 
 下面是最终的头文件` CreateStaticMesh.h`的代码：
+
+
 
 ```C++
 #pragma once
@@ -56,4 +60,11 @@ void ACreateStaticMesh::Tick(float DeltaTime)
 ```
 
 现在在编辑器中，拖放您的新 actor。在 actor 的 Details面板中，选择你想要添加到 actor 的静态网格。 
+
+![](../img/added_static_mesh.jpg)
+
+## 参考
+
+* [创建静态网格【二】](https://panda1234lee.blog.csdn.net/article/details/119089498)
+* [英文源地址](https://unrealcpp.com/create-static-mesh/)
 

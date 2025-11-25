@@ -98,7 +98,7 @@ void AConsoleLog::Tick(float DeltaTime)
 
 执行的结果如下所示（先打印的在下，后打印的在上）：
 
-![](../img/log_temp.jpg)
+![](../img/hello_unreal.png)
 
 
 ![](../img/log_screen.jpg)

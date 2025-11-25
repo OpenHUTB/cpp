@@ -87,3 +87,8 @@ if (CylinderAsset.Succeeded())
 将新建的 actor 子类拖入场景中，最后的结果如下：
 
 ![](../img/add_mesh_from_file.jpg)
+
+
+## 参考
+
+* [C++ 中添加静态网格文件【三】](https://blog.csdn.net/panda1234lee/article/details/119094175)

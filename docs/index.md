@@ -29,7 +29,7 @@ title: 主页
 
 [__5. 打印调式信息__](tutorial/print_debug.md) — 向命令行、屏幕打印开发过程中的调式信息
 
-[__6.绘制辅助调试的形状__](./tutorial/draw_debug.md)
+[__6.绘制辅助调试的形状__](./tutorial/draw_debug_helpers.md)
 
 [__7.寻找玩家的当前位置__](./tutorial/find_player_position.md)
 
@@ -38,6 +38,8 @@ title: 主页
 [__9.获取场景中棋子的个数__](./tutorial/get_number_of_pawns.md)
 
 [__10.设置 Actor 的位置和朝向__](./tutorial/set_actor_location_and_rotation.md)
+
+[__11.实时旋转 Actor__](./tutorial/rotating_actor.md)
 
 [__12.立即切换玩家的相机（视图目标）到 Actor 位置__](./tutorial/set_view_target.md)
 
@@ -67,17 +69,17 @@ title: 主页
 
 [__25.触发区域内的键盘响应开关灯__](./tutorial/light_switch_push_button.md)
 
-[__26.绕轴旋转__](https://bbs.huaweicloud.com/blogs/310543)
+[__26.绕轴旋转__](./tutorial/rotate_angle_axis.md)
 
-[__27.漂浮的 Actor__](https://bbs.huaweicloud.com/blogs/310547)
+[__27.漂浮的 Actor__](./tutorial/floating_actor.md)
 
-[__28.两个相机视图的切换__](https://bbs.huaweicloud.com/blogs/310542)
+[__28.两个相机视图的切换__](./tutorial/camera_director.md)
 
-[__29.带碰撞和粒子特效的角色操控__](https://panda1234lee.blog.csdn.net/article/details/119242349)
+[__29.带碰撞和粒子特效的角色操控__](./tutorial/collding.md)
 
-[__30.触发改变网格的材质__](https://bbs.huaweicloud.com/blogs/310537)
+[__30.触发改变网格的材质__](./tutorial/change_material_mesh.md)
 
-[__31.通过插值和重叠事件实现开门效果__](https://bbs.huaweicloud.com/blogs/310538) - 开车门
+[__31.通过插值和重叠事件实现开门效果__](./tutorial/open_door_with_lerp.md) - 开车门
 
 
 ### 技巧

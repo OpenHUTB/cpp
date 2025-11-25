@@ -1,4 +1,4 @@
-# 为 Charactor 添加重叠事件
+# 19. 为 Charactor 添加重叠事件
 
 
 接上一节教程，我们继续在 Character.h 文件中，在 public 部分声明 `OnOverlapBegin` 和 `OnOverlapEnd` 方法。我在本教程中的头文件名为 `UnrealCPPCharacter.h` ，你的文件可能有不同的名称。你可以在这里了解更多关于 [OnComponentBeginOverlap](https://docs.unrealengine.com/latest/INT/API/Runtime/Engine/Components/UPrimitiveComponent/OnComponentBeginOverlap/index.html) 和 [OnComponentEndOverlap](https://docs.unrealengine.com/latest/INT/API/Runtime/Engine/Components/UPrimitiveComponent/OnComponentEndOverlap/index.html) 的信息。
