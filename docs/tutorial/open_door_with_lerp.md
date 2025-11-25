@@ -2,8 +2,7 @@
 
 在本教程中，在这个引擎 C++ 教程中，我们将学习如何依据玩家的方向，通过使用插值(lerp)函数和重叠事件自动打开一扇门。创建一个新的 actor 类，比如叫它 `OpenDoorWithLerp` 。
 
-首先，在 .h 文件中，让我们在文件的顶部使用 `
-#include "Components/BoxComponent.h"` 。确保它出现在 Actor 的 `generated.h` 文件之前。
+首先，在 .h 文件中，让我们在文件的顶部使用 `#include "Components/BoxComponent.h"` 。确保它出现在 Actor 的 `generated.h` 文件之前。
 
 ```cpp
 #include "CoreMinimal.h"
