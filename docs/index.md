@@ -65,7 +65,7 @@ title: 主页
 
 [__24.为玩家绑定键盘事件__](./tutorial/character_bind_button.md)
 
-[__25.触发区域内的键盘响应开关灯__](https://bbs.huaweicloud.com/blogs/310546)
+[__25.触发区域内的键盘响应开关灯__](./tutorial/light_switch_push_button.md)
 
 [__26.绕轴旋转__](https://bbs.huaweicloud.com/blogs/310543)
 
