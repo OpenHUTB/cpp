@@ -69,10 +69,11 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="24">24. 为玩家绑定键盘事件</h1>
-<p>在本教程中，让我们为角色添加一个 <strong>Action</strong> 键盘响应。首先，我们需要添加一个名为 Action 的输入选项，并将其绑定到键盘输入或控制器按钮上。在本例中，我们将把 Action 输入绑定到键盘的 F 键。转到 <strong>编辑&gt;项目设置（Edit &gt; Project Settings）</strong> 。然后选择 <strong>Input</strong> 选项。单击 <strong>Action Mappings</strong> 旁边的加号。调用新的输入 <strong>Action</strong> 并从下拉菜单中选择 <strong>F</strong> 。</p>
+<p>本教程将为角色添加一个 <strong>Action</strong> 键盘响应。首先，我们需要添加一个名为 Action 的输入选项，并将其绑定到键盘输入或控制器按钮上。在本例中，我们将把 Action 输入绑定到键盘的 F 键。转到 <strong>编辑&gt;项目设置（Edit &gt; Project Settings）</strong> 。然后选择 <strong>Input</strong> 选项。单击 <strong>操作映射(Action Mappings)</strong> 旁边的加号。输入动作的名为 <strong>Action</strong>，并从下拉菜单中选择 <strong>F</strong> 。</p>
 <p><img alt="" src="../../img/keyboard_project_settings.jpg" /></p>
 <p><img alt="" src="../../img/input_F.jpg" /></p>
-<p>在 <code>xxxCharacter.h</code> 文件中，在 <code>OnFire</code> 方法下添加 <code>OnAction</code> 方法。</p>
+<p>右键“新建C++类”，选择父类为<code>角色(Character)</code>。
+在 <code>xxxCharacter.h</code> 文件中添加 <code>OnFire</code> 方法和 <code>OnAction</code> 方法。</p>
 <div class="highlight"><pre><span></span><code><span class="k">protected</span><span class="o">:</span>
 
 <span class="w">    </span><span class="cm">/** Fires a projectile. */</span>
@@ -81,10 +82,10 @@
 <span class="w">    </span><span class="c1">// on action </span>
 <span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">OnAction</span><span class="p">();</span>
 </code></pre></div>
-<p>接下来，在 <code>xxxCharacter.cpp</code> 文件中，我们将找到 <code>SetupPlayerInputComponent</code> 函数，并将 <code>Action</code> 映射与 <code>OnAction</code> 函数连接起来。我们之后马上会创建 <code>OnAction</code> 函数。我通过 <code>PlayerInputComponent</code> 中 的 <code>BindAction</code> 函数将控制器连接到 <code>OnAction</code> 函数。在这个例子中，每次按下键盘 <code>F</code> 时都会调用 <code>OnAction</code> 函数</p>
+<p>接下来，在 <code>xxxCharacter.cpp</code> 文件中，我们将找到 <code>AxxxCharacter::SetupPlayerInputComponent</code> 函数，并将 <code>Action</code> 映射与 <code>OnAction</code> 函数连接起来。我们之后马上会创建 <code>OnAction</code> 函数。我通过 <code>PlayerInputComponent</code> 中 的 <code>BindAction</code> 函数将控制器连接到 <code>OnAction</code> 函数。在这个例子中，每次按下键盘 <code>F</code> 时都会调用 <code>OnAction</code> 函数</p>
 <div class="highlight"><pre><span></span><code><span class="n">PlayerInputComponent</span><span class="o">-&gt;</span><span class="n">BindAction</span><span class="p">(</span><span class="s">&quot;Action&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">IE_Pressed</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">AUnrealCPPCharacter</span><span class="o">::</span><span class="n">OnAction</span><span class="p">);</span>
 </code></pre></div>
-<p>最后，我们将添加 <code>OnAction</code> 函数。这将是一个非常简单的函数，用于将消息记录到屏幕上。</p>
+<p>最后，我们在xxxCharacter.cpp中添加 <code>OnAction</code> 函数。这将是一个非常简单的函数，用于将消息记录到屏幕上。</p>
 <div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">AUnrealCPPCharacter::OnAction</span><span class="p">()</span><span class="w"> </span>
 <span class="p">{</span>
 <span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">GEngine</span><span class="p">)</span><span class="w"> </span>
@@ -258,6 +259,7 @@ G
 <ul>
 <li><a href="https://blog.csdn.net/panda1234lee/article/details/119200569">为玩家绑定键盘事件【二十四】</a></li>
 <li><a href="https://unrealcpp.com/character-bind-button/">英文原地址</a></li>
+<li><a href="https://openhutb.github.io/engine_doc/zh-CN/ProgrammingAndScripting/ProgrammingWithCPP/CPPTutorials/FirstPersonShooter/2/index.html">实现第一人称射击角色</a></li>
 </ul>
               
             </div>
