@@ -87,6 +87,9 @@ title: 主页
 [__热重载__](./hot_reload.md) - 不必关闭编辑器就可以编译 C++ 
 
 
+## 源代码解析
+
+* [游戏模式](./engine/game_mode.md)
 
 
 

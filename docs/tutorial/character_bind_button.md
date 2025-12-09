@@ -1,12 +1,13 @@
 # 24. 为玩家绑定键盘事件
 
-在本教程中，让我们为角色添加一个 **Action** 键盘响应。首先，我们需要添加一个名为 Action 的输入选项，并将其绑定到键盘输入或控制器按钮上。在本例中，我们将把 Action 输入绑定到键盘的 F 键。转到 **编辑>项目设置（Edit > Project Settings）** 。然后选择 **Input** 选项。单击 **Action Mappings** 旁边的加号。调用新的输入 **Action** 并从下拉菜单中选择 **F** 。
+本教程将为角色添加一个 **Action** 键盘响应。首先，我们需要添加一个名为 Action 的输入选项，并将其绑定到键盘输入或控制器按钮上。在本例中，我们将把 Action 输入绑定到键盘的 F 键。转到 **编辑>项目设置（Edit > Project Settings）** 。然后选择 **Input** 选项。单击 **操作映射(Action Mappings)** 旁边的加号。输入动作的名为 **Action**，并从下拉菜单中选择 **F** 。
 
 ![](../img/keyboard_project_settings.jpg)
 
 ![](../img/input_F.jpg)
 
-在 `xxxCharacter.h` 文件中，在 `OnFire` 方法下添加 `OnAction` 方法。
+右键“新建C++类”，选择父类为`角色(Character)`。
+在 `xxxCharacter.h` 文件中添加 `OnFire` 方法和 `OnAction` 方法。
 
 ```cpp
 protected:
@@ -18,13 +19,13 @@ protected:
 	void OnAction();
 ```
 
-接下来，在 `xxxCharacter.cpp` 文件中，我们将找到 `SetupPlayerInputComponent` 函数，并将 `Action` 映射与 `OnAction` 函数连接起来。我们之后马上会创建 `OnAction` 函数。我通过 `PlayerInputComponent` 中 的 `BindAction` 函数将控制器连接到 `OnAction` 函数。在这个例子中，每次按下键盘 `F` 时都会调用 `OnAction` 函数
+接下来，在 `xxxCharacter.cpp` 文件中，我们将找到 `AxxxCharacter::SetupPlayerInputComponent` 函数，并将 `Action` 映射与 `OnAction` 函数连接起来。我们之后马上会创建 `OnAction` 函数。我通过 `PlayerInputComponent` 中 的 `BindAction` 函数将控制器连接到 `OnAction` 函数。在这个例子中，每次按下键盘 `F` 时都会调用 `OnAction` 函数
 
 ```cpp
 PlayerInputComponent->BindAction("Action", IE_Pressed, this, &AUnrealCPPCharacter::OnAction);
 ```
 
-最后，我们将添加 `OnAction` 函数。这将是一个非常简单的函数，用于将消息记录到屏幕上。
+最后，我们在xxxCharacter.cpp中添加 `OnAction` 函数。这将是一个非常简单的函数，用于将消息记录到屏幕上。
 
 ```cpp
 void AUnrealCPPCharacter::OnAction() 
@@ -219,3 +220,4 @@ void AMyPawn::StopGrowing()
 
 * [为玩家绑定键盘事件【二十四】](https://blog.csdn.net/panda1234lee/article/details/119200569)
 * [英文原地址](https://unrealcpp.com/character-bind-button/)
+* [实现第一人称射击角色](https://openhutb.github.io/engine_doc/zh-CN/ProgrammingAndScripting/ProgrammingWithCPP/CPPTutorials/FirstPersonShooter/2/index.html)
