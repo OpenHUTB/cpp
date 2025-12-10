@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>切换 GameMmode - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "\u5207\u6362 GameMmode";
+        var mkdocs_page_input_path = "engine/game_mode.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">切换 GameMmode</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/engine/game_mode.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="gamemmode">切换 GameMmode</h1>
+<p>在运行游戏时决定Map使用哪一个GameMode。</p>
+<h2 id="_1">流程</h2>
+<ol>
+<li>调用<code>UGameplayStatics::OpenLevel()</code>函数</li>
+<li>传入Options参数"Game=XXX"，或者直接在LevelName里面拼接好<code>LevelName?Game=XXX</code>，其中XXX是GameMode别名</li>
+<li>在 ProjectSettings 中设置 GameModeClassAliases 配置GameMode别名</li>
+</ol>
+<h2 id="_2">分析</h2>
+<p>可以在打开关卡时决定选用的GameMode，玄机就在 <a href="https://github.com/OpenHUTB/engine/blob/421ec66f4d50f5dce22bb2d03fa35858dd7eec2b/Engine/Source/Runtime/Engine/Private/GameplayStatics.cpp#L778">UGameplayStatics::OpenLevel</a> 的参数里。</p>
+<p>一般来讲，我们调用这个函数的时候会忽略掉Options参数，而其实OpenLevel里会将LevelName参数和Options参数拼接形成一个Url，格式大致为"LevelName?Options"。</p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">UGameplayStatics::OpenLevel</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">UObject</span><span class="o">*</span><span class="w"> </span><span class="n">WorldContextObject</span><span class="p">,</span><span class="w"> </span><span class="n">FName</span><span class="w"> </span><span class="n">LevelName</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">bAbsolute</span><span class="p">,</span><span class="w"> </span><span class="n">FString</span><span class="w"> </span><span class="n">Options</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">UWorld</span><span class="o">*</span><span class="w"> </span><span class="n">World</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GEngine</span><span class="o">-&gt;</span><span class="n">GetWorldFromContextObject</span><span class="p">(</span><span class="n">WorldContextObject</span><span class="p">,</span><span class="w"> </span><span class="n">EGetWorldErrorMode</span><span class="o">::</span><span class="n">LogAndReturnNull</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">World</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="k">nullptr</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">return</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">ETravelType</span><span class="w"> </span><span class="n">TravelType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">bAbsolute</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">TRAVEL_Absolute</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">TRAVEL_Relative</span><span class="p">);</span>
+<span class="w">    </span><span class="n">FWorldContext</span><span class="w"> </span><span class="o">&amp;</span><span class="n">WorldContext</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GEngine</span><span class="o">-&gt;</span><span class="n">GetWorldContextFromWorldChecked</span><span class="p">(</span><span class="n">World</span><span class="p">);</span>
+<span class="w">    </span><span class="n">FString</span><span class="w"> </span><span class="n">Cmd</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LevelName</span><span class="p">.</span><span class="n">ToString</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">Options</span><span class="p">.</span><span class="n">Len</span><span class="p">()</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Cmd</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">FString</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;?&quot;</span><span class="p">))</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">Options</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">FURL</span><span class="w"> </span><span class="n">TestURL</span><span class="p">(</span><span class="o">&amp;</span><span class="n">WorldContext</span><span class="p">.</span><span class="n">LastURL</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">Cmd</span><span class="p">,</span><span class="w"> </span><span class="n">TravelType</span><span class="p">);</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">TestURL</span><span class="p">.</span><span class="n">IsLocalInternal</span><span class="p">())</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="c1">// make sure the file exists if we are opening a local file</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">GEngine</span><span class="o">-&gt;</span><span class="n">MakeSureMapNameIsValid</span><span class="p">(</span><span class="n">TestURL</span><span class="p">.</span><span class="n">Map</span><span class="p">))</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="n">UE_LOG</span><span class="p">(</span><span class="n">LogLevel</span><span class="p">,</span><span class="w"> </span><span class="n">Warning</span><span class="p">,</span><span class="w"> </span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;WARNING: The map &#39;%s&#39; does not exist.&quot;</span><span class="p">),</span><span class="w"> </span><span class="o">*</span><span class="n">TestURL</span><span class="p">.</span><span class="n">Map</span><span class="p">);</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="n">GEngine</span><span class="o">-&gt;</span><span class="n">SetClientTravel</span><span class="p">(</span><span class="w"> </span><span class="n">World</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">Cmd</span><span class="p">,</span><span class="w"> </span><span class="n">TravelType</span><span class="w"> </span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>打开关卡时，在 <a href="https://github.com/OpenHUTB/engine/blob/421ec66f4d50f5dce22bb2d03fa35858dd7eec2b/Engine/Source/Runtime/Engine/Private/GameInstance.cpp#L1186">GameInstance</a> 里会根据刚才传输的 Url 设置当前Map的GameMode，此时会解析字符串"Game="，而该参数即作为GameMode的参数。</p>
+<div class="highlight"><pre><span></span><code><span class="n">AGameModeBase</span><span class="o">*</span><span class="w"> </span><span class="nf">UGameInstance::CreateGameModeForURL</span><span class="p">(</span><span class="n">FURL</span><span class="w"> </span><span class="n">InURL</span><span class="p">,</span><span class="w"> </span><span class="n">UWorld</span><span class="o">*</span><span class="w"> </span><span class="n">InWorld</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="c1">// Init the game info.</span>
+<span class="w">    </span><span class="n">FString</span><span class="w"> </span><span class="n">Options</span><span class="p">;</span>
+<span class="w">    </span><span class="n">FString</span><span class="w"> </span><span class="n">GameParam</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">int32</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">InURL</span><span class="p">.</span><span class="n">Op</span><span class="p">.</span><span class="n">Num</span><span class="p">();</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="n">Options</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;?&quot;</span><span class="p">);</span>
+<span class="w">        </span><span class="n">Options</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">InURL</span><span class="p">.</span><span class="n">Op</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+<span class="w">        </span><span class="n">FParse</span><span class="o">::</span><span class="n">Value</span><span class="p">(</span><span class="o">*</span><span class="n">InURL</span><span class="p">.</span><span class="n">Op</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="w"> </span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;GAME=&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">GameParam</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<p>而GameMode参数应该传入什么呢？其实解析到的GameMode字符串会作为UGameMapsSettings::GetGameModeForName()的参数被调用，在该函数内会检查它是否为 <a href="https://github.com/OpenHUTB/engine/blob/421ec66f4d50f5dce22bb2d03fa35858dd7eec2b/Engine/Source/Runtime/EngineSettings/Private/EngineSettingsModule.cpp#L106">GameMode的别名</a> 。简单来说，Game=XXX需要填写的是GameMode的别名。</p>
+<div class="highlight"><pre><span></span><code><span class="n">FString</span><span class="w"> </span><span class="nf">UGameMapsSettings::GetGameModeForName</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">FString</span><span class="o">&amp;</span><span class="w"> </span><span class="n">GameModeName</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">    </span><span class="n">UGameMapsSettings</span><span class="o">*</span><span class="w"> </span><span class="n">GameMapsSettings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Cast</span><span class="o">&lt;</span><span class="n">UGameMapsSettings</span><span class="o">&gt;</span><span class="p">(</span><span class="n">UGameMapsSettings</span><span class="o">::</span><span class="n">StaticClass</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">GetDefaultObject</span><span class="p">());</span>
+
+<span class="w">    </span><span class="c1">// Look to see if this should be remapped from a shortname to full class name</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">FGameModeName</span><span class="o">&amp;</span><span class="w"> </span><span class="n">Alias</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">GameMapsSettings</span><span class="o">-&gt;</span><span class="n">GameModeClassAliases</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">GameModeName</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">Alias</span><span class="p">.</span><span class="n">Name</span><span class="p">)</span>
+<span class="w">        </span><span class="p">{</span>
+<span class="w">            </span><span class="c1">// switch GameClassName to the full name</span>
+<span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="n">Alias</span><span class="p">.</span><span class="n">GameMode</span><span class="p">.</span><span class="n">ToString</span><span class="p">();</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+</code></pre></div>
+<p><a href="https://dev.epicgames.com/documentation/zh-cn/unreal-engine/game-mode-and-game-state?application_version=4.27">GameMode的别名</a> 的说法来自于GameMapSettings的一个成员。
+可以在 <code>DefaultEngine.ini</code> 文件的 <code>/Script/Engine.WorldSettings/</code> 部分中设置地图前缀（和 URL 法的别名）。这些前缀设置所有拥有特定前缀的地图的默认游戏模式。</p>
+<div class="highlight"><pre><span></span><code><span class="k">[/Script/EngineSettings.GameMapsSettings]</span>
+<span class="na">+GameModeMapPrefixes</span><span class="o">=</span><span class="s">(Name=&quot;DM&quot;,GameMode=&quot;/Script/UnrealTournament.UTDMGameMode&quot;)</span>
+<span class="na">+GameModeClassAliases</span><span class="o">=</span><span class="s">(Name=&quot;DM&quot;,GameMode=&quot;/Script/UnrealTournament.UTDMGameMode&quot;)</span>
+</code></pre></div>
+<h2 id="pythonapi">PythonAPI</h2>
+<p>在 <a href="https://github.com/OpenHUTB/hutb/blob/c95e2d44a30c1fc066e8c9de082c0ec764b1be8a/PythonAPI/carla/source/libcarla/Client.cpp#L225">PythonAPI/carla/source/libcarla/Client.cpp</a> 声明 load_world 函数的对应关系：
+<div class="highlight"><pre><span></span><code><span class="p">.</span><span class="n">def</span><span class="p">(</span><span class="s">&quot;load_world&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">CONST_CALL_WITHOUT_GIL_3</span><span class="p">(</span><span class="n">cc</span><span class="o">::</span><span class="n">Client</span><span class="p">,</span><span class="w"> </span><span class="n">LoadWorld</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="p">,</span><span class="w"> </span><span class="n">rpc</span><span class="o">::</span><span class="n">MapLayer</span><span class="p">),</span><span class="w"> </span><span class="p">(</span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;map_name&quot;</span><span class="p">),</span><span class="w"> </span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;reset_settings&quot;</span><span class="p">)</span><span class="o">=</span><span class="nb">true</span><span class="p">,</span><span class="w"> </span><span class="n">arg</span><span class="p">(</span><span class="s">&quot;map_layers&quot;</span><span class="p">)</span><span class="o">=</span><span class="n">rpc</span><span class="o">::</span><span class="n">MapLayer</span><span class="o">::</span><span class="n">All</span><span class="p">))</span>
+</code></pre></div></p>
+<p>调用 <a href="https://github.com/OpenHUTB/hutb/blob/c95e2d44a30c1fc066e8c9de082c0ec764b1be8a/LibCarla/source/carla/client/Client.h#L75">hutb/LibCarla/source/carla/client/Client.h</a> 中的LoadWord ，</p>
+<div class="highlight"><pre><span></span><code><span class="n">World</span><span class="w"> </span><span class="nf">LoadWorld</span><span class="p">(</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">map_name</span><span class="p">,</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">reset_settings</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">,</span>
+<span class="w">    </span><span class="n">rpc</span><span class="o">::</span><span class="n">MapLayer</span><span class="w"> </span><span class="n">map_layers</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">rpc</span><span class="o">::</span><span class="n">MapLayer</span><span class="o">::</span><span class="n">All</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">World</span><span class="p">{</span><span class="n">_simulator</span><span class="o">-&gt;</span><span class="n">LoadEpisode</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">map_name</span><span class="p">),</span><span class="w"> </span><span class="n">reset_settings</span><span class="p">,</span><span class="w"> </span><span class="n">map_layers</span><span class="p">)};</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>然后调用 <a href="https://github.com/OpenHUTB/hutb/blob/c95e2d44a30c1fc066e8c9de082c0ec764b1be8a/LibCarla/source/carla/client/detail/Simulator.cpp#L87">LibCarla/source/carla/client/detail/Simulator.cpp</a> 中的 LoadEpisode 。</p>
+<div class="highlight"><pre><span></span><code><span class="n">EpisodeProxy</span><span class="w"> </span><span class="nf">Simulator::LoadEpisode</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">map_name</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">reset_settings</span><span class="p">,</span><span class="w"> </span><span class="n">rpc</span><span class="o">::</span><span class="n">MapLayer</span><span class="w"> </span><span class="n">map_layers</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="w"> </span><span class="n">id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetCurrentEpisode</span><span class="p">().</span><span class="n">GetId</span><span class="p">();</span>
+<span class="w">    </span><span class="n">_client</span><span class="p">.</span><span class="n">LoadEpisode</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">map_name</span><span class="p">),</span><span class="w"> </span><span class="n">reset_settings</span><span class="p">,</span><span class="w"> </span><span class="n">map_layers</span><span class="p">);</span>
+</code></pre></div>
+<p>然后调用 <a href="https://github.com/OpenHUTB/hutb/blob/c95e2d44a30c1fc066e8c9de082c0ec764b1be8a/LibCarla/source/carla/client/detail/Client.cpp#L147">LibCarla/source/carla/client/detail
+/Client.cpp</a> 中的 load_new_episode</p>
+<div class="highlight"><pre><span></span><code><span class="kt">void</span><span class="w"> </span><span class="nf">Client::LoadEpisode</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">map_name</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">reset_settings</span><span class="p">,</span><span class="w"> </span><span class="n">rpc</span><span class="o">::</span><span class="n">MapLayer</span><span class="w"> </span><span class="n">map_layer</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">// Await response, we need to be sure in this one.</span>
+<span class="w">    </span><span class="n">_pimpl</span><span class="o">-&gt;</span><span class="n">CallAndWait</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;load_new_episode&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">map_name</span><span class="p">),</span><span class="w"> </span><span class="n">reset_settings</span><span class="p">,</span><span class="w"> </span><span class="n">map_layer</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>然后调用 <a href="https://github.com/OpenHUTB/hutb/blob/c95e2d44a30c1fc066e8c9de082c0ec764b1be8a/Unreal/CarlaUE4/Plugins/Carla/Source/Carla/Server/CarlaServer.cpp#L308">Unreal/CarlaUE4/Plugins/Carla/Source/Carla/Server
+/CarlaServer.cpp</a> 中的 SetMapLayer</p>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="n">BIND_SYNC</span><span class="p">(</span><span class="n">load_new_episode</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">[</span><span class="k">this</span><span class="p">](</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="o">&amp;</span><span class="n">map_name</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">reset_settings</span><span class="p">,</span><span class="w"> </span><span class="n">cr</span><span class="o">::</span><span class="n">MapLayer</span><span class="w"> </span><span class="n">MapLayers</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">R</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">REQUIRE_CARLA_EPISODE</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">UCarlaGameInstance</span><span class="o">*</span><span class="w"> </span><span class="n">GameInstance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UCarlaStatics</span><span class="o">::</span><span class="n">GetGameInstance</span><span class="p">(</span><span class="n">Episode</span><span class="o">-&gt;</span><span class="n">GetWorld</span><span class="p">());</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">GameInstance</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="n">RESPOND_ERROR</span><span class="p">(</span><span class="s">&quot;unable to find CARLA game instance&quot;</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">GameInstance</span><span class="o">-&gt;</span><span class="n">SetMapLayer</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">int32</span><span class="o">&gt;</span><span class="p">(</span><span class="n">MapLayers</span><span class="p">));</span>
+
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">Episode</span><span class="o">-&gt;</span><span class="n">LoadNewEpisode</span><span class="p">(</span><span class="n">cr</span><span class="o">::</span><span class="n">ToFString</span><span class="p">(</span><span class="n">map_name</span><span class="p">),</span><span class="w"> </span><span class="n">reset_settings</span><span class="p">))</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="n">FString</span><span class="w"> </span><span class="n">Str</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;Map &#39;&quot;</span><span class="p">));</span>
+<span class="w">      </span><span class="n">Str</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">cr</span><span class="o">::</span><span class="n">ToFString</span><span class="p">(</span><span class="n">map_name</span><span class="p">);</span>
+<span class="w">      </span><span class="n">Str</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;&#39; not found&quot;</span><span class="p">);</span>
+<span class="w">      </span><span class="n">RESPOND_ERROR_FSTRING</span><span class="p">(</span><span class="n">Str</span><span class="p">);</span>
+<span class="w">    </span><span class="p">}</span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">R</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">&gt;::</span><span class="n">Success</span><span class="p">();</span>
+<span class="w">  </span><span class="p">};</span>
+</code></pre></div>
+<p>然后调用 <a href="https://github.com/OpenHUTB/hutb/blob/c95e2d44a30c1fc066e8c9de082c0ec764b1be8a/Unreal/CarlaUE4/Plugins/Carla/Source/Carla/Game/CarlaGameInstance.h#L100">Unreal/CarlaUE4/Plugins/Carla/Source/Carla/Game
+/CarlaGameInstance.h</a> 的 SetMapLayer</p>
+<div class="highlight"><pre><span></span><code><span class="w">  </span><span class="n">UFUNCTION</span><span class="p">(</span><span class="n">Category</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;Carla Game Instance&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">BlueprintCallable</span><span class="p">)</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">SetMapLayer</span><span class="p">(</span><span class="n">int32</span><span class="w"> </span><span class="n">MapLayer</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">CurrentMapLayer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MapLayer</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+</code></pre></div>
+<h2 id="_3">参考</h2>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/660795062?share_code=1kQREJgxnStpH&amp;utm_psn=1953537310399370643">绕开WorldSetting！切换GameMode的新姿势</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../js/umlconvert.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
