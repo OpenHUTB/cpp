@@ -60,7 +60,7 @@
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">24. 为玩家绑定键盘事件</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/tutorial/character_bind_button.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/tutorial/character_bind_button.md" class="icon icon-github"> 在 GitHub 上编辑</a>
     </li>
   </ul>
   <hr/>
@@ -71,10 +71,11 @@
                 <h1 id="24">24. 为玩家绑定键盘事件</h1>
 <p>本教程将为角色添加一个 <strong>Action</strong> 键盘响应。首先，我们需要添加一个名为 Action 的输入选项，并将其绑定到键盘输入或控制器按钮上。在本例中，我们将把 Action 输入绑定到键盘的 F 键。转到 <strong>编辑&gt;项目设置（Edit &gt; Project Settings）</strong> 。然后选择 <strong>Input</strong> 选项。单击 <strong>操作映射(Action Mappings)</strong> 旁边的加号。输入动作的名为 <strong>Action</strong>，并从下拉菜单中选择 <strong>F</strong> 。</p>
 <p><img alt="" src="../../img/keyboard_project_settings.jpg" /></p>
+<p>然后选择 <strong>输入(Input)</strong> 选项。单击 <strong>操作映射(Action Mappings)</strong> 旁边的加号（注意不是轴映射）。填入操作名<code>SwitchGameMode</code>，并从下拉菜单中选择 <strong>V</strong>，并勾选<code>Ctrl</code>。</p>
 <p><img alt="" src="../../img/input_F.jpg" /></p>
 <p>右键“新建C++类”，选择父类为<code>角色(Character)</code>。
 在 <code>xxxCharacter.h</code> 文件中添加 <code>OnFire</code> 方法和 <code>OnAction</code> 方法。</p>
-<div class="highlight"><pre><span></span><code><span class="k">protected</span><span class="o">:</span>
+<p><div class="highlight"><pre><span></span><code><span class="k">protected</span><span class="o">:</span>
 
 <span class="w">    </span><span class="cm">/** Fires a projectile. */</span>
 <span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="n">OnFire</span><span class="p">();</span>
@@ -82,7 +83,7 @@
 <span class="w">    </span><span class="c1">// on action </span>
 <span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">OnAction</span><span class="p">();</span>
 </code></pre></div>
-<p>接下来，在 <code>xxxCharacter.cpp</code> 文件中，我们将找到 <code>AxxxCharacter::SetupPlayerInputComponent</code> 函数，并将 <code>Action</code> 映射与 <code>OnAction</code> 函数连接起来。我们之后马上会创建 <code>OnAction</code> 函数。我通过 <code>PlayerInputComponent</code> 中 的 <code>BindAction</code> 函数将控制器连接到 <code>OnAction</code> 函数。在这个例子中，每次按下键盘 <code>F</code> 时都会调用 <code>OnAction</code> 函数</p>
+接下来，在 <code>xxxCharacter.cpp</code> 文件中，我们将找到 <code>SetupPlayerInputComponent</code> 函数，并将 <code>Action</code> 映射与 <code>OnAction</code> 函数绑定起来。之后马上会创建 <code>OnAction</code> 函数。通过 <code>PlayerInputComponent</code> 中 的 <code>BindAction</code> 函数将控制器绑定到 <code>OnAction</code> 函数。在这个例子中，每次按下键盘 <code>F</code> 时都会调用 <code>OnAction</code> 函数</p>
 <div class="highlight"><pre><span></span><code><span class="n">PlayerInputComponent</span><span class="o">-&gt;</span><span class="n">BindAction</span><span class="p">(</span><span class="s">&quot;Action&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">IE_Pressed</span><span class="p">,</span><span class="w"> </span><span class="k">this</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">AUnrealCPPCharacter</span><span class="o">::</span><span class="n">OnAction</span><span class="p">);</span>
 </code></pre></div>
 <p>最后，我们在xxxCharacter.cpp中添加 <code>OnAction</code> 函数。这将是一个非常简单的函数，用于将消息记录到屏幕上。</p>
@@ -94,11 +95,20 @@
 <span class="w">    </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>游戏运行后，按下 F 键的效果图如下 </p>
+<p>游戏运行后，按下 Ctril + V 键的效果图如下</p>
 <p><img alt="" src="../../img/F_pressed.jpg" /></p>
+<div class="admonition 注意">
+<p class="admonition-title">注意</p>
+<p>如果发现按键没有反应，检查是否点击工具栏中的<code>控制</code>。</p>
+</div>
+<h2 id="_1">蓝图的方式绑定键盘事件</h2>
+<p>上面操作<code>操作映射</code>后，在工具栏中的 <code>蓝图</code> 中选择 <code>打开关卡蓝图</code>：</p>
+<p><img alt="" src="../img/open_level_blueprint.jpg" /></p>
+<p>在事件图表中右键搜索并创建<code>SwitchGameMode</code>和<code>PrintString</code>，连接<code>Pressed</code>和<code>打印字符串</code>的输入。</p>
+<p><img alt="" src="../img/switch_game_model_BP.jpg" /></p>
 <h2 id="pawn">指定的任意的 Pawn 绑定键盘相应事件</h2>
-<p>除了给玩家接收键盘响应，也可以给我们指定的任意的 Pawn 绑定键盘相应事件</p>
-<p>首先，我们可以新建一个 MyPawn 类，注意其继承自 Pawn 类</p>
+<p>除了给玩家接收键盘响应，也可以给指定的任意的 Pawn 绑定键盘相应事件</p>
+<p>首先，新建一个 MyPawn 类，注意其继承自棋子(Pawn)类</p>
 <p><strong>MyPawn.h</strong></p>
 <div class="highlight"><pre><span></span><code><span class="cp">#pragma once</span>
 
@@ -140,7 +150,7 @@
 <span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">bGrowing</span><span class="p">;</span>
 <span class="p">};</span>
 </code></pre></div>
-<p>接着在编辑器中，我们创建一个名为 Grow 的 Action 映射，并将其绑定到 G 键， 用于缩放。然后创建两个 Axis 映射用于平移，并将它们命名为 MoveX 和 MoveY 。将轴的比例分别设置为 1 和 -1 。</p>
+<p>接着在编辑器中，创建一个名为 Grow 的 Action 映射，并将其绑定到 G 键，用于缩放。然后创建两个 Axis 映射用于平移，并将它们命名为 MoveX 和 MoveY 。将轴的比例分别设置为 1 和 -1 。</p>
 <pre><code>1. MoveX
 
 I: Scale 1.0
@@ -255,7 +265,7 @@ G
 </code></pre></div>
 <p>效果图为</p>
 <p><img alt="" src="../../img/bind_button.gif" /></p>
-<h2 id="_1">参考</h2>
+<h2 id="_2">参考</h2>
 <ul>
 <li><a href="https://blog.csdn.net/panda1234lee/article/details/119200569">为玩家绑定键盘事件【二十四】</a></li>
 <li><a href="https://unrealcpp.com/character-bind-button/">英文原地址</a></li>
