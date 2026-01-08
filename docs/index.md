@@ -2,7 +2,7 @@ title: 主页
 
 # [引擎实现文档](https://github.com/OpenHUTB/cpp)
 
-欢迎引擎的 C++ 实现文档，沟通[引擎使用文档](https://openhutb.github.io/engine_doc)和[源代码实现](https://github.com/OpenHUTB/engine)。
+欢迎引擎的 C++ 实现文档，沟通[引擎使用文档](https://openhutb.github.io/engine_doc)和[源代码实现](https://github.com/OpenHUTB/engine)。目标是让模拟的帧率达到稳定的 30 FPS（稳定流畅的底线）、60 FPS（游戏响应迅速）、90 FPS（VR 应用低帧率会导致眩晕）。
 
 
 * [__引擎 C++ 开发教程__](#dev)  
@@ -12,9 +12,6 @@ title: 主页
 ---
 
 ## 引擎 C++ 开发教程 <span id="dev"></span>
-
-
-
 
 
 ### 引擎 C++ 教程 <span id="engine_cpp"></span>

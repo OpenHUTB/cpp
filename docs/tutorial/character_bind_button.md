@@ -4,6 +4,8 @@
 
 ![](../img/keyboard_project_settings.jpg)
 
+然后选择 **输入(Input)** 选项。单击 **操作映射(Action Mappings)** 旁边的加号（注意不是轴映射）。填入操作名`SwitchGameMode`，并从下拉菜单中选择 **V**，并勾选`Ctrl`。
+
 ![](../img/input_F.jpg)
 
 右键“新建C++类”，选择父类为`角色(Character)`。
@@ -18,8 +20,7 @@ protected:
 	// on action 
 	void OnAction();
 ```
-
-接下来，在 `xxxCharacter.cpp` 文件中，我们将找到 `AxxxCharacter::SetupPlayerInputComponent` 函数，并将 `Action` 映射与 `OnAction` 函数连接起来。我们之后马上会创建 `OnAction` 函数。我通过 `PlayerInputComponent` 中 的 `BindAction` 函数将控制器连接到 `OnAction` 函数。在这个例子中，每次按下键盘 `F` 时都会调用 `OnAction` 函数
+接下来，在 `xxxCharacter.cpp` 文件中，我们将找到 `SetupPlayerInputComponent` 函数，并将 `Action` 映射与 `OnAction` 函数绑定起来。之后马上会创建 `OnAction` 函数。通过 `PlayerInputComponent` 中 的 `BindAction` 函数将控制器绑定到 `OnAction` 函数。在这个例子中，每次按下键盘 `F` 时都会调用 `OnAction` 函数
 
 ```cpp
 PlayerInputComponent->BindAction("Action", IE_Pressed, this, &AUnrealCPPCharacter::OnAction);
@@ -37,16 +38,30 @@ void AUnrealCPPCharacter::OnAction()
 }
 ```
 
-游戏运行后，按下 F 键的效果图如下 
+游戏运行后，按下 Ctril + V 键的效果图如下
 
 ![](../img/F_pressed.jpg)
+
+!!! 注意
+    如果发现按键没有反应，检查是否点击工具栏中的`控制`。
+
+
+## 蓝图的方式绑定键盘事件
+
+上面操作`操作映射`后，在工具栏中的 `蓝图` 中选择 `打开关卡蓝图`：
+
+![](../img/open_level_blueprint.jpg)
+
+在事件图表中右键搜索并创建`SwitchGameMode`和`PrintString`，连接`Pressed`和`打印字符串`的输入。
+
+![](../img/switch_game_model_BP.jpg)
 
 
 ## 指定的任意的 Pawn 绑定键盘相应事件
 
-除了给玩家接收键盘响应，也可以给我们指定的任意的 Pawn 绑定键盘相应事件
+除了给玩家接收键盘响应，也可以给指定的任意的 Pawn 绑定键盘相应事件
 
-首先，我们可以新建一个 MyPawn 类，注意其继承自 Pawn 类
+首先，新建一个 MyPawn 类，注意其继承自棋子(Pawn)类
 
 **MyPawn.h**
 
@@ -92,7 +107,7 @@ public:
 };
 ```
 
-接着在编辑器中，我们创建一个名为 Grow 的 Action 映射，并将其绑定到 G 键， 用于缩放。然后创建两个 Axis 映射用于平移，并将它们命名为 MoveX 和 MoveY 。将轴的比例分别设置为 1 和 -1 。
+接着在编辑器中，创建一个名为 Grow 的 Action 映射，并将其绑定到 G 键，用于缩放。然后创建两个 Axis 映射用于平移，并将它们命名为 MoveX 和 MoveY 。将轴的比例分别设置为 1 和 -1 。
 
     1. MoveX
 
