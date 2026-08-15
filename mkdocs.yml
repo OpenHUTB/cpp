@@ -47,7 +47,9 @@ copyright: OpenHUTB 版权所有 &copy; 2025
 
 nav:
 - 首页: 'index.md'
-#- 入门: '#_1'
+- 引擎 C++ 开发教程: './tutorial/add_actor_subclass.md'
+- 引擎源码解析: './engine/game_mode.md'
+- 引擎优化: './optimization/Default-topic.md'
 #- 主题: '#_2'
 #- 交通: '#_3'
 #- 行人: "#_4"
