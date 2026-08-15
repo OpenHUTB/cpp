@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Engine Overview - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Engine Overview";
+        var mkdocs_page_input_path = "optimization/EngineOverview/Engine-Overview.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Engine Overview</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/EngineOverview/Engine-Overview.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="engine-overview">Engine Overview</h1>
+<p><tldr></p>
+<p>
+Vite is Unreal Engine 4.27.2 (<code>++UE4+Release-4.27</code>) forked from NvRTX 4.27 Caustics merged fully with UE 4.27
+Plus, NvRTX 5.0 and AMD branch features merged in, plus 300+ backports from UE 5.0&ndash;5.8.
+</p>
+<p></tldr></p>
+<p>This section explains the reasoning behind Vite's architecture: why the fork is based on Unreal Engine 4.27
+rather than UE5, what performance envelope it is designed for, and where the measured cost differences
+between the two engine generations come from.</p>
+<p>If you just want to get the engine running, go to <a href="Getting-Started.md">Getting Started</a> instead.</p>
+<h2 id="base-version">Base version</h2>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Engine version</td>
+<td>4.27.2</td>
+</tr>
+<tr>
+<td>Repo name</td>
+<td><code>UnrealEngineVite-PhysX</code></td>
+</tr>
+<tr>
+<td>Upstream base</td>
+<td>NvRTX 4.27 Caustics</td>
+</tr>
+<tr>
+<td>Merged branches</td>
+<td>UE 4.27 Plus, NvRTX 5.0, AMD GPUOpen engine branches</td>
+</tr>
+<tr>
+<td>UE5 backports</td>
+<td>300+ in release, 1,000+ in internal staging</td>
+</tr>
+<tr>
+<td>Physics backend</td>
+<td>Vite PhysX</td>
+</tr>
+<tr>
+<td>Main Path Renderer</td>
+<td>Deferred, agnostic DXR Ray Tracing pipeline</td>
+</tr>
+</tbody>
+</table>
+<h2 id="section-contents">Section contents</h2>
+<h3 id="why-nvrtx-427"><a href="../Why-NvRTX-427/">Why NvRTX 4.27</a></h3>
+<p>The technical argument for the base version: what changed in UE 5.1's ray tracing scene construction, why
+Lumen coupling makes alternative GI integrations harder, and why PhysX removal matters.</p>
+<h3 id="performance-targets"><a href="../Performance-Targets/">Performance Targets</a></h3>
+<p>The four PS5-class configurations Vite is tuned against, from 4K120 stylised through to 1440p30 with the
+full ray tracing effect suite.</p>
+<h3 id="ue4-versus-ue5-cost-analysis"><a href="../UE4-Versus-UE5-Cost-Analysis/">UE4 versus UE5 Cost Analysis</a></h3>
+<p>Where the frame time actually goes: shader instruction counts, physics, character movement, memory,
+Slate, skeletal meshes, tick cost, render thread overhead, Blueprint nativization and volumetrics.</p>
+<h3 id="release-notes"><a href="../Release-Notes/">Release Notes</a></h3>
+<p>What is in the current release branch, what is in progress, and what is planned.</p>
+<h2 id="design-principles">Design principles</h2>
+<p>Three commitments shape almost every decision in the codebase, and they are worth stating explicitly
+because they explain choices that otherwise look conservative.</p>
+<p><strong>Battle-tested technology over in-house technology.</strong> Where Epic built a new system for UE5, Vite prefers
+the industry-standard solutions that are widely shipped in AAA titles: PhysX rather than Chaos, DDGI rather than
+Lumen, HW Tessellation rather than Nanite, TressFX rather than Groom. These are not nostalgic choices; they are choices
+about which solutions has been through the most shipped games.</p>
+<p><strong>Native resolution over reconstruction.</strong> Vite's performance targets are stated at native 4K and native
+1440p. Upscalers are supported and integrated, but they are treated as a way to go faster than the target,
+not as a way to reach it.</p>
+<p><strong>Frame-time budgets are a design constraint, not an optimisation phase.</strong> Performance targets define a
+product's end feature set and the quality of the user experience. Vite maintains an iterative optimisation
+plan for every major feature it introduces, rather than deferring optimisation to the end of a project.</p>
+<p>The <a href="Coding-Guidelines.md">Engine Coding Guidelines</a> encode these principles as concrete rules for
+contributors: no recursion, no new virtuals without justification, no ABI-breaking changes, and strict
+Clang compliance with an ARM-class CPU as the baseline performance target.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="Introduction-to-Vite.md">Introduction to Vite</a></li>
+<li><a href="Rendering.md">Rendering</a></li>
+<li><a href="Physics.md">Physics</a></li>
+<li><a href="Coding-Guidelines.md">Engine Coding Guidelines</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

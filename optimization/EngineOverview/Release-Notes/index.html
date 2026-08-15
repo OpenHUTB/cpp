@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Release Notes - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Release Notes";
+        var mkdocs_page_input_path = "optimization/EngineOverview/Release-Notes.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Release Notes</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/EngineOverview/Release-Notes.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="release-notes">Release Notes</h1>
+<p><tldr></p>
+<p>
+Current release branch: <code>ueVite26-JulyMajor-release</code>. Staging work lands in
+<code>ueVite26-JulyStaging</code> before promotion. Feature branches such as
+<code>ueVite26-HairWorks</code> and <code>ueVite26-JulyRtSettings</code> are merged when stable.
+</p>
+<p></tldr></p>
+<p>This page tracks what is in the current major release, what is actively in progress, and what is planned.
+Feature lists are cumulative &mdash; everything under "Shipped" is present in the current release branch.</p>
+<h2 id="branch-layout">Branch layout</h2>
+<table>
+<thead>
+<tr>
+<th>Branch</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ueVite26-JulyMajor-release</code></td>
+<td>Current major release. This is what you should build against.</td>
+</tr>
+<tr>
+<td><code>ueVite26-JulyStaging</code></td>
+<td>Integration branch. Backports and features land here first.</td>
+</tr>
+<tr>
+<td><code>ueVite26-JuneMajorRelease</code></td>
+<td>Previous major release, kept for projects mid-milestone.</td>
+</tr>
+<tr>
+<td>Feature branches</td>
+<td>Work in progress on a single system, merged when stable.</td>
+</tr>
+</tbody>
+</table>
+<p>Work-in-progress changes belong on a branch, not on release. See
+<a href="Commit-Conventions.md">Commit and PR Conventions</a>.</p>
+<h2 id="shipped">Shipped</h2>
+<h3 id="physics">Physics</h3>
+<ul>
+<li><strong>Vite PhysX 3.4</strong> as the shipping physics backend.</li>
+<li><strong>Library upgrade</strong> for compatibility with newer Clang versions and the latest Android NDK Clang,
+  producing a meaningful performance increase &mdash; up to 2x in stress tests, typically around 1.4x
+  faster in the Box Container Pile 10 test.</li>
+<li><strong>PhysX Blast</strong> working alongside Apex Destruction.</li>
+<li><strong>PhysX Fixed Timestep</strong> as an opt-in feature, fully guarded for zero overhead on the regular path.</li>
+</ul>
+<h3 id="rendering">Rendering</h3>
+<ul>
+<li><strong>Callisto BRDF</strong> shading model: single- and dual-lobe GGX specular with specular Fresnel falloff.</li>
+<li><strong>Toon</strong> shading model, inspired by Guilty Gear.</li>
+<li><strong>HBAO+</strong> ambient occlusion.</li>
+<li><strong>Compute-based SMAA</strong>.</li>
+<li>Improved <strong>FXAA</strong> with a higher image quality option.</li>
+<li>Updated <strong>TAA</strong> for better temporal resolve.</li>
+<li><strong>DLSS 4.5</strong>, <strong>FSR 2</strong>, <strong>FSR 4</strong>, <strong>XeSS</strong>, <strong>NIS</strong> and <strong>AMD Anti-Lag 2</strong> ported and integrated.</li>
+<li>Engine-side DLSS rendering support improvements.</li>
+<li>Improved <strong>DDGI</strong>, including performance work on RT reflections.</li>
+<li><strong>SSAO fast path</strong> and a significantly cheaper SSAO.</li>
+<li><strong>TressFX</strong> hair integration.</li>
+<li>Localized IBL.</li>
+<li>Improved <strong>ACES</strong> colour reproduction.</li>
+<li>Rendering optimisations across RHI, RT direct lighting, RT shadows, geometry collections, drawing,
+  eye adaptation and shadow/light draw distance, plus AMD optimisations targeted at consoles.</li>
+<li><strong>Software occlusion</strong>, which was removed after 4.27 upstream.</li>
+<li>Nintendo Switch specialised renderer base, which UE 5.0+ removed.</li>
+</ul>
+<h3 id="cpu-and-core">CPU and core</h3>
+<ul>
+<li>CPU optimisations for containers, friends usage, hash maps, NavMesh, volumetric clouds, the game thread,
+  the task graph, SIMD, animation systems, texture handling, streaming and audio systems.</li>
+<li>Optimised runtimes for skeletal meshes and actors.</li>
+<li>Updated classes for easier backporting of UE5 codebases (game framework and containers).</li>
+<li>Gameplay Ability System updates.</li>
+<li>Oodle updates.</li>
+<li>Modernised console systems.</li>
+</ul>
+<h3 id="build-tooling-and-content">Build, tooling and content</h3>
+<ul>
+<li>Full merge of UE 4.27 Plus, NvRTX 4.27, NvRTX 5.0, DLSS, TressFX, FSR and AMD patches.</li>
+<li>Over <strong>300 backports</strong> from UE 5.0 through the 5.8 era.</li>
+<li>MSVC toolchain compliance up to <strong>14.50 &amp; SDK 10.0.26100 (Visual Studio 2026)</strong>.</li>
+<li>Shader compilation improvements.</li>
+<li>Debloated <strong>runtime PSOs</strong> in Shipping configuration.</li>
+<li>Editor loading improvements and editor quality-of-life backports.</li>
+<li>Project default plugin debloat.</li>
+<li>Batch tooling to produce installed engine builds and debloat the tree.</li>
+<li>Bundled plugins: FSR, Motion Symphony, Houdini, ACL, Kawaii Physics, PhysX Instanced Subsystem,
+  Splash Damage Ability System, ImGui and ImGui Tools, and others. See
+  <a href="Bundled-Plugins.md">Bundled Plugins</a>.</li>
+<li><strong>ImGui</strong> integration with benchmarking tools.</li>
+<li>Large volume of toolchain updates, C++ modernisation, faster cooking, engine fixes, resolved memory leaks
+  and stall fixes.</li>
+<li>Mobile improvements and fixes.</li>
+</ul>
+<h2 id="in-progress">In progress</h2>
+<ul>
+<li>Flat UI redesign, closer to UE5's visual language.</li>
+<li>Integration of Multi-Threaded FLECS ECS library with Unreal Actors interaction.</li>
+<li>Full C++20 support.</li>
+<li>Further UE5 backport integration &mdash; roughly 1,000 backports pending promotion to release.</li>
+<li>Rendering features: improved mesh handling, GI, shading models, ambient occlusion and specular aliasing
+  handling.</li>
+<li>Further ACES upgrades, colour space, HDR handling and tonemappers.</li>
+<li>Large level optimisations.</li>
+<li>Further shader compilation improvements.</li>
+<li>CACAO ambient occlusion.</li>
+<li>PhysX Flex and Flow: GPU-accelerated particles across vendors, with AMD compute and NVIDIA CUDA paths.</li>
+<li>Tessellated water for ocean rendering, integrated into the RT scene for reflections.</li>
+<li>Improved performance for RTAO and RT shadows.</li>
+<li>Engine-level multi-threaded tick aggregation for improved instruction coherency.</li>
+<li>Core C++ library upgrades and a core engine math upgrade.</li>
+<li>Larger ray tracing rendering changes.</li>
+</ul>
+<h2 id="planned">Planned</h2>
+<ul>
+<li><a href="https://github.com/GPUOpenSoftware/UnrealEngine/tree/FidelityFXSPD-4.26/UnrealEngine">AMD Single Pass Downsampler</a>.</li>
+<li>Improved SSGI.</li>
+<li>Bespoke Level Editor</li>
+</ul>
+<h2 id="tracking">Tracking</h2>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>Link</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Work plan</td>
+<td><a href="https://trello.com/b/JKyBFS5X/ue-vite-physx-vite-studio-fork">Trello board</a></td>
+</tr>
+<tr>
+<td>Backport tracker</td>
+<td><a href="https://github.com/users/GapingPixel/projects/1/views/1">GitHub project</a></td>
+</tr>
+<tr>
+<td>Sample projects</td>
+<td><a href="https://github.com/ViteStudio-Tech">ViteStudio-Tech</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Engine-Overview/">Engine Overview</a></li>
+<li><a href="Backporting.md">Backporting Workflow</a></li>
+<li><a href="Bundled-Plugins.md">Bundled Plugins</a></li>
+<li><a href="Proposed-Plugins.md">Proposed Plugins</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

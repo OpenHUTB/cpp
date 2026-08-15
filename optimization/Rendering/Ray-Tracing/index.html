@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Ray Tracing - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Ray Tracing";
+        var mkdocs_page_input_path = "optimization/Rendering/Ray-Tracing.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Ray Tracing</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/Ray-Tracing.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="ray-tracing">Ray Tracing</h1>
+<p><tldr></p>
+<p>
+Vite ships the ray tracing suite from NvRTX 4.27 Caustics and NvRTX 5.0. In a default build,
+<b>reflections, shadows, ambient occlusion and sky light are available; the rest are compiled out</b> by
+<code>VITE_RT_PSO_DEBLOAT</code>. Read the availability table below before debugging a console variable
+that appears to do nothing.
+</p>
+<p></tldr></p>
+<p>Ray tracing in Vite is an engine-agnostic pipeline: acceleration structures are maintained independently of
+any single lighting solution, so each effect can be enabled or disabled on its own. This is the arrangement
+UE 4.27 had and UE 5.1+ moved away from &mdash; see <a href="Why-NvRTX-427.md">Why NvRTX 4.27</a>.</p>
+<h2 id="availability">Availability</h2>
+<p>The <code>VITE_RT_PSO_DEBLOAT</code> compile-time switch defaults to <code>1</code> and removes shader permutations for effects
+outside Vite's recommended configuration. Ray tracing PSOs must be compiled and bound whether or not their
+console variable is set, so leaving unused effects compiled in costs shader build time, package size and
+pipeline creation time for nothing.</p>
+<p>The practical consequence: <strong>setting the console variable for a compiled-out effect appears to succeed and
+renders nothing.</strong></p>
+<table>
+<thead>
+<tr>
+<th>Effect</th>
+<th>Console variable</th>
+<th>Default build</th>
+<th>Page</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reflections</td>
+<td><code>r.RayTracing.Reflections</code></td>
+<td>Available</td>
+<td><a href="../RT-Reflections/">RT Reflections</a></td>
+</tr>
+<tr>
+<td>Shadows</td>
+<td><code>r.RayTracing.Shadows</code></td>
+<td>Available</td>
+<td><a href="../RT-Shadows-And-Ambient-Occlusion/">RT Shadows and AO</a></td>
+</tr>
+<tr>
+<td>Ambient occlusion</td>
+<td><code>r.RayTracing.AmbientOcclusion</code></td>
+<td>Available</td>
+<td><a href="../RT-Shadows-And-Ambient-Occlusion/">RT Shadows and AO</a></td>
+</tr>
+<tr>
+<td>Sky light</td>
+<td><code>r.RayTracing.SkyLight</code></td>
+<td>Available</td>
+<td>This page</td>
+</tr>
+<tr>
+<td>Translucency</td>
+<td><code>r.RayTracing.Translucency</code></td>
+<td>Compiled out</td>
+<td><a href="../RT-Translucency-And-Caustics/">RT Translucency and Caustics</a></td>
+</tr>
+<tr>
+<td>Mesh caustics</td>
+<td><code>r.RayTracing.MeshCaustics.Enable</code></td>
+<td>Compiled out</td>
+<td><a href="../RT-Translucency-And-Caustics/">RT Translucency and Caustics</a></td>
+</tr>
+<tr>
+<td>Water caustics</td>
+<td><code>r.RayTracing.WaterCaustics.Type</code></td>
+<td>Compiled out</td>
+<td><a href="../RT-Translucency-And-Caustics/">RT Translucency and Caustics</a></td>
+</tr>
+<tr>
+<td>Sampled direct lighting (RTXDI)</td>
+<td><code>r.RayTracing.SampledDirectLighting</code></td>
+<td>Compiled out</td>
+<td><a href="../RTXDI/">RTXDI</a></td>
+</tr>
+<tr>
+<td>Per-pixel global illumination</td>
+<td><code>r.RayTracing.GlobalIllumination</code></td>
+<td>Compiled out</td>
+<td>This page</td>
+</tr>
+<tr>
+<td>Reflection captures and probes</td>
+<td><code>r.RayTracing.Reflections.RayTraceEnvironmentCaptures</code></td>
+<td>Compiled out</td>
+<td><a href="../RT-Reflections/">RT Reflections</a></td>
+</tr>
+<tr>
+<td>Path tracing</td>
+<td><code>r.PathTracing</code></td>
+<td>Compiled out</td>
+<td><a href="../Path-Tracing/">Path Tracing</a></td>
+</tr>
+</tbody>
+</table>
+<p>To use anything in the compiled-out set, rebuild with <code>VITE_RT_PSO_DEBLOAT=0</code>. See
+<a href="Compile-Time-Switches.md">Compile-Time Switches</a>.</p>
+<p>Reflections have one further caveat even when available: the debloat switch forces the sorted deferred
+reflection algorithm and compiles out the older non-deferred path.</p>
+<p>Dynamic DDGI is a separate system, enabled through <code>r.GlobalIllumination.ExperimentalPlugin</code> rather than the
+<code>r.RayTracing.*</code> group, and is <strong>not</strong> affected by the debloat switch. See
+<a href="../DDGI-Dynamic/">Dynamic DDGI</a>.</p>
+<p>This is the rendering stack Black Myth: Wukong shipped on.</p>
+<p><a href="https://www.youtube.com/watch?v=A5boaueGopg"><img alt="Black Myth: Wukong ray tracing comparison" src="https://img.youtube.com/vi/A5boaueGopg/0.jpg" /></a></p>
+<h2 id="enabling-and-disabling">Enabling and disabling</h2>
+<p>From code:</p>
+<div class="highlight"><pre><span></span><code><span class="n">IConsoleManager</span><span class="o">::</span><span class="n">Get</span><span class="p">().</span><span class="n">FindConsoleVariable</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.RayTracing.AmbientOcclusion&quot;</span><span class="p">))</span><span class="o">-&gt;</span><span class="n">Set</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">IConsoleManager</span><span class="o">::</span><span class="n">Get</span><span class="p">().</span><span class="n">FindConsoleVariable</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.RayTracing.Reflections&quot;</span><span class="p">))</span><span class="o">-&gt;</span><span class="n">Set</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">IConsoleManager</span><span class="o">::</span><span class="n">Get</span><span class="p">().</span><span class="n">FindConsoleVariable</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.RayTracing.Shadows&quot;</span><span class="p">))</span><span class="o">-&gt;</span><span class="n">Set</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</code></pre></div>
+<p>From configuration, which is what shipping projects should use:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">; Config/DefaultEngine.ini</span>
+<span class="k">[/Script/Engine.RendererSettings]</span>
+<span class="na">r.RayTracing.Reflections</span><span class="o">=</span><span class="s">1</span>
+<span class="na">r.RayTracing.Shadows</span><span class="o">=</span><span class="s">0</span>
+<span class="na">r.RayTracing.AmbientOcclusion</span><span class="o">=</span><span class="s">0</span>
+<span class="na">r.RayTracing.Translucency</span><span class="o">=</span><span class="s">0</span>
+</code></pre></div>
+<p><code>r.RayTracing.ForceAllRayTracingEffects 1</code> turns everything on at once. Treat it as a diagnostic &mdash; a
+way to see the ceiling and to audit which effects a scene responds to &mdash; not as a shipping setting.
+<code>r.RayTracing.ForceAllRayTracingEffects 0</code> forces everything off, which is the fastest way to establish how
+much of your frame time ray tracing accounts for.</p>
+<h2 id="culling-and-cost-control">Culling and cost control</h2>
+<p>Ray tracing cost scales with how much geometry is in the acceleration structure, so culling is the first
+lever to reach for before reducing effect quality.</p>
+<div class="highlight"><pre><span></span><code><span class="n">GEngine</span><span class="o">-&gt;</span><span class="n">Exec</span><span class="p">(</span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.RayTracing.Culling.UseMinDrawDistance 1&quot;</span><span class="p">));</span>
+</code></pre></div>
+<p>This makes ray tracing culling respect each primitive's minimum draw distance, which is a cheap and
+generally safe win in scenes with a lot of small detail meshes.</p>
+<p>Beyond culling, the standard levers in rough order of effectiveness:</p>
+<ol>
+<li>Reduce the number of effects enabled. Turning an effect off is always cheaper than optimising it.</li>
+<li>Reduce effect resolution &mdash; most effects support half or quarter resolution buffers.</li>
+<li>Reduce sample counts and maximum bounce depth.</li>
+<li>Reduce the geometry that participates in ray tracing, per-primitive.</li>
+</ol>
+<h2 id="amd-hardware">AMD hardware</h2>
+<p>Vite integrates AMD GPUOpen RT optimizations and a number of custom AMD RDNA specific GPU optimizations targeted at
+consoles. Ray tracing performance on RDNA2 hardware is a first-class concern rather than an afterthought,
+which follows directly from the PS5-class performance targets. </p>
+<h3 id="rdna-based-console-and-handheld-hardware"><strong>RDNA-based Console and Handheld Hardware</strong></h3>
+<table>
+<thead>
+<tr>
+<th>Hardware</th>
+<th style="text-align: right;">GPU architecture</th>
+<th>GPU configuration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PlayStation 5</td>
+<td style="text-align: right;">RDNA 2–based custom GPU</td>
+<td>36 CUs, up to 10.28 TFLOPS</td>
+</tr>
+<tr>
+<td>PlayStation 5 Pro</td>
+<td style="text-align: right;">RDNA-based custom GPU*</td>
+<td>60 CUs, 16.7 TFLOPS</td>
+</tr>
+<tr>
+<td>Xbox Series X</td>
+<td style="text-align: right;">RDNA 2</td>
+<td>52 CUs, 12 TFLOPS</td>
+</tr>
+<tr>
+<td>Xbox Series S</td>
+<td style="text-align: right;">RDNA 2</td>
+<td>20 CUs, 4 TFLOPS</td>
+</tr>
+<tr>
+<td>Steam Deck / Steam Deck OLED</td>
+<td style="text-align: right;">RDNA 2</td>
+<td>8 CUs, up to 1.6 GHz</td>
+</tr>
+<tr>
+<td>ASUS ROG Ally</td>
+<td style="text-align: right;">RDNA 3</td>
+<td>Z1: 4 CUs; Z1 Extreme: 12 CUs</td>
+</tr>
+<tr>
+<td>ASUS ROG Ally X</td>
+<td style="text-align: right;">RDNA 3</td>
+<td>12 CUs (Ryzen Z1 Extreme)</td>
+</tr>
+<tr>
+<td>ROG Xbox Ally</td>
+<td style="text-align: right;">RDNA 3</td>
+<td>8 CUs (Ryzen Z2 A)</td>
+</tr>
+<tr>
+<td>ROG Xbox Ally X</td>
+<td style="text-align: right;">RDNA 3.5</td>
+<td>16 CUs (Ryzen AI Z2 Extreme)</td>
+</tr>
+<tr>
+<td>Valve Steam Machine (2026)</td>
+<td style="text-align: right;">RDNA 3</td>
+<td>Semi-custom GPU, 28 CUs, up to 2.45 GHz</td>
+</tr>
+</tbody>
+</table>
+<p>*Sony officially labels the PS5 Pro GPU as “AMD Radeon RDNA-based”; it includes features beyond PC RDNA 3.5 Spec, inherting very specific tech from RDNA4.</p>
+<h3 id="major-android-flagship-samsung-galaxy-with-exynos-xclipse-gpus"><strong>Major Android Flagship; Samsung Galaxy with Exynos Xclipse GPUs</strong></h3>
+<table>
+<thead>
+<tr>
+<th>Galaxy phone</th>
+<th>SoC</th>
+<th>Xclipse GPU</th>
+<th>RDNA architecture</th>
+<th>Availability</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Galaxy S22</td>
+<td>Exynos 2200</td>
+<td>Xclipse 920</td>
+<td>RDNA 2</td>
+<td>Selected regions</td>
+</tr>
+<tr>
+<td>Galaxy S22+</td>
+<td>Exynos 2200</td>
+<td>Xclipse 920</td>
+<td>RDNA 2</td>
+<td>Selected regions</td>
+</tr>
+<tr>
+<td>Galaxy S22 Ultra</td>
+<td>Exynos 2200</td>
+<td>Xclipse 920</td>
+<td>RDNA 2</td>
+<td>Selected regions</td>
+</tr>
+<tr>
+<td>Galaxy S23 FE</td>
+<td>Exynos 2200</td>
+<td>Xclipse 920</td>
+<td>RDNA 2</td>
+<td>Selected regions</td>
+</tr>
+<tr>
+<td>Galaxy S24</td>
+<td>Exynos 2400</td>
+<td>Xclipse 940</td>
+<td>RDNA 3</td>
+<td>Selected regions</td>
+</tr>
+<tr>
+<td>Galaxy S24+</td>
+<td>Exynos 2400</td>
+<td>Xclipse 940</td>
+<td>RDNA 3</td>
+<td>Selected regions</td>
+</tr>
+<tr>
+<td>Galaxy S24 FE</td>
+<td>Exynos 2400e</td>
+<td>Xclipse 940</td>
+<td>RDNA 3</td>
+<td>Global</td>
+</tr>
+<tr>
+<td>Galaxy Z Flip7</td>
+<td>Exynos 2500</td>
+<td>Xclipse 950</td>
+<td>RDNA 3–based</td>
+<td>Global</td>
+</tr>
+<tr>
+<td>Galaxy S25 FE</td>
+<td>Exynos 2400</td>
+<td>Xclipse 940</td>
+<td>RDNA 3</td>
+<td>Global</td>
+</tr>
+<tr>
+<td>Galaxy S26</td>
+<td>Exynos 2600</td>
+<td>Xclipse 960</td>
+<td>New Samsung architecture*</td>
+<td>Selected regions</td>
+</tr>
+<tr>
+<td>Galaxy S26+</td>
+<td>Exynos 2600</td>
+<td>Xclipse 960</td>
+<td>New Samsung architecture*</td>
+<td>Selected regions</td>
+</tr>
+</tbody>
+</table>
+<p>*Samsung describes the Xclipse 960 as a new architecture, rather than assigning it a public AMD RDNA version.</p>
+<p><em>Stock Vite </em><em>DOES NOT</em>* support Ray Tracing on Android, but this is a reference for future Vite Major Releases, 
+current optimizations are applicable to any Future Rendering path.</p>
+<h2 id="per-pixel-ray-traced-gi">Per-pixel ray-traced GI</h2>
+<p><note>
+Compiled out in a default build. Requires <code>VITE_RT_PSO_DEBLOAT=0</code>. See
+<a href="Compile-Time-Switches.md">Compile-Time Switches</a>.
+</note></p>
+<p>Distinct from DDGI, Vite retains the per-pixel ray-traced GI path including the NvRTX ReStir GI improvements:
+a new SVGF-based denoiser, a reservoir-resampling final gather, emissive material support, quarter- and
+eighth-resolution modes, metallic material support and spherical harmonics for improved normal detail.</p>
+<p>It produces excellent reference imagery. It is also considerably more expensive than DDGI and reintroduces
+a denoising and temporal stability problems; DDGI exists to avoid. That trade is precisely why the debloat
+switch removes it by default. This Per Pixel RT GI Solution is higher Fidelity than HWRT Lumen, also somewhat more costly.</p>
+<p>Key controls, if you do use it:</p>
+<ul>
+<li><code>r.RayTracing.GlobalIllumination.FinalGather.UseReservoirResampling 0/1</code> &mdash; toggles the new final
+  gather sampler, which significantly reduces sampler noise and produces a much more stable result before
+  denoising, allowing lower samples per pixel.</li>
+<li><code>r.DiffuseIndirect.Denoiser 2</code> &mdash; selects the new SVGF denoiser.</li>
+<li><code>r.RayTracing.GlobalIllumination.EvalSkyLight 0/1</code> &mdash; includes skylight contribution. The skylight
+  actor's <strong>Affect Global Illumination</strong> flag must also be set.</li>
+<li><code>r.DiffuseIndirect.ApplyAO</code> &mdash; applies AO to the indirect lighting result. Significantly increases
+  lighting detail and is strongly recommended when this path is in use.</li>
+</ul>
+<p>In typical use, 4 samples per pixel with <code>r.RayTracing.GlobalIllumination.ScreenPercentage</code> at 12.5 produces
+a reasonable result.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Global-Illumination/">Global Illumination</a></li>
+<li><a href="../RT-Reflections/">RT Reflections</a></li>
+<li><a href="../RT-Shadows-And-Ambient-Occlusion/">RT Shadows and Ambient Occlusion</a></li>
+<li><a href="../RT-Translucency-And-Caustics/">RT Translucency and Caustics</a></li>
+<li><a href="../RTXDI/">RTXDI</a></li>
+<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
+<li><a href="Console-Variables.md">Console Variable Reference</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

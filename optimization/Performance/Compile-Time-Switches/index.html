@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Compile-Time Switches - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Compile-Time Switches";
+        var mkdocs_page_input_path = "optimization/Performance/Compile-Time-Switches.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Compile-Time Switches</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Performance/Compile-Time-Switches.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="compile-time-switches">Compile-Time Switches</h1>
+<p><tldr></p>
+<p>
+Five <code>VITE_*</code> macros in
+<code>Engine/Source/Runtime/Core/Public/Misc/CoreDefines.h</code> control features that are decided at
+compile time rather than by console variable. <b><code>VITE_RT_PSO_DEBLOAT</code> defaults to
+<code>1</code> and compiles out several ray tracing effects entirely</b> &mdash; read that section before
+concluding a feature is broken.
+</p>
+<p></tldr></p>
+<p>Some Vite features cannot be console variables. Either they change shader permutation sets, which are
+decided when shaders are compiled, or they alter hot code paths where a runtime branch would cost more than
+the feature saves.</p>
+<h2 id="the-switches">The switches</h2>
+<table>
+<thead>
+<tr>
+<th>Macro</th>
+<th>Default</th>
+<th>Effect when enabled</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>VITE_RT_PSO_DEBLOAT</code></td>
+<td><code>1</code></td>
+<td>Compiles out a large set of ray tracing shader permutations</td>
+</tr>
+<tr>
+<td><code>VITE_O_SSAO</code></td>
+<td><code>1</code></td>
+<td>Vite's optimised SSAO memory access path</td>
+</tr>
+<tr>
+<td><code>VITE_PHYSX_FIXED_TIMESTEP</code></td>
+<td><code>0</code></td>
+<td>Deterministic fixed-step PhysX with render interpolation</td>
+</tr>
+<tr>
+<td><code>VITE_DLSS_PATCH</code></td>
+<td><code>0</code></td>
+<td>Output-resolution translucency and volumetric fog when upscaling</td>
+</tr>
+<tr>
+<td><code>VITE_NVRTX_TRANSLUCENCY_DEPTH</code></td>
+<td><code>0</code></td>
+<td>Separate translucency depth texture from the NvRTX branch</td>
+</tr>
+</tbody>
+</table>
+<p>Each is defined with an <code>#ifndef</code> guard, so any of them can be overridden from the build system without
+editing the header.</p>
+<h2 id="overriding-a-switch">Overriding a switch</h2>
+<p><procedure title="Change a compile-time switch" id="override-switch">
+    <step>
+        Open your project's <code>Source/&lt;Project&gt;.Target.cs</code>, or the engine target file if
+        you are changing it engine-wide.
+    </step>
+    <step>
+        Add the definition to <code>GlobalDefinitions</code>:
+        <code-block lang="c#">
+public MyGameTarget(TargetInfo Target) : base(Target)
+{
+    Type = TargetType.Game;
+    DefaultBuildSettings = BuildSettingsVersion.V2;
+    ExtraModuleNames.Add("MyGame");</p>
+<pre><code>GlobalDefinitions.Add("VITE_RT_PSO_DEBLOAT=0");
+</code></pre>
+<p>}
+        </code-block>
+    </step>
+    <step>Regenerate project files.</step>
+    <step>
+        Rebuild the engine, and wipe the shader cache if you changed
+        <code>VITE_RT_PSO_DEBLOAT</code> or any switch that affects shader permutations. See
+        <a href="Cache-Management.md">Cache Management</a>.
+    </step>
+</procedure></p>
+<p>Prefer <code>GlobalDefinitions</code> in a target file over editing <code>CoreDefines.h</code>. Editing the header changes the
+value for every target and creates a diff against the engine repository that you will have to carry through
+every merge.</p>
+<h2 id="vite_rt_pso_debloat">VITE_RT_PSO_DEBLOAT</h2>
+<p>This is the switch that surprises people, so it gets the most detail.</p>
+<p>Ray tracing pipeline state objects are expensive in a way that is easy to miss. Every ray generation shader
+permutation that <em>could</em> be used has to be compiled, packaged and bound into the ray tracing pipeline, even
+if the effect it belongs to is disabled at runtime by a console variable. A CVar set to <code>0</code> does not stop
+its shaders existing. The result is long shader compile times, large packaged builds, high PSO counts and
+slow ray tracing pipeline creation at runtime.</p>
+<p><code>VITE_RT_PSO_DEBLOAT</code> cuts the permutation set down to the effects Vite actually ships, by returning <code>false</code>
+from <code>ShouldCompilePermutation</code> for everything else.</p>
+<h3 id="what-is-compiled-out-at-the-default-value">What is compiled out at the default value</h3>
+<p>With <code>VITE_RT_PSO_DEBLOAT=1</code>, these effects are <strong>unavailable regardless of their console variables</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Effect</th>
+<th>Normally controlled by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Per-pixel ray-traced global illumination</td>
+<td><code>r.RayTracing.GlobalIllumination</code></td>
+</tr>
+<tr>
+<td>RTXDI sampled direct lighting</td>
+<td><code>r.RayTracing.SampledDirectLighting</code></td>
+</tr>
+<tr>
+<td>Path tracing</td>
+<td><code>r.PathTracing</code>, path tracing view mode</td>
+</tr>
+<tr>
+<td>Ray-traced translucency</td>
+<td><code>r.RayTracing.Translucency</code></td>
+</tr>
+<tr>
+<td>Mesh caustics</td>
+<td>NvRTX caustics CVars</td>
+</tr>
+<tr>
+<td>Water caustics</td>
+<td>NvRTX water caustics CVars</td>
+</tr>
+<tr>
+<td>Single layer water ray-traced reflections</td>
+<td><code>r.Water.SingleLayer.RTR</code></td>
+</tr>
+<tr>
+<td>Ray-traced reflection captures and reflection probes</td>
+<td><code>r.RayTracing.Reflections.RayTraceEnvironmentCaptures</code></td>
+</tr>
+</tbody>
+</table>
+<p>Setting the console variable will appear to succeed and the effect will not render.</p>
+<h3 id="what-still-works">What still works</h3>
+<table>
+<thead>
+<tr>
+<th>Effect</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ray-traced reflections</td>
+<td>Forced to the sorted deferred algorithm. The older non-deferred path is compiled out.</td>
+</tr>
+<tr>
+<td>Ray-traced shadows</td>
+<td>Unaffected</td>
+</tr>
+<tr>
+<td>Ray-traced ambient occlusion</td>
+<td>Unaffected</td>
+</tr>
+<tr>
+<td>Ray-traced sky light</td>
+<td>Unaffected</td>
+</tr>
+<tr>
+<td>DDGI</td>
+<td>Unaffected. DDGI is a plugin and does not go through these permutations.</td>
+</tr>
+</tbody>
+</table>
+<p>The set that remains is exactly Vite's recommended configuration: <a href="DDGI-Dynamic.md">DDGI</a> for indirect
+lighting, <a href="RT-Reflections.md">RT reflections</a> via the deferred path, and
+<a href="RT-Shadows-And-Ambient-Occlusion.md">RT shadows and AO</a>. See
+<a href="Global-Illumination.md">Global Illumination</a> for why DDGI is preferred over per-pixel ray-traced GI in the
+first place &mdash; the debloat switch encodes that recommendation into the build.</p>
+<h3 id="turning-it-off">Turning it off</h3>
+<p>Set <code>VITE_RT_PSO_DEBLOAT=0</code> and rebuild if you need path tracing for
+<a href="Path-Tracing.md">reference imagery</a>, RTXDI for a many-lights scene, or ray-traced translucency and
+caustics.</p>
+<p><warning>
+Turning this off substantially increases shader compilation time, packaged build size and ray tracing PSO
+count. Consider maintaining a separate target configuration &mdash; debloat off for an internal
+reference-rendering build, debloat on for the shipping build &mdash; rather than turning it off globally.
+</warning></p>
+<h2 id="vite_o_ssao">VITE_O_SSAO</h2>
+<p>Enables Vite's rewritten memory access pattern for the screen-space ambient occlusion pass. Same visual
+result as stock, lower cost.</p>
+<p>Unusually among these switches, it also has a runtime CVar &mdash; but only in development builds:</p>
+<div class="highlight"><pre><span></span><code>r.Vite.SSAO 0   // stock UE path
+r.Vite.SSAO 1   // optimised path
+</code></pre></div>
+<p>Shipping builds are locked to the compile-time value; the CVar does not exist. The runtime toggle exists so
+the two paths can be A/B compared during development, which is how the optimisation was validated. There is
+no reason to turn the compile-time switch off. See <a href="Ambient-Occlusion.md">Ambient Occlusion</a>.</p>
+<h2 id="vite_physx_fixed_timestep">VITE_PHYSX_FIXED_TIMESTEP</h2>
+<p>Off by default. Enables deterministic fixed-step PhysX simulation with render interpolation, plus the
+<code>p.VitePhysXFixedTimestep.*</code> console variables.</p>
+<p>The compile-time gate exists because the feature adds branches and double-buffered transform storage to the
+physics scene, substep task and animation physics blend. Projects with no determinism requirement should
+not pay for it. Full documentation is in <a href="Fixed-Timestep.md">Fixed Timestep</a>.</p>
+<h2 id="vite_dlss_patch">VITE_DLSS_PATCH</h2>
+<p>Off by default. Adds <code>TranslucencyAfterDOFUpscaledRT</code> and <code>TranslucencyAfterDOFModulateUpscaledRT</code> mesh
+passes so selected translucent primitives render at output resolution after upscaling, and adds
+<code>r.VolumetricFog.UseUpScaledSizeVolumetricFog</code> so the fog grid can be computed from output resolution.</p>
+<p>Only relevant to projects shipping with an upscaler enabled. See
+<a href="Upscalers.md">Upscalers and Frame Generation</a>.</p>
+<h2 id="vite_nvrtx_translucency_depth">VITE_NVRTX_TRANSLUCENCY_DEPTH</h2>
+<p>Off by default. Allocates and writes a separate translucency depth texture alongside separate translucency
+colour, inherited from the NvRTX branch. Required by some NvRTX effects that need translucent depth; costs
+an extra render target when enabled.</p>
+<h2 id="checking-what-a-build-has">Checking what a build has</h2>
+<p>Compile-time switches are invisible at runtime, which makes "is this feature even compiled in?" a real
+question when debugging.</p>
+<p>The most reliable check is to set the relevant CVar and see whether the effect appears. If
+<code>r.RayTracing.SampledDirectLighting 1</code> produces no change in a scene with hundreds of lights,
+<code>VITE_RT_PSO_DEBLOAT</code> is on.</p>
+<p>For the switches with runtime CVars, checking whether the CVar exists at all is a direct test: in a Shipping
+build, <code>r.Vite.SSAO</code> will not be found because it is compiled out.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Shader-Compilation-And-PSO/">Shader Compilation and PSO</a></li>
+<li><a href="Ray-Tracing.md">Ray Tracing</a></li>
+<li><a href="Fixed-Timestep.md">Fixed Timestep</a></li>
+<li><a href="Cache-Management.md">Cache Management</a></li>
+<li><a href="Build-From-Source.md">Build from Source</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

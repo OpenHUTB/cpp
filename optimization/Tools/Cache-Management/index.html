@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Cache Management - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Cache Management";
+        var mkdocs_page_input_path = "optimization/Tools/Cache-Management.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Cache Management</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Tools/Cache-Management.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="cache-management">Cache Management</h1>
+<p><tldr></p>
+<p>
+<code>WipeShaderCache.bat</code> at the engine root deletes the engine's derived data cache, intermediate
+shaders and shader debug info. Reach for it when the editor's behaviour stops matching your source
+changes.
+</p>
+<p></tldr></p>
+<p>Unreal caches aggressively. That is what makes iteration bearable, but it also means a stale cache can make
+a correct change appear not to work &mdash; or an incorrect one appear to.</p>
+<h2 id="what-the-script-clears">What the script clears</h2>
+<p><code>WipeShaderCache.bat</code> deletes three directories relative to the engine root:</p>
+<table>
+<thead>
+<tr>
+<th>Directory</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Engine\DerivedDataCache</code></td>
+<td>Compiled shaders, cooked textures, built meshes and every other derived artefact</td>
+</tr>
+<tr>
+<td><code>Engine\Intermediate\Shaders</code></td>
+<td>Intermediate shader compilation output</td>
+</tr>
+<tr>
+<td><code>Engine\Saved\ShaderDebugInfo</code></td>
+<td>Shader debug symbols and preprocessed source dumps</td>
+</tr>
+</tbody>
+</table>
+<p>It reports each directory as deleted, not found, or failed. A failure almost always means something still
+holds a file handle.</p>
+<p><warning>
+Close the editor and all <code>ShaderCompileWorker.exe</code> processes before running the script. Shader
+compile workers can outlive the editor; check Task Manager if a deletion fails.
+</warning></p>
+<p>After wiping, the next editor launch recompiles everything it needs. On a large project this can be tens of
+minutes or more. Do not do it casually.</p>
+<h2 id="when-to-wipe">When to wipe</h2>
+<p><deflist>
+<def title="You changed a .usf or .ush file and nothing happened">
+Shader source changes are usually picked up, but engine-level global shader changes sometimes are not.
+Try <code>recompileshaders global</code> or <code>recompileshaders changed</code> in the console first
+&mdash; it is far faster than a full wipe.
+</def>
+<def title="You changed a compile-time switch">
+Changing <a href="Compile-Time-Switches.md">VITE_RT_PSO_DEBLOAT</a>, <code>VITE_O_SSAO</code> or any other
+<code>VITE_*</code> switch changes which shader permutations exist. The engine rebuild handles the C++,
+but cached shaders from the old configuration can linger. Wipe after switching.
+</def>
+<def title="You pulled engine changes that touched the renderer">
+A merge that changes shader code or the shader map keying can leave a cache the engine misreads.
+</def>
+<def title="You are getting shader compilation errors that do not match the source">
+A classic stale-cache symptom: the reported error line does not exist in the file you are looking at.
+</def>
+<def title="The editor crashes on startup after an engine change">
+Worth trying before deeper investigation, since it is cheap to rule out.
+</def>
+</deflist></p>
+<h2 id="when-not-to-wipe">When not to wipe</h2>
+<p>Wiping the DDC is a heavy hammer and is frequently applied to problems it cannot solve.</p>
+<ul>
+<li><strong>Project-level problems.</strong> The script clears the <em>engine</em> DDC. Your project has its own
+  <code>DerivedDataCache</code> folder and its own <code>Intermediate</code> and <code>Saved</code> directories. Engine-level wiping does
+  not touch them.</li>
+<li><strong>Runtime rendering bugs.</strong> If an effect renders wrongly but consistently, that is a code or
+  configuration problem, not a cache problem. Check the
+  <a href="Ray-Tracing.md">compile-time switch availability table</a> first &mdash; many ray tracing features are
+  compiled out by default and their console variables silently do nothing.</li>
+<li><strong>Long shader compile times.</strong> Wiping makes this worse, not better. See
+  <a href="Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a>.</li>
+</ul>
+<h2 id="lighter-weight-alternatives">Lighter-weight alternatives</h2>
+<p>Try these before a full wipe:</p>
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Clears</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>recompileshaders changed</code></td>
+<td>Modified shaders only</td>
+<td>Seconds</td>
+</tr>
+<tr>
+<td><code>recompileshaders global</code></td>
+<td>Global shaders</td>
+<td>Under a minute</td>
+</tr>
+<tr>
+<td><code>recompileshaders material &lt;name&gt;</code></td>
+<td>One material</td>
+<td>Seconds</td>
+</tr>
+<tr>
+<td>Delete the project's <code>Intermediate\</code></td>
+<td>Project build intermediates</td>
+<td>Project rebuild</td>
+</tr>
+<tr>
+<td>Delete <code>Engine\Intermediate\Shaders</code> only</td>
+<td>Intermediate shader output, keeping the DDC</td>
+<td>Partial recompile</td>
+</tr>
+</tbody>
+</table>
+<p>The last one is worth knowing: the DDC is the expensive part to rebuild. If you only need to clear
+intermediate shader state, deleting that one directory by hand is much cheaper than running the full
+script.</p>
+<h2 id="cache-locations">Cache locations</h2>
+<table>
+<thead>
+<tr>
+<th>Cache</th>
+<th>Path</th>
+<th>Cleared by the script</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Engine DDC</td>
+<td><code>Engine\DerivedDataCache</code></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Engine intermediate shaders</td>
+<td><code>Engine\Intermediate\Shaders</code></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Shader debug info</td>
+<td><code>Engine\Saved\ShaderDebugInfo</code></td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Project DDC</td>
+<td><code>&lt;Project&gt;\DerivedDataCache</code></td>
+<td>No</td>
+</tr>
+<tr>
+<td>Project intermediates</td>
+<td><code>&lt;Project&gt;\Intermediate</code></td>
+<td>No</td>
+</tr>
+<tr>
+<td>Shared / network DDC</td>
+<td>Per <code>BaseEngine.ini</code> DDC configuration</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Local user DDC</td>
+<td><code>%LOCALAPPDATA%\UnrealEngine\Common\DerivedDataCache</code></td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p><note>
+If your team uses a shared network DDC, wiping locally is usually pointless: the local cache repopulates
+from the share, including whatever stale entries prompted the wipe. Confirm the shared DDC's state before
+concluding your local cache was the problem.
+</note></p>
+<h2 id="disk-footprint">Disk footprint</h2>
+<p>The engine DDC grows without bound during development. On a project that exercises many material and
+ray-tracing permutations it can reach tens of gigabytes. Periodically wiping it is a legitimate way to
+reclaim disk space, accepting the recompile cost.</p>
+<p>If disk space is the actual concern, the <a href="Debloat-Guide.md">Debloat Guide</a> covers larger and more permanent
+savings.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a></li>
+<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
+<li><a href="Build-Troubleshooting.md">Build Troubleshooting</a></li>
+<li><a href="Debloat-Guide.md">Debloat Guide</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

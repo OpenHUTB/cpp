@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Upscalers and Frame Generation - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Upscalers and Frame Generation";
+        var mkdocs_page_input_path = "optimization/Rendering/Upscalers.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Upscalers and Frame Generation</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/Upscalers.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="upscalers-and-frame-generation">Upscalers and Frame Generation</h1>
+<p><tldr></p>
+<p>
+Vite bundles DLSS 4.5, DLSS Frame Generation, FSR2, FSR 4, XeSS 3, NIS &mdash;. They are <b>optional headroom</b>, not the rendering plan. Vite's
+<a href="Performance-Targets.md">performance targets</a> are met at native resolution without any of them.
+</p>
+<p></tldr></p>
+<p>Check out the <a href="https://github.com/ViteStudio-Tech/ueVite-UpscalerTest">UpscalerTest Sample project</a></p>
+<p>Unreal Engine 5 treats upscaling as mandatory: the renderer is designed around rendering at a fraction of
+output resolution and reconstructing the rest. Vite takes the opposite position. The targets are native, and
+upscalers are available for users who want to spend the headroom on something else.</p>
+<p>That distinction changes how you should use the plugins on this page. If your project only hits its frame
+target with DLSS Performance enabled, the project is over budget &mdash; fix that first, then offer
+upscaling as an option on top.</p>
+<h2 id="bundled-plugins">Bundled plugins</h2>
+<p>All of these ship in the engine repository under <code>Engine/Plugins/Runtime</code>. None are enabled by default;
+enable the ones your project offers from <strong>Edit &gt; Plugins</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Plugin</th>
+<th>Version</th>
+<th>What it provides</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NVIDIA DLSS</td>
+<td>8.7.0-NGX310.7.0 (DLSS 4.5)</td>
+<td>Super Resolution, Ray Reconstruction, DLAA</td>
+<td><code>Nvidia/DLSS</code></td>
+</tr>
+<tr>
+<td>NVIDIA DLSS Frame Generation</td>
+<td>1.3.0-SL2.4.0 (Streamline)</td>
+<td>Frame Generation and Reflex</td>
+<td><code>Nvidia/Streamline</code></td>
+</tr>
+<tr>
+<td>NVIDIA DeepDVC</td>
+<td>Streamline</td>
+<td>Deep-learning dynamic vibrance</td>
+<td><code>Nvidia/StreamlineDeepDVC</code></td>
+</tr>
+<tr>
+<td>NVIDIA NIS</td>
+<td>&mdash;</td>
+<td>Image Scaling, spatial upscaling and sharpening</td>
+<td><code>Nvidia/NIS</code></td>
+</tr>
+<tr>
+<td>DLSS Movie Pipeline Support</td>
+<td>&mdash;</td>
+<td>DLSS integration for Movie Render Queue</td>
+<td><code>Nvidia/DLSSMoviePipelineSupport</code></td>
+</tr>
+<tr>
+<td>AMD FSR 4</td>
+<td>4.1.1</td>
+<td>FidelityFX Super Resolution 4 and Frame Generation, DX12</td>
+<td><code>VitePlugins/FSR4-427</code></td>
+</tr>
+<tr>
+<td>Intel XeSS</td>
+<td>3.0.5</td>
+<td>Xe Super Sampling</td>
+<td><code>VitePlugins/XeSS_UE4.27_Plugin_v3.0.5</code></td>
+</tr>
+</tbody>
+</table>
+<p>FSR 4 and XeSS 3 are notable: both are backports that do not exist in stock 4.27. FSR 4 uses the native
+<code>ffx-api</code> and requires DirectX 12.</p>
+<h2 id="choosing-what-to-ship">Choosing what to ship</h2>
+<p>You do not need all of them. Each enabled upscaler adds shaders, binaries, package size and a settings menu
+entry that has to be tested.</p>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Recommendation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PC release, broad hardware support</td>
+<td>DLSS + FSR 4. Covers NVIDIA and AMD; XeSS if Intel Arc matters to you.</td>
+</tr>
+<tr>
+<td>NVIDIA-focused, ray tracing heavy</td>
+<td>DLSS with Ray Reconstruction</td>
+</tr>
+<tr>
+<td>Anti-aliasing quality at native resolution</td>
+<td>DLAA (part of the DLSS plugin), or Vite's <a href="../Anti-Aliasing/">SMAA</a></td>
+</tr>
+<tr>
+<td>No upscaling, native only</td>
+<td>Ship nothing from this page. This is a valid and supported configuration.</td>
+</tr>
+</tbody>
+</table>
+<p>DLAA is worth calling out separately. It is DLSS's neural network applied at native resolution rather than
+as an upscaler, so it competes with SMAA rather than complementing it. It generally resolves finer detail
+than SMAA but reintroduces temporal accumulation, and therefore some of the artefacts SMAA avoids. Offer
+both and let the player choose.</p>
+<h2 id="ray-reconstruction">Ray Reconstruction</h2>
+<p>Ray Reconstruction replaces the hand-tuned denoisers for ray-traced effects with a neural denoiser. In a
+Vite project this interacts directly with the <a href="../Ray-Tracing/">ray tracing</a> configuration:</p>
+<ul>
+<li>It can substantially improve <a href="../RT-Reflections/">RT reflection</a> and <a href="../RTXDI/">RTXDI</a> quality under
+  motion, where hand-tuned denoisers struggle.</li>
+<li>It has no benefit for <a href="../DDGI-Dynamic/">DDGI</a>, which is noise-free by construction and has nothing to
+  denoise.</li>
+</ul>
+<p>If your ray tracing configuration is DDGI-led, Ray Reconstruction buys you less than it would in a
+Lumen-based project. Measure before shipping it.</p>
+<h2 id="frame-generation">Frame generation</h2>
+<p>DLSS Frame Generation (via Streamline) and FSR 4 Frame Generation both synthesise intermediate frames.</p>
+<p>Frame generation increases displayed frame rate without reducing input latency &mdash; it can make latency
+slightly worse, which is why Reflex ships alongside it in the Streamline plugin. Enable Reflex whenever you
+enable frame generation.</p>
+<blockquote>
+<p>Frame generation works best when the base frame rate is already high. Generating from 30&nbsp;fps to
+60&nbsp;fps produces visible artefacts around fast-moving UI and thin geometry; generating from
+60&nbsp;fps to 120&nbsp;fps is far more convincing. Since Vite targets high native frame rates to begin
+with, frame generation is well positioned here &mdash; as a way to push a 4K60 target toward a
+high-refresh display, not as a way to rescue a 30&nbsp;fps one.</p>
+<p>{style="note"}</p>
+</blockquote>
+<h2 id="the-dlss-translucency-patch">The DLSS translucency patch</h2>
+<p>Vite includes an optional compile-time patch that addresses a specific quality problem with upscaling:
+separate translucency and volumetric fog rendering at the internal render resolution and then being
+upscaled, which softens particles, glass and fog against an otherwise sharp reconstructed image.</p>
+<table>
+<thead>
+<tr>
+<th>Switch</th>
+<th>Default</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>VITE_DLSS_PATCH</code></td>
+<td><code>0</code></td>
+<td>Adds upscaled-resolution translucency passes and native-resolution volumetric fog</td>
+</tr>
+</tbody>
+</table>
+<p>When enabled, the renderer gains two additional translucency passes,
+<code>TranslucencyAfterDOFUpscaledRT</code> and <code>TranslucencyAfterDOFModulateUpscaledRT</code>, which render selected
+translucent primitives at output resolution after upscaling. Primitives opt in through the
+<code>bRenderInTranslucencyUpscaledRTPass</code> relevance flag, and the passes are only used when a temporal upscaler
+is actually active.</p>
+<p>It also adds:</p>
+<table>
+<thead>
+<tr>
+<th>CVar</th>
+<th>Default</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.VolumetricFog.UseUpScaledSizeVolumetricFog</code></td>
+<td><code>0</code></td>
+<td>Computes the volumetric fog grid from the output resolution rather than the internal render resolution</td>
+</tr>
+</tbody>
+</table>
+<p>The switch is defined in <code>Engine/Source/Runtime/Core/Public/Misc/CoreDefines.h</code> and defaults to off, since
+it costs frame time and only matters for projects that ship with upscaling enabled. See
+<a href="Compile-Time-Switches.md">Compile-Time Switches</a> for how to change it.</p>
+<h2 id="enabling-an-upscaler">Enabling an upscaler</h2>
+<p><procedure title="Add DLSS to a project" id="enable-dlss">
+    <step>Open <b>Edit &gt; Plugins</b>, find <b>NVIDIA DLSS Super Resolution/Ray Reconstruction/DLAA</b>, enable it and restart the editor.</step>
+    <step>For frame generation, also enable <b>NVIDIA DLSS Frame Generation</b>.</step>
+    <step>
+        Query support at runtime through the DLSS Blueprint library before exposing the option in your
+        settings menu. Hardware and driver support vary, and an option that silently does nothing is worse
+        than no option.
+    </step>
+    <step>Expose quality mode as a player setting rather than forcing one. Include an off state.</step>
+    <step>
+        Test the interaction with your <a href="Anti-Aliasing.md">anti-aliasing</a> setting. DLSS replaces
+        the anti-aliasing pass; leaving SMAA enabled alongside it wastes frame time.
+    </step>
+</procedure></p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Anti-Aliasing/">Anti-Aliasing</a></li>
+<li><a href="Performance-Targets.md">Performance Targets</a></li>
+<li><a href="../Ray-Tracing/">Ray Tracing</a></li>
+<li><a href="Bundled-Plugins.md">Bundled Plugins</a></li>
+<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

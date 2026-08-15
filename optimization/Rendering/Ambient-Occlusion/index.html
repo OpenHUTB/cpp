@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Ambient Occlusion - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Ambient Occlusion";
+        var mkdocs_page_input_path = "optimization/Rendering/Ambient-Occlusion.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Ambient Occlusion</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/Ambient-Occlusion.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="ambient-occlusion">Ambient Occlusion</h1>
+<p><tldr></p>
+<p>
+Three options: Vite's <b>optimised SSAO</b> (on by default, free), <b>HBAO+</b> (higher quality,
+post-process volume controlled) and <b>RTAO</b> (ray traced, most accurate, most expensive).
+They compose &mdash; HBAO+ multiplies over the SSAO buffer.
+</p>
+<p></tldr></p>
+<p>Ambient occlusion darkens creases, contact points and enclosed areas that ambient light should not fully
+reach. It is one of the cheapest ways to make a scene read as grounded, and one of the most common places to
+overspend.</p>
+<h2 id="vite-optimised-ssao">Vite optimised SSAO</h2>
+<p>Vite rewrites the memory access pattern of the stock UE4.27 screen-space AO pass. It produces the same
+result as the stock path at lower cost, and is enabled by default.</p>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Default</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>VITE_O_SSAO</code> (compile-time)</td>
+<td><code>1</code></td>
+<td>Shipping builds are locked to this value</td>
+</tr>
+<tr>
+<td><code>r.Vite.SSAO</code> (runtime)</td>
+<td><code>VITE_O_SSAO</code></td>
+<td>Development builds only. <code>0</code> = stock UE path, <code>1</code> = optimised path</td>
+</tr>
+</tbody>
+</table>
+<p>The runtime CVar exists so you can A/B the optimised path against stock during development, which is how the
+optimisation was validated. In Shipping the CVar does not exist at all &mdash; the path is compiled in.
+See <a href="Compile-Time-Switches.md">Compile-Time Switches</a>.</p>
+<p>Standard UE4.27 SSAO settings all still apply and are found under <strong>Rendering Features &gt; Ambient Occlusion</strong>
+in a post process volume: Intensity, Radius, Quality, Power, Bias, Fade Out Distance and the rest.</p>
+<h2 id="hbao">HBAO+</h2>
+<p>Horizon-Based Ambient Occlusion is NVIDIA's higher-quality AO technique, inherited through the NvRTX
+branch. It samples the depth buffer along horizon directions rather than in a screen-space sphere, which
+produces more accurate occlusion in creases and less of SSAO's characteristic haloing around object
+silhouettes.</p>
+<p>HBAO+ <strong>multiplies over</strong> the screen-space AO buffer rather than replacing it, so both run when it is
+enabled.</p>
+<h3 id="enabling">Enabling</h3>
+<table>
+<thead>
+<tr>
+<th>CVar</th>
+<th>Default</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.HBAO.Enable</code></td>
+<td><code>0</code></td>
+<td>Master enable</td>
+</tr>
+<tr>
+<td><code>r.HBAO.HighPrecisionDepth</code></td>
+<td><code>0</code></td>
+<td><code>0</code> = FP16 internal depth, <code>1</code> = FP32. Use FP32 to avoid self-occlusion banding on distant objects.</td>
+</tr>
+<tr>
+<td><code>r.HBAO.GBufferNormals</code></td>
+<td><code>1</code></td>
+<td><code>0</code> = reconstruct normals from depth, <code>1</code> = fetch GBuffer normals</td>
+</tr>
+</tbody>
+</table>
+<p><note>
+The CVar help text describes HBAO+ as DX11-only. Vite implements it on both D3D11 and D3D12; the help
+string is inherited from the original NVIDIA integration and has not been updated.
+</note></p>
+<h3 id="post-process-volume-settings">Post process volume settings</h3>
+<p>Once enabled, HBAO+ is tuned per post process volume under the <strong>HBAO+</strong> category. These are Blueprint
+read/write, so they can be driven at runtime.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default</th>
+<th>Range</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Power Exponent</td>
+<td><code>2.0</code></td>
+<td>0&ndash;4</td>
+<td>Darkening curve applied to the AO result. Higher is more contrasty.</td>
+</tr>
+<tr>
+<td>Radius</td>
+<td><code>2.0</code></td>
+<td>0.1&ndash;2</td>
+<td>World-space sampling radius in metres</td>
+</tr>
+<tr>
+<td>Bias</td>
+<td><code>0.1</code></td>
+<td>0&ndash;0.2</td>
+<td>Rejects samples below this angle. Raise to remove self-occlusion on flat surfaces.</td>
+</tr>
+<tr>
+<td>SmallScale AO</td>
+<td><code>1.0</code></td>
+<td>0&ndash;1</td>
+<td>Weight of fine-detail occlusion</td>
+</tr>
+<tr>
+<td>Blur Radius</td>
+<td>2 pixels</td>
+<td>Disabled / 2px / 4px</td>
+<td>Noise reduction blur</td>
+</tr>
+<tr>
+<td>Blur Sharpness</td>
+<td><code>16.0</code></td>
+<td>0&ndash;32</td>
+<td>Edge preservation during blur. Higher preserves more edges.</td>
+</tr>
+<tr>
+<td>Max Depth</td>
+<td><code>9500.0</code></td>
+<td>0&ndash;400+</td>
+<td>View depth beyond which HBAO+ stops being computed</td>
+</tr>
+<tr>
+<td>Depth Sharpness</td>
+<td><code>50.0</code></td>
+<td>0&ndash;100</td>
+<td>Depth discontinuity sensitivity</td>
+</tr>
+<tr>
+<td>Clamp Foreground AO</td>
+<td>off</td>
+<td>&mdash;</td>
+<td>Limits AO on near geometry</td>
+</tr>
+<tr>
+<td>Foreground AO Distance</td>
+<td><code>100.0</code></td>
+<td>0&ndash;1000</td>
+<td>Distance used by the foreground clamp</td>
+</tr>
+<tr>
+<td>Clamp Background AO</td>
+<td>off</td>
+<td>&mdash;</td>
+<td>Limits AO on distant geometry</td>
+</tr>
+<tr>
+<td>Background AO Distance</td>
+<td><code>1000.0</code></td>
+<td>0&ndash;10000</td>
+<td>Distance used by the background clamp</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Radius</strong> is the setting that matters most and is most often wrong. It is in metres, and the correct value
+depends entirely on scene scale. An interior with human-scale props wants a small radius; a large exterior
+wants a larger one. Too large produces soft grey wash across everything; too small produces occlusion only
+in the tightest creases.</p>
+<p><strong>Max Depth</strong> is a straightforward performance lever. Distant geometry contributes very little visible AO,
+so lowering this value reduces cost with minimal visual change. Check the result against a fly-through
+before committing to an aggressive value.</p>
+<h2 id="ray-traced-ambient-occlusion">Ray-traced ambient occlusion</h2>
+<p>RTAO is covered in detail in <a href="../RT-Shadows-And-Ambient-Occlusion/">RT Shadows and Ambient Occlusion</a>. In
+brief: it traces actual occlusion rays, so it handles off-screen occluders correctly and does not suffer
+from screen-space AO's fundamental limitation of only knowing about what is visible.</p>
+<p>It is also the most expensive of the three, and requires DXR.</p>
+<h2 id="choosing">Choosing</h2>
+<table>
+<thead>
+<tr>
+<th>Target</th>
+<th>Recommended configuration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stylised 4K120</td>
+<td>Vite SSAO only</td>
+</tr>
+<tr>
+<td>Performance High End 4K60</td>
+<td>Vite SSAO, HBAO+ if there is headroom</td>
+</tr>
+<tr>
+<td>Fidelity High End 4K30</td>
+<td>Vite SSAO + HBAO+</td>
+</tr>
+<tr>
+<td>Fidelity Full RT 1440p30</td>
+<td>RTAO</td>
+</tr>
+</tbody>
+</table>
+<p>The general rule is that AO should be the cheapest thing in your frame that produces its result. If
+<a href="../DDGI-Dynamic/">DDGI</a> is already resolving the indirect lighting in a space correctly, heavy AO on top of
+it is double-darkening &mdash; you are subtracting light that the GI solution never added.</p>
+<p><warning>
+Watch for AO stacking. Enabling material AO, SSAO, HBAO+ and RTAO simultaneously produces a scene that is
+much darker in contact areas than it should be. Each layer multiplies. Compare against a
+<a href="Path-Tracing.md">path-traced</a> reference if you are unsure whether your contact shadows are
+physically plausible or just dark.
+</warning></p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../RT-Shadows-And-Ambient-Occlusion/">RT Shadows and Ambient Occlusion</a></li>
+<li><a href="../Global-Illumination/">Global Illumination</a></li>
+<li><a href="../SSGI/">SSGI</a></li>
+<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
+<li><a href="Performance-Targets.md">Performance Targets</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

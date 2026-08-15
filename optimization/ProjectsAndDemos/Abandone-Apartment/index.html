@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Abandoned Apartment - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Abandoned Apartment";
+        var mkdocs_page_input_path = "optimization/ProjectsAndDemos/Abandone-Apartment.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Abandoned Apartment</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/ProjectsAndDemos/Abandone-Apartment.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="abandoned-apartment">Abandoned Apartment</h1>
+<p><tldr></p>
+<p>
+Interior lighting scene. Interiors are the hardest case for global illumination, which makes them the most
+useful place to evaluate it.
+</p>
+<p></tldr></p>
+<p><img src="AbandonedAppartment.png" alt="Abandoned apartment interior lit entirely by indirect bounce light" border-effect="line"/></p>
+<p><em>Almost every surface visible here is lit by bounce rather than by the sun directly. That is what makes
+interiors the honest test of a GI solution.</em></p>
+<h2 id="download">Download</h2>
+<p><a href="https://drive.google.com/file/d/1OCb9sW9xH3FsFUza0ZG1tKWOPMMus5XA/view?usp=sharing">Abandoned Apartment</a></p>
+<h2 id="why-interiors">Why interiors</h2>
+<p>An interior is almost entirely indirect light. Sun enters through a small number of openings and everything
+else the eye sees is bounce. Get the GI wrong and the scene reads as flat or as leaking; there is no
+direct lighting to hide behind.</p>
+<p>That makes scenes like this the right place to evaluate the practical differences between Vite's GI
+options:</p>
+<table>
+<thead>
+<tr>
+<th>Approach</th>
+<th>Behaviour in an interior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="DDGI-Static.md">Static DDGI</a></td>
+<td>Baked probe data. Cheapest, and correct if nothing moves.</td>
+</tr>
+<tr>
+<td><a href="DDGI-Dynamic.md">Dynamic DDGI</a></td>
+<td>Probes update at runtime. Handles time of day and moving occluders.</td>
+</tr>
+<tr>
+<td><a href="SSGI.md">SSGI</a></td>
+<td>Adds contact-scale detail the probe grid cannot resolve</td>
+</tr>
+<tr>
+<td>Per-pixel ray-traced GI</td>
+<td>Reference quality, unaffordable at frame rate, and compiled out by default</td>
+</tr>
+</tbody>
+</table>
+<p>The realistic answer for most interiors is DDGI plus SSGI. DDGI supplies the low-frequency bounce and SSGI
+fills in the detail near contacts and in corners. See
+<a href="Global-Illumination.md">Global Illumination</a>.</p>
+<h2 id="what-to-look-at">What to look at</h2>
+<ul>
+<li><strong>Light leaking.</strong> Probe-based GI leaks through thin geometry when probe spacing is too coarse relative
+  to wall thickness. Interiors are full of thin walls, so this is where to tune probe density.</li>
+<li><strong>Corner darkening.</strong> Compare DDGI alone against DDGI with SSGI enabled. The difference concentrates in
+  corners and at contacts.</li>
+<li><strong>Ambient occlusion choice.</strong> <a href="Ambient-Occlusion.md">HBAO+ versus the optimised SSAO path</a> is most
+  visible in cluttered interiors.</li>
+<li><strong>Ray-traced reflections.</strong> Interior surfaces reflect a great deal of off-screen geometry, which is
+  exactly the case screen-space reflections cannot handle.</li>
+</ul>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="Global-Illumination.md">Global Illumination</a></li>
+<li><a href="DDGI-Dynamic.md">Dynamic DDGI</a></li>
+<li><a href="SSGI.md">SSGI</a></li>
+<li><a href="Ambient-Occlusion.md">Ambient Occlusion</a></li>
+<li><a href="../Attic-Scene/">Attic Scene</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

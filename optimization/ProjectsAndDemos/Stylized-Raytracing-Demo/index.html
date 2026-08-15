@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Stylized Raytracing Demo - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Stylized Raytracing Demo";
+        var mkdocs_page_input_path = "optimization/ProjectsAndDemos/Stylized-Raytracing-Demo.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Stylized Raytracing Demo</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/ProjectsAndDemos/Stylized-Raytracing-Demo.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="stylized-raytracing-demo">Stylized Raytracing Demo</h1>
+<p><tldr></p>
+<p>
+Ray tracing applied to non-photorealistic art direction. A counterexample to the assumption that ray
+tracing only serves photorealism.
+</p>
+<p></tldr></p>
+<p><img src="StylizedRTDemo.png" alt="Stylized outdoor scene lit by dynamic DDGI, frame counter reading 811 FPS" border-effect="line"/></p>
+<p><em>Dynamic DDGI, no baked lighting. The counter reads 811 FPS at 1440p native on an RTX 4080 Super.</em></p>
+<h2 id="download">Download</h2>
+<p><a href="https://drive.google.com/file/d/1M0H60ESNuvUltF9eePO-CHrlUuBzvFHh/view">Stylized Raytracing Demo</a></p>
+<h2 id="why-stylized-ray-tracing">Why stylized ray tracing</h2>
+<p>Ray tracing is usually presented as a photorealism feature, which leads stylized projects to skip it. That
+is a mistake. What ray tracing actually provides is correct light transport, and stylized rendering
+benefits from correct light transport just as much &mdash; arguably more, because stylized art tends to use
+strong, deliberate lighting where screen-space artefacts are conspicuous.</p>
+<p>Specifically:</p>
+<table>
+<thead>
+<tr>
+<th>Ray-traced feature</th>
+<th>What it gives stylized work</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="RT-Reflections.md">Reflections</a></td>
+<td>Reflections of off-screen geometry, which screen-space reflections cannot produce</td>
+</tr>
+<tr>
+<td><a href="RT-Shadows-And-Ambient-Occlusion.md">Shadows</a></td>
+<td>Contact-accurate shadows without shadow map resolution and bias tuning</td>
+</tr>
+<tr>
+<td><a href="DDGI-Dynamic.md">DDGI</a></td>
+<td>Colour bleed that reinforces a limited palette rather than fighting it</td>
+</tr>
+<tr>
+<td><a href="Ambient-Occlusion.md">Ambient occlusion</a></td>
+<td>Grounded contact without the halos screen-space AO produces</td>
+</tr>
+</tbody>
+</table>
+<p>Combining ray-traced lighting with the <a href="Shading-Models.md">Toon shading model</a> is well supported in Vite
+&mdash; Toon is one of the custom shading models the fork adds.</p>
+<h2 id="what-to-look-at">What to look at</h2>
+<p>Turn ray-traced reflections off and on in the demo. The difference is largest exactly where screen-space
+reflections fail: reflections of things outside the frame, at grazing angles, and behind the camera.</p>
+<p>Then look at how the stylized materials respond to the ray-traced lighting rather than to a baked
+approximation of it. The lighting is doing work the art direction can rely on being consistent as the
+camera moves.</p>
+<h2 id="availability-caveat">Availability caveat</h2>
+<p><warning>
+Reflections, shadows, ambient occlusion and sky light are available in a default Vite build. Translucency,
+caustics, RTXDI, path tracing and per-pixel ray-traced GI are <b>compiled out</b> by
+<code>VITE_RT_PSO_DEBLOAT</code>, which defaults to <code>1</code>.</p>
+<p>
+If a console variable from that second group appears to do nothing, this is why. See
+<a href="Ray-Tracing.md">Ray Tracing</a> and
+<a href="Compile-Time-Switches.md">Compile-Time Switches</a>.
+</p>
+<p></warning></p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="Ray-Tracing.md">Ray Tracing</a></li>
+<li><a href="Shading-Models.md">Shading Models</a></li>
+<li><a href="DDGI-Dynamic.md">Dynamic DDGI</a></li>
+<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

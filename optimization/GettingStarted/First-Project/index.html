@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Creating Your First Project - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Creating Your First Project";
+        var mkdocs_page_input_path = "optimization/GettingStarted/First-Project.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Creating Your First Project</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/GettingStarted/First-Project.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="creating-your-first-project">Creating Your First Project</h1>
+<p><tldr></p>
+<p>
+Create a project as you normally would, then decide which ray tracing effects you actually want &mdash;
+Vite enables most of them by default. Enable <a href="DDGI-Dynamic.md">DDGI</a> with
+<code>r.GlobalIllumination.ExperimentalPlugin 1</code> and pair it with
+<code>r.SSGI.Enable 1</code>.
+</p>
+<p></tldr></p>
+<p>Project creation in Vite works exactly as it does in stock Unreal Engine 4.27. What differs is the default
+rendering configuration, so this page focuses on what to do immediately after the project opens.</p>
+<p><note>
+This manual documents what Vite changes, not Unreal Engine itself. For the parts that are unchanged
+&mdash; project structure, templates, content browser, Blueprints, materials, packaging &mdash; Epic's
+4.27 documentation applies directly and remains the reference:
+<a href="https://dev.epicgames.com/documentation/unreal-engine/working-with-unreal-projects-and-templates?application_version=4.27">Working with Unreal Projects and Templates (4.27)</a>.
+</note></p>
+<h2 id="create-the-project">Create the project</h2>
+<p><procedure title="Create a new Vite project" id="create-project">
+    <step>Launch the editor from your desktop shortcut or <code>Engine\Binaries\Win64\UE4Editor.exe</code>.</step>
+    <step>Choose a template. The Third Person template is the one kept by the debloat presets and is the safest starting point.</step>
+    <step>Pick C++ rather than Blueprint if you intend to drive rendering features from code, which most of the examples in this manual assume.</step>
+    <step>Create the project and wait for the initial shader compile. On a first run this takes a while, because the engine is building its shader cache from scratch.</step>
+</procedure></p>
+<p>If you are opening an existing project instead, right-click the <code>.uproject</code>, choose
+<strong>Switch Unreal Engine version</strong>, and select <code>UE_ViteFork</code>.</p>
+<h2 id="understand-the-defaults-before-you-build-content">Understand the defaults before you build content</h2>
+<blockquote>
+<p>Vite ships with the full ray tracing suite enabled by default &mdash; shadows, reflections, translucency
+and ambient occlusion. This is deliberate, so that new users discover the features immediately, but it
+means an empty project costs more than a stock 4.27 one.</p>
+<p>{style="warning"}</p>
+</blockquote>
+<p>Decide early which effects your project actually needs, because the answer shapes your entire art and
+performance budget. A stylised competitive title targeting 4K120 will typically run DDGI alone. A fidelity
+title targeting 4K60 might add ray-traced reflections and tessellation. See
+<a href="Performance-Targets.md">Performance Targets</a> for the four reference configurations Vite is tuned around.</p>
+<p>The other set of defaults worth reading before you build much content is
+<a href="Engine-Defaults.md">Engine Default Changes</a>. Several of them change behaviour rather than just cost &mdash;
+most notably, overlap events are disabled by default on primitive components, and lightmap UV generation is
+off by default on import.</p>
+<h2 id="turning-features-on-from-code">Turning features on from code</h2>
+<p>The conventional place to set these up in a sample project is the character class constructor or
+<code>BeginPlay</code>. This is what the Vite sample projects do.</p>
+<div class="highlight"><pre><span></span><code><span class="c1">// Global illumination</span>
+<span class="n">IConsoleManager</span><span class="o">::</span><span class="n">Get</span><span class="p">().</span><span class="n">FindConsoleVariable</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.GlobalIllumination.ExperimentalPlugin&quot;</span><span class="p">))</span><span class="o">-&gt;</span><span class="n">Set</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">IConsoleManager</span><span class="o">::</span><span class="n">Get</span><span class="p">().</span><span class="n">FindConsoleVariable</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.SSGI.Enable&quot;</span><span class="p">))</span><span class="o">-&gt;</span><span class="n">Set</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+<span class="c1">// Ray tracing effects</span>
+<span class="n">IConsoleManager</span><span class="o">::</span><span class="n">Get</span><span class="p">().</span><span class="n">FindConsoleVariable</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.RayTracing.AmbientOcclusion&quot;</span><span class="p">))</span><span class="o">-&gt;</span><span class="n">Set</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">IConsoleManager</span><span class="o">::</span><span class="n">Get</span><span class="p">().</span><span class="n">FindConsoleVariable</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.RayTracing.Reflections&quot;</span><span class="p">))</span><span class="o">-&gt;</span><span class="n">Set</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">IConsoleManager</span><span class="o">::</span><span class="n">Get</span><span class="p">().</span><span class="n">FindConsoleVariable</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.RayTracing.Shadows&quot;</span><span class="p">))</span><span class="o">-&gt;</span><span class="n">Set</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">IConsoleManager</span><span class="o">::</span><span class="n">Get</span><span class="p">().</span><span class="n">FindConsoleVariable</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.RayTracing.Translucency&quot;</span><span class="p">))</span><span class="o">-&gt;</span><span class="n">Set</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">IConsoleManager</span><span class="o">::</span><span class="n">Get</span><span class="p">().</span><span class="n">FindConsoleVariable</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.RayTracing.SampledDirectLighting&quot;</span><span class="p">))</span><span class="o">-&gt;</span><span class="n">Set</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">IConsoleManager</span><span class="o">::</span><span class="n">Get</span><span class="p">().</span><span class="n">FindConsoleVariable</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.RayTracing.MeshCaustics.Enable&quot;</span><span class="p">))</span><span class="o">-&gt;</span><span class="n">Set</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</code></pre></div>
+<p><code>r.GlobalIllumination.ExperimentalPlugin 1</code> enables DDGI. Running SSGI alongside it is recommended rather
+than optional: DDGI resolves world-scale bounce, SSGI fills in high-frequency contact detail that probe
+volumes are too coarse to capture. See <a href="SSGI.md">DDGI and SSGI Together</a>.</p>
+<p>For production, prefer setting these in configuration files rather than code, so they participate in
+scalability and can be overridden per platform:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">; Config/DefaultEngine.ini</span>
+<span class="k">[/Script/Engine.RendererSettings]</span>
+<span class="na">r.GlobalIllumination.ExperimentalPlugin</span><span class="o">=</span><span class="s">1</span>
+<span class="na">r.SSGI.Enable</span><span class="o">=</span><span class="s">1</span>
+<span class="na">r.RayTracing.Reflections</span><span class="o">=</span><span class="s">1</span>
+</code></pre></div>
+<p><code>r.RayTracing.ForceAllRayTracingEffects 1</code> turns everything on at once. It is useful for a quick look at
+what the engine can do, and a poor idea in a shipping configuration.</p>
+<h2 id="verify-it-is-working">Verify it is working</h2>
+<p>Open the console with the tilde key and check a few things:</p>
+<ul>
+<li><code>stat unit</code> &mdash; frame, game, draw and GPU times. If GPU time dominates after enabling RT effects, that
+  is expected; start turning effects off from there.</li>
+<li><code>stat gpu</code> &mdash; per-pass GPU cost, which is how you find out whether reflections or GI is the expensive
+  one.</li>
+<li><code>r.RayTracing.Reflections 0</code> &mdash; toggle an effect at runtime and watch the delta.</li>
+</ul>
+<p>Vite also bundles ImGui-based benchmarking tools for in-editor and in-game profiling. See
+<a href="Profiling.md">Profiling and Benchmarking</a>.</p>
+<h2 id="sample-projects-worth-opening">Sample projects worth opening</h2>
+<p>Rather than building a test scene from scratch, start from one that already demonstrates the features:</p>
+<ul>
+<li><a href="Tech-Demo-Project.md">Tech Demo Project</a> &mdash; DDGI Cornell Box, Apex Destruction test bed, Apex Cloth
+  sample and a high-end DDGI plus SSGI cave scene.</li>
+<li><a href="Abandone-Apartment.md">Abandoned Apartment</a> and <a href="Attic-Scene.md">Attic Scene</a> &mdash; NVIDIA's original
+  RTGI showcase scenes.</li>
+<li><a href="Physics-Cube-Bench.md">Physics Cube Bench</a> and <a href="400-Characters-CMC-Bench.md">400 Characters CMC Bench</a>
+  &mdash; the benchmark scenes behind the numbers quoted in this manual.</li>
+</ul>
+<p>The full list is in <a href="ProjectsAndDemos.md">Projects and Demos</a>.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="Global-Illumination.md">Global Illumination</a></li>
+<li><a href="Ray-Tracing.md">Ray Tracing</a></li>
+<li><a href="Engine-Defaults.md">Engine Default Changes</a></li>
+<li><a href="Console-Variables.md">Console Variable Reference</a></li>
+<li><a href="../Migrating-From-UE5/">Migrating from Unreal Engine 5</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

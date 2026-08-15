@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Installing a Binary Build - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Installing a Binary Build";
+        var mkdocs_page_input_path = "optimization/GettingStarted/Install-Binary-Build.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Installing a Binary Build</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/GettingStarted/Install-Binary-Build.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="installing-a-binary-build">Installing a Binary Build</h1>
+<p><tldr></p>
+<p>
+Extract <code>UE_ViteFork.7z</code>, run <code>RegistryAdd.bat</code> to register the engine, run
+<code>MakeShortcut.bat</code> for a desktop launcher, then set
+<code>"EngineAssociation": "UE_ViteFork"</code> in your <code>.uproject</code>.
+</p>
+<p></tldr></p>
+<p>An installed build is a precompiled, redistributable copy of the editor. It behaves like an
+Epic Games Launcher installation: you can open and cook projects, but you cannot modify or debug into
+engine source. This is the right choice for artists, designers and anyone evaluating the fork.</p>
+<p>Installed builds are produced from a source build by the team. If you need to make one yourself, see
+<a href="Installed-Builds.md">Installed Builds</a>.</p>
+<h2 id="contents-of-a-build-archive">Contents of a build archive</h2>
+<p>A packaged Vite build extracts to a folder containing:</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Engine\</code></td>
+<td>The engine itself, including <code>Engine\Binaries\Win64\UE4Editor.exe</code></td>
+</tr>
+<tr>
+<td><code>MakeShortcut.bat</code></td>
+<td>Creates <code>UEViteFork.lnk</code> pointing at the editor executable</td>
+</tr>
+<tr>
+<td><code>RegistryAdd.bat</code></td>
+<td>Registers the folder as the <code>UEViteFork</code> engine association</td>
+</tr>
+<tr>
+<td><code>RegistryRemove.bat</code></td>
+<td>Removes that registration</td>
+</tr>
+<tr>
+<td><code>Templates\</code></td>
+<td>Project templates, if the build was packaged with them</td>
+</tr>
+<tr>
+<td><code>FeaturePacks\</code></td>
+<td>Feature packs, if the build was packaged with them</td>
+</tr>
+<tr>
+<td><code>Samples\</code></td>
+<td>Sample content, if the build was packaged with them</td>
+</tr>
+</tbody>
+</table>
+<p>Lean builds omit templates, feature packs, samples and debug symbols. Some builds ship an accompanying
+<code>ExcludedPlugins.7z</code> containing plugins that were split out of the main archive to keep it small; extract
+it over the same folder if you need those plugins.</p>
+<h2 id="installation">Installation</h2>
+<p><procedure title="Install and register an installed build" id="install-binary">
+    <step>
+        Extract <code>UE_ViteFork.7z</code> to a path with no spaces or non-ASCII characters, for example
+        <code>D:\Engines\UE_ViteFork</code>. Avoid <code>Program Files</code>; the editor writes to its own
+        directory and the permission prompts are not worth it.
+    </step>
+    <step>
+        If the build shipped a separate <code>ExcludedPlugins.7z</code> and you need those plugins, extract
+        it into the same folder now.
+    </step>
+    <step>
+        Run <code>RegistryAdd.bat</code>. This writes the engine path to
+        <code>HKCU\Software\Epic Games\Unreal Engine\Builds</code> under the name <code>UE_ViteFork</code>,
+        and removes stale GUID-keyed entries that pointed at the same folder.
+    </step>
+    <step>
+        Run <code>MakeShortcut.bat</code> to create <code>UEViteFork.lnk</code> next to the engine folder.
+    </step>
+    <step>
+        Launch the editor through the shortcut, or directly via
+        <code>Engine\Binaries\Win64\UE4Editor.exe</code>.
+    </step>
+</procedure></p>
+<blockquote>
+<p>Registration is per-user, written under <code>HKCU</code>. Each Windows user account that needs the engine must run
+<code>RegistryAdd.bat</code> once.</p>
+<p>{style="note"}</p>
+</blockquote>
+<h2 id="pointing-a-project-at-the-build">Pointing a project at the build</h2>
+<p>Open your <code>.uproject</code> file in a text editor and set the engine association:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;FileVersion&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;EngineAssociation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;UE_ViteFork&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;Category&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;Description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
+<span class="p">}</span>
+</code></pre></div>
+<p>Projects packaged inside an installed build archive already have this set. If you right-click a <code>.uproject</code>
+and choose <strong>Switch Unreal Engine version</strong>, <code>UE_ViteFork</code> will appear in the list once the build is
+registered.</p>
+<h2 id="moving-or-removing-a-build">Moving or removing a build</h2>
+<p>The registry entry stores an absolute path, so moving the engine folder breaks it. If you relocate a build:</p>
+<ol>
+<li>Run <code>RegistryRemove.bat</code> from the old location, or delete the <code>UE_ViteFork</code> value manually.</li>
+<li>Move the folder.</li>
+<li>Run <code>RegistryAdd.bat</code> from the new location.</li>
+</ol>
+<p>To uninstall entirely, run <code>RegistryRemove.bat</code> and then delete the folder. Nothing is written outside the
+engine directory and the single <code>HKCU</code> registry value, apart from the usual per-user Unreal directories
+under <code>%LOCALAPPDATA%\UnrealEngine</code> and <code>%APPDATA%\Unreal Engine</code>.</p>
+<h2 id="running-source-and-binary-builds-side-by-side">Running source and binary builds side by side</h2>
+<p>You can have both installed. They are separate engine associations as long as they register under different
+names, so if you want a source build and an installed build available at the same time, change the
+<code>ENGINE_ASSOCIATION</code> value in one of them before registering. Note that both builds share the per-user
+Unreal directories, so editor layout and some settings will be common between them.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Getting-Started/">Getting Started</a></li>
+<li><a href="Installed-Builds.md">Installed Builds</a></li>
+<li><a href="Installed-Builds.md">Packaging and Distribution</a></li>
+<li><a href="../First-Project/">Creating Your First Project</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

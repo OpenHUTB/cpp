@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Physics - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Physics";
+        var mkdocs_page_input_path = "optimization/Physics/Physics.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Physics</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Physics/Physics.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="physics">Physics</h1>
+<p><tldr></p>
+<p>
+Vite's physics stack uses <b>PhysX 3.4</b>, with Vite extensions for fixed-timestep simulation,
+modern toolchains, NVIDIA Blast and high-count instanced rigid bodies. This page describes the physics
+architecture and its measured CPU behavior; the <a href="PhysX.md">PhysX page</a> documents backend features.
+</p>
+<p></tldr></p>
+<p>Vite treats physics as a frame-time-critical engine system. Simulation cost includes more than the solver:
+broad phase, contact generation, island construction, constraint preparation, iterative solving, integration,
+callbacks and synchronization with engine state all contribute to the final physics time.</p>
+<h2 id="what-is-in-this-section">What is in this section</h2>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Covers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../PhysX/">PhysX</a></td>
+<td>PhysX 3.4 features, Vite extensions, configuration and profiling</td>
+</tr>
+<tr>
+<td><a href="../Fixed-Timestep/">Fixed Timestep</a></td>
+<td>Fixed-step simulation with render interpolation</td>
+</tr>
+<tr>
+<td><a href="../Destruction-And-Cloth/">Destruction and Cloth</a></td>
+<td>APEX Destruction, APEX Cloth and NVIDIA Blast</td>
+</tr>
+<tr>
+<td><a href="../Instanced-Physics/">Instanced Physics Subsystem</a></td>
+<td>Simulating large rigid-body sets through instanced meshes</td>
+</tr>
+</tbody>
+</table>
+<h2 id="physics-cpu-architecture">Physics CPU architecture</h2>
+<h3 id="threading-and-the-critical-path">Threading and the critical path</h3>
+<p>PhysX and Chaos both support multithreaded simulation. Chaos can execute through the Task Graph, use a
+dedicated physics thread and parallelize selected particle, collision and island work. A dedicated thread
+moves work away from the game thread, but it does not by itself reduce the time between starting and
+finishing a simulation step.</p>
+<p>Physics contains ordered phases and data dependencies. Constraints within a connected island cannot all be
+solved independently, and later stages must wait for the state produced by earlier stages. Scaling therefore
+depends on the number and size of independent islands, task granularity, synchronization frequency and the
+amount of state transferred between the game and physics representations.</p>
+<p>PhysX 3.4 exposes a dependency-linked <code>TaskManager</code> and <code>CpuDispatcher</code>. Simulation stages create
+<code>LightCpuTask</code> jobs and submit them to the engine worker pool as their prerequisites complete. Vite's Unreal
+integration can batch dispatcher submissions to trade scheduling overhead against available parallelism.
+NVIDIA's <a href="https://docs.nvidia.com/gameworks/content/gameworkslibrary/physx/guide/Manual/Threading.html?highlight=cpudispatcher">PhysX 3.4 threading documentation</a></p>
+<h3 id="simd-coverage">SIMD coverage</h3>
+<p>Chaos contains optional Intel ISPC kernels. ISPC is a SIMD technology: it compiles an SPMD program for the
+vector units of the target CPU. The relevant constraint is coverage and utilization, not "ISPC versus SIMD."
+Only work implemented by an ISPC kernel receives that vector path. Divergent contacts, indirect memory
+access, gathers and scatters, heterogeneous constraint types and pointer-heavy data reduce effective lane
+occupancy. Intel's <a href="https://ispc.github.io/index.html">ISPC documentation</a> describes the compiler and its SIMD
+execution model.</p>
+<p>PhysX's narrow phase and solver were developed around batched float data and platform SIMD kernels. The
+useful measurement is effective vector occupancy across the complete simulation step, including work that
+remains scalar or loses time to data movement.</p>
+<h3 id="numeric-precision">Numeric precision</h3>
+<p>UE5 Large World Coordinates changed core world-space types to double precision. Epic's
+<a href="https://dev.epicgames.com/documentation/unreal-engine/large-world-coordinates-in-unreal-engine-5">LWC documentation</a>
+explicitly documents double precision in Chaos destruction. This does not mean that every field in every
+Chaos subsystem is FP64. Modern Chaos uses mixed precision in selected paths, while the experimental Chaos
+implementation in the UE4.27 base aliases its primary <code>FReal</code> to <code>float</code>.</p>
+<p>Double precision remains SIMD-capable. A fixed-width register, however, carries half as many doubles as
+floats: a 256-bit register holds four 64-bit values or eight 32-bit values. Double-based fields also require
+twice the storage and memory bandwidth of equivalent float fields. In affected kernels this can reduce
+theoretical element throughput, increase cache pressure and add conversion work at float/double boundaries.
+Epic's <a href="https://dev.epicgames.com/documentation/unreal-engine/large-world-coordinates-project-conversion-guidelines-in-unreal-engine-5">LWC conversion guide</a>
+documents both <code>VectorRegister4f</code> and <code>VectorRegister4d</code>; the constraint is lane width and data cost, not an
+absence of vector instructions.</p>
+<p>There is no accurate universal percentage for the FP64 cost. Scalar FP32 and FP64 instructions can have
+similar latency on some CPUs, while vector-throughput- or bandwidth-bound kernels can experience a much
+larger difference. Any percentage must be attached to a named workload, platform and build.</p>
+<h2 id="box-container-pile-10k-benchmark">Box Container Pile 10K benchmark</h2>
+<p>The supplied reports measure a deliberately physics-bound pile containing <strong>10,005 active rigid bodies and
+10,005 shapes</strong>. Rendering is removed(except for Chaos), sleeping is disabled and both runs use four solver iterations, a
+60 Hz simulation step, 30 warm-up steps and 300 measured steps. The metric is median physics milliseconds
+per frame; lower is better. </p>
+<p><note>
+This is purely a performance test; simulation precision and SDK features should be evaluated separately.
+</note></p>
+<table>
+<thead>
+<tr>
+<th>Test property</th>
+<th>Reported configuration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Host</td>
+<td>Intel Core i7-13700K (8P+8E / 24 threads), maximum 3.40 GHz</td>
+</tr>
+<tr>
+<td>Memory</td>
+<td>64 GB DDR5-4800</td>
+</tr>
+<tr>
+<td>Platform</td>
+<td>Windows 11 Pro for Workstations x64, build 10.0.26200</td>
+</tr>
+<tr>
+<td>Workload</td>
+<td>Headless; 10,005 bodies; 10,005 shapes; rigid-body sleeping disabled</td>
+</tr>
+<tr>
+<td>Solver</td>
+<td>Four iterations; 60 Hz</td>
+</tr>
+<tr>
+<td>Sampling</td>
+<td>300 measured steps after 30 warm-up steps</td>
+</tr>
+<tr>
+<td>Chaos build</td>
+<td>Unreal release-branch Chaos Program target; Win64 Shipping; one reported repeat</td>
+</tr>
+<tr>
+<td>NVIDIA PhysX build</td>
+<td>NVIDIA PhysX 3.4; Visual Studio 2026 MSBuild Release; SDK and runner; ten reported repeats</td>
+</tr>
+<tr>
+<td>Vite PhysX build</td>
+<td>Vite PhysX 3.4; clang-cl 22 Release; runtime DLLs; ten reported repeats</td>
+</tr>
+</tbody>
+</table>
+<h3 id="matching-thread-count-results">Matching thread-count results</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Reported threads</th>
+<th style="text-align: right;">Unreal Chaos</th>
+<th style="text-align: right;">NVIDIA PhysX 3.4</th>
+<th style="text-align: right;">Vite PhysX 3.4</th>
+<th style="text-align: right;">Chaos / Vite</th>
+<th style="text-align: right;">NVIDIA / Vite</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1,052.09 ms</td>
+<td style="text-align: right;">49.61 ms</td>
+<td style="text-align: right;">35.60 ms</td>
+<td style="text-align: right;"><strong>29.55×</strong></td>
+<td style="text-align: right;"><strong>1.39×</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">1,051.41 ms</td>
+<td style="text-align: right;">21.98 ms</td>
+<td style="text-align: right;">15.95 ms</td>
+<td style="text-align: right;"><strong>65.92×</strong></td>
+<td style="text-align: right;"><strong>1.38×</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">951.36 ms</td>
+<td style="text-align: right;">18.94 ms</td>
+<td style="text-align: right;">14.17 ms</td>
+<td style="text-align: right;"><strong>67.14×</strong></td>
+<td style="text-align: right;"><strong>1.34×</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">857.89 ms</td>
+<td style="text-align: right;">17.09 ms</td>
+<td style="text-align: right;">12.47 ms</td>
+<td style="text-align: right;"><strong>68.80×</strong></td>
+<td style="text-align: right;"><strong>1.37×</strong></td>
+</tr>
+<tr>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">791.97 ms</td>
+<td style="text-align: right;">15.82 ms</td>
+<td style="text-align: right;">11.76 ms</td>
+<td style="text-align: right;"><strong>67.34×</strong></td>
+<td style="text-align: right;"><strong>1.35×</strong></td>
+</tr>
+</tbody>
+</table>
+<p><note>
+Chaos had to be benched through Win64, not Headless as the rest of the SDKs.
+</note></p>
+<p>Vite PhysX improves from 35.60 ms at one reported thread to 11.76 ms at six, a <strong>3.03× throughput
+increase</strong>. NVIDIA PhysX 3.4 improves from 49.61 ms to 15.82 ms, a <strong>3.14× increase</strong>, while Chaos improves
+from 1,052.09 ms to 791.97 ms over the same range, a <strong>1.33× increase</strong>. The Chaos report continues to 24
+threads and reaches 581.25 ms, <strong>1.81× the throughput of its one-thread result</strong>.</p>
+<p>At matching thread counts, Chaos takes <strong>21.21× as long as stock NVIDIA PhysX at one thread</strong> and <strong>50.06×
+as long at six threads</strong>. NVIDIA PhysX takes 1.34–1.39× as long as Vite PhysX across the shared thread counts;
+equivalently, Vite reduces the reported median physics time by <strong>25.2–28.2%</strong> relative to the NVIDIA PhysX
+3.4 baseline. Vite PhysX enters the 16.67 ms budget for 60 Hz at three threads, and NVIDIA PhysX enters it at
+six. The reported Chaos result remains outside that budget at 24 threads.</p>
+<p>The one-thread result shows that task scaling cannot explain the complete gap: the reported physics time is
+already 29.55× as long for Chaos as for Vite PhysX and 21.21× as long for Chaos as for NVIDIA PhysX before
+additional worker scaling. The multi-thread results show that scaling widens a difference that also includes
+solver work, data access, collision and constraint processing, build configuration and engine integration.
+The stock NVIDIA result also separates the base PhysX architecture from the additional improvements in
+Vite's PhysX build.</p>
+<p><img src="BoxContainerPile10KChaos.jpg" alt="Unreal Chaos Box Container Pile 10K benchmark report across one to 24 threads" border-effect="line"/></p>
+<p><em>Unreal Chaos report. Median physics milliseconds per frame; lower is better.</em></p>
+<p><img src="BoxContainerPile10KVitePhysX.jpg" alt="Vite PhysX and comparison engines Box Container Pile 10K benchmark report" border-effect="line"/></p>
+<p><em>Vite PhysX and comparison-engine report. The shared table above uses only thread counts reported for Chaos,
+NVIDIA PhysX 3.4 and Vite PhysX 3.4 in the supplied reports.</em></p>
+<p><note>
+The reports use the same host and high-level workload settings, but not identical executables: Chaos is a Win64 Shipping
+Chaos Program target, NVIDIA PhysX is a Visual Studio 2026 MSBuild Release SDK runner, and Vite PhysX is a
+clang-cl 22 Release runtime build (Chaos had to be tested as Win64 due to it not being able to be compiled independently of UE5). Cite these values as the <b>reported Box Container Pile 10K result</b>, not as a
+universal PhysX-versus-Chaos multiplier.
+</note></p>
+<h2 id="reproducing-the-comparison">Reproducing the comparison</h2>
+<p>For a controlled engine decision:</p>
+<ol>
+<li>Pin both engine and benchmark-project commits.</li>
+<li>Use equivalent compiler optimization, checks, logging and instrumentation.</li>
+<li>Match collision shapes, material settings, solver iterations, sleeping, timestep and event generation.</li>
+<li>Record thread affinity and P-core/E-core placement on hybrid CPUs.</li>
+<li>Publish raw frame samples, median, percentiles and variance.</li>
+<li>Capture the solver critical path and worker utilization with the appropriate CPU profiler.</li>
+<li>Repeat with a representative production scene; a fully awake 10,005-body pile is a stress workload.</li>
+</ol>
+<h2 id="in-engine-cube-workload">In-engine cube workload</h2>
+<p>The <a href="https://github.com/ViteStudio-Tech/Vite-PhysX-Cube-Test">Vite PhysX Cube Test</a> complements the headless
+solver report with a workload that runs inside Unreal Engine. The public
+<a href="https://github.com/ViteStudio-Tech/Vite-PhysX-Cube-Test/blob/5ae89c3b7b9d6993fdc535a54769e39ca7a116b4/Source/PhysXTest/CubeSpawner.cpp">cube-spawner implementation</a>
+creates one <code>UStaticMeshComponent</code> per cube, registers it with the engine and enables simulation through
+<code>SetSimulatePhysics(true)</code>. The spawner itself is a single <code>AActor</code>, so this measures an engine-managed
+component path rather than 3,000 separately spawned Unreal Actors.</p>
+<h3 id="3000-engine-managed-cubes">3,000 engine-managed cubes</h3>
+<p>The matched capture reports 3,000 spawned cubes and 3,016 rendered primitives in both engine variants.
+Unlike the Box Container Pile 10K runner, these values include the surrounding Unreal runtime work and are
+not physics-solver milliseconds in isolation.</p>
+<table>
+<thead>
+<tr>
+<th>Reported metric</th>
+<th style="text-align: right;">Unreal 5.7 — Chaos</th>
+<th style="text-align: right;">Unreal Vite 26 — PhysX 3.4</th>
+<th style="text-align: right;">Vite relative result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Spawned cubes</td>
+<td style="text-align: right;">3,000</td>
+<td style="text-align: right;">3,000</td>
+<td style="text-align: right;">Matched</td>
+</tr>
+<tr>
+<td>Rendered primitives</td>
+<td style="text-align: right;">3,016</td>
+<td style="text-align: right;">3,016</td>
+<td style="text-align: right;">Matched</td>
+</tr>
+<tr>
+<td>FPS</td>
+<td style="text-align: right;">33.26</td>
+<td style="text-align: right;">157.88</td>
+<td style="text-align: right;"><strong>4.75× as high</strong></td>
+</tr>
+<tr>
+<td>Frame time</td>
+<td style="text-align: right;">30.07 ms</td>
+<td style="text-align: right;">6.33 ms</td>
+<td style="text-align: right;"><strong>78.9% lower</strong></td>
+</tr>
+<tr>
+<td>Game time</td>
+<td style="text-align: right;">30.01 ms</td>
+<td style="text-align: right;">6.11 ms</td>
+<td style="text-align: right;"><strong>79.6% lower</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The captured Chaos game time is <strong>4.91×</strong> the Vite PhysX game time, while its frame time is <strong>4.75×</strong> the
+Vite PhysX frame time. Game time accounts for almost the complete frame in both captures, so the result is
+CPU-side rather than a GPU-limited comparison.</p>
+<p><img src="ChaosVsPhysX3000.png" alt="In-engine comparison of 3,000 simulated cubes in Unreal 5.7 Chaos and Unreal Vite 26 PhysX 3.4" border-effect="line"/></p>
+<p><em>In-engine 3,000-cube capture. Both sides report 3,016 rendered primitives.</em></p>
+<h3 id="1425-native-physx-actors">1,425 native PhysX actors</h3>
+<p>The native-path capture represents simulated cubes directly as PhysX actors instead of giving every body a
+separate Unreal <code>AActor</code>. This removes the per-body Unreal Actor lifecycle from the simulation representation
+while the scene continues to run and render inside Unreal Engine. Any remaining render representation and
+transform-bridge cost depends on the native integration.</p>
+<table>
+<thead>
+<tr>
+<th>Reported metric</th>
+<th style="text-align: right;">Native PhysX actor path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Engine label</td>
+<td style="text-align: right;">UE Vite  — PxActors</td>
+</tr>
+<tr>
+<td>Spawned cubes</td>
+<td style="text-align: right;">1,425</td>
+</tr>
+<tr>
+<td>Rendered primitives</td>
+<td style="text-align: right;">1,447</td>
+</tr>
+<tr>
+<td>FPS</td>
+<td style="text-align: right;">374.28</td>
+</tr>
+<tr>
+<td>Frame time</td>
+<td style="text-align: right;">2.67 ms</td>
+</tr>
+<tr>
+<td>Game time</td>
+<td style="text-align: right;">2.11 ms</td>
+</tr>
+</tbody>
+</table>
+<p><img src="NativePhysXActors1425.png" alt="In-engine Vite native PhysX actor test with 1,425 simulated cubes" border-effect="line"/></p>
+<p><em>Native PhysX actor capture running in Unreal Engine without a separate UE Actor representation for each
+simulated cube.</em></p>
+<p><warning>
+Do not calculate a direct multiplier between the native-path capture and the 3,000-cube comparison. The
+native result uses 1,425 cubes, a different engine label and a different object representation. It documents
+the lower-overhead native integration path; it is not a matched Chaos-versus-PhysX result.
+</warning></p>
+<h2 id="practical-starting-points">Practical starting points</h2>
+<p><procedure title="Set up physics for a new project" id="physics-setup">
+    <step>
+        Review the <a href="PhysX.md">PhysX feature and configuration reference</a>.
+    </step>
+    <step>
+        Configure substepping under <b>Project Settings &gt; Engine &gt; Physics</b> when fast-moving or heavily
+        constrained bodies require smaller simulation steps.
+    </step>
+    <step>
+        For a fixed simulation cadence, read <a href="Fixed-Timestep.md">Fixed Timestep</a> before authoring
+        systems around variable frame delta.
+    </step>
+    <step>
+        For large sets of debris, shells or other repeated bodies, evaluate the
+        <a href="Instanced-Physics.md">Instanced Physics Subsystem</a>.
+    </step>
+    <step>
+        PhysX behaves best with a consistent frame rate. At very high or uneven frame rates, stuttering can 
+        occur, so cap the FPS for steadier frame pacing. Setting MaxDepenetrationVelocity to around 100 can 
+        also help reduce stutter caused by uneven frame pacing.
+    </step></p>
+<p></procedure></p>
+<h2 id="reference-workloads">Reference workloads</h2>
+<ul>
+<li><a href="Physics-Cube-Bench.md">Physics Cube Bench</a> — in-engine rigid-body throughput</li>
+<li><a href="PhysX-Instanced-Subsystem.md">PhysX Instanced Subsystem demo</a> — instanced simulation at scale</li>
+<li><a href="400-Characters-CMC-Bench.md">400 Characters CMC Bench</a> — character movement and physics-query cost</li>
+</ul>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../PhysX/">PhysX</a></li>
+<li><a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 versus UE5 Cost Analysis</a></li>
+<li><a href="Performance-Targets.md">Performance Targets</a></li>
+<li><a href="Profiling.md">Profiling</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

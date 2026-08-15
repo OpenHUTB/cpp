@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Engine Default Changes - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Engine Default Changes";
+        var mkdocs_page_input_path = "optimization/Performance/Engine-Defaults.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Engine Default Changes</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Performance/Engine-Defaults.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="engine-default-changes">Engine Default Changes</h1>
+<p><tldr></p>
+<p>
+Vite changes a number of stock Unreal Engine 4.27 defaults for performance. These changes affect your
+project directly &mdash; some of them change runtime behaviour, not just cost. Read this page before
+concluding that something is broken.
+</p>
+<p></tldr></p>
+<p>Stock Unreal defaults are chosen to make everything work out of the box, which means they enable features
+most projects never use. Vite changes several of them to favour performance, on the principle that a
+feature you want should be something you turn on rather than something you forget to turn off.</p>
+<p>The trade is that a project moved from stock 4.27 to Vite may behave differently. This page is the list.</p>
+<h2 id="runtime-behaviour-changes">Runtime behaviour changes</h2>
+<p><warning>
+These change behaviour, not just performance. If gameplay logic depends on the stock default, it will need
+attention.
+</warning></p>
+<h3 id="overlap-events-disabled-by-default">Overlap events disabled by default</h3>
+<p>Primitive components no longer generate overlap events unless explicitly enabled.</p>
+<p>Overlap event generation costs on every component that has it, whether or not anything is bound to the
+event. In a stock project the majority of primitives generate overlap events that nothing listens to.</p>
+<p><strong>What this means for you:</strong> components that need overlap events must set <strong>Generate Overlap Events</strong>
+explicitly. Trigger volumes, pickup detection and anything driven by <code>OnComponentBeginOverlap</code> need the
+flag set. This is the most likely source of "my trigger stopped working" after migrating a project.</p>
+<p><img src="OverlapEventsDisabled.png" alt="Commit diff replacing SetGenerateOverlapEvents(true) with bGenerateOverlapEvents = false in PrimitiveComponent.cpp" border-effect="line"/></p>
+<p><em>One line in <code>UPrimitiveComponent</code>, applied to every primitive in every project.</em></p>
+<p><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/02d7c0ad0a7542b382a70dc3e37877d6ec052d76">Commit</a></p>
+<h3 id="optimised-actor-runtime">Optimised actor runtime</h3>
+<p>Actor runtime defaults are changed to reduce per-actor overhead in <code>AActor::InitializeDefaults</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Default</th>
+<th>Stock 4.27</th>
+<th>Vite</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SetCanBeDamaged</code></td>
+<td><code>true</code></td>
+<td><code>false</code></td>
+<td>Only actors that use the damage system need it</td>
+</tr>
+<tr>
+<td><code>bRelevantForNetworkReplays</code></td>
+<td><code>true</code></td>
+<td><code>false</code></td>
+<td>Keeps actors out of demo net recording unless wanted</td>
+</tr>
+<tr>
+<td><code>bRelevantForLevelBounds</code></td>
+<td><code>true</code></td>
+<td><code>false</code></td>
+<td>Avoids level-bounds iteration over actors that do not define bounds</td>
+</tr>
+</tbody>
+</table>
+<p><img src="OptimizedActorRuntime.png" alt="Commit diff in Actor.cpp changing SetCanBeDamaged, bRelevantForNetworkReplays and bRelevantForLevelBounds defaults" border-effect="line"/></p>
+<p><em>Large meshes, blocking volumes and foliage that must define world bounds need <code>bRelevantForLevelBounds</code>
+set back to <code>true</code>.</em></p>
+<p><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/970cbb989c3712f13be1fa370b778e769e5d864c">Commit</a></p>
+<h3 id="skeletal-mesh-optimised-configuration">Skeletal mesh optimised configuration</h3>
+<p>Skeletal meshes are among the top CPU offenders in most projects, so <code>USkeletalMeshComponent</code> ships with
+performance-oriented defaults instead of Epic's fully featured ones. In-world assets often contain many
+skeletal meshes, which makes enabling optimised settings per component impractical; configuring the cheap
+path as the default and opting into the expensive options where they are needed is the workable order.</p>
+<table>
+<thead>
+<tr>
+<th>Default</th>
+<th>Stock 4.27</th>
+<th>Vite</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>VisibilityBasedAnimTickOption</code></td>
+<td><code>AlwaysTickPoseAndRefreshBones</code></td>
+<td><code>OnlyTickPoseWhenRendered</code></td>
+</tr>
+<tr>
+<td><code>bEnableUpdateRateOptimizations</code></td>
+<td><code>false</code></td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>bHasCustomNavigableGeometry</code></td>
+<td><code>Yes</code></td>
+<td><code>No</code></td>
+</tr>
+<tr>
+<td><code>bDisablePostProcessBlueprint</code></td>
+<td><code>false</code></td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>bUpdateOverlapsOnAnimationFinalize</code></td>
+<td><code>true</code></td>
+<td><code>false</code></td>
+</tr>
+</tbody>
+</table>
+<p><img src="SkeletalMeshesOptimizedConfig.png" alt="Commit diff in SkeletalMeshComponent.cpp showing the five changed defaults against Epic's originals" border-effect="line"/></p>
+<p><em>Each changed line keeps Epic's original value in a trailing comment, so the stock behaviour is recoverable
+without consulting upstream.</em></p>
+<p><code>VisibilityBasedAnimTickOption</code> is the one to watch. <code>OnlyTickPoseWhenRendered</code> means an off-screen
+character stops evaluating its pose entirely; gameplay that reads bone transforms or sockets on unrendered
+characters &mdash; weapon muzzle positions, IK targets, attach points on a distant actor &mdash; must set
+the component back to <code>AlwaysTickPose</code> or <code>AlwaysTickPoseAndRefreshBones</code>.</p>
+<p><code>bDisablePostProcessBlueprint = true</code> is the second: post-process anim Blueprints, commonly used for IK
+and bone corrections, no longer run unless re-enabled per component.</p>
+<p><img src="SkeletalMeshDefault.png" alt="SkeletalMeshComponent.cpp constructor showing the surrounding default block" border-effect="line"/></p>
+<p><em>The surrounding constructor block in <code>SkeletalMeshComponent.cpp</code>, for context on where these defaults are
+set.</em></p>
+<p><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/33fe7c638829b8120e8a02ecc639acda761df835">Commit</a></p>
+<h3 id="generate-lightmap-uvs-disabled">Generate Lightmap UVs disabled</h3>
+<p>Static mesh import no longer generates lightmap UVs by default.</p>
+<p>Most Vite projects use <a href="DDGI-Dynamic.md">DDGI</a> rather than baked lighting, so generating lightmap UVs for
+every imported mesh is wasted import time and wasted UV channels. If your project bakes lighting, enable
+the setting in the static mesh import options.</p>
+<p><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/acce6fbe432fe9fe5a2536f0979befd5dcd741d1">Commit</a></p>
+<h2 id="scalability">Scalability</h2>
+<p>Shadow Quality 4 is used for the Medium shadow setting, raising shadow quality in the middle of the
+scalability range.</p>
+<p><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/1718cd66e08a2b47222f895162e3be2b2c98ee6a">Commit</a></p>
+<h2 id="disabled-plugins">Disabled plugins</h2>
+<p>A number of plugins that ship enabled in stock 4.27 are disabled by default. This reduces editor startup
+time, module load count and packaged build size.</p>
+<p><strong>VR plugins in particular must be re-enabled if you need them.</strong></p>
+<p><a href="https://github.com/GapingPixel/UnrealEngineVite-PhysX/commit/e9aebc2ef9f8acb7326a7e989f288ef68969342f">Commit 1</a> &middot;
+<a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/6c5948bf12ea61f82784193ccaa5d43c4f574ae9">Commit 2</a></p>
+<h2 id="tick-optimisations">Tick optimisations</h2>
+<h3 id="speedtree-tick">SpeedTree tick</h3>
+<p>The SpeedTree tick in <code>LevelTick.cpp</code> is optimised. SpeedTree ticking runs regardless of whether a project
+uses SpeedTree assets, so this is a saving every project gets.</p>
+<p><img src="SpeedTreeTick.png" alt="LevelTick.cpp showing the UpdateSpeedTreeWind call inside the world tick" border-effect="line"/></p>
+<p><em><code>Scene-&gt;UpdateSpeedTreeWind</code> in the world tick &mdash; unconditional in stock 4.27.</em></p>
+<p><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/blob/3e4a16aa89de4f4c37da300c945d6a14dc62edd7/Engine/Source/Runtime/Engine/Private/LevelTick.cpp#L1709">Source</a></p>
+<h3 id="niagara-tick">Niagara tick</h3>
+<p>Niagara ticks whenever the plugin is enabled. Disable the Niagara plugin at project level if you do not use
+it; Cascade remains available in 4.27.</p>
+<h2 id="ray-tracing-culling">Ray tracing culling</h2>
+<p>Ray tracing culling respects each primitive's minimum draw distance:</p>
+<div class="highlight"><pre><span></span><code><span class="n">GEngine</span><span class="o">-&gt;</span><span class="n">Exec</span><span class="p">(</span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.RayTracing.Culling.UseMinDrawDistance 1&quot;</span><span class="p">));</span>
+</code></pre></div>
+<p>This is a cheap and generally safe win in scenes with many small detail meshes, since geometry too small to
+be drawn is also too small to matter in the acceleration structure.</p>
+<p><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/595f376f6de0912606b05768739aa3d24ac4f61a">Commit</a></p>
+<h2 id="editor-quality-of-life">Editor quality-of-life</h2>
+<p>These do not affect runtime performance but change editor behaviour:</p>
+<ul>
+<li>Animation assets always open in a new tab
+  (<a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/8bdae919e6eae61a27ef8d09d38027592a473d8c">commit</a>)</li>
+<li>A config variable to disable the new plugins popup
+  (<a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/9af0349c1832b7094ceae7f47ba8ca5d261e0e69">commit</a>)</li>
+<li><code>bDisableAllTutorialAlerts=True</code>
+  (<a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/d9fd593e11581fd93d0ff60b2933794f150b4780">commit</a>)</li>
+<li>Assorted safe backports from later engine versions
+  (<a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/fe7a6f4d7c54d8725d6308820d5b4fd546b9ff49">commit</a>)</li>
+</ul>
+<h2 id="optional-debloat-you-can-do-yourself">Optional debloat you can do yourself</h2>
+<p>These cannot be disabled in the fork release branch for compatibility reasons, but are available to
+individual projects.</p>
+<p><strong>Vite plugin removal.</strong> Removing the added Vite plugins improves compile times. Measured on a Ryzen 9
+9950X3D: full repository 15 minutes, without Vite plugins 12 minutes. Houdini is the largest single
+contributor.</p>
+<p>See the <a href="../Debloat-Guide/">Debloat Guide</a> for the tooling.</p>
+<h2 id="migrating-an-existing-project">Migrating an existing project</h2>
+<p><procedure title="Check a migrated project against Vite defaults" id="check-defaults">
+    <step>
+        Test every trigger volume and overlap-driven interaction. Overlap events are the most common
+        breakage.
+    </step>
+    <step>
+        Check characters using leader/follower skeletal mesh setups for missing curve propagation.
+    </step>
+    <step>
+        If the project bakes lighting, re-enable lightmap UV generation and confirm existing meshes still
+        have valid lightmap UVs.
+    </step>
+    <step>Re-enable any plugins your project needs, VR in particular.</step>
+    <step>Review scalability settings, since Medium shadows now differ from stock.</step>
+</procedure></p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="Migrating-From-UE5.md">Migrating from UE5</a></li>
+<li><a href="../Debloat-Guide/">Debloat Guide</a></li>
+<li><a href="../Profiling/">Profiling</a></li>
+<li><a href="../Compile-Time-Switches/">Compile-Time Switches</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

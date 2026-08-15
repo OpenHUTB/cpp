@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Ray-Traced Shadows and Ambient Occlusion - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Ray-Traced Shadows and Ambient Occlusion";
+        var mkdocs_page_input_path = "optimization/Rendering/RT-Shadows-And-Ambient-Occlusion.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Ray-Traced Shadows and Ambient Occlusion</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/RT-Shadows-And-Ambient-Occlusion.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="ray-traced-shadows-and-ambient-occlusion">Ray-Traced Shadows and Ambient Occlusion</h1>
+<p><tldr></p>
+<p>
+<code>r.RayTracing.Shadows 1</code> and <code>r.RayTracing.AmbientOcclusion 1</code>. Both are enabled by
+default in new Vite projects. Both are typically the first things to turn off when a project needs frame
+time, because cheaper alternatives get close for much less.
+</p>
+<p></tldr></p>
+<p>These two effects are grouped together because they share a cost profile, a set of tuning controls, and a
+recommendation: enable them when your target has room, disable them first when it does not.</p>
+<h2 id="ray-traced-shadows">Ray-traced shadows</h2>
+<p>Ray-traced shadows replace shadow map sampling with rays traced from the shaded point toward each light.
+The benefits are correct contact hardening, accurate soft shadows from area lights, and no shadow map
+resolution artefacts, peter-panning or cascade transitions.</p>
+<p>The costs are real. Every light casting ray-traced shadows adds rays per pixel, so cost scales with light
+count in a way shadow maps do not. Shadow maps amortise across the frame; ray-traced shadows do not.</p>
+<h3 id="tuning">Tuning</h3>
+<p><strong>Sample count per light.</strong> The dominant quality and cost control. Low counts are noisy and lean on the
+denoiser; high counts are expensive.</p>
+<p><strong>Light source radius.</strong> Larger radii produce softer shadows and need more samples to resolve cleanly. A
+scene tuned for sharp shadows can use far fewer samples.</p>
+<p><strong>Per-light opt-in.</strong> Rather than enabling ray-traced shadows globally, enable them on the lights where the
+difference is visible &mdash; usually the key light and any large area light &mdash; and leave fill lights
+on shadow maps. This is by far the most effective optimisation available and it is frequently overlooked.</p>
+<p><strong>Maximum distance.</strong> Bounding shadow ray distance limits cost in large scenes.</p>
+<p>Vite includes rendering optimisations specifically targeting RT shadows and RT direct lighting, and further
+performance work on RTAO and RT shadows is in progress. See <a href="Release-Notes.md">Release Notes</a>.</p>
+<h2 id="ray-traced-ambient-occlusion">Ray-traced ambient occlusion</h2>
+<p>RTAO traces short rays into the hemisphere around each shaded point to determine how occluded it is. Unlike
+screen-space AO it accounts for geometry that is off-screen or occluded, so it does not exhibit the halo and
+disocclusion artefacts SSAO produces under camera motion.</p>
+<h3 id="tuning_1">Tuning</h3>
+<p><strong>Radius.</strong> How far occlusion rays travel. This is an art direction control as much as a performance one
+&mdash; small radii give tight contact darkening, large radii give broad ambient shaping and cost more.</p>
+<p><strong>Samples per pixel.</strong> Quality against cost, mediated by the denoiser.</p>
+<p><strong>Intensity.</strong> Post-process strength. Cheap to change and worth exhausting before increasing sample counts.</p>
+<p><strong>Resolution.</strong> Half-resolution RTAO is often visually indistinguishable and substantially cheaper.</p>
+<h2 id="the-cheaper-alternatives">The cheaper alternatives</h2>
+<p>Before committing frame time to either effect, know what you are buying relative to the alternatives.</p>
+<table>
+<thead>
+<tr>
+<th>Effect</th>
+<th>Alternative</th>
+<th>Trade-off</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RT shadows</td>
+<td>Cascaded shadow maps</td>
+<td>Much cheaper. Resolution artefacts, no correct contact hardening, cascade transitions.</td>
+</tr>
+<tr>
+<td>RT shadows</td>
+<td>Distance field shadows</td>
+<td>Cheap soft shadows. Approximate, needs mesh distance fields.</td>
+</tr>
+<tr>
+<td>RTAO</td>
+<td><a href="../Ambient-Occlusion/">SSAO fast path</a></td>
+<td>Dramatically cheaper. Screen-space artefacts. Vite's implementation is significantly optimised.</td>
+</tr>
+<tr>
+<td>RTAO</td>
+<td><a href="../Ambient-Occlusion/">HBAO+</a></td>
+<td>Higher quality than SSAO at moderate cost. DirectX 11 only.</td>
+</tr>
+</tbody>
+</table>
+<p>In practice, most Vite projects targeting 60 FPS or above run cascaded shadow maps and either the SSAO fast
+path or HBAO+, and spend the ray tracing budget on <a href="../DDGI-Dynamic/">DDGI</a> and
+<a href="../RT-Reflections/">reflections</a> instead. Only the 1440p30 "Fidelity, full RT" target in
+<a href="Performance-Targets.md">Performance Targets</a> enables both RT shadows and RTAO.</p>
+<p>Note that Vite's SSAO has both a fast path and a memory-access optimisation. It is much cheaper than the
+stock 4.27 implementation, which shifts the calculus further away from RTAO than you might expect from
+experience with other engines.</p>
+<h2 id="disabling">Disabling</h2>
+<div class="highlight"><pre><span></span><code><span class="c1">; Config/DefaultEngine.ini</span>
+<span class="k">[/Script/Engine.RendererSettings]</span>
+<span class="na">r.RayTracing.Shadows</span><span class="o">=</span><span class="s">0</span>
+<span class="na">r.RayTracing.AmbientOcclusion</span><span class="o">=</span><span class="s">0</span>
+</code></pre></div>
+<p>Measure with <code>stat gpu</code> before and after. In a scene with many shadow-casting lights, RT shadows are
+frequently the single largest ray tracing cost in the frame, ahead of reflections.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Ray-Tracing/">Ray Tracing</a></li>
+<li><a href="../Ambient-Occlusion/">Ambient Occlusion</a></li>
+<li><a href="../RTXDI/">RTXDI</a></li>
+<li><a href="Performance-Targets.md">Performance Targets</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

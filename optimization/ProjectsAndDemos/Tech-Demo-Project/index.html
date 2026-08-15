@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Tech Demo Project - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Tech Demo Project";
+        var mkdocs_page_input_path = "optimization/ProjectsAndDemos/Tech-Demo-Project.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Tech Demo Project</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/ProjectsAndDemos/Tech-Demo-Project.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="tech-demo-project">Tech Demo Project</h1>
+<p><tldr></p>
+<p>
+Vite's main showcase package. Four scenes covering dynamic global illumination, Apex Destruction and Apex
+Cloth. The reference project for verifying that a build works correctly.
+</p>
+<p></tldr></p>
+<p><img src="TechDemo.png" alt="Tech Demo Project scene rendered in Unreal Engine Vite" border-effect="line"/></p>
+<p><em>The Tech Demo package is the reference project for verifying that a fresh build renders and simulates
+correctly.</em></p>
+<h2 id="contents">Contents</h2>
+<table>
+<thead>
+<tr>
+<th>Scene</th>
+<th>Demonstrates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NVIDIA DDGI Cornell Box office sample</td>
+<td><a href="DDGI-Dynamic.md">Dynamic DDGI</a> in a controlled reference setting</td>
+</tr>
+<tr>
+<td>PhysX Apex Destruction test bed</td>
+<td><a href="Destruction-And-Cloth.md">Apex Destruction</a></td>
+</tr>
+<tr>
+<td>PhysX Apex Cloth sample</td>
+<td><a href="Destruction-And-Cloth.md">Apex Cloth</a></td>
+</tr>
+<tr>
+<td>"High End" DDGI + SSGI Deep Elder Caves</td>
+<td><a href="DDGI-Dynamic.md">DDGI</a> combined with <a href="SSGI.md">SSGI</a> in production-scale content</td>
+</tr>
+</tbody>
+</table>
+<p>The Cornell Box is the useful one for understanding DDGI. It is the standard global illumination reference
+scene precisely because the correct answer is known, so probe placement, leaking and response time are all
+visible against a ground truth.</p>
+<p>The Deep Elder Caves scene is the opposite case: production-scale geometry where DDGI and SSGI are layered.
+DDGI supplies the low-frequency bounce and SSGI adds the contact-scale detail DDGI's probe grid cannot
+resolve. See <a href="Global-Illumination.md">Global Illumination</a> for why both are used together.</p>
+<h2 id="download">Download</h2>
+<p><a href="https://drive.google.com/file/d/1SuHlT4KC3nTQrB2rwVcwBpNgWa_r6yKh/view">Tech Demo Project</a></p>
+<h2 id="using-it-as-a-verification-project">Using it as a verification project</h2>
+<p>Vite's <a href="Coding-Guidelines.md">contribution guidelines</a> name this project specifically: engine changes must
+produce no crashes on startup, shutdown or on the Tech Showcase project. If you are modifying the engine,
+run this before opening a pull request.</p>
+<p>It exercises a useful cross-section: dynamic GI, ray tracing, PhysX destruction and cloth. A change that
+breaks any of those tends to break it here.</p>
+<h2 id="requirements">Requirements</h2>
+<p>Dynamic DDGI requires a DXR-capable GPU on DirectX 12. Apex Destruction and Apex Cloth require their
+plugins, which are stock 4.27 plugins Vite retains. See <a href="Platforms.md">Platforms</a> and
+<a href="System-Requirements.md">System Requirements</a>.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="DDGI-Dynamic.md">Dynamic DDGI</a></li>
+<li><a href="Global-Illumination.md">Global Illumination</a></li>
+<li><a href="Destruction-And-Cloth.md">Destruction and Cloth</a></li>
+<li><a href="ProjectsAndDemos.md">Projects and Demos</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

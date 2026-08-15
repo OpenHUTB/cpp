@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Physics Cube Bench - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Physics Cube Bench";
+        var mkdocs_page_input_path = "optimization/ProjectsAndDemos/Physics-Cube-Bench.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Physics Cube Bench</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/ProjectsAndDemos/Physics-Cube-Bench.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="physics-cube-bench">Physics Cube Bench</h1>
+<p><tldr></p>
+<p>
+Rigid body throughput test using conventional PhysX actors. The baseline that the
+<a href="Instanced-Physics.md">instanced subsystem</a> is measured against.
+</p>
+<p></tldr></p>
+<p><img src="PhysicsCubeBench.png" alt="Side-by-side capture of 1400 simulated cubes, Chaos at 75.45 FPS against PhysX 3.4 at 148.44 FPS" border-effect="line"/></p>
+<p><em>1400 simulated cubes, identical scene. Chaos (left) 75.45 FPS at a 13.25 ms frame; PhysX 3.4 (right)
+148.44 FPS at a 6.74 ms frame.</em></p>
+<h2 id="download">Download</h2>
+<p><a href="https://drive.google.com/file/d/1WVsC8cp2fx8eiM56Ueek-mJbO_EdPKOR/view?usp=sharing">Physics Cube Bench</a></p>
+<h2 id="what-it-measures">What it measures</h2>
+<p>Simple rigid bodies simulated conventionally: one actor per body, each with its own component, transform
+and tick. It establishes how many PhysX bodies you can simulate before the frame budget runs out using the
+standard workflow.</p>
+<p>The interesting part is not the number, it is where it stops scaling and why. Two costs grow with body
+count and they grow differently:</p>
+<table>
+<thead>
+<tr>
+<th>Cost</th>
+<th>Grows with</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PhysX solver</td>
+<td>Bodies actually in contact and awake</td>
+</tr>
+<tr>
+<td>Actor and component overhead</td>
+<td>Total body count, whether or not anything is moving</td>
+</tr>
+</tbody>
+</table>
+<p>The second one is what the <a href="Instanced-Physics.md">PhysX Instanced Subsystem</a> eliminates. Comparing this
+benchmark against the <a href="../PhysX-Instanced-Subsystem/">instanced subsystem demo</a> shows the difference
+directly.</p>
+<h2 id="running-it">Running it</h2>
+<p><code>stat unit</code> first, then:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>stat physics</code></td>
+<td>Solver time</td>
+</tr>
+<tr>
+<td><code>stat game</code></td>
+<td>Actor tick and component overhead</td>
+</tr>
+<tr>
+<td><code>p.showConstraints 1</code></td>
+<td>Constraint visualisation</td>
+</tr>
+</tbody>
+</table>
+<p>If <strong>Game</strong> exceeds <strong>Physics</strong> by a wide margin, actor overhead rather than the solver is your limit,
+and the instanced path is the answer.</p>
+<h2 id="physx-versus-chaos">PhysX versus Chaos</h2>
+<p>Vite retains PhysX rather than migrating to Chaos. On this class of workload PhysX is the faster and more
+predictable solver, which is part of why. See <a href="PhysX.md">PhysX</a>.</p>
+<p>If you need frame-rate-independent determinism from this kind of simulation, Vite's optional
+<a href="Fixed-Timestep.md">fixed timestep</a> applies &mdash; it requires rebuilding with
+<code>VITE_PHYSX_FIXED_TIMESTEP=1</code>.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="PhysX.md">PhysX</a></li>
+<li><a href="Instanced-Physics.md">Instanced Physics</a></li>
+<li><a href="Fixed-Timestep.md">Fixed Timestep</a></li>
+<li><a href="Profiling.md">Profiling</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>ViteSetup Assistant - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "ViteSetup Assistant";
+        var mkdocs_page_input_path = "optimization/Tools/ViteSetup.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">ViteSetup Assistant</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Tools/ViteSetup.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="vitesetup-assistant">ViteSetup Assistant</h1>
+<p><tldr></p>
+<p>
+<code>ViteSetup.bat</code> at the engine root runs a nine-step guided setup from environment check to a
+launched editor. <code>ViteSetup.bat menu</code> gives you the individual operations instead.
+</p>
+<p></tldr></p>
+<p>The assistant exists because setting up an Unreal source build has many steps, each with failure modes that
+produce unhelpful errors when you get them wrong. It checks the environment first, so a missing toolchain
+component fails at step 1 with a clear message rather than at step 5 with a linker error.</p>
+<h2 id="guided-mode">Guided mode</h2>
+<p>Run <code>ViteSetup.bat</code> with no arguments.</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Check the environment and enforce the toolchain</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Set up dependencies, with platform selection</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Generate Visual Studio project files</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Choose source or binary build</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Build the selected target</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Register the selected build</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Create <code>UEViteFork.lnk</code> on the desktop</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Optional engine debloat</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Finish; source builds launch the editor, binary builds do not</td>
+</tr>
+</tbody>
+</table>
+<p>Each step pauses so you can read the output before continuing. Failures stop the assistant and report an
+error code rather than pushing on.</p>
+<h2 id="step-1-environment-check">Step 1 &mdash; environment check</h2>
+<p>The assistant enforces a specific toolchain and will not proceed without it:</p>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Enforced value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Visual Studio</td>
+<td>2022</td>
+</tr>
+<tr>
+<td>MSVC</td>
+<td>14.44</td>
+</tr>
+<tr>
+<td>Windows SDK</td>
+<td>10.0.26100, subversion .7705 or higher, major pinned to 26100</td>
+</tr>
+<tr>
+<td>.NET Framework reference assemblies</td>
+<td>v4.6.2 and v4.5</td>
+</tr>
+</tbody>
+</table>
+<p><warning>
+The enforced toolchain is not the same as the toolchain Vite is currently developed against, which is
+Visual Studio 2026 with MSVC 14.50 and Windows SDK 10.0.26100. The assistant's check has not been updated.</p>
+<p>
+If you are on the newer toolchain, the check will fail. Build through
+<a href="Build-From-Source.md">the manual path</a> or use the individual menu options rather than the
+guided flow. See <a href="Toolchain-Requirements.md">Toolchain Requirements</a>.
+</p>
+<p></warning></p>
+<p>The .NET Framework 4.5 reference assemblies are the component people most often lack, since recent Visual
+Studio installers no longer offer them by default. See
+<a href="Build-Troubleshooting.md">Build Troubleshooting</a>.</p>
+<h2 id="step-2-dependency-setup">Step 2 &mdash; dependency setup</h2>
+<p>Rather than running <code>Setup.bat</code> with everything, the assistant offers setup profiles:</p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Step-by-step assistant</td>
+<td>Choose platforms and optional content individually, then review</td>
+</tr>
+<tr>
+<td>Recommended Win64</td>
+<td>Win64 only. Excludes non-Windows platforms, samples, templates, feature packs, docs, XR and consoles.</td>
+</tr>
+<tr>
+<td>Win64 ultra compact</td>
+<td>As recommended, with the smallest optional content set</td>
+</tr>
+<tr>
+<td>Win64 + templates / feature packs</td>
+<td>Keeps project templates and starter content</td>
+</tr>
+<tr>
+<td>Win64 + Android</td>
+<td>Adds Android dependencies</td>
+</tr>
+<tr>
+<td>Win64 + Linux</td>
+<td>Adds Linux and cross-compile dependencies</td>
+</tr>
+<tr>
+<td>Full setup</td>
+<td>Passes no <code>-exclude</code> argument to <code>Setup.bat</code></td>
+</tr>
+</tbody>
+</table>
+<p>The step-by-step assistant exposes individual platform toggles for Android, iOS/tvOS, Mac, Linux, WinRT,
+HTML5 and consoles. Win32 support files are always included, since Win64 requires them.</p>
+<p><strong>Recommended Win64 is the right choice for most people.</strong> Downloading dependencies you will never use
+costs bandwidth, disk space and setup time. If you later need a platform, re-run setup with it enabled.</p>
+<h2 id="step-4-source-or-binary">Step 4 &mdash; source or binary</h2>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Source build</td>
+<td>Builds <code>UE4Editor</code>, <code>ShaderCompileWorker</code> and <code>UnrealLightmass</code> in the source tree, Win64 Development</td>
+</tr>
+<tr>
+<td>Binary Installed Build</td>
+<td>Incremental BuildGraph run producing <code>LocalBuilds\Engine\Windows</code> plus <code>UE_ViteFork.7z</code></td>
+</tr>
+</tbody>
+</table>
+<p>Choose source if you are working on the engine or want to modify
+<a href="Compile-Time-Switches.md">compile-time switches</a>. Choose binary if you want a redistributable engine to
+hand to people who do not need to compile it. See <a href="../Installed-Builds/">Installed Builds</a>.</p>
+<h2 id="steps-6-and-7-registration-and-shortcut">Steps 6 and 7 &mdash; registration and shortcut</h2>
+<p>Registration writes the engine path under
+<code>HKCU\Software\Epic Games\Unreal Engine\Builds</code> as <code>UEViteFork</code>, which is what makes the build selectable in
+a <code>.uproject</code> file's engine association. The engine association identifier is <code>UE_ViteFork</code>.</p>
+<p>The shortcut step creates <code>UEViteFork.lnk</code> pointing at <code>UE4Editor.exe</code>.</p>
+<p>Both are also available standalone as <code>LocalBuilds\RegistryAdd.bat</code> and <code>LocalBuilds\MakeShortcut.bat</code>.</p>
+<h2 id="step-8-debloat">Step 8 &mdash; debloat</h2>
+<p>Optionally runs the debloat assistant, offering:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Move to a recovery folder</td>
+<td>Restorable later. Destination is <code>ViteDebloat_Moved</code> next to the engine folder. Recommended.</td>
+</tr>
+<tr>
+<td>Delete permanently</td>
+<td>Smallest footprint, not reversible</td>
+</tr>
+</tbody>
+</table>
+<p>Full detail in the <a href="Debloat-Guide.md">Debloat Guide</a>.</p>
+<h2 id="menu-mode">Menu mode</h2>
+<p><code>ViteSetup.bat menu</code> skips the guided flow and presents the operations individually:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Check the environment</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Set up dependencies (assistant)</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Generate Visual Studio files</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Build Unreal Engine source</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Setup, then generate Visual Studio files</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Open <code>UE4.sln</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>Show setup profiles</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Build installed binary</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Debloat engine (assistant)</td>
+</tr>
+<tr>
+<td>0</td>
+<td>Exit</td>
+</tr>
+</tbody>
+</table>
+<p>Menu mode is what you want for day-to-day work. Regenerating project files after adding a module, or
+rebuilding after a pull, does not need the whole nine-step flow.</p>
+<h2 id="key-paths">Key paths</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Editor executable</td>
+<td><code>Engine\Binaries\Win64\UE4Editor.exe</code></td>
+</tr>
+<tr>
+<td>Installed build staging</td>
+<td><code>LocalBuilds\Engine\Windows</code></td>
+</tr>
+<tr>
+<td>Installed build archive</td>
+<td><code>LocalBuilds\Engine\UE_ViteFork.7z</code></td>
+</tr>
+<tr>
+<td>Source cache</td>
+<td><code>UE4_Source_Cache</code></td>
+</tr>
+<tr>
+<td>Engine association</td>
+<td><code>UE_ViteFork</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="Build-From-Source.md">Build from Source</a></li>
+<li><a href="Toolchain-Requirements.md">Toolchain Requirements</a></li>
+<li><a href="../Installed-Builds/">Installed Builds</a></li>
+<li><a href="Build-Troubleshooting.md">Build Troubleshooting</a></li>
+<li><a href="Debloat-Guide.md">Debloat Guide</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

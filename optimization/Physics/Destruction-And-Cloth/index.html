@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Destruction and Cloth - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Destruction and Cloth";
+        var mkdocs_page_input_path = "optimization/Physics/Destruction-And-Cloth.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Destruction and Cloth</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Physics/Destruction-And-Cloth.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="destruction-and-cloth">Destruction and Cloth</h1>
+<p><tldr></p>
+<p>
+Vite keeps <b>Apex Destruction</b> and <b>Apex Cloth</b>, both removed in Unreal Engine 5, and adds
+NVIDIA <b>Blast</b> for modern fracture. Existing 4.27 destructible and clothing assets continue to work.
+</p>
+<p></tldr></p>
+<p>Destruction and cloth are the two areas where the <a href="../PhysX/">PhysX decision</a> has the most visible
+consequences for content. Both Apex systems are tied to PhysX; removing PhysX removed them.</p>
+<h2 id="apex-destruction">Apex Destruction</h2>
+<p>Apex Destruction fractures a mesh into a hierarchy of chunks that break apart under impact. Assets are
+authored as Destructible Meshes, either fractured in-editor with Voronoi decomposition or imported from
+external tools.</p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plugin</td>
+<td><code>Engine/Plugins/Runtime/ApexDestruction</code></td>
+</tr>
+<tr>
+<td>Asset type</td>
+<td>Destructible Mesh</td>
+</tr>
+<tr>
+<td>Component</td>
+<td><code>UDestructibleComponent</code></td>
+</tr>
+<tr>
+<td>Status in UE5</td>
+<td>Removed</td>
+</tr>
+</tbody>
+</table>
+<p>It is a mature, well-understood system with a straightforward cost model: chunk count drives everything. A
+destructible with a two-level hierarchy and modest chunk counts is cheap; one with deep hierarchies and
+hundreds of chunks is not.</p>
+<p>Key settings live on the Destructible Mesh asset:</p>
+<ul>
+<li><strong>Depth</strong> controls how many fracture levels exist. Each level multiplies chunk count.</li>
+<li><strong>Damage Threshold</strong> and <strong>Damage Spread</strong> control how readily chunks break and how far damage propagates.</li>
+<li><strong>Support Depth</strong> determines which level participates in structural support calculations.</li>
+<li><strong>Debris Timeout</strong> and <strong>Debris Max Separation</strong> clean up chunks after they settle. Set these. Chunks that
+  never despawn accumulate until frame time collapses.</li>
+</ul>
+<p>Instructional video on Apex Destruction <a href="https://youtu.be/Stn7eL1TFBg"><img alt="Instructional video by MeanLemur" src="https://img.youtube.com/vi/Stn7eL1TFBg/hqdefault.jpg" /></a></p>
+<h2 id="apex-cloth">Apex Cloth</h2>
+<p>Apex Cloth is the PhysX-era clothing system, authored either through the in-editor Clothing Tool or imported
+from APEX clothing assets produced in external DCC tools.</p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Asset type</td>
+<td>APEX Clothing asset or in-editor clothing data on a skeletal mesh</td>
+</tr>
+<tr>
+<td>Status in UE5</td>
+<td>Removed in favour of Chaos Cloth</td>
+</tr>
+</tbody>
+</table>
+<p>The in-editor workflow paints cloth parameters directly onto a skeletal mesh: max distance, backstop
+radius and backstop distance. Max distance is the primary control &mdash; it defines how far each vertex may
+move from its skinned position, so painting it to zero pins a region and increasing it lets the cloth
+swing free.</p>
+<p>Practical notes:</p>
+<ul>
+<li>Cloth cost scales with simulated vertex count. Paint a low-resolution simulation mesh and skin the render
+  mesh to it rather than simulating the render mesh directly.</li>
+<li>Cloth is simulated per skeletal mesh component. Ten characters in cloth cost ten times one character.</li>
+<li>Cloth does not substep with the rest of the scene. Fast character motion can produce stretching that no
+  amount of parameter tuning fixes; the answer is usually reducing how fast the attachment point moves.</li>
+</ul>
+<h2 id="nvidia-blast">NVIDIA Blast</h2>
+<p>Blast is NVIDIA's successor to Apex Destruction, and the more capable of the two fracture systems.</p>
+<p><a href="https://archive.docs.nvidia.com/gameworks/content/gameworkslibrary/blast/1.1/authoring_docs/BlastUe4_QuickStart.html">Official Blast Plugin Documentation</a> </p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plugin</td>
+<td><code>Engine/Plugins/GameWorks/Blast</code> (version 1.0)</td>
+</tr>
+<tr>
+<td>Platforms</td>
+<td>Win64, Linux</td>
+</tr>
+<tr>
+<td>Enabled by default</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Modules</td>
+<td><code>BlastLoader</code>, <code>BlastRuntime</code>, <code>BlastEditor</code>, <code>BlastMeshEditor</code>, <code>BlastLoaderEditor</code></td>
+</tr>
+</tbody>
+</table>
+<p>Blast separates the destruction graph from the physics simulation. A Blast asset describes chunks and the
+bonds between them; damage propagates through the bond graph, and chunks become physics bodies only once
+they actually detach. This is why Blast handles large structures better than Apex Destruction: an intact
+building is a graph, not a thousand sleeping rigid bodies.</p>
+<p>Blast also supports runtime fracture, so the fracture pattern can depend on where and how the object was
+hit rather than being fully baked at author time.</p>
+<p>Enable the plugin from <strong>Edit &gt; Plugins &gt; GameWorks</strong>, then use the Blast Mesh Editor to author assets.</p>
+<blockquote>
+<p>Blast is not a drop-in replacement for Apex Destruction. The asset types, authoring workflow and runtime
+API are all different. Choose one per project rather than mixing them, and prefer Blast for new work.</p>
+<p>{style="note"}</p>
+</blockquote>
+<h2 id="choosing">Choosing</h2>
+<table>
+<thead>
+<tr>
+<th>Need</th>
+<th>System</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Existing 4.27 destructible meshes</td>
+<td>Apex Destruction &mdash; they still work, do not port them without reason</td>
+</tr>
+<tr>
+<td>New destruction, large structures</td>
+<td>Blast</td>
+</tr>
+<tr>
+<td>New destruction, small props</td>
+<td>Either. Apex Destruction is simpler; Blast scales better.</td>
+</tr>
+<tr>
+<td>Runtime-dependent fracture patterns</td>
+<td>Blast</td>
+</tr>
+<tr>
+<td>Existing APEX clothing assets</td>
+<td>Apex Cloth</td>
+</tr>
+<tr>
+<td>New clothing</td>
+<td>Apex Cloth via the in-editor Clothing Tool</td>
+</tr>
+</tbody>
+</table>
+<h2 id="performance">Performance</h2>
+<p>Destruction is one of the easiest ways to destroy a frame budget, because the cost is invisible until
+something breaks and then arrives all at once.</p>
+<ul>
+<li><strong>Cap simultaneous debris.</strong> Set debris timeouts and maximum separation distances on every destructible.</li>
+<li><strong>Budget chunk counts against the worst case,</strong> not the typical one. A grenade in a room full of
+  destructibles is the frame you have to survive.</li>
+<li><strong>Consider the <a href="../Instanced-Physics/">instanced physics subsystem</a></strong> for debris. Chunks that have settled
+  and no longer need individual actors can be handled far more cheaply as instances.</li>
+<li><strong>Profile with <code>stat physics</code></strong> while destroying things, not while standing still.</li>
+</ul>
+<h2 id="licensing">Licensing</h2>
+<p>Apex Destruction, Apex Cloth and Blast are NVIDIA GameWorks technologies inherited through the PhysX and
+NvRTX lineage. Their licence terms apply to shipped titles. See the
+<a href="https://developer.nvidia.com/gameworks-source-sdk-eula">GameWorks source SDK EULA</a>.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../PhysX/">PhysX</a></li>
+<li><a href="../Instanced-Physics/">Instanced Physics Subsystem</a></li>
+<li><a href="Bundled-Plugins.md">Bundled Plugins</a></li>
+<li><a href="Profiling.md">Profiling</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Colour Management - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Colour Management";
+        var mkdocs_page_input_path = "optimization/Rendering/Color-Management.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Colour Management</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/Color-Management.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="colour-management">Colour Management</h1>
+<p><tldr></p>
+<p>
+Vite uses the stock Unreal Engine 4.27 tonemapping and colour pipeline: ACES film tonemapper, post process
+volume grading, LUTs and HDR output. This page covers the controls and the settings that most often cause
+problems.
+</p>
+<p></tldr></p>
+<p>Colour management is the last stage of the frame and the one that determines whether all the work done by
+the <a href="../Global-Illumination/">lighting</a> and <a href="../Ray-Tracing/">ray tracing</a> systems actually reaches the
+display looking correct.</p>
+<h2 id="the-pipeline">The pipeline</h2>
+<p>The renderer works in linear HDR throughout. At the end of the frame:</p>
+<ol>
+<li><strong><a href="../Anti-Aliasing/">SMAA</a></strong> resolves edges, in linear space, before tonemapping.</li>
+<li><strong>Colour grading</strong> applies the post process volume's exposure, white balance, saturation, contrast,
+   gain, gamma and offset controls, plus any colour grading LUT.</li>
+<li><strong>Tonemapping</strong> maps the HDR range into the display range using the ACES filmic curve.</li>
+<li><strong>Output encoding</strong> applies the transfer function for the target display, sRGB for SDR or PQ/ST-2084 for
+   HDR.</li>
+</ol>
+<h2 id="tonemapper-controls">Tonemapper controls</h2>
+<table>
+<thead>
+<tr>
+<th>CVar</th>
+<th>Default</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.TonemapperFilm</code></td>
+<td><code>1</code></td>
+<td>Use the ACES film tone mapper. <code>0</code> reverts to the legacy curve.</td>
+</tr>
+<tr>
+<td><code>r.Tonemapper.Quality</code></td>
+<td><code>5</code></td>
+<td><code>0</code> basic only, <code>1</code> + film contrast, <code>2</code> + vignette, <code>3</code> + film shadow tint, <code>4</code> + grain, <code>5</code> + grain jitter (full quality)</td>
+</tr>
+<tr>
+<td><code>r.Tonemapper.Sharpen</code></td>
+<td><code>0</code></td>
+<td>Sharpening in the tonemapper, clamped at 10. <code>0.5</code> half strength, <code>1</code> full strength.</td>
+</tr>
+<tr>
+<td><code>r.Tonemapper.GrainQuantization</code></td>
+<td><code>1</code></td>
+<td><code>1</code> adds a high-frequency pixel pattern to fight 8-bit colour quantisation. <code>0</code> is slightly faster.</td>
+</tr>
+<tr>
+<td><code>r.TonemapperGamma</code></td>
+<td><code>0.0</code></td>
+<td><code>0</code> uses the default sRGB or Rec709 transform; any other value forces a fixed gamma.</td>
+</tr>
+<tr>
+<td><code>r.Gamma</code></td>
+<td><code>1.0</code></td>
+<td>Gamma applied on output</td>
+</tr>
+</tbody>
+</table>
+<p><code>r.Tonemapper.Quality</code> is a genuine scalability lever. Each step down removes a feature from the tonemapper
+shader, producing a cheaper permutation. If your project does not use vignette, film shadow tint or grain,
+dropping the quality level costs nothing visually and saves both frame time and shader permutations.</p>
+<p><code>r.Tonemapper.Sharpen</code> deserves care. A small amount of tonemapper sharpening can compensate for perceived
+softness, but it operates after <a href="../Anti-Aliasing/">anti-aliasing</a> and will re-introduce aliasing on edges
+SMAA just resolved. If the image looks soft, first confirm that you are actually rendering at native
+resolution and that no upscaler is active.</p>
+<h2 id="colour-grading">Colour grading</h2>
+<p>All grading is done through post process volumes under <strong>Color Grading</strong>. The controls are organised into
+Temperature, Global, Shadows, Midtones and Highlights, each offering saturation, contrast, gamma, gain and
+offset.</p>
+<p>Grading in Unreal is applied before tonemapping, in linear space. This is why grading values that look
+correct in a 2D image editor do not transfer directly &mdash; you are grading scene-referred linear data,
+not display-referred pixels.</p>
+<p><strong>LUTs.</strong> A colour grading LUT can be assigned in the post process volume with a blend weight. Author LUTs
+against a neutral capture of your scene rather than against an already-graded one, or the grades compound.</p>
+<h2 id="hdr-output">HDR output</h2>
+<table>
+<thead>
+<tr>
+<th>CVar</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.AllowHDR</code></td>
+<td>Enables HDR output support for the project. Usually set per-project or per-platform in <code>DefaultEngine.ini</code>.</td>
+</tr>
+<tr>
+<td><code>r.HDR.Display.OutputDevice</code></td>
+<td>Selects the output transfer function</td>
+</tr>
+<tr>
+<td><code>r.HDR.Display.ColorGamut</code></td>
+<td>Selects the output colour gamut</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><code><span class="c1">; Config/DefaultEngine.ini</span>
+<span class="k">[/Script/Engine.RendererSettings]</span>
+<span class="na">r.AllowHDR</span><span class="o">=</span><span class="s">1</span>
+</code></pre></div>
+<p>HDR output interacts with SMAA correctly because <a href="../Anti-Aliasing/">SMAA runs before tonemapping</a> in Vite.
+Anti-aliasing implementations that run after the tonemapper generally have to be reworked for HDR output;
+this one does not.</p>
+<p>Slate and UI are composited with knowledge of the output device via <code>r.TonemapperGamma</code>, but UI authored
+against an SDR reference will look wrong in HDR. Budget time to check your UI in HDR specifically rather
+than assuming it transfers.</p>
+<h2 id="common-problems">Common problems</h2>
+<p><deflist>
+<def title="The scene looks washed out or milky">
+Usually excessive ambient or fog rather than a grading problem. Check whether
+<a href="Ambient-Occlusion.md">AO</a> is being applied and whether your
+<a href="Global-Illumination.md">GI</a> intensity is too high. Compare against a
+<a href="Path-Tracing.md">path-traced</a> reference before reaching for contrast in the grade.
+</def>
+<def title="Colours shift between the editor viewport and packaged builds">
+Almost always a different output device or a post process volume that is not unbound. Confirm
+<code>r.HDR.Display.OutputDevice</code> matches in both, and check for editor-only post process volumes.
+</def>
+<def title="Banding in gradients and skies">
+Check <code>r.Tonemapper.GrainQuantization</code> is <code>1</code>. If banding persists on an HDR display,
+the source gradient itself may be quantised &mdash; check the sky texture or gradient material precision.
+</def>
+<def title="The image is sharp in the editor and soft in game">
+Confirm no upscaler is active. See <a href="Upscalers.md">Upscalers and Frame Generation</a>. Vite renders
+at native resolution by default; an upscaler enabled in a game settings menu is the usual cause.
+</def>
+</deflist></p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Anti-Aliasing/">Anti-Aliasing</a></li>
+<li><a href="../Path-Tracing/">Path Tracing</a></li>
+<li><a href="../Upscalers/">Upscalers and Frame Generation</a></li>
+<li><a href="../Rendering/">Rendering</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

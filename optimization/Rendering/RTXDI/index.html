@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>RTXDI - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "RTXDI";
+        var mkdocs_page_input_path = "optimization/Rendering/RTXDI.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">RTXDI</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/RTXDI.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="rtxdi">RTXDI</h1>
+<p><tldr></p>
+<p>
+Ray-traced direct lighting for scenes with very many lights. This is the <b>standalone</b> RTXDI, not the
+Lumen-integrated version in UE 5.1+. A less noisy alternative to MegaLights.
+</p>
+<p>
+<b>Compiled out in a default build.</b> Requires rebuilding with
+<code>VITE_RT_PSO_DEBLOAT=0</code> before <code>r.RayTracing.SampledDirectLighting</code> does anything.
+</p>
+<p></tldr></p>
+<p>RTX Direct Illumination solves the many-lights problem: shading a pixel correctly when hundreds or thousands
+of lights could contribute to it, without evaluating all of them.</p>
+<h2 id="what-it-does">What it does</h2>
+<p>Conventional direct lighting evaluates every relevant light per pixel, so cost scales with light count. Once
+a scene has hundreds of lights, that becomes untenable, which is why engines historically cull aggressively,
+limit shadow-casting lights, or bake.</p>
+<p>RTXDI uses reservoir-based spatiotemporal importance resampling. Each pixel maintains a small reservoir of
+candidate light samples, refined across neighbouring pixels and across frames. The result approximates
+sampling all lights while evaluating only a few, and the cost becomes roughly independent of light count.</p>
+<p>The practical effect is that light count stops being a budget you manage. You can light a scene with the
+number of emitters it physically has rather than the number the renderer can afford.</p>
+<h2 id="the-standalone-distinction">The standalone distinction</h2>
+<p>This matters and is easy to miss.</p>
+<p>UE 5.1 and later NvRTX branches integrate RTXDI <em>into Lumen</em>. Vite ships the standalone implementation,
+which operates on the scene's direct lighting independently of any global illumination solution.</p>
+<p>The consequence is composability. RTXDI handles direct lighting; <a href="../DDGI-Dynamic/">DDGI</a> handles indirect
+bounce; they do not need to know about each other. Enabling both still results in better performance than
+standalone hardware Lumen, while producing a less noisy image than MegaLights.</p>
+<h2 id="enabling">Enabling</h2>
+<p><warning>
+RTXDI's shader permutations are compiled out when <code>VITE_RT_PSO_DEBLOAT</code> is <code>1</code>, which
+is the default. In such a build <code>ShouldRenderRayTracingSampledLighting()</code> returns
+<code>false</code> unconditionally: the console variable will set successfully and nothing will render.
+</warning></p>
+<p><procedure title="Enable RTXDI" id="enable-rtxdi">
+    <step>
+        Add <code>GlobalDefinitions.Add("VITE_RT_PSO_DEBLOAT=0");</code> to your target file and rebuild
+        the engine. See <a href="Compile-Time-Switches.md">Compile-Time Switches</a>.
+    </step>
+    <step>
+        Set the console variable:
+        <code-block lang="ini">
+; Config/DefaultEngine.ini
+[/Script/Engine.RendererSettings]
+r.RayTracing.SampledDirectLighting=1
+        </code-block>
+    </step>
+    <step>Confirm the target hardware supports DXR.</step>
+</procedure></p>
+<p>Because turning the debloat switch off restores the full ray tracing permutation set &mdash; not just
+RTXDI's &mdash; weigh the shader compile time and package size cost against what RTXDI actually buys your
+scene. The next section is the test.</p>
+<h2 id="when-it-earns-its-cost">When it earns its cost</h2>
+<p>RTXDI is a specialised tool. It is worth enabling when your scene has enough lights that conventional direct
+lighting becomes the bottleneck, and not otherwise.</p>
+<table>
+<thead>
+<tr>
+<th>Scene</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Neon-lit city street, hundreds of emissive signs and practicals</td>
+<td>Strong fit</td>
+</tr>
+<tr>
+<td>Interior with many small practical lights</td>
+<td>Strong fit</td>
+</tr>
+<tr>
+<td>Destructible or dynamic environments where light count varies unpredictably</td>
+<td>Strong fit</td>
+</tr>
+<tr>
+<td>Outdoor daylight scene with a sun and a few fill lights</td>
+<td>Not worth it</td>
+</tr>
+<tr>
+<td>Stylised scene with a deliberately small light rig</td>
+<td>Not worth it</td>
+</tr>
+</tbody>
+</table>
+<p>For a scene with a handful of lights, conventional direct lighting is cheaper and produces an identical
+result. RTXDI has a fixed setup cost that only pays off once light count is high.</p>
+<h2 id="interaction-with-other-systems">Interaction with other systems</h2>
+<p><strong>DDGI.</strong> Complementary and designed to run together. RTXDI resolves what direct light reaches a surface;
+DDGI resolves what bounced light reaches it.</p>
+<p><strong>RT shadows.</strong> RTXDI performs its own visibility testing as part of sampling, so the relationship with
+<code>r.RayTracing.Shadows</code> needs measuring in your specific scene rather than assuming. Enabling both is not
+automatically the right answer.</p>
+<p><strong>Denoising.</strong> RTXDI output is denoised. It is described as less noisy than MegaLights rather than noise-free
+&mdash; unlike <a href="../DDGI-Dynamic/">DDGI</a>, which is noise-free by construction. Under fast motion in a scene
+with many small bright lights, expect to spend some time on denoiser settings.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Ray-Tracing/">Ray Tracing</a></li>
+<li><a href="../RT-Shadows-And-Ambient-Occlusion/">RT Shadows and Ambient Occlusion</a></li>
+<li><a href="../DDGI-Dynamic/">Dynamic DDGI</a></li>
+<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
+<li><a href="Performance-Targets.md">Performance Targets</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

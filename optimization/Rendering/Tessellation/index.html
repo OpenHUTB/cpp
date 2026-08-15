@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Tessellation and Displacement - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Tessellation and Displacement";
+        var mkdocs_page_input_path = "optimization/Rendering/Tessellation.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Tessellation and Displacement</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/Tessellation.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="tessellation-and-displacement">Tessellation and Displacement</h1>
+<p><tldr></p>
+<p>
+Hardware tessellation with true world displacement, removed in Unreal Engine 5, is fully present in Vite.
+Set the material's <b>Tessellation Mode</b> and drive the <b>World Displacement</b> and
+<b>Tessellation Multiplier</b> pins.
+</p>
+<p></tldr></p>
+<p>Tessellation subdivides geometry on the GPU and displaces the resulting vertices along a displacement map,
+producing real geometric detail: silhouettes change, surfaces self-occlude and self-shadow correctly, and
+ray-traced effects intersect the displaced surface rather than the flat one.</p>
+<h2 id="why-this-page-exists">Why this page exists</h2>
+<p>Unreal Engine 5 removed hardware tessellation. Nanite is offered as the replacement, but Nanite solves a
+different problem: it renders extremely dense authored meshes efficiently. It does not let you take a
+moderate-density mesh and add procedural or texture-driven detail at runtime.</p>
+<p>The workflows that break without tessellation:</p>
+<ul>
+<li><strong>Terrain and landscape displacement</strong> driven by a heightmap, where the detail is procedural and
+  view-dependent rather than baked into a mesh.</li>
+<li><strong>Runtime displacement</strong> &mdash; snow accumulation, footprints, deformation, water surfaces &mdash; where
+  the displacement changes during play.</li>
+<li><strong>Texture-driven detail on tiling surfaces</strong>, where a single material adds real depth to brick, cobble or
+  bark across many meshes without authoring unique high-poly geometry for each.</li>
+<li><strong>Memory-constrained detail</strong>, where a heightmap is dramatically cheaper than the equivalent dense mesh.</li>
+</ul>
+<p>Vite keeps the entire 4.27 tessellation pipeline intact, which means these workflows still work.</p>
+<h2 id="enabling-tessellation-on-a-material">Enabling tessellation on a material</h2>
+<p><procedure title="Set up a displaced material" id="setup-tessellation">
+    <step>
+        Open the material and set <b>Tessellation Mode</b> in the details panel:
+        <b>Flat Tessellation</b> subdivides without smoothing the base surface; <b>PN Triangles</b>
+        smooths the base surface as it subdivides. PN Triangles is usually what you want on organic
+        shapes; Flat is correct when the base silhouette should be preserved exactly.
+    </step>
+    <step>
+        Connect a scalar to <b>Tessellation Multiplier</b>. This controls how much subdivision the surface
+        receives. Drive it from distance so that far geometry is not subdivided.
+    </step>
+    <step>
+        Connect a vector to <b>World Displacement</b>. The usual form is your surface normal multiplied by
+        a heightmap sample multiplied by a displacement scale.
+    </step>
+    <step>
+        Enable <b>Adaptive Tessellation</b> on the material if you want the engine to scale subdivision by
+        screen-space triangle size.
+    </step>
+</procedure></p>
+<h2 id="global-controls">Global controls</h2>
+<table>
+<thead>
+<tr>
+<th>CVar</th>
+<th>Default</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.TessellationAdaptivePixelsPerTriangle</code></td>
+<td><code>48.0</code></td>
+<td>Global tessellation factor multiplier. Target screen-space triangle size in pixels when adaptive tessellation is enabled.</td>
+</tr>
+</tbody>
+</table>
+<p>Lowering the value produces smaller triangles and more subdivision; raising it produces fewer. It is a
+useful global scalability lever: expose it through your scalability groups so that lower quality presets
+back off tessellation across the whole project without touching individual materials.</p>
+<h2 id="cost-and-control">Cost and control</h2>
+<p>Tessellation is not free, and the failure mode is severe: an unbounded tessellation multiplier on a large
+surface can generate millions of triangles and collapse frame rate.</p>
+<p><strong>Always bound the multiplier by distance.</strong> The standard pattern multiplies the tessellation factor by a
+distance falloff so that only nearby surfaces are subdivided:</p>
+<ul>
+<li>Sample <code>Camera Position</code> and the object or pixel world position.</li>
+<li>Compute distance, remap it through a <code>Divide</code> and <code>Saturate</code> into a 0&ndash;1 falloff.</li>
+<li>Multiply the falloff into the tessellation multiplier.</li>
+</ul>
+<p><strong>Watch triangle density directly.</strong> The wireframe view mode and the <code>Shader Complexity</code> view mode both
+reveal runaway subdivision immediately. Add <code>stat rhi</code> to check triangle counts.</p>
+<p><strong>Displacement cracks</strong> appear at UV seams and mesh boundaries where adjacent vertices displace by
+different amounts. Fix them by making the heightmap continuous across the seam, or by masking displacement
+to zero at boundaries.</p>
+<h2 id="interaction-with-ray-tracing">Interaction with ray tracing</h2>
+<p>Displaced geometry participates in ray tracing correctly, which is a meaningful advantage over the
+parallax-mapping alternatives. A parallax-occlusion-mapped brick wall looks displaced from the primary view
+but is flat to every ray-traced <a href="../RT-Reflections/">reflection</a>, <a href="../RT-Shadows-And-Ambient-Occlusion/">shadow</a>
+and <a href="../DDGI-Dynamic/">DDGI</a> probe ray. A tessellated and displaced one is genuinely displaced to all of
+them.</p>
+<p>The cost is that ray tracing acceleration structures must be built for the displaced geometry, which
+increases BLAS build cost for dynamically tessellated surfaces. For large static displaced surfaces this is
+paid once; for surfaces whose displacement animates every frame it is paid continuously. Budget
+accordingly.</p>
+<h2 id="alternatives">Alternatives</h2>
+<p>Tessellation is the right tool when you need real geometry. When you do not:</p>
+<table>
+<thead>
+<tr>
+<th>Technique</th>
+<th>When it is enough</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Normal mapping</td>
+<td>Lighting detail only; silhouette and self-occlusion do not matter</td>
+</tr>
+<tr>
+<td>Parallax occlusion mapping</td>
+<td>Convincing depth from the primary view, flat to rays, no geometry cost</td>
+</tr>
+<tr>
+<td>Authored high-poly meshes</td>
+<td>Static detail, known in advance, memory budget allows it</td>
+</tr>
+<tr>
+<td><strong>Tessellation</strong></td>
+<td>Silhouette matters, displacement is dynamic, or ray-traced effects must see the detail</td>
+</tr>
+</tbody>
+</table>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Rendering/">Rendering</a></li>
+<li><a href="../Ray-Tracing/">Ray Tracing</a></li>
+<li><a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 versus UE5 Cost Analysis</a></li>
+<li><a href="../Shading-Models/">Shading Models</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

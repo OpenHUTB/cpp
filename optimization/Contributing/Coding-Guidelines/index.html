@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Coding Guidelines - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Coding Guidelines";
+        var mkdocs_page_input_path = "optimization/Contributing/Coding-Guidelines.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Coding Guidelines</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Contributing/Coding-Guidelines.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="coding-guidelines">Coding Guidelines</h1>
+<p><tldr></p>
+<p>
+Stability first, performance-focused, strict Clang 22 compliance, copyright-clean, ABI-safe. No recursion,
+no new virtuals, no new Blueprint exposure, minimal templates. Gate anything that adds overhead or changes
+behaviour behind a guard in <code>CoreDefines.h</code>.
+</p>
+<p></tldr></p>
+<p>These rules are stricter than stock Unreal's own coding standard. They exist because Vite's value
+proposition is predictable performance on Console Class hardware, and because a fork that breaks binary
+compatibility with its own shaders is unusable.</p>
+<h2 id="core-principles">Core principles</h2>
+<p><deflist>
+<def title="Stability first">
+Code must remain predictable and safe under both MSVC and Clang. Behaviour that happens to work on one
+compiler is not acceptable.
+</def>
+<def title="Performance-focused">
+All changes must consider CPU, GPU and memory impact, with an ARM-class ~1 GHz CPU as the baseline target.
+Performance measured on a local desktop CPU must not be treated as sufficient or representative of
+real-world target hardware.
+</def>
+<def title="Strict Clang 22 compliance">
+No MSVC-specific behaviour, compiler extensions or undefined constructs. Code that only builds because MSVC
+is permissive about it does not meet this bar, even when MSVC is the compiler you personally use.
+</def>
+<def title="Licensing clarity">
+All contributions must be copyright-clean. Code may be included only if it is original work by the
+contributor, or licensed permissively &mdash; MIT, Apache 2.0, BSD, Zlib.
+</def>
+<def title="ABI safety">
+Do not modify engine bitmask layouts, payload structures, serialization formats, or any CPU/GPU-shared
+binary contracts.
+</def>
+</deflist></p>
+<h2 id="forbidden">Forbidden</h2>
+<h3 id="recursion">Recursion</h3>
+<p>Banned. Use iterative patterns. Recursion makes stack usage unbounded and unpredictable, which matters on
+the hardware Vite targets.</p>
+<h3 id="new-virtual-functions">New virtual functions</h3>
+<p>Do not add new virtuals unless strictly required. Where you can, cache existing engine virtuals rather than
+calling through them repeatedly.</p>
+<h3 id="kismet-blueprint-api-additions">Kismet / Blueprint API additions</h3>
+<p>No new <code>BlueprintCallable</code> or <code>BlueprintPure</code> functions without explicit approval. Every Blueprint-exposed
+function adds reflection metadata, binary size and a call path that is slower than native C++. At the same type 
+the Blueprint Nativization system needs to remain stable.</p>
+<h3 id="template-heavy-patterns">Template-heavy patterns</h3>
+<p>Avoid templates unless they provide a clear performance or architectural benefit. Do not introduce patterns
+that increase compile times, binary size or code complexity. See
+<a href="Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a> for why compile times are taken seriously here.</p>
+<h3 id="abi-breaking-modifications">ABI-breaking modifications</h3>
+<p><warning>
+Do not modify any of the following:
+<list></p>
+<li>Ray tracing payload bitfields</li>
+<li>Shader-visible enums or flags</li>
+<li>Packed bitmasks used by RHI or RenderCore</li>
+<li>Reflection system bitmask definitions</li>
+<li>Any CPU/GPU shared struct layouts</li>
+<p></list></p>
+<p>
+Such modifications break PSO caching, ray tracing stability, serialization, and cross-platform and
+cross-vendor GPU behaviour. This is the single most common cause of immediate rejection.
+</p>
+<p></warning></p>
+<h2 id="technical-standards">Technical standards</h2>
+<ol>
+<li>No undefined behaviour or non-standard extensions.</li>
+<li>Avoid implicit type conversions.</li>
+<li>Maintain memory correctness. Avoid large stack allocations; minimise dynamic memory.</li>
+<li>Prefer <code>constexpr</code>, <code>FORCEINLINE</code> and zero-cost abstractions.</li>
+</ol>
+<h2 id="performance-rules">Performance rules</h2>
+<ol>
+<li>Favour contiguous memory and cache-friendly layouts.</li>
+<li>Avoid unpredictable branching in hot paths.</li>
+<li>No <code>FString</code> processing, reflection calls, dynamic allocation or virtual dispatch inside per-frame
+   loops.</li>
+<li>Use SIMD-friendly math (SSE/AVX/NEON) where appropriate.</li>
+</ol>
+<p>Rule 3 is the one most often violated by otherwise reasonable code. An <code>FString</code> format call in a per-actor
+tick is invisible in a test scene and catastrophic at scale &mdash; see the
+<a href="400-Characters-CMC-Bench.md">400-character CMC benchmark</a> for what per-frame cost looks like when
+multiplied out.</p>
+<h2 id="work-in-progress">Work in progress</h2>
+<ol>
+<li>Commit work in progress to alternative branches.</li>
+<li>Give a brief commentary on what is left to do.</li>
+<li>Delete temporary branches once they are no longer needed.</li>
+<li>Make other forkers aware of the work so effort is not duplicated.</li>
+</ol>
+<h2 id="verification-requirements">Verification requirements</h2>
+<h3 id="compilation">Compilation</h3>
+<p>Must compile cleanly under MSVC and be Clang compliant. "Compiles on my machine with warnings" is not
+clean.</p>
+<h3 id="stability">Stability</h3>
+<ul>
+<li>No crashes on startup, shutdown, or on the Tech Showcase project.</li>
+<li>No log spam.</li>
+<li>Guard all code not necessary for shipping.</li>
+</ul>
+<h3 id="abi">ABI</h3>
+<ul>
+<li>All shader-visible structs must remain bit-for-bit identical.</li>
+<li>No changes to payloads, bitmask layouts, uniform buffers or reflection flags.</li>
+<li>ABI violations result in immediate rejection.</li>
+</ul>
+<h3 id="code-gating">Code gating</h3>
+<p>Anything that adds overhead or changes existing behaviour must sit behind a guard defined in
+<code>Engine\Source\Runtime\Core\Public\Misc\CoreDefines.h</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#ifndef VITE_MY_FEATURE</span>
+<span class="w">    </span><span class="cp">#define VITE_MY_FEATURE 0</span>
+<span class="cp">#endif</span>
+</code></pre></div>
+<p>Two rules follow from that. The default must leave the existing path untouched &mdash; a guard whose
+default value changes behaviour is not a guard. And the guarded code must actually be excluded when the
+switch is off, rather than compiled in and skipped at runtime, or the overhead you were gating is still
+being paid.</p>
+<p>This is what makes optional features free for projects that do not use them, and it is why
+<code>VITE_PHYSX_FIXED_TIMESTEP</code> and the rest of the
+<a href="Compile-Time-Switches.md">compile-time switches</a> exist in the form they do. Document every new switch on
+that page in the same change.</p>
+<h2 id="review-checklist">Review checklist</h2>
+<p>Confirm all of these before opening a pull request:</p>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No recursion</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>No added virtual calls, existing engine virtuals cached where possible</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>No new Kismet exposure</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>Copyright-clean code</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>ABI and bitmask integrity preserved</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>Strict Clang compliance</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>No undefined behaviour</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>No performance regressions</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>No unnecessary binary size increases</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>No shader or RHI ABI mismatches</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>Overhead or behaviour changes gated in <code>CoreDefines.h</code>, defaulting off</td>
+<td>☐</td>
+</tr>
+<tr>
+<td>New compile-time switches documented</td>
+<td>☐</td>
+</tr>
+</tbody>
+</table>
+<h2 id="marking-your-changes">Marking your changes</h2>
+<p>Vite's engine modifications are marked inline so they survive upstream merges and are findable later. The
+existing convention in the tree uses trailing comments on modified lines:</p>
+<div class="highlight"><pre><span></span><code><span class="k">case</span><span class="w"> </span><span class="no">MP_Anisotropy</span><span class="p">:</span>
+<span class="w">    </span><span class="n">CustomPinNames</span><span class="p">.</span><span class="n">Add</span><span class="p">({</span><span class="w"> </span><span class="n">MSM_CallistoBRDF</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Diffuse Fresnel&quot;</span><span class="w"> </span><span class="p">});</span><span class="w"> </span><span class="c1">// AKCHANGES</span>
+<span class="w">    </span><span class="n">CustomPinNames</span><span class="p">.</span><span class="n">Add</span><span class="p">({</span><span class="w"> </span><span class="n">MSM_Toon</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Softness&quot;</span><span class="w"> </span><span class="p">});</span><span class="w"> </span><span class="c1">//Fletch</span>
+</code></pre></div>
+<p>Follow whatever marker the surrounding code uses. For a new region, a <code>// AKCHANGES START</code> /
+<code>// AKCHANGES END</code> pair makes the extent of the change clear.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Contributing/">Contributing</a></li>
+<li><a href="../Commit-Conventions/">Commit Conventions</a></li>
+<li><a href="../Backporting/">Backporting</a></li>
+<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
+<li><a href="Performance-Targets.md">Performance Targets</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

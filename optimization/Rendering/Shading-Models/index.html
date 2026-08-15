@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Shading Models - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Shading Models";
+        var mkdocs_page_input_path = "optimization/Rendering/Shading-Models.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Shading Models</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/Shading-Models.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="shading-models">Shading Models</h1>
+<p><tldr></p>
+<p>
+Vite adds three shading models to the stock 4.27 set: <b>Callisto BRDF</b> for high-fidelity skin and
+character surfaces, <b>Toon</b> for stylised non-photorealistic rendering, and <b>Lit Reactive</b>.
+Each repurposes existing material pins, so read the pin mapping tables before authoring.
+</p>
+<p></tldr></p>
+<p>Shading models are selected from the <strong>Shading Model</strong> dropdown in the material's details panel, or driven
+per-pixel through the <strong>Shading Model</strong> material expression. All stock Unreal Engine 4.27 shading models
+remain available.</p>
+<h2 id="added-shading-models">Added shading models</h2>
+<table>
+<thead>
+<tr>
+<th>Shading model</th>
+<th>Display name</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MSM_CallistoBRDF</code></td>
+<td>Callisto BRDF</td>
+<td>High-fidelity character and skin surfaces with single- and dual-lobe GGX specular</td>
+</tr>
+<tr>
+<td><code>MSM_Toon</code></td>
+<td>Toon</td>
+<td>Stylised cel shading, inspired by Guilty Gear</td>
+</tr>
+<tr>
+<td><code>MSM_LitReactive</code></td>
+<td>Lit Reactive</td>
+<td>Lit surface variant with anisotropy and tangent support</td>
+</tr>
+</tbody>
+</table>
+<h2 id="callisto-brdf">Callisto BRDF</h2>
+<p>Callisto BRDF provides single- and dual-lobe GGX specular with specular Fresnel falloff, aimed at
+characters and skin where the default lit model's single specular lobe is too crude. The
+<a href="Callisto-BRDF-Demos.md">Callisto BRDF demo projects</a> show it applied to male and female character
+surfaces.</p>
+<h3 id="pin-mapping">Pin mapping</h3>
+<p>The model repurposes several standard material pins. The material editor relabels them automatically once
+the shading model is selected, but knowing the mapping helps when reading material graphs or writing
+material functions.</p>
+<table>
+<thead>
+<tr>
+<th>Standard pin</th>
+<th>Callisto BRDF label</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Opacity</td>
+<td><strong>Retroreflection</strong></td>
+<td>Retroreflective response strength</td>
+</tr>
+<tr>
+<td>Ambient Occlusion</td>
+<td><strong>Retroreflection Falloff</strong></td>
+<td>Falloff curve for the retroreflection term</td>
+</tr>
+<tr>
+<td>Anisotropy</td>
+<td><strong>Diffuse Fresnel</strong></td>
+<td>Diffuse Fresnel term</td>
+</tr>
+<tr>
+<td>Custom Data 0</td>
+<td><strong>Smooth Terminator</strong></td>
+<td>Softens the light terminator across the shadow boundary</td>
+</tr>
+<tr>
+<td>Custom Data 1</td>
+<td><strong>Diffuse Fresnel Falloff</strong></td>
+<td>Falloff curve for the diffuse Fresnel term</td>
+</tr>
+</tbody>
+</table>
+<h3 id="callisto-advanced-params">Callisto Advanced Params</h3>
+<p>An additional custom output node, <strong>Callisto Advanced Params</strong>, exposes parameters that do not fit the
+standard pin set:</p>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Specular Fresnel Falloff</td>
+<td>Falloff curve for the specular Fresnel response</td>
+</tr>
+</tbody>
+</table>
+<p>Add the node to the material graph the same way as any other custom output. It compiles to the
+<code>CallistoAdvancedParams</code> material function.</p>
+<h3 id="authoring-notes">Authoring notes</h3>
+<p>The smooth terminator control is the one most worth understanding. The hard light terminator produced by
+standard GGX shading is a well-known artefact on curved organic surfaces, particularly faces lit from a
+grazing angle, where the shading boundary appears unnaturally sharp. The smooth terminator input softens
+that transition without flattening the overall shading.</p>
+<p>The retroreflection and diffuse Fresnel controls together let you dial in surfaces that brighten toward
+grazing angles &mdash; skin, fabric with fine fibres, dusty surfaces &mdash; without resorting to a
+subsurface model.</p>
+<h2 id="toon">Toon</h2>
+<p>The Toon shading model provides cel shading with explicit artistic control over the shading ramp, specular
+shape and shaded colour, inspired by Arc System Works' approach in Guilty Gear.</p>
+<h3 id="pin-mapping_1">Pin mapping</h3>
+<p>Toon repurposes more pins than any other model, because most of the standard PBR parameters have no
+meaning under cel shading.</p>
+<table>
+<thead>
+<tr>
+<th>Standard pin</th>
+<th>Toon label</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Metallic</td>
+<td><strong>Specular Brightness</strong></td>
+<td>Intensity of the specular highlight</td>
+</tr>
+<tr>
+<td>Specular</td>
+<td><strong>Specular Size</strong></td>
+<td>Size of the specular highlight</td>
+</tr>
+<tr>
+<td>Roughness</td>
+<td><strong>Shadow Bias</strong></td>
+<td>Shifts the shading threshold between lit and shaded</td>
+</tr>
+<tr>
+<td>Anisotropy</td>
+<td><strong>Softness</strong></td>
+<td>Softness of the lit/shaded transition</td>
+</tr>
+<tr>
+<td>Subsurface Color</td>
+<td><strong>Shaded Color</strong></td>
+<td>Explicit colour used in the shaded region</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Shaded Color</strong> is the key control. Rather than deriving shadow colour by darkening the base colour, you
+specify it directly, which is what gives cel-shaded art its characteristic non-physical colour shifts in
+shadow &mdash; skin that goes purple rather than dark brown, for instance.</p>
+<p><strong>Shadow Bias</strong> and <strong>Softness</strong> together define the ramp. A bias near the middle with near-zero softness
+gives a hard two-tone look; increasing softness moves toward a gradient.</p>
+<h2 id="lit-reactive">Lit Reactive</h2>
+<p>A lit surface variant supporting anisotropy, tangent input and Custom Data 0. It is treated as a basic
+opaque surface for the purposes of the opacity and opacity-mask optimisation path, alongside Default Lit,
+which means it avoids the masked and translucent-only attribute compilation that other lit models trigger.</p>
+<h2 id="shader-permutations">Shader permutations</h2>
+<p>Every shading model in use adds shader permutations, which cost compile time, PSO count and disk space.
+This is a real budget rather than a theoretical concern &mdash; permutation growth was one of the specific
+regressions Vite exists to avoid, as described in
+<a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 versus UE5 Cost Analysis</a>.</p>
+<blockquote>
+<p>Use the smallest set of shading models your art direction needs. A project that ships Default Lit,
+Callisto BRDF for characters and nothing else will compile faster, have fewer PSOs and load faster than
+one that uses six models across its material library.</p>
+<p>{style="note"}</p>
+</blockquote>
+<p>See <a href="Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a> for how Vite manages permutations, and note
+that runtime PSOs are debloated in Shipping configuration.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Rendering/">Rendering</a></li>
+<li><a href="Callisto-BRDF-Demos.md">Callisto BRDF Demos</a></li>
+<li><a href="../Hair-Rendering/">Hair Rendering</a></li>
+<li><a href="Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a></li>
+<li><a href="../Color-Management/">Colour Management</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

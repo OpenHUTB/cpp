@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Building from Source - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Building from Source";
+        var mkdocs_page_input_path = "optimization/GettingStarted/Build-From-Source.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Building from Source</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/GettingStarted/Build-From-Source.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="building-from-source">Building from Source</h1>
+<p><tldr></p>
+<p>
+<code>Setup.bat</code> (answer <code>N</code> when asked to overwrite) &rarr; <code>GenerateProjectFiles.bat</code>
+&rarr; build <b>UE4</b> in <b>Development Editor</b> / <b>Win64</b>. Or run <code>ViteSetup.bat</code>
+and let the assistant do all of it.
+</p>
+<p></tldr></p>
+<p>This page covers building the engine from source on Windows. Install the
+<a href="../Toolchain-Requirements/">toolchain</a> first &mdash; almost every build failure reported against Vite turns
+out to be a toolchain problem, not a code problem.</p>
+<p>If you have never built Unreal Engine from source before, Epic's
+<a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/setting-up-visual-studio-development-environment-for-cplusplus-projects-in-unreal-engine?application_version=4.27">Visual Studio setup guide for 4.27</a>
+is still the best background reading.</p>
+<h2 id="guided-build-with-vitesetup">Guided build with ViteSetup</h2>
+<p>The repository root ships <code>ViteSetup.bat</code>, an assistant that runs the whole flow in order: environment
+check, toolchain enforcement, dependency setup with platform selection, project file generation, source or
+binary build, engine registration, desktop shortcut, and optional debloat.</p>
+<div class="highlight"><pre><span></span><code>ViteSetup.bat
+</code></pre></div>
+<p>For the advanced menu, which lets you run any single step on its own:</p>
+<div class="highlight"><pre><span></span><code>ViteSetup.bat menu
+</code></pre></div>
+<p>The assistant is the recommended path for a first build because it catches missing prerequisites before you
+spend twenty minutes compiling. See <a href="ViteSetup.md">ViteSetup Assistant</a> for a full walkthrough of
+its screens and options.</p>
+<blockquote>
+<p>The assistant enforces its toolchain requirements with no bypass. If it refuses to continue, it will
+print exactly which component is missing.</p>
+<p>{style="note"}</p>
+</blockquote>
+<h2 id="manual-build">Manual build</h2>
+<p>If you would rather drive the steps yourself, this is what the assistant is doing.</p>
+<h3 id="1-download-dependencies">1. Download dependencies</h3>
+<div class="highlight"><pre><span></span><code>Setup.bat
+</code></pre></div>
+<p>GitDeps is already patched in this fork, so no manual edits are needed. When the script asks whether to
+overwrite local changes, answer <code>N</code>.</p>
+<p><code>Setup.bat</code> accepts <code>-exclude=</code> arguments to skip platforms and content you do not need, which
+substantially reduces download size and disk usage. A Win64-only setup looks roughly like this:</p>
+<div class="highlight"><pre><span></span><code>Setup.bat -exclude=Android -exclude=IOS -exclude=TVOS -exclude=Mac -exclude=MacOSX <span class="se">^</span>
+<span class="se"> </span>         -exclude=Linux -exclude=Linux64 -exclude=HTML5 -exclude=WinRT <span class="se">^</span>
+<span class="se"> </span>         -exclude=PS4 -exclude=XboxOne -exclude=Switch -exclude=Dingo <span class="se">^</span>
+<span class="se"> </span>         -exclude=Samples -exclude=Templates -exclude=FeaturePacks -exclude=Engine/Documentation
+</code></pre></div>
+<blockquote>
+<p>Do not exclude the Win32 folders. Win64 installed builds depend on third-party tools that live under
+Win32, including <code>ARM\Win32\astcenc.exe</code>.</p>
+<p>{style="warning"}</p>
+</blockquote>
+<p><code>ViteSetup.bat</code> exposes these as named presets &mdash; <strong>Recommended Win64</strong>, <strong>Win64 ultra compact</strong>,
+<strong>Win64 + templates / feature packs</strong>, <strong>Win64 + Android</strong>, <strong>Win64 + Linux</strong> and <strong>Full setup</strong> &mdash; and
+will print the exact <code>Setup.bat</code> command line for each one from its <strong>Show setup profiles</strong> menu entry.</p>
+<h3 id="2-generate-project-files">2. Generate project files</h3>
+<div class="highlight"><pre><span></span><code>GenerateProjectFiles.bat
+</code></pre></div>
+<p>This produces <code>UE4.sln</code> in the repository root.</p>
+<p><img src="UE4SolutionFiles.jpg" alt="Repository root in Explorer after project file generation, showing UE4.sln" border-effect="line"/></p>
+<p><em><code>UE4.sln</code> appears alongside the setup scripts once generation succeeds. If it is missing, generation
+failed &mdash; read its output rather than opening Visual Studio.</em></p>
+<h3 id="3-build">3. Build</h3>
+<p>Open <code>UE4.sln</code> and set <strong>UE4</strong> as the startup project if it is not already. Build the
+<strong>Development Editor</strong> configuration for <strong>Win64</strong>.</p>
+<p><img src="VSBuildUE4.jpg" alt="Visual Studio Solution Explorer with the UE4 project selected and the Build command open" border-effect="line"/></p>
+<p><em>Build </em><em>UE4</em><em> under </em><em>Engine</em><em>, not the solution. Building the whole solution compiles program targets you
+do not need for an editor build.</em></p>
+<p>From the command line, the equivalent is:</p>
+<div class="highlight"><pre><span></span><code>Engine\Build\BatchFiles\Build.bat UE4Editor Win64 Development -WaitMutex
+Engine\Build\BatchFiles\Build.bat ShaderCompileWorker Win64 Development -WaitMutex
+Engine\Build\BatchFiles\Build.bat UnrealLightmass Win64 Development -WaitMutex
+</code></pre></div>
+<p>All three targets are needed for a working editor. <code>ViteSetup.bat</code> builds them in this order.</p>
+<h3 id="4-register-the-engine">4. Register the engine</h3>
+<p>So that <code>.uproject</code> files can find this build, register it under the current user's Unreal Engine build key:</p>
+<div class="highlight"><pre><span></span><code>reg add <span class="s2">&quot;HKCU\Software\Epic Games\Unreal Engine\Builds&quot;</span> /v UE_ViteFork /t REG_SZ /d <span class="s2">&quot;&lt;engine root&gt;&quot;</span> /f
+</code></pre></div>
+<p>Then set <code>"EngineAssociation": "UE_ViteFork"</code> in your project's <code>.uproject</code> file. The assistant does this
+step for you and also cleans up stale GUID-keyed entries that point at the same folder.</p>
+<h2 id="build-times">Build times</h2>
+<p>Compile time is dominated by core count. As a reference point, a full build of the repository on a
+Ryzen 9 9950X3D takes about 15 minutes; removing the bundled Vite plugins brings that down to about
+12 minutes, with the Houdini plugin accounting for most of the difference. See
+<a href="Debloat-Guide.md">Debloat Guide</a> if iteration speed matters more to you than plugin coverage.</p>
+<h2 id="producing-an-installed-build">Producing an installed build</h2>
+<p>Once a source build works, you can turn it into a redistributable installed build for the rest of the
+team. <code>RunUAT.bat</code> in the repository root runs the BuildGraph <code>Make Installed Build Win64</code> target and
+writes the result to <code>LocalBuilds\Engine\Windows\</code>:</p>
+<div class="highlight"><pre><span></span><code>RunUAT.bat
+</code></pre></div>
+<p>See <a href="Installed-Builds.md">Installed Builds</a> for the full set of options and
+<a href="Installed-Builds.md">Packaging and Distribution</a> for the compression scripts.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Toolchain-Requirements/">Toolchain Requirements</a></li>
+<li><a href="../Build-Troubleshooting/">Build Troubleshooting</a></li>
+<li><a href="ViteSetup.md">ViteSetup Assistant</a></li>
+<li><a href="Installed-Builds.md">Installed Builds</a></li>
+<li><a href="Cache-Management.md">Cache Management</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

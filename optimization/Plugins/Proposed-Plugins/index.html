@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Proposed Plugins - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Proposed Plugins";
+        var mkdocs_page_input_path = "optimization/Plugins/Proposed-Plugins.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Proposed Plugins</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Plugins/Proposed-Plugins.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="proposed-plugins">Proposed Plugins</h1>
+<p><tldr></p>
+<p>
+Candidates for bundling into the engine, plus recommended plugins that projects should add themselves.
+Everything here must be compatible with UE 4.21&ndash;4.27 &mdash; UE5-only plugins are out of scope.
+</p>
+<p></tldr></p>
+<p>Not everything useful belongs in the engine repository. A plugin bundled with Vite increases the size of
+every clone, the length of every build and the surface area of every integration. This page tracks what has
+been proposed and which tier it belongs in.</p>
+<p><img src="Plugins1.png" alt="Explorer view of Engine/Plugins/Runtime/VitePlugins showing the integrated plugin folders" border-effect="line"/></p>
+<p><em>Plugins already integrated live in <code>Engine\Plugins\Runtime\VitePlugins</code>.</em></p>
+<h2 id="tiers">Tiers</h2>
+<p><deflist>
+<def title="Engine repository">
+Core functionality and native runtime. Small, fast to compile, useful to nearly everyone. These get
+bundled &mdash; see <a href="Bundled-Plugins.md">Bundled Plugins</a>.
+</def>
+<def title="Staples">
+Relevant to general game production, frequently used in AAA, representing major functionality. Worth
+bundling if licensing and size allow; otherwise documented so teams can add them.
+</def>
+<def title="Common use">
+Non-essential or high-level tooling, typically Blueprint extensions. Projects add these themselves.
+</def>
+</deflist></p>
+<h2 id="staple-plugins">Staple plugins</h2>
+<h3 id="physx-instanced-subsystem-integrated-free">PhysX Instanced Subsystem &mdash; integrated, free</h3>
+<p>A world subsystem plus instanced actor workflow for managing large numbers of PhysX-backed instanced
+bodies. Instead of spawning thousands of separate <code>AActor</code> / <code>UPrimitiveComponent</code> objects, you keep one or
+a few instanced mesh actors for rendering while the subsystem creates and updates per-instance PhysX rigid
+bodies, writing their poses back into ISM/HISM instance transforms.</p>
+<p>Integrated at version 1.11. See <a href="Instanced-Physics.md">Instanced Physics</a>.</p>
+<p><a href="https://github.com/Dragomirson/PhysXInstancedSubsystem">Repository</a> ·
+<a href="https://drive.google.com/file/d/1NulunBP2Qre5vLyYnkiqywovsycNuWdQ/view">Demo project</a></p>
+<h3 id="houdini-engine-integrated-commercialfree-use">Houdini Engine &mdash; integrated, commercial/free use</h3>
+<p>Procedural workflow through Houdini Digital Assets. Artists adjust asset parameters interactively in the
+editor and use Unreal assets as inputs; Houdini's procedural engine cooks the asset and the result appears
+in the editor without baking.</p>
+<p><a href="https://github.com/sideeffects/HoudiniEngineForUnreal/tree/Houdini20.0-Unreal4.27">HoudiniEngineForUnreal, Houdini 20.0 / Unreal 4.27 branch</a></p>
+<h3 id="motion-symphony-integrated">Motion Symphony &mdash; integrated</h3>
+<p>Ubisoft-style motion matching and pose matching. Bundled at 1.09; see
+<a href="../Bundled-Plugins/">Bundled Plugins</a>.</p>
+<h3 id="popcornfx-commercialfree-use">PopcornFX &mdash; commercial/free use</h3>
+<p>Proprietary particle system used in several AAA titles including Blizzard games and racing titles. Version
+2.18.6 is the latest fully 4.27-compatible release. Better GPU performance than Niagara.</p>
+<p><a href="https://github.com/PopcornFX/UnrealEnginePopcornFXPlugin">Repository</a> ·
+<a href="https://github.com/PopcornFX/UnrealEnginePopcornFXPlugin/archive/refs/tags/v2.18.6.zip">v2.18.6 download</a></p>
+<p>A patched build by bunnyofficial fixes a compile error:
+<a href="https://drive.google.com/file/d/1hckpY_1zSLsW6mBqBlDeEgPVSijg9Z_y/view?usp=drive_link">patched version</a>.</p>
+<h3 id="azure-playfab-commercialfree-use">Azure PlayFab &mdash; commercial/free use</h3>
+<p>Backend platform for live games: player authentication, data storage, matchmaking, multiplayer networking,
+analytics and LiveOps such as events and A/B testing, on Azure infrastructure.</p>
+<p><img src="Plugins2.png" alt="Azure PlayFab backend services overview" border-effect="line"/></p>
+<p><a href="https://github.com/PlayFab/UnrealMarketplacePlugin">PlayFab Unreal Marketplace Plugin</a></p>
+<h3 id="wwise-commercialfree-use">Wwise &mdash; commercial/free use</h3>
+<p>The de facto standard audio middleware for games, with hundreds of shipped titles.</p>
+<p><a href="https://www.audiokinetic.com/en/public-library/2025.1.3_9039/?source=UE4&amp;id=index.html">Wwise Unreal integration</a></p>
+<h3 id="asset-downgrader-paid">Asset Downgrader &mdash; paid</h3>
+<p>Downgrades assets to 5.6.1, 5.5.4, 5.4.4, 5.3.2, 5.2.1, 5.1.1, 5.0.3, 4.27 and 4.26. It first upgrades
+assets to the source version (5.6), then applies patches to the <code>.uasset</code> files to make them compatible
+with the target version, minus the newer data &mdash; Nanite data is stripped for a 4.27 downgrade, for
+example.</p>
+<p><warning>
+Features that do not exist in the older version cannot be ported: Nanite on masked materials, new material
+nodes and new Niagara modules among them. The downgrader moves data, not capability.
+</warning></p>
+<p><img src="AssetDwongrader.png" alt="Asset Downgrader plugin interface showing target version selection" border-effect="line"/></p>
+<p><em>Target versions the downgrader supports, from 5.6.1 down to 4.26.</em></p>
+<p>This is the practical route for using UE5 marketplace content in Vite. See
+<a href="Migrating-From-UE5.md">Migrating from UE5</a>. The author, Ciprian Stanciu, is active on the Vite Discord and
+has provided direct help on several Vite projects.</p>
+<p><img src="CiprianStanciu.png" alt="Asset Downgrader author on the Vite Discord" border-effect="line"/></p>
+<h3 id="htn-planner-fab-paid">HTN Planner &mdash; FAB / paid</h3>
+<p>Hierarchical Task Network AI framework for Unreal. Goal-driven strategy built by separating <em>what</em> to do
+from <em>how</em> to do it. Version 1.18.3 was recently backported to 4.27.</p>
+<p><img src="HTN.png" alt="HTN Planner task network in the Unreal editor" border-effect="line"/></p>
+<p><em>A hierarchical task network separates the goal from the method used to reach it, which is what makes plans
+composable across agents.</em></p>
+<p><a href="https://maksmaisak.github.io/htn/front.html">HTN plugin for Unreal Engine</a></p>
+<h2 id="common-use-plugins">Common use plugins</h2>
+<p>These are recommended but not bundled. Add them per project.</p>
+<h3 id="ffmpeg-media-player">FFMPEG Media Player</h3>
+<p>Support for more video formats and alpha videos than the stock media framework.</p>
+<p><a href="https://github.com/bakjos/FFMPEGMedia">bakjos/FFMPEGMedia</a></p>
+<h3 id="ui-navigation">UI Navigation</h3>
+<p>Blueprint-driven UI navigation for gamepad and keyboard menu traversal.</p>
+<p><a href="https://github.com/goncasmage1/UINavigation/tree/4.27_3.0">goncasmage1/UINavigation, 4.27 branch</a></p>
+<h3 id="multiplayer-movement-smn2">Multiplayer Movement (SMN2)</h3>
+<p>Blueprint multiplayer movement. Officially supported to 4.26 but compiles and works on 4.27, and can be
+extended further. Deprecated upstream.</p>
+<p><a href="https://github.com/Reddy-dev/SMN2">Reddy-dev/SMN2</a></p>
+<h3 id="root-motion-source">Root Motion Source</h3>
+<p>Fully functional on 4.26 and 4.27, and effectively the 4.x equivalent of UE5's Motion Warping. In stock
+UE4, root motion source is only correctly networked through GAS; this plugin overrides that and exposes
+full root motion source functionality directly in Blueprints.</p>
+<p>Field testing on a laggy network reports that following normal CMC logic gives clean results without
+jitter or server-side corrections during root motion animations.</p>
+<p><img src="Plugins3.png" alt="Root Motion Source Blueprint nodes" border-effect="line"/></p>
+<p><a href="https://github.com/VJien/RootMotionSource">VJien/RootMotionSource</a> ·
+<a href="https://supervj.top/2022/03/24/RootMotionSource/?highlight=root+motion+source">write-up</a></p>
+<h2 id="proposing-a-plugin">Proposing a plugin</h2>
+<p>Before proposing, check:</p>
+<table>
+<thead>
+<tr>
+<th>Criterion</th>
+<th>Requirement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Engine version</td>
+<td>Compatible with 4.21&ndash;4.27. UE5-only is out of scope.</td>
+</tr>
+<tr>
+<td>Licensing</td>
+<td>Redistributable, or clearly documented as something users obtain themselves</td>
+</tr>
+<tr>
+<td>Size</td>
+<td>Bundled plugins are cloned by everyone. Large binary dependencies need justification.</td>
+</tr>
+<tr>
+<td>Compile cost</td>
+<td>Adds to every engine build. See <a href="Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a>.</td>
+</tr>
+<tr>
+<td>Overlap</td>
+<td>Does it duplicate something already bundled or stock?</td>
+</tr>
+</tbody>
+</table>
+<p>Then say which tier you think it belongs in and why.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Bundled-Plugins/">Bundled Plugins</a></li>
+<li><a href="../Plugins/">Plugins</a></li>
+<li><a href="Migrating-From-UE5.md">Migrating from UE5</a></li>
+<li><a href="Contributing.md">Contributing</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

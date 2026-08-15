@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>System Requirements - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "System Requirements";
+        var mkdocs_page_input_path = "optimization/GettingStarted/System-Requirements.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">System Requirements</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/GettingStarted/System-Requirements.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="system-requirements">System Requirements</h1>
+<p><tldr></p>
+<p>
+Windows 10 or 11 x64. A ray-tracing capable GPU is recommended but not required &mdash;
+<a href="DDGI-Static.md">Static DDGI</a> and the raster paths run on hardware with no DXR support at all.
+Dynamic DDGI is designed to scale down to GTX 1060 6&nbsp;GB class GPUs.
+</p>
+<p></tldr></p>
+<p>Vite has two distinct sets of requirements: what it takes to <em>run</em> content built on the engine, and what it
+takes to <em>build the engine itself</em>. They are very different, and the second one is much heavier.</p>
+<h2 id="running-vite-content">Running Vite content</h2>
+<p>Vite is explicitly designed to scale across a wide hardware range, which is the point of choosing DDGI over
+Lumen in the first place.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Minimum</th>
+<th>Recommended</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OS</td>
+<td>Windows 10 x64</td>
+<td>Windows 11 x64</td>
+</tr>
+<tr>
+<td>GPU (no ray tracing)</td>
+<td>Any DirectX 11 capable GPU</td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td>GPU (Dynamic DDGI)</td>
+<td>GTX 1060 6&nbsp;GB or any RDNA2</td>
+<td>RTX 2060 / RX 6600 or better</td>
+</tr>
+<tr>
+<td>GPU (full RT suite)</td>
+<td>RTX 2060 / RX 6600</td>
+<td>RTX 3070 / RX 6700 XT or better</td>
+</tr>
+<tr>
+<td>VRAM</td>
+<td>6&nbsp;GB</td>
+<td>8&nbsp;GB or more</td>
+</tr>
+</tbody>
+</table>
+<p>Dynamic DDGI works from GTX 1060 6&nbsp;GB class GPUs upward. Below that, or on any GPU with no ray tracing
+support, use <a href="DDGI-Static.md">Static DDGI</a>, which bakes irradiance into probe volumes and has no runtime
+ray tracing cost.</p>
+<h3 id="test-hardware">Test Hardware</h3>
+<p>These are the configurations Vite is actively benchmarked and tuned against. The following Test Hardware is owned by main Devs of this fork.</p>
+<table>
+<thead>
+<tr>
+<th>Vendor</th>
+<th>Hardware</th>
+<th>Why it matters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AMD</td>
+<td>RX 6700 (RDNA2)</td>
+<td>Closest desktop match to PlayStation 5</td>
+</tr>
+<tr>
+<td>AMD</td>
+<td>Steam Deck LCD Van Gogh (RDNA2)</td>
+<td>Handheld Class</td>
+</tr>
+<tr>
+<td>AMD</td>
+<td>RX 9600XT (RDNA4)</td>
+<td>Mid Tier GPU</td>
+</tr>
+<tr>
+<td>NVIDIA</td>
+<td>RTX 2060 (Turing)</td>
+<td>Lower Bound for HW RT &amp; DLSS</td>
+</tr>
+<tr>
+<td>NVIDIA</td>
+<td>RTX 3060 (Ampere)</td>
+<td>Matches Steam most common GPU</td>
+</tr>
+<tr>
+<td>NVIDIA</td>
+<td>RTX 4080 Super (Ada Lovelace)</td>
+<td>Upper-bound reference for 4K native captures</td>
+</tr>
+</tbody>
+</table>
+<p>Testing is most useful on a 4K native monitor or TV(from 6700/RTX 4060), because Vite's whole argument is about holding native
+resolution rather than upscaling from a lower internal one.</p>
+<p>If you want to showcase results in your hardware (as in from the Demos), the <code>#showcase</code> channel on Discord is where testing is coordinated.</p>
+<h2 id="building-the-engine-from-source">Building the engine from source</h2>
+<p>Building is CPU-, RAM- and disk-bound. Treat these as practical guidance rather than hard cutoffs.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Practical minimum</th>
+<th>Comfortable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CPU</td>
+<td>6 cores / 12 threads</td>
+<td>16 cores / 32 threads or more</td>
+</tr>
+<tr>
+<td>RAM</td>
+<td>24&nbsp;GB</td>
+<td>32&nbsp;GB</td>
+</tr>
+<tr>
+<td>Storage</td>
+<td>SATA SSD with 50gb of Space</td>
+<td>NVMe SSD 157GB of space (Full Size)</td>
+</tr>
+<tr>
+<td>OS</td>
+<td>Windows 10 x64</td>
+<td>Windows 11 x64</td>
+</tr>
+</tbody>
+</table>
+<p>An Unreal Engine 4.27 source tree with dependencies, intermediates and a built editor is very large &mdash;
+budget well over a hundred gigabytes, and more again if you produce an installed build alongside it, since
+that writes a second copy into <code>LocalBuilds\Engine\Windows\</code>. A mechanical hard drive will work but makes
+every step painful; use an SSD.</p>
+<p>Compile time scales almost linearly with core count. A full build on a Ryzen 9 9950X3D takes roughly
+14 minutes. You can reclaim a meaningful amount of both time and disk space by excluding platforms you do
+not target and stripping optional content &mdash; see <a href="Debloat-Guide.md">Debloat Guide</a> and the setup
+presets described in <a href="../Build-From-Source/">Building from Source</a>.</p>
+<p>You also need a specific compiler and SDK. This is not optional and is covered separately in
+<a href="../Toolchain-Requirements/">Toolchain Requirements</a>.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Toolchain-Requirements/">Toolchain Requirements</a></li>
+<li><a href="../Build-From-Source/">Building from Source</a></li>
+<li><a href="Platforms.md">Platform Support</a></li>
+<li><a href="Performance-Targets.md">Performance Targets</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

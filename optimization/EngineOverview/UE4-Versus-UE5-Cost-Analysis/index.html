@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>UE4 versus UE5 Cost Analysis - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "UE4 versus UE5 Cost Analysis";
+        var mkdocs_page_input_path = "optimization/EngineOverview/UE4-Versus-UE5-Cost-Analysis.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">UE4 versus UE5 Cost Analysis</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/EngineOverview/UE4-Versus-UE5-Cost-Analysis.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="ue4-versus-ue5-cost-analysis">UE4 versus UE5 Cost Analysis</h1>
+<p><tldr></p>
+<p>
+The performance gap is not one system. It is shader instruction counts, physics, character movement,
+memory, Slate, skeletal meshes, tick cost, render thread structure, the loss of Blueprint nativization,
+and volumetric shaders &mdash; each contributing independently.
+</p>
+<p></tldr></p>
+<p>This page documents where the measured cost differences between Unreal Engine 4.27 and modern UE5 come
+from. It exists because "UE5 is slower" is not actionable; knowing <em>which</em> subsystem regressed and by how
+much is what lets you decide whether a fork is worth maintaining.</p>
+<p>Supporting measurements are collected in a
+<a href="https://docs.google.com/spreadsheets/d/1TabQV7UTDLMHI9GVFCbMzXohax2Agm2qzET7tOOXN7w/edit?usp=sharing">public spreadsheet</a>.</p>
+<h2 id="materials-and-shaders">Materials and shaders</h2>
+<p>From UE 5.1, Shader Model 6 became the preferred rendering path, and general shader instruction count
+increased significantly for both the SM5 and SM6 paths. Subsequent versions expanded both instruction counts
+and permutation counts further.</p>
+<p>Unreal Engine 4.27 produces lighter-weight shaders that deliver the same visual result, which translates
+directly into faster GPU time across the board &mdash; not just in scenes that use the new features.</p>
+<p><img src="ShaderInstructionCount.png" alt="Shader instruction count for equivalent material work compared across Unreal Engine versions" border-effect="line"/></p>
+<p><em>Shader instruction count for equivalent material work, by engine version. The count rises with each
+release on both the SM5 and SM6 paths, and every one of those instructions is GPU time spent without a
+corresponding change in the final image.</em></p>
+<h2 id="physics">Physics</h2>
+<p>Chaos is significantly slower than PhysX across many workloads, largely from less efficient SIMD
+utilisation, comparatively poor multithreading, and generally less efficient engineering decisions.</p>
+<p>Internal stress tests show Chaos performing over 5x slower than PhysX in heavily physics-bound scenarios.
+The gap is not limited to rigid body simulation: it also affects physics queries, collision calculation and
+transform propagation, which means projects that make little or no explicit use of physics simulation still
+pay a measurable CPU cost.</p>
+<p><img src="ChaosVsPhysX3000.png" alt="3000 simulated cubes, Unreal 5.7 Chaos at 33.26 FPS against Vite PhysX 3.4 at 157.88 FPS" border-effect="line"/></p>
+<p><em>3000 simulated cubes. Unreal 5.7 with Chaos (left) 33.26 FPS at a 30.07 ms frame; Vite with PhysX 3.4
+(right) 157.88 FPS at a 6.33 ms frame &mdash; a 4.7x difference in delivered frame rate.</em></p>
+<p>The practical consequence is scale. The same CPU budget buys substantially more complex cloth simulation and
+destruction under PhysX. See <a href="PhysX.md">PhysX Overview</a>.</p>
+<h2 id="character-movement-component">Character Movement Component</h2>
+<p>CMC has become progressively more expensive. Against Unreal Engine 5.6, version 4.27 performs 2.2&ndash;2.8x
+faster in movement and collision calculations, and that figure does not even account for PhysX's faster
+sweeps.</p>
+<p>This dominates scenes with many players or AI characters, and directly limits the feasible scale of
+simulation. The <a href="400-Characters-CMC-Bench.md">400 Characters CMC Bench</a> scene exists to measure exactly
+this.</p>
+<h2 id="memory">Memory</h2>
+<p>Overall memory usage has increased with each engine iteration. In a typical multiplayer map scene, Vite uses
+approximately 1 GB less total memory than UE 5.7, measured on the Stylized demo.</p>
+<p>On memory-constrained targets &mdash; handhelds, Switch 2, base consoles &mdash; a gigabyte is not a
+rounding error. It is often the difference between a texture pool that holds and one that thrashes.</p>
+<h2 id="slate-and-ui">Slate and UI</h2>
+<p>From UE 5.0, Slate's rendering cost increased considerably, alongside a more complex system for handling
+Slate object updates, layout calculation and transformations. The rendering of UI itself became more
+expensive in the pursuit of higher UI rendering fidelity.</p>
+<p>For UI-heavy games &mdash; which is most of them, once you count HUDs, inventories and menus &mdash; this is
+a persistent per-frame cost that never goes away.</p>
+<h2 id="skeletal-meshes">Skeletal meshes</h2>
+<p>Skeletal meshes became more complex around 5.1 to 5.4. The base cost of a skeletal mesh component in 4.27 is
+far lighter.</p>
+<p>This matters disproportionately because skeletal meshes are frequently the worst CPU offenders in a shipped
+game. Vite additionally ships an optimised skeletal mesh configuration as the default &mdash; see
+<a href="Engine-Defaults.md">Engine Default Changes</a>.</p>
+<h2 id="world-tick-and-game-thread">World tick and game thread</h2>
+<p>Newer UE5 iterations increased the general cost of the ticking systems, and made physics, Niagara and
+controller ticks heavier to run. This is a flat tax on every frame, independent of what your game does.</p>
+<h2 id="render-thread">Render thread</h2>
+<p>With the deeper integration of Lumen, Nanite, VSM, Virtual Textures, TSR, Substrate, Chaos Cloth and Hair,
+the render thread became larger and more fragmented, and PSOs became heavier. This affects overall renderer
+performance in every circumstance, not only when those features are enabled.</p>
+<h2 id="loss-of-blueprint-nativization">Loss of Blueprint nativization</h2>
+<p>This one is frequently overlooked and is often the largest single factor in real projects.</p>
+<p>The Blueprint VM is a slow runtime. For simple gameplay logic it is typically 50&ndash;80x slower than
+equivalent native C++. For algorithmic workloads &mdash; sorting, node operations, pathfinding &mdash; it can
+be 150&ndash;400x slower.</p>
+<p>In Unreal Engine 4, Blueprint Nativization mitigated this by converting Blueprint bytecode into native C++
+during packaging, producing code roughly 10x faster than VM execution. UE5 removed the feature.</p>
+<p>Because most Unreal projects rely heavily on Blueprints &mdash; especially through plugins and third-party
+code that you do not control &mdash; retaining nativization can make UE4's game thread substantially faster
+in real-world projects, reducing input latency, improving responsiveness and allowing higher simulation
+scale.</p>
+<h2 id="volumetrics-fog-and-engine-shaders">Volumetrics, fog and engine shaders</h2>
+<p>There is a large performance regression in the systems and materials handling volumetrics, fog and sky, and
+in many other default engine shaders. The increased shader complexity compounds on top of the base material
+cost increases described above.</p>
+<p><img src="VolumetricFogCost1.png" alt="Shader cost of the default volumetric, fog and sky materials compared across engine versions" border-effect="line"/></p>
+<p><em>Shader cost of the default volumetric, fog and sky materials across engine versions.</em></p>
+<p><img src="VolumetricFogCost2.png" alt="Second measurement of default engine shader cost across engine versions" border-effect="line"/></p>
+<p><em>A second measurement over the same systems. Because the regression is in the default engine shaders
+themselves, it applies whether or not a project authors any custom volumetric material.</em></p>
+<h2 id="core-class-base-costs">Core class base costs</h2>
+<p>Beyond any individual system, the base cost of core engine classes increased in both execution time and
+memory footprint, across both game and render logic.</p>
+<p><img src="CoreClassBaseCosts.png" alt="Base cost comparison for core engine classes across engine versions" border-effect="line"/></p>
+<p><em>Base cost of core engine classes by version. This is cost paid before any game code runs, which is why it
+shows up even in projects that use none of the newer features.</em></p>
+<p>Per-class figures are in the
+<a href="https://docs.google.com/spreadsheets/d/1TabQV7UTDLMHI9GVFCbMzXohax2Agm2qzET7tOOXN7w/edit?usp=sharing">measurements spreadsheet</a>,
+and class sizes per version are broken out in the
+<a href="https://docs.google.com/spreadsheets/d/1qfS04ke1cVGDGBFVLoAjeqE4IzW5QVJ-JAbvFbUw_SY/edit?usp=sharing">size of class report</a>.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Why-NvRTX-427/">Why NvRTX 4.27</a></li>
+<li><a href="../Performance-Targets/">Performance Targets</a></li>
+<li><a href="Engine-Defaults.md">Engine Default Changes</a></li>
+<li><a href="Profiling.md">Profiling and Benchmarking</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

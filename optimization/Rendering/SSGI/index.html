@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>SSGI - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "SSGI";
+        var mkdocs_page_input_path = "optimization/Rendering/SSGI.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">SSGI</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/SSGI.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="ssgi">SSGI</h1>
+<p><tldr></p>
+<p>
+UE4-era screen-space global illumination, enabled with <code>r.SSGI.Enable 1</code>. Recommended
+<i>alongside</i> <a href="DDGI-Dynamic.md">DDGI</a> rather than instead of it: DDGI supplies world-scale
+bounce, SSGI supplies high-frequency contact detail. No ray tracing hardware required.
+</p>
+<p></tldr></p>
+<p>Screen-space global illumination gathers indirect light by sampling the depth and colour buffers. It only
+knows about what is on screen, which is simultaneously its great limitation and the reason it complements a
+world-space solution so well.</p>
+<h2 id="why-this-matters-in-vite-specifically">Why this matters in Vite specifically</h2>
+<p>SSGI experienced both quality and performance regressions in UE5 as a result of being integrated into
+Lumen, and it is no longer possible to activate it alongside a separate GI solution there.</p>
+<p>Vite retains the UE4-era implementation, which is both faster and composable. Running SSGI in tandem with
+DDGI is the recommended default configuration, not an exotic combination.</p>
+<h2 id="what-each-technique-contributes">What each technique contributes</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>DDGI</th>
+<th>SSGI</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Spatial resolution</td>
+<td>Probe grid</td>
+<td>Per-pixel</td>
+</tr>
+<tr>
+<td>Knows about off-screen geometry</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Knows about occluded geometry</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Captures contact-scale detail</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Requires ray tracing hardware</td>
+<td>Yes (dynamic mode)</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Stable under camera motion</td>
+<td>Yes</td>
+<td>Screen-space artefacts at frame edges</td>
+</tr>
+</tbody>
+</table>
+<p>The two fail in opposite directions, which is exactly what you want from a pair of techniques. DDGI has
+complete world knowledge at coarse resolution; SSGI has pixel resolution over an incomplete view. Together
+they cover both scales.</p>
+<p>Concretely, SSGI is what gives you the darkening where a chair leg meets the floor, bounce inside a narrow
+gap between two objects, and the colour bleed from a nearby red wall onto a character's shoulder &mdash; all
+features smaller than typical probe spacing.</p>
+<h2 id="enabling">Enabling</h2>
+<div class="highlight"><pre><span></span><code><span class="n">IConsoleManager</span><span class="o">::</span><span class="n">Get</span><span class="p">().</span><span class="n">FindConsoleVariable</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.SSGI.Enable&quot;</span><span class="p">))</span><span class="o">-&gt;</span><span class="n">Set</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1">; Config/DefaultEngine.ini</span>
+<span class="k">[/Script/Engine.RendererSettings]</span>
+<span class="na">r.SSGI.Enable</span><span class="o">=</span><span class="s">1</span>
+</code></pre></div>
+<p>SSGI quality is controlled through the standard UE4 SSGI console variables and the post process volume. The
+quality setting trades ray count and resolution against cost in the usual way.</p>
+<h2 id="limitations-to-design-around">Limitations to design around</h2>
+<p>Everything screen-space shares the same failure modes, and it is worth knowing them so you do not chase
+them as bugs:</p>
+<p><strong>Off-screen light is missing.</strong> A brightly lit wall just outside the frustum contributes nothing. As the
+camera turns and it comes into view, its contribution appears. This is why SSGI alone is not a viable GI
+solution and why the pairing matters.</p>
+<p><strong>Occluded geometry is missing.</strong> SSGI can only see the depth buffer's front surface. Light that should
+bounce from behind an object is not represented.</p>
+<p><strong>Frame edges.</strong> Contributions fade out towards the screen border because the sampling kernel runs out of
+buffer. This is usually acceptable but becomes visible with fast camera motion.</p>
+<p>Because DDGI is providing the world-scale answer, none of these produce a <em>wrong</em> image in the combined
+setup &mdash; they produce a locally less detailed one, which is a much better failure mode.</p>
+<h2 id="cost">Cost</h2>
+<p>SSGI is cheap relative to any world-space technique, and it scales with resolution and quality setting
+rather than with scene complexity. On the <a href="Performance-Targets.md">Performance Targets</a> that include it, it
+is not the dominant cost; DDGI and reflections are.</p>
+<p>If you are hunting frame time, measure before you disable it. <code>stat gpu</code> will tell you what the pass
+actually costs in your scene, and it is frequently less than people assume.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Global-Illumination/">Global Illumination</a></li>
+<li><a href="../DDGI-Dynamic/">Dynamic DDGI</a></li>
+<li><a href="../DDGI-Static/">Static DDGI</a></li>
+<li><a href="../Ambient-Occlusion/">Ambient Occlusion</a></li>
+<li><a href="Console-Variables.md">Console Variable Reference</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

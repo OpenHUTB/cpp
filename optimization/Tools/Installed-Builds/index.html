@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Installed Builds - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Installed Builds";
+        var mkdocs_page_input_path = "optimization/Tools/Installed-Builds.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Installed Builds</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Tools/Installed-Builds.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="installed-builds">Installed Builds</h1>
+<p><tldr></p>
+<p>
+An installed build is a precompiled, redistributable engine that works like an Epic Games Launcher install.
+<code>RunUAT.bat</code> produces one; the <code>LocalBuilds\</code> scripts package and register it.
+</p>
+<p></tldr></p>
+<p>A source build requires a full toolchain, a long compile and a lot of disk. An installed build does not:
+artists, designers and anyone who does not modify engine C++ can use one directly.</p>
+<h2 id="building">Building</h2>
+<p><code>RunUAT.bat</code> at the engine root drives the BuildGraph installed-build target:</p>
+<div class="highlight"><pre><span></span><code>Engine\Build\BatchFiles\RunUAT.bat BuildGraph
+    -script=&quot;Engine\Build\InstalledEngineBuild.xml&quot;
+    -target=&quot;Make Installed Build Win64&quot;
+    -nosign
+    -set:GameConfigurations=Development;Shipping
+    -set:WithWin64=true
+    -set:WithWin32=false
+    -set:WithMac=false
+    -set:WithAndroid=false
+    -set:WithIOS=false
+    -set:WithTVOS=false
+    -set:WithLinux=false
+    -set:WithLinuxAArch64=false
+    -set:WithDDC=false
+    -clean
+</code></pre></div>
+<p>The configuration is Win64-only with Development and Shipping game configurations, matching Vite's
+<a href="Platforms.md">platform focus</a>. <code>WithDDC=false</code> skips derived data cache generation, which shortens the
+build considerably at the cost of first-launch shader compilation for the end user.</p>
+<p>You can also reach this through <a href="../ViteSetup/">ViteSetup</a> &mdash; step 4, binary option, or menu option 8.
+The ViteSetup path is incremental; <code>RunUAT.bat</code> as shipped passes <code>-clean</code>.</p>
+<p><note>
+This is a long build. Budget hours, not minutes, and considerable free disk space. Both the intermediate
+and final outputs are large.
+</note></p>
+<p>Output lands in <code>LocalBuilds\Engine\Windows</code>.</p>
+<h2 id="packaging">Packaging</h2>
+<p>Four scripts in <code>LocalBuilds\</code> compress the staged build with 7-Zip. All expect
+<code>LocalBuilds\Engine\Windows</code> to contain the staged build, and all look for 7-Zip at
+<code>C:\Program Files\7-Zip\7z.exe</code> unless the <code>SEVEN_ZIP</code> environment variable points elsewhere.</p>
+<table>
+<thead>
+<tr>
+<th>Script</th>
+<th>Debug symbols</th>
+<th>Plugins</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CompressBuild.bat</code></td>
+<td>Excluded per <code>ExcludedPdbs.txt</code></td>
+<td>Single archive</td>
+</tr>
+<tr>
+<td><code>CompressBuildSeparate.bat</code></td>
+<td>Excluded per <code>ExcludedPdbs.txt</code></td>
+<td>Split into a second archive</td>
+</tr>
+<tr>
+<td><code>CompressBuildSymbols.bat</code></td>
+<td>Excluded per <code>ExcludedPdbs.txt</code></td>
+<td>Single archive</td>
+</tr>
+<tr>
+<td><code>CompressBuildSymbolsSeparate.bat</code></td>
+<td><strong>Included</strong></td>
+<td>Split into a second archive</td>
+</tr>
+</tbody>
+</table>
+<p><note>
+<code>CompressBuildSymbols.bat</code> is currently identical to <code>CompressBuild.bat</code> &mdash; both
+exclude PDBs. If you need symbols in the archive, use
+<code>CompressBuildSymbolsSeparate.bat</code>, which is the only script that does not pass
+<code>-x@ExcludedPdbs.txt</code>.
+</note></p>
+<p>All four exclude <code>FeaturePacks\</code>, <code>Samples\</code> and <code>Templates\</code> from the main archive.</p>
+<p>Outputs:</p>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>LocalBuilds\Engine\UE_ViteFork.7z</code></td>
+<td>The engine</td>
+</tr>
+<tr>
+<td><code>LocalBuilds\Engine\ExcludedPlugins.7z</code></td>
+<td>Plugins, in the <code>Separate</code> variants only</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-exclusion-lists">The exclusion lists</h3>
+<p><code>ExcludedPdbs.txt</code> lists roughly 1,100 PDB paths covering the engine modules and plugins. Debug symbols are
+a very large fraction of a source build's size, so excluding them is the single biggest packaging saving.</p>
+<p><code>ExcludedPlugins.txt</code> is the same list used by the <a href="Debloat-Guide.md">debloat suite</a>. In the <code>Separate</code>
+variants it splits plugins into their own archive rather than removing them &mdash; users extract the base
+engine and add the plugin archive only if they need it.</p>
+<h3 id="why-split-plugins">Why split plugins</h3>
+<p>A team where most people need the base engine and only a few need the full plugin set can distribute a much
+smaller primary download. The split is by archive, not by deletion, so nothing is lost.</p>
+<h2 id="installing-on-a-target-machine">Installing on a target machine</h2>
+<p><procedure title="Install a packaged Vite build" id="install-binary">
+    <step>Extract <code>UE_ViteFork.7z</code> to its final location. Moving it later requires re-registering.</step>
+    <step>If you were given <code>ExcludedPlugins.7z</code> and need those plugins, extract it over the same folder.</step>
+    <step>
+        Run <code>RegistryAdd.bat</code> from the extracted root. This writes the engine path to
+        <code>HKCU\Software\Epic Games\Unreal Engine\Builds</code> under the name <code>UEViteFork</code>.
+    </step>
+    <step>Run <code>MakeShortcut.bat</code> to create <code>UEViteFork.lnk</code> pointing at the editor.</step>
+    <step>
+        Right-click a <code>.uproject</code>, choose <b>Switch Unreal Engine version</b>, and select
+        <b>UEViteFork</b>.
+    </step>
+</procedure></p>
+<p>The packaged archive root contains <code>MakeShortcut.bat</code>, <code>RegistryAdd.bat</code> and <code>RegistryRemove.bat</code> alongside
+<code>Engine\</code>, plus <code>FeaturePacks\</code>, <code>Templates\</code> and <code>Samples\</code> if they were included at build time.</p>
+<h2 id="moving-or-removing">Moving or removing</h2>
+<p>Registration stores an absolute path, so moving the build breaks it.</p>
+<p><procedure title="Move an installed build" id="move-binary">
+    <step>Run <code>RegistryRemove.bat</code> from the current location.</step>
+    <step>Move the folder.</step>
+    <step>Run <code>RegistryAdd.bat</code> from the new location.</step>
+    <step>Run <code>MakeShortcut.bat</code> again; the old shortcut points at the old path.</step>
+</procedure></p>
+<p>To remove entirely, run <code>RegistryRemove.bat</code>, delete the shortcut, and delete the folder.</p>
+<h2 id="running-alongside-a-source-build">Running alongside a source build</h2>
+<p>Both can coexist, but they register under the same <code>UEViteFork</code> name, so only one is registered at a time.
+Whichever ran <code>RegistryAdd.bat</code> most recently is the one projects will find.</p>
+<p>If you regularly switch, note which is currently registered, or edit the registry key manually to give them
+distinct names.</p>
+<h2 id="limitations">Limitations</h2>
+<p>Installed builds cannot compile engine C++. Projects using them can still have their own C++ modules, which
+compile against the installed engine's headers and libraries, but engine source changes require a source
+build.</p>
+<p>This includes <a href="Compile-Time-Switches.md">compile-time switches</a>. If your project needs
+<code>VITE_RT_PSO_DEBLOAT=0</code> for path tracing or RTXDI, that has to be baked into the installed build at the
+time it is produced.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../ViteSetup/">ViteSetup Assistant</a></li>
+<li><a href="Install-Binary-Build.md">Install a Binary Build</a></li>
+<li><a href="Build-From-Source.md">Build from Source</a></li>
+<li><a href="Debloat-Guide.md">Debloat Guide</a></li>
+<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

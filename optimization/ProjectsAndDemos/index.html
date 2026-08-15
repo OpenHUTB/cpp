@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Projects and Demos - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Projects and Demos";
+        var mkdocs_page_input_path = "optimization/ProjectsAndDemos.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Projects and Demos</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/ProjectsAndDemos.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="projects-and-demos">Projects and Demos</h1>
+<p><tldr></p>
+<p>
+Downloadable projects demonstrating Vite's features and establishing its performance numbers. Several are
+the benchmarks the <a href="Performance-Targets.md">performance targets</a> are measured against.
+</p>
+<p></tldr></p>
+<p>These fall into two groups: <strong>showcases</strong> that demonstrate what the engine can do visually, and
+<strong>benchmarks</strong> that establish what it costs. The benchmarks are the more useful of the two if you are
+deciding whether Vite fits your project.</p>
+<h2 id="showcases">Showcases</h2>
+<table>
+<thead>
+<tr>
+<th>Project</th>
+<th>Demonstrates</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="Tech-Demo-Project.md">Tech Demo Project</a></td>
+<td>DDGI, SSGI, Apex Destruction and Apex Cloth in one package</td>
+</tr>
+<tr>
+<td><a href="Stylized-Raytracing-Demo.md">Stylized Raytracing Demo</a></td>
+<td>Ray tracing applied to non-photoreal art direction</td>
+</tr>
+<tr>
+<td><a href="Callisto-BRDF-Demos.md">Callisto BRDF Demos</a></td>
+<td>The custom skin and character shading model</td>
+</tr>
+<tr>
+<td><a href="Abandone-Apartment.md">Abandoned Apartment</a></td>
+<td>Interior lighting scene</td>
+</tr>
+<tr>
+<td><a href="Attic-Scene.md">Attic Scene</a></td>
+<td>Interior lighting scene</td>
+</tr>
+<tr>
+<td><a href="Crash-Bandicoot.md">Crash Bandicoot: Timetwister</a></td>
+<td>A complete gameplay level built on UE4</td>
+</tr>
+</tbody>
+</table>
+<h2 id="benchmarks">Benchmarks</h2>
+<table>
+<thead>
+<tr>
+<th>Project</th>
+<th>Measures</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="400-Characters-CMC-Bench.md">400 Characters CMC Bench</a></td>
+<td>Character Movement Component cost at scale</td>
+</tr>
+<tr>
+<td><a href="Physics-Cube-Bench.md">Physics Cube Bench</a></td>
+<td>PhysX rigid body throughput</td>
+</tr>
+<tr>
+<td><a href="PhysXTest.md">PhysX Test</a></td>
+<td>General PhysX behaviour and stability</td>
+</tr>
+<tr>
+<td><a href="PhysX-Instanced-Subsystem.md">PhysX Instanced Subsystem</a></td>
+<td>Instanced rigid bodies at counts individual actors cannot reach</td>
+</tr>
+</tbody>
+</table>
+<h2 id="using-the-benchmarks">Using the benchmarks</h2>
+<p>The benchmarks are more informative than a frame rate number suggests. Run them with <code>stat unit</code> visible
+and note which thread is the limit &mdash; that tells you what a similar workload will cost you, and which
+of Vite's optimisations apply. See <a href="Profiling.md">Profiling</a>.</p>
+<p><note>
+Numbers from these projects reflect the hardware they were captured on. Vite's
+<a href="Coding-Guidelines.md">performance baseline</a> is an ARM-class ~1 GHz CPU, which is far below a
+development desktop. A benchmark that is comfortable on your machine may not be on your target.
+</note></p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="Performance-Targets.md">Performance Targets</a></li>
+<li><a href="Profiling.md">Profiling</a></li>
+<li><a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 versus UE5 Cost Analysis</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../js/umlconvert.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

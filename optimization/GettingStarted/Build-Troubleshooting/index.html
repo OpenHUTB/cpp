@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Build Troubleshooting - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Build Troubleshooting";
+        var mkdocs_page_input_path = "optimization/GettingStarted/Build-Troubleshooting.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Build Troubleshooting</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/GettingStarted/Build-Troubleshooting.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="build-troubleshooting">Build Troubleshooting</h1>
+<p><tldr></p>
+<p>
+Most build failures on Vite are toolchain failures wearing a disguise. Before investigating anything else,
+confirm you have exactly one MSVC toolset and one Windows SDK installed, matching
+<a href="Toolchain-Requirements.md">Toolchain Requirements</a>.
+</p>
+<p></tldr></p>
+<p>This page collects the errors that come up most often, what they actually mean, and how to clear them.</p>
+<h2 id="toolchain-errors">Toolchain errors</h2>
+<h3 id="error-c4668-__has_feature-is-not-defined-as-a-preprocessor-macro"><code>error C4668: '__has_feature' is not defined as a preprocessor macro</code></h3>
+<p>This is the signature error of a toolchain mismatch. Unreal Engine 4.27 predates the MSVC version you have
+installed, and UBT has selected a toolset whose preprocessor behaviour the engine's headers do not expect.</p>
+<p><strong>Fix.</strong> Install a supported MSVC version, remove the others, and pin the SDK in <code>BuildConfiguration.xml</code>.
+See <a href="../Toolchain-Requirements/">Toolchain Requirements</a>. Regenerate project files after changing anything.</p>
+<h3 id="unrealbuildtool-picks-the-wrong-compiler-or-sdk">UnrealBuildTool picks the wrong compiler or SDK</h3>
+<p>UBT autodetects by scanning installed toolsets and generally prefers the newest. When you have several
+installed, that is often not the one you want.</p>
+<p><strong>Fix.</strong> Pin both explicitly in <code>%APPDATA%\Unreal Engine\UnrealBuildTool\BuildConfiguration.xml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;</span>
+<span class="nt">&lt;Configuration</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;https://www.unrealengine.com/BuildConfiguration&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;WindowsPlatform&gt;</span>
+<span class="w">        </span><span class="nt">&lt;Compiler&gt;</span>VisualStudio2022<span class="nt">&lt;/Compiler&gt;</span>
+<span class="w">        </span><span class="nt">&lt;WindowsSdkVersion&gt;</span>10.0.26100.0<span class="nt">&lt;/WindowsSdkVersion&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/WindowsPlatform&gt;</span>
+<span class="nt">&lt;/Configuration&gt;</span>
+</code></pre></div>
+<p>Then run <code>GenerateProjectFiles.bat</code> again. Watch the build log just before linking to confirm the toolchain
+UBT reports is the one you intended.</p>
+<h3 id="vitesetupbat-refuses-to-continue-with-a-fail-line"><code>ViteSetup.bat</code> refuses to continue with a <code>[FAIL]</code> line</h3>
+<p>The assistant enforces its toolchain requirements deliberately and offers no bypass. The failing line names
+the missing component. Note that the assistant currently pins Visual Studio 2022, MSVC 14.44 and Windows SDK
+10.0.26100.7705 or higher; if you are on the newer VS 2026 / MSVC 14.50 toolchain, either build manually as
+described in <a href="../Build-From-Source/">Building from Source</a>, or update the <code>REQUIRED_*</code> variables at the top
+of the script.</p>
+<h3 id="c-tool-projects-fail-to-build-swarmagent-networkprofiler-unrealcontrols">C# tool projects fail to build (SwarmAgent, NetworkProfiler, UnrealControls)</h3>
+<p>These target .NET Framework 4.5, whose targeting pack modern Visual Studio installers no longer ship.</p>
+<p><strong>Fix.</strong> Install it, as described in <a href="../Toolchain-Requirements/">Toolchain Requirements</a>. A <code>v4.5</code> folder
+containing only XML files is a runtime stub, not a targeting pack &mdash; check for
+<code>v4.5\RedistList\FrameworkList.xml</code>.</p>
+<h2 id="dependency-and-setup-errors">Dependency and setup errors</h2>
+<h3 id="setupbat-fails-to-download-dependencies"><code>Setup.bat</code> fails to download dependencies</h3>
+<p>In stock Unreal Engine 4.27 this happens because the GitDeps endpoints have moved. <strong>Vite already ships the
+fix</strong>, so if you are seeing download failures on this fork, the cause is environmental: a proxy, a firewall,
+or an interrupted earlier run leaving a corrupt cache.</p>
+<p><strong>Fix.</strong> Delete the <code>UE4_Source_Cache</code> folder in the repository root and run <code>Setup.bat</code> again.
+<code>ViteSetup.bat</code> removes this cache automatically after a successful setup.</p>
+<h3 id="setupbat-asks-to-overwrite-local-changes"><code>Setup.bat</code> asks to overwrite local changes</h3>
+<p>Answer <code>N</code>. Answering <code>Y</code> reverts fork-specific files to their upstream state and will break the build.</p>
+<h3 id="missing-astcencexe-or-other-third-party-tools-in-a-win64-build">Missing <code>astcenc.exe</code> or other third-party tools in a Win64 build</h3>
+<p>You excluded the Win32 folders during setup. Win64 installed builds depend on tools that live under Win32,
+including <code>ARM\Win32\astcenc.exe</code>.</p>
+<p><strong>Fix.</strong> Re-run <code>Setup.bat</code> without any <code>-exclude=Win32</code> argument. The <code>ViteSetup.bat</code> presets never exclude
+Win32 for this reason.</p>
+<h2 id="compile-and-link-errors">Compile and link errors</h2>
+<h3 id="out-of-memory-or-heap-exhaustion-during-compilation">Out of memory or heap exhaustion during compilation</h3>
+<p>Unreal's unity build system compiles very large translation units and parallelises aggressively. On machines
+with high core counts and modest RAM, the default parallelism can exhaust memory.</p>
+<p><strong>Fix.</strong> Limit parallel actions in <code>BuildConfiguration.xml</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;</span>
+<span class="nt">&lt;Configuration</span><span class="w"> </span><span class="na">xmlns=</span><span class="s">&quot;https://www.unrealengine.com/BuildConfiguration&quot;</span><span class="nt">&gt;</span>
+<span class="w">    </span><span class="nt">&lt;ParallelExecutor&gt;</span>
+<span class="w">        </span><span class="nt">&lt;MaxProcessorCount&gt;</span>12<span class="nt">&lt;/MaxProcessorCount&gt;</span>
+<span class="w">    </span><span class="nt">&lt;/ParallelExecutor&gt;</span>
+<span class="nt">&lt;/Configuration&gt;</span>
+</code></pre></div>
+<h3 id="the-editor-builds-but-fails-to-launch">The editor builds but fails to launch</h3>
+<p>Confirm all three targets were built: <code>UE4Editor</code>, <code>ShaderCompileWorker</code> and <code>UnrealLightmass</code>. Building
+only the editor target produces a binary that starts and then fails as soon as it needs to compile a shader.</p>
+<h3 id="stale-shaders-or-derived-data-after-pulling-engine-changes">Stale shaders or derived data after pulling engine changes</h3>
+<p>Rendering changes invalidate the shader cache. If you see shader compilation errors, missing materials or
+visual corruption after a pull, wipe the engine-level caches:</p>
+<div class="highlight"><pre><span></span><code>WipeShaderCache.bat
+</code></pre></div>
+<p>This removes <code>Engine\DerivedDataCache</code>, <code>Engine\Intermediate\Shaders</code> and <code>Engine\Saved\ShaderDebugInfo</code>.
+The engine rebuilds them on the next launch, which will take a while. Close the editor and any
+<code>ShaderCompileWorker</code> processes first, or the deletion will fail. See
+<a href="Cache-Management.md">Cache Management</a>.</p>
+<h2 id="runtime-issues-after-a-successful-build">Runtime issues after a successful build</h2>
+<h3 id="a-new-project-runs-much-slower-than-expected">A new project runs much slower than expected</h3>
+<p>Ray tracing is enabled by default in Vite, including shadows, reflections, translucency and ambient
+occlusion. This is intentional so that the features are discoverable, but it means an empty project is
+heavier than a stock 4.27 one.</p>
+<p><strong>Fix.</strong> Disable the effects you do not need. See <a href="Ray-Tracing.md">Ray Tracing</a> for the console variables.</p>
+<h3 id="gameplay-behaves-differently-from-stock-427">Gameplay behaves differently from stock 4.27</h3>
+<p>Vite changes several engine defaults for performance, and some of them affect behaviour rather than just
+frame time &mdash; overlap events are disabled by default on primitive components, for instance.</p>
+<p><strong>Fix.</strong> Read <a href="Engine-Defaults.md">Engine Default Changes</a> in full. Every changed default is listed there
+with a link to the commit that changed it.</p>
+<h2 id="getting-help">Getting help</h2>
+<p>If none of the above applies, the <code>#support</code> channels on the
+<a href="https://discord.gg/n9zQrYFhMb">community Discord</a> are the fastest route. Include your Visual Studio
+version, MSVC toolset version, Windows SDK version, the branch you are building, and the first error in the
+log rather than the last &mdash; Unreal's build output cascades, and the final error is rarely the useful
+one.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Toolchain-Requirements/">Toolchain Requirements</a></li>
+<li><a href="../Build-From-Source/">Building from Source</a></li>
+<li><a href="Cache-Management.md">Cache Management</a></li>
+<li><a href="Engine-Defaults.md">Engine Default Changes</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

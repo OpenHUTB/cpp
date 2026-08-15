@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Fixed Timestep - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Fixed Timestep";
+        var mkdocs_page_input_path = "optimization/Physics/Fixed-Timestep.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Fixed Timestep</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Physics/Fixed-Timestep.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="fixed-timestep">Fixed Timestep</h1>
+<p><tldr></p>
+<p>
+An optional Vite feature that steps PhysX at a fixed rate independent of frame rate, with render
+interpolation so motion stays smooth. Compile-time switch <code>VITE_PHYSX_FIXED_TIMESTEP</code>
+(default <code>0</code>), runtime CVar <code>p.VitePhysXFixedTimestep.Enabled</code>.
+</p>
+<p></tldr></p>
+<p>By default, Unreal steps physics with the frame's delta time. A frame that took 8&nbsp;ms steps physics by
+8&nbsp;ms; a frame that took 33&nbsp;ms steps by 33&nbsp;ms. Simulation results therefore depend on frame
+rate, which means the same input produces different outcomes on different hardware, and a replay recorded on
+one machine does not reproduce on another.</p>
+<p>Vite's fixed timestep mode decouples the two. Physics always advances in identical increments; the renderer
+interpolates between the two most recent physics states to keep motion smooth.</p>
+<h2 id="enabling">Enabling</h2>
+<p>This is a two-stage opt-in. The feature is compiled out by default.</p>
+<p><procedure title="Enable fixed timestep physics" id="enable-fixed-timestep">
+    <step>
+        Set <code>VITE_PHYSX_FIXED_TIMESTEP</code> to <code>1</code>. See
+        <a href="Compile-Time-Switches.md">Compile-Time Switches</a> for how to override it without
+        editing <code>CoreDefines.h</code>.
+    </step>
+    <step>Rebuild the engine.</step>
+    <step>
+        Set <code>p.VitePhysXFixedTimestep.Enabled 1</code> at runtime, or in
+        <code>DefaultEngine.ini</code>.
+    </step>
+    <step>
+        Enable substepping in <b>Project Settings &gt; Engine &gt; Physics</b>. The fixed-step
+        implementation runs through the substepping path.
+    </step>
+</procedure></p>
+<p>The compile-time gate exists because the feature changes hot paths in the physics scene, the substep task
+and the animation physics blend. Projects that do not need determinism should not pay for the extra branches
+and the double-buffered transform storage.</p>
+<h2 id="console-variables">Console variables</h2>
+<p>All of these exist only when <code>VITE_PHYSX_FIXED_TIMESTEP</code> is compiled in.</p>
+<table>
+<thead>
+<tr>
+<th>CVar</th>
+<th>Default</th>
+<th>Range</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>p.VitePhysXFixedTimestep.Enabled</code></td>
+<td><code>0</code></td>
+<td>0/1</td>
+<td>Master enable</td>
+</tr>
+<tr>
+<td><code>p.VitePhysXFixedTimestep.DeltaTime</code></td>
+<td><code>0.01667</code> (1/60)</td>
+<td>0.0013&ndash;1.0</td>
+<td>Fixed simulation step in seconds</td>
+</tr>
+<tr>
+<td><code>p.VitePhysXFixedTimestep.MaxTimesteps</code></td>
+<td><code>16</code></td>
+<td>1&ndash;50</td>
+<td>Maximum fixed steps per game tick before overload accumulates</td>
+</tr>
+<tr>
+<td><code>p.VitePhysXFixedTimestep.MaxCumulativeExtraSteps</code></td>
+<td><code>50</code></td>
+<td>0&ndash;100</td>
+<td>Cumulative overload budget before the limit policy applies</td>
+</tr>
+<tr>
+<td><code>p.VitePhysXFixedTimestep.LimitType</code></td>
+<td><code>0</code></td>
+<td>0/1</td>
+<td><code>0</code> clamp fixed steps, <code>1</code> fall back to variable substeps</td>
+</tr>
+<tr>
+<td><code>p.VitePhysXFixedTimestep.InterpolationMode</code></td>
+<td><code>1</code></td>
+<td>0/1/2</td>
+<td><code>0</code> disabled, <code>1</code> per component, <code>2</code> always</td>
+</tr>
+</tbody>
+</table>
+<h2 id="how-it-works">How it works</h2>
+<p>The implementation maintains a time accumulator. Each game tick adds the frame's delta to the accumulator,
+then runs as many whole fixed steps as fit. The remainder stays in the accumulator for next frame.</p>
+<p>Because a fast frame may fit zero fixed steps and a slow frame may fit several, the system has to handle two
+things carefully.</p>
+<p><strong>Buffers are not rotated on frames with no physics step.</strong> Standard substepping swaps the physics target
+buffers unconditionally. In fixed-step mode the swap is deferred until a step actually happens, which
+preserves one-shot forces, kinematic targets and custom physics callbacks that were queued during a frame
+that did not step. Without this, an impulse applied on a zero-step frame would be silently discarded.</p>
+<p><strong>Results are only fetched when a step occurred.</strong> <code>fetchResults</code> is skipped on frames with no simulation,
+avoiding redundant work and stale transform reads.</p>
+<h2 id="overload-handling">Overload handling</h2>
+<p>If the game cannot keep up &mdash; a long hitch, or a physics load too heavy for the fixed rate &mdash; the
+accumulator grows faster than it drains. Left alone this becomes a death spiral: each frame takes longer,
+which queues more steps, which makes the next frame longer still.</p>
+<p>Two limits prevent that. <code>MaxTimesteps</code> caps steps per tick. Overload beyond that cap accumulates against
+<code>MaxCumulativeExtraSteps</code>, and when that budget is exhausted, <code>LimitType</code> decides what happens:</p>
+<table>
+<thead>
+<tr>
+<th><code>LimitType</code></th>
+<th>Behaviour</th>
+<th>Use when</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code> &mdash; Clamp</td>
+<td>Discard excess accumulated time. Simulation falls behind wall-clock time.</td>
+<td>Determinism matters more than real-time correspondence: replays, deterministic tests</td>
+</tr>
+<tr>
+<td><code>1</code> &mdash; Variable substeps</td>
+<td>Fall back to normal variable-step substepping until caught up.</td>
+<td>Real-time correspondence matters more: general gameplay</td>
+</tr>
+</tbody>
+</table>
+<p>Clamping means physics runs in slow motion under sustained overload but remains bit-identical for a given
+step sequence. Falling back to variable substeps keeps things real-time but sacrifices determinism for the
+frames where it engages.</p>
+<h2 id="render-interpolation">Render interpolation</h2>
+<p>Fixed stepping at 60&nbsp;Hz while rendering at 120&nbsp;fps would show each physics state twice without
+interpolation, producing visible judder. The system stores the two most recent completed transforms per body
+(<code>PreviousPhysicsTransform</code> and <code>LatestPhysicsTransform</code>) and blends between them using the accumulator's
+fractional remainder.</p>
+<p><code>InterpolationMode</code> controls how widely this applies:</p>
+<ul>
+<li><strong><code>0</code> Disabled.</strong> No interpolation. Bodies snap to the latest physics state. Cheapest, and correct if your
+  render rate matches your fixed step rate exactly.</li>
+<li><strong><code>1</code> Per component (default).</strong> Interpolates only bodies whose <code>bInterpolateWhenSubStepping</code> flag is set.
+  The engine clears this flag for bodies where interpolation cannot be observed &mdash; kinematic
+  query-only bodies, for instance &mdash; so this mode gets the visual benefit without paying for bodies
+  that do not need it.</li>
+<li><strong><code>2</code> Always.</strong> Interpolates every body unconditionally.</li>
+</ul>
+<p>Interpolation applies to both rigid bodies and the skeletal mesh physics blend, so ragdolls and
+physics-blended animation stay smooth.</p>
+<h2 id="choosing-a-step-rate">Choosing a step rate</h2>
+<p><code>DeltaTime</code> is the central tuning decision.</p>
+<table>
+<thead>
+<tr>
+<th>Step rate</th>
+<th>Value</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>30&nbsp;Hz</td>
+<td><code>0.03333</code></td>
+<td>Cheapest. Acceptable for slow, heavy objects. Fast bodies will tunnel.</td>
+</tr>
+<tr>
+<td>60&nbsp;Hz</td>
+<td><code>0.01667</code></td>
+<td>Default. Good general choice.</td>
+</tr>
+<tr>
+<td>120&nbsp;Hz</td>
+<td><code>0.00833</code></td>
+<td>Better for fast projectiles and tight constraints. Roughly double the CPU cost.</td>
+</tr>
+</tbody>
+</table>
+<p>Physics cost scales linearly with step rate, so 120&nbsp;Hz stepping costs about twice 60&nbsp;Hz. Pick the
+lowest rate that keeps your fastest-moving simulated bodies stable, and use CCD rather than a higher step
+rate to solve isolated tunnelling problems.</p>
+<blockquote>
+<p>Choose the step rate early and do not change it after content is tuned. Physics content &mdash; impulse
+magnitudes, constraint stiffness, damping values &mdash; is implicitly tuned against the step rate.
+Changing it late means retuning everything.</p>
+<p>{style="warning"}</p>
+</blockquote>
+<h2 id="when-to-use-this">When to use this</h2>
+<p><strong>Use fixed timestep for</strong> deterministic replays, networked physics where client and server must agree,
+automated tests that assert on physics outcomes, and any game where identical input must produce identical
+results across machines.</p>
+<p><strong>Do not use it for</strong> projects with no determinism requirement. The default variable-step path is cheaper
+and the compile-time switch defaults to off for that reason.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../PhysX/">PhysX</a></li>
+<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
+<li><a href="../Instanced-Physics/">Instanced Physics Subsystem</a></li>
+<li><a href="Profiling.md">Profiling</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

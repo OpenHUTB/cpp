@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Ray-Traced Translucency and Caustics - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Ray-Traced Translucency and Caustics";
+        var mkdocs_page_input_path = "optimization/Rendering/RT-Translucency-And-Caustics.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Ray-Traced Translucency and Caustics</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/RT-Translucency-And-Caustics.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="ray-traced-translucency-and-caustics">Ray-Traced Translucency and Caustics</h1>
+<p><tldr></p>
+<p>
+Hybrid translucency lets rasterised and ray-traced translucency coexist. <code>r.RayTracing.Translucency 3</code>
+plus absorption is the recommended high-quality setup. Mesh and water caustics are separate systems
+enabled with <code>r.RayTracing.MeshCaustics.Enable</code> and <code>r.RayTracing.WaterCaustics.Type</code>.
+</p>
+<p></tldr></p>
+<p>These features come from NVIDIA's NvRTX 4.27 Caustics branch, which is Vite's base. They are the most
+parameter-heavy part of the renderer, so this page is structured as a reference rather than a narrative.</p>
+<p><warning>
+<b>Everything on this page is compiled out in a default build.</b> Ray-traced translucency, mesh caustics
+and water caustics all have their shader permutations removed when <code>VITE_RT_PSO_DEBLOAT</code> is
+<code>1</code>, which is the default. Their console variables will set successfully and render nothing.</p>
+<p>
+Rebuild with <code>VITE_RT_PSO_DEBLOAT=0</code> to use them. See
+<a href="Compile-Time-Switches.md">Compile-Time Switches</a>.
+</p>
+<p></warning></p>
+<p>These are the most expensive effects in the ray tracing suite, and none of them fit inside Vite's
+<a href="Performance-Targets.md">performance targets</a> at 4K. They are documented here because the NvRTX lineage
+provides them and some projects will want them for cinematics, marketing captures or specific set pieces.</p>
+<blockquote>
+<p>All code and art assets of the RTX features inherited from the NvRTX Caustics branch are covered by the
+<a href="https://developer.nvidia.com/gameworks-source-sdk-eula">GameWorks license</a>.</p>
+<p>{style="note"}</p>
+</blockquote>
+<h2 id="translucency-modes">Translucency modes</h2>
+<p>Stock UE4 ray-traced translucency forces <em>all</em> translucency through the ray tracing pipeline, which makes
+unsupported primitive types such as Cascade particles disappear, and produces refraction behaviour that
+interacts unintuitively with content authored for rasterisation. Hybrid translucency solves this.</p>
+<table>
+<thead>
+<tr>
+<th><code>r.RayTracing.Translucency</code></th>
+<th>Mode</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code></td>
+<td>Stock UE4 ray-traced translucency off</td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td>Stock UE4 ray-traced translucency on</td>
+</tr>
+<tr>
+<td><code>2</code></td>
+<td>Hybrid Translucency 1 &mdash; ray-traced translucent reflection only</td>
+</tr>
+<tr>
+<td><code>3</code></td>
+<td>Hybrid Translucency 2 &mdash; ray-traced translucent reflection and refraction</td>
+</tr>
+</tbody>
+</table>
+<p>Hybrid modes require the <strong>Hybrid Translucency</strong> checkbox in project settings, because they permute the base
+translucency shaders. The corresponding shader support switch is
+<code>r.RayTracing.HybridTranslucencySupport</code>.</p>
+<h3 id="mode-2-reflection-only">Mode 2 &mdash; reflection only</h3>
+<p>Traces several layers of translucency to an off-screen surface, then composites them as part of normal
+raster translucency. It loses order-independent transparency and refraction relative to full ray-traced
+translucency, but it is no worse than raster in those areas while delivering ray-traced reflections and
+shading.</p>
+<table>
+<thead>
+<tr>
+<th>Console variable</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.RayTracing.Translucency.HybridLayers</code></td>
+<td>How many overlapping ray-traced translucency levels are tracked</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.Translucency.HybridDepthThreshold</code></td>
+<td>World-space separation at which geometry counts as a different translucency layer. Too small and hybrid translucency will not appear, or z-fighting artefacts occur; too large and stacked layers incorrectly merge.</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.Translucency.HalfRes</code></td>
+<td>0 full, 1 half vertically (interleaved), 2 half checkerboard (4-tap), 3 half checkerboard (2-tap vertical)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="mode-3-reflection-and-refraction">Mode 3 &mdash; reflection and refraction</h3>
+<p>Mixes raster and <em>fully</em> ray-traced translucency, including reflection, refraction and OIT support. Cascade
+particles can coexist with ray-traced translucency without losing its advantages. Order-independent
+transparency is automatic in this mode.</p>
+<p>This is the recommended mode for translucent meshes, used together with absorption.</p>
+<p>Recommended settings for best visual quality:</p>
+<div class="highlight"><pre><span></span><code>r.RayTracing.Translucency.Refraction 1
+r.RayTracing.Translucency.HybridLayers 5
+r.RayTracing.Translucency.MaxRefractionRays 5
+</code></pre></div>
+<p>In 4.27, when RT refraction is enabled under mode 3, per-material IOR is bound to the PBR-based refraction
+index input; the material's Refraction Mode input must be set to <strong>Index Of Refraction</strong>.</p>
+<p>Mode 3 also lets you choose per-mesh whether a translucent static mesh participates in ray tracing at all.
+Meshes excluded from ray tracing render through rasterisation, which lets you mix ray-traced and rasterised
+translucency in the same scene and can improve performance by reducing ray tracing pipeline workload.</p>
+<p>Additional notes for mode 3:</p>
+<ul>
+<li><code>r.RayTracing.Translucency.HybridDepthThreshold</code> does not apply. Use
+  <code>r.RayTracing.Translucency.PrimaryRayBias</code> instead to bias depth when determining layer ordering.</li>
+<li>Cascade and Niagara emitters spawning opaque meshes may disappear when fully occluded by ray-traced
+  translucent meshes, because some particle types cannot generate the BVH data hardware ray tracing
+  requires. This is a known stock UE4 behaviour that hybrid mode 2 does not change.</li>
+<li>Half-resolution refraction is available via <code>r.RayTracing.Translucency.HalfRes</code>: 0 full, 1 half
+  checkerboard with weighted colour reconstruction, 2 half checkerboard interframe, 3 half checkerboard with
+  average colour reconstruction. These reconstruction techniques are intended for use under TAA and need
+  careful tuning under DLSS, which can amplify pixel-level reconstruction artefacts.</li>
+</ul>
+<h2 id="translucent-absorption">Translucent absorption</h2>
+<p>With absorption enabled, thicker objects made of the same material appear less transparent, which is the
+physically correct behaviour and a large fidelity win on glass and liquids. Absorption is a per-material
+option, so objects with and without it render together.</p>
+<p><procedure title="Enable translucent absorption" id="enable-absorption">
+    <step>Ensure ray-traced translucency is enabled.</step>
+    <step>Set <code>r.RayTracing.Translucency.EnableAbsorption 1</code>, or check <b>Enable Absorption</b> in the post process volume.</step>
+    <step>In the material editor, check <b>Ray Traced Translucency Absorption</b> on each material that should use it.</step>
+</procedure></p>
+<p>Throughput culling reduces cost by discarding low-contribution ray paths:</p>
+<table>
+<thead>
+<tr>
+<th>Console variable</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.RayTracing.Translucency.MinRefractionThroughput</code></td>
+<td>Higher values cull more refraction rays. May introduce artefacts.</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.Translucency.MinReflectionThroughput</code></td>
+<td>Higher values cull more reflection rays. May introduce artefacts.</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.PrimaryRays.AbsorptionForceShadingOnOpaqueObjects</code></td>
+<td>Set to 1 to eliminate double-shading artefacts on transparent reflections where actors occlude background.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="depth-of-field-from-primary-rays">Depth of field from primary rays</h2>
+<p>Rasterised depth of field handles translucency poorly, particularly where Cascade particles intersect
+translucent glass. Ray tracing makes accurate cinematic DOF achievable.</p>
+<p><procedure title="Enable ray-traced depth of field" id="enable-rt-dof">
+    <step>Use a cine camera and apply depth of field as normal.</step>
+    <step>
+        Collect every translucent material in the camera frustum, including translucent particles. For each
+        root material, check <b>Output Translucency Depth</b> and ensure <b>Translucency Depth Opacity
+        Threshold</b> is lower than the material instance's opacity parameter.
+    </step>
+    <step>Set <code>r.RayTracing.PrimaryRays.IncludeDOF 1</code>.</step>
+</procedure></p>
+<p>Enhanced translucency mode 3, RT translucent reflection and refraction, and translucent absorption are all
+strongly recommended alongside RT DOF. DLSS is supported automatically.</p>
+<h2 id="mesh-caustics">Mesh caustics</h2>
+<p>Renders interactive caustics for translucent and metallic objects. Supports all four UE4 light types,
+multiple light sources, reflective and refractive caustics, dispersion and soft caustics.</p>
+<p><img src="MeshCaustics.jpg" alt="POV-Ray Glasses scene with ray-traced refractive caustics cast onto a tiled surface" border-effect="line"/></p>
+<p><em>The POV-Ray Glasses scene. Every bright pattern on the tile is a refractive caustic, traced rather than
+authored.</em></p>
+<p><img src="CausticsDispersion.jpg" alt="Prisms splitting a white beam into a spectrum through ray-traced dispersion" border-effect="line"/></p>
+<p><em>Dispersion. Requires </em><em>Ray Traced Caustics Dispersion Amount</em><em> above 0 in the material root node together
+with <code>r.RayTracing.MeshCaustics.EnableDispersion 1</code>.</em></p>
+<p><procedure title="Enable mesh caustics" id="enable-mesh-caustics">
+    <step>Enable ray tracing.</step>
+    <step>Check <b>Enabled</b> under <b>Ray Tracing Mesh Caustics</b> in the post process volume, or set <code>r.RayTracing.MeshCaustics.Enable 1</code>.</step>
+    <step>In light properties, check <b>Cast Mesh Caustics</b>.</step>
+    <step>
+        For metallic materials, check <b>Cast Ray Traced Reflection Caustics</b>. For translucent objects,
+        check <b>Cast Ray Traced Reflection Caustics</b> for reflective caustics and <b>Cast Ray Traced
+        Refraction Caustics</b> for refractive caustics.
+    </step>
+</procedure></p>
+<h3 id="feature-settings">Feature settings</h3>
+<p>Where a console variable is set to <code>-1</code>, the post process volume controls the actual value.</p>
+<table>
+<thead>
+<tr>
+<th>Console variable</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.RayTracing.MeshCaustics.EnableTranslucentReflection</code></td>
+<td>Reflective caustics for transparent objects</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.MeshCaustics.TranslucentReflectionMode</code></td>
+<td>0 refractive only, 1 refractive plus reflective first bounce, 2 reflective for arbitrary bounces</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.MeshCaustics.EnableDispersion</code></td>
+<td>Enables dispersion. Requires <strong>Ray Traced Caustics Dispersion Amount</strong> greater than 0 in the material root node.</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.MeshCaustics.DispersionSamples</code></td>
+<td>Colour samples used for dispersion</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.MeshCaustics.SoftCausticsSample</code></td>
+<td>Sample count for soft caustics. Requires <strong>Mesh Caustics Softness</strong> greater than 0 in light settings.</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.MeshCaustics.EnableAdvancedSoftCaustics</code></td>
+<td>Higher quality soft caustics algorithm</td>
+</tr>
+</tbody>
+</table>
+<p>To expose dispersion amount per material instance, check <strong>Ray Traced Caustics Use CustomData 0 As
+Dispersion Amount</strong> and connect a scalar to the Custom Data 0 channel, which makes the parameter tweakable
+at runtime.</p>
+<h3 id="performance-tuning">Performance tuning</h3>
+<p>The key to performance is limiting photon count. Set the view mode to
+<strong>Ray Tracing Debug &rarr; Mesh Caustics Debug Data</strong>, then set <strong>Debug Light Data Type</strong> to <strong>Photon
+Count</strong>. Around 100k photons produces decent results in typical cases. If the count is too high, increase
+<strong>Adaptive Photon Size</strong> and decrease <strong>Adaptive Variance Gain</strong> in the post process volume, and raise
+<strong>Final Cull Threshold</strong> and <strong>Mid Cull Threshold</strong> until caustics begin to disappear.</p>
+<table>
+<thead>
+<tr>
+<th>Console variable</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.RayTracing.MeshCaustics.FinalCullColorThreshold</code></td>
+<td>Culls low-contribution rays</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.MeshCaustics.MidCullColorThreshold</code></td>
+<td>Culls low-contribution rays</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.MeshCaustics.BufferScale</code></td>
+<td>-1 post process volume, 0 full, 1 half, 2 quarter resolution</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.MeshCaustics.AdaptivePhotonSize</code></td>
+<td>Target screen-space photon size. Smaller is more detailed and more expensive.</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.MeshCaustics.AdaptiveVarianceGain</code></td>
+<td>Higher values suppress flickering</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.MeshCaustics.EnableTemporalFilter</code></td>
+<td>Temporal filtering to reduce flicker</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.MeshCaustics.TemporalStrength</code></td>
+<td>Higher is more stable but can introduce lag or ghosting</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.MeshCaustics.MaxTraceDepth</code></td>
+<td>Limits bounce count; raises performance for translucent objects</td>
+</tr>
+</tbody>
+</table>
+<h2 id="water-caustics">Water caustics</h2>
+<p>Renders interactive caustics for water areas from ponds to open sea. Supports all four light types, multiple
+lights, reflective and refractive caustics, dispersion, soft caustics and cascaded caustics maps.</p>
+<p><img src="WaterCaustics.jpg" alt="Swimming pool floor lit by ray-traced water caustics with a character disturbing the surface" border-effect="line"/></p>
+<p><em>The Swimming Pool scene under a single directional light. The caustics respond to surface disturbance
+because they are traced against the water mesh each frame.</em></p>
+<p><procedure title="Enable water caustics" id="enable-water-caustics">
+    <step>Enable ray tracing.</step>
+    <step>Select a water caustics type in the post process volume, or set <code>r.RayTracing.WaterCaustics.Type</code> to 1 or 2.</step>
+    <step>In light properties, check <b>Cast Water Caustics</b>.</step>
+    <step>
+        On the water surface static mesh actor, check <b>Evaluate Ray Tracing Water Caustics</b> under the
+        Ray Tracing tab. The water surface material must use a Translucent blend mode.
+    </step>
+</procedure></p>
+<h3 id="choosing-an-algorithm">Choosing an algorithm</h3>
+<p><strong>Photon Difference Scattering (type 1)</strong> is flexible and works with all light types UE4 supports. It needs
+relatively high-resolution caustics maps to produce sharp patterns, so for large surfaces such as seas and
+large lakes, enable cascaded caustics maps alongside it. Cascades keep caustics sharp near the camera while
+rendering more cheaply at distance.</p>
+<p><strong>Procedural Caustic Mesh (type 2)</strong> produces very sharp caustics even from relatively low-resolution maps.
+It does not work with cascaded caustics maps, because it does not need them. It is usually faster than PDS,
+but it does not support area lights and can leave artefacts on the edges of caustics receivers.</p>
+<h3 id="settings">Settings</h3>
+<table>
+<thead>
+<tr>
+<th>Console variable</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.RayTracing.WaterCaustics.MaxReflectionRayDistance</code></td>
+<td>Set to 0 to disable reflective caustics</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.WaterCaustics.MaxRefractionRayDistance</code></td>
+<td>Set to 0 to disable refractive caustics</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.WaterCaustics.MapCascades</code></td>
+<td>Cascade count, up to 4 levels. Type 1 only.</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.WaterCaustics.MapSizeX</code> / <code>MapSizeY</code></td>
+<td>Caustics map size, default 2048. 1024 is often enough for a small pond and saves substantial performance.</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.WaterCaustics.NumDenoisePasses</code></td>
+<td>Default 2. Reduce to 0 for a sharper result.</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.WaterCaustics.UseSceneLightDir</code></td>
+<td>Set to 0 to capture the caustics map from above the camera rather than along the light direction. Directional lights only.</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.WaterCaustics.BufferScale</code></td>
+<td>1 full, 2 half, 4 quarter resolution</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.WaterCaustics.PhotonScale</code></td>
+<td>Initial photon size in PDS. Default 3.</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.WaterCaustics.ShowPhoton</code></td>
+<td>Debug: draws photons as points</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.WaterCaustics.RefractBackFaceCullingThreshold</code></td>
+<td>Set around -0.5 to ignore surface normals where cracks or seams appear</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.WaterCaustics.ReflectBackFaceCullingThreshold</code></td>
+<td>As above, for reflective caustics</td>
+</tr>
+</tbody>
+</table>
+<p>Restricting water caustics to a single dynamic light saves a great deal of performance; light distance
+culling and intensity fade are fully supported.</p>
+<p>Caustics focus depends on mesh and normal strength: large waves or strong normal map values produce more
+dramatic caustics. To enable dispersion, increase <strong>Dispersion Intensity</strong> in the post process volume and
+tune <strong>Dispersion Offset</strong>.</p>
+<h2 id="sample-content">Sample content</h2>
+<p>NVIDIA provides project files and packaged demos for these features:</p>
+<ul>
+<li><a href="https://drive.google.com/drive/folders/1MfJ1rLqwx8acdscFfQtaYOR2Cdm1WPz9?usp=sharing">All project files</a></li>
+<li><a href="https://drive.google.com/drive/folders/1yHFOtmZWVDof8GbfZJMeazfb927ahTDn?usp=sharing">All packaged demos</a></li>
+</ul>
+<p>Specific scenes: the POV-Ray Glasses scene for heavy refraction, a prism dispersion demonstration, the
+Swimming Pool scene for water caustics, and the Office scene mixing particles, reflections, refractions,
+mesh caustics and RTGI. See also <a href="Abandone-Apartment.md">Abandoned Apartment</a> and
+<a href="Attic-Scene.md">Attic Scene</a> in this manual.</p>
+<p><img src="RTOfficeScene.jpg" alt="Office scene combining volumetric light, translucent spheres, ray-traced reflections and refractions" border-effect="line"/></p>
+<p><em>The Office scene is the one that exercises the whole stack at once: particles, translucent reflection and
+refraction, mesh caustics and ray-traced GI in a single frame.</em></p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Ray-Tracing/">Ray Tracing</a></li>
+<li><a href="../RT-Reflections/">RT Reflections</a></li>
+<li><a href="../Upscalers/">Upscalers and Frame Generation</a></li>
+<li><a href="Console-Variables.md">Console Variable Reference</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Global Illumination - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Global Illumination";
+        var mkdocs_page_input_path = "optimization/Rendering/Global-Illumination.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Global Illumination</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/Global-Illumination.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="global-illumination">Global Illumination</h1>
+<p><tldr></p>
+<p>
+Vite's recommended GI setup is <b>Dynamic DDGI plus SSGI</b>. DDGI resolves world-scale bounce without
+noise; SSGI fills in the high-frequency contact detail that probe volumes are too coarse to capture.
+Enable with <code>r.GlobalIllumination.ExperimentalPlugin 1</code> and <code>r.SSGI.Enable 1</code>.
+</p>
+<p></tldr></p>
+<p>Global illumination is the single biggest reason Vite exists as a separate fork. This page explains the
+options and how to choose between them; the individual techniques have their own pages.</p>
+<h2 id="the-options">The options</h2>
+<table>
+<thead>
+<tr>
+<th>Solution</th>
+<th>Cost</th>
+<th>Requires DXR</th>
+<th>Dynamic lighting</th>
+<th>Best for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../DDGI-Dynamic/">Dynamic DDGI</a></td>
+<td>Low</td>
+<td>Yes</td>
+<td>Fully dynamic</td>
+<td>Almost everything</td>
+</tr>
+<tr>
+<td><a href="../DDGI-Static/">Static DDGI</a></td>
+<td>Near zero at runtime</td>
+<td>No</td>
+<td>Baked</td>
+<td>Low-end and no-DXR hardware</td>
+</tr>
+<tr>
+<td><a href="../SSGI/">SSGI</a></td>
+<td>Low</td>
+<td>No</td>
+<td>Fully dynamic</td>
+<td>High Frequency Detail, made to run alongside DDGI</td>
+</tr>
+<tr>
+<td><a href="../Ray-Tracing/">Per-pixel RT GI</a></td>
+<td>High</td>
+<td>Yes</td>
+<td>Fully dynamic</td>
+<td>GPUs non trivially faster than PS5, Reference</td>
+</tr>
+<tr>
+<td>Path-Tracing</td>
+<td>Ultra</td>
+<td>Yes</td>
+<td>Fully dynamic</td>
+<td>RTX 5080 and above, Ground Truth Reference</td>
+</tr>
+<tr>
+<td>Baked lightmaps</td>
+<td>Zero at runtime</td>
+<td>No</td>
+<td>Static only</td>
+<td>Fully static scenes, Always use CPU LightMass for maximum quality</td>
+</tr>
+</tbody>
+</table>
+<p><note>
+"Vite includes several secondary Indirect Bounce solutions, such as Distance Fields Bounce and IBL capture (Vite specific addition). 
+These are rarely considered over the solutions listed above, except for very specific target platforms or specialized setups."
+</note></p>
+<h2 id="why-ddgi-rather-than-lumen">Why DDGI rather than Lumen</h2>
+<p>Dynamic Diffuse Global Illumination stores irradiance in a grid of probes and filters it using spherical
+harmonics. Because the representation is smooth by construction, the result is noise-free without a
+denoiser &mdash; which is the root cause of most of its advantages over Lumen.</p>
+<p>Against Software Lumen, DDGI provides higher quality bounce and less light leaking. Against Hardware Lumen,
+it is comparable for bounce quality while typically running around twice as fast (End Scene FPS not just the isolated GI cost).
+In one representative test scene at 1440p native on an RTX 4080 Super, DDGI measured 811 FPS against Lumen 5.7's 324 FPS. 
+On AMD hardware the technique holds up well: the same class of test scene runs at 245 FPS at 1080p native on an
+RX 6600.</p>
+<p>DDGI is also not experimental technology. Implementations ship in Metro Exodus, Overwatch 2, The Finals,
+Control, The Witcher 3, Warhammer 40,000: Darktide, DOOM: The Dark Ages, Indiana Jones and the Great Circle,
+007 First Light, Ghost of Yotei and Star Wars Outlaws including its Switch 2 version. AAA engines including
+Anvil and Snowdrop use DDGI probes as part of their ray-traced GI pipelines. The technique was designed to
+scale across a wide hardware range, starting from Xbox One S GPU for Static Mode and GTX 1060 class GPUs for Dynamic RT mode.</p>
+<p><img src="StylizedRTDemo.png" alt="Stylized scene lit by Dynamic DDGI with the frame counter reading 811 FPS" border-effect="line"/></p>
+<p><em>811 FPS, RTX 4080 Super, 1440p native, Dynamic DDGI. The same scene on Lumen in 5.7 measures 324 FPS.</em></p>
+<p><img src="DDGIEmissiveSurfaces.png" alt="Interior lit by emissive surfaces contributing to DDGI" border-effect="line"/></p>
+<p><em>Emissive materials contribute to DDGI directly, so a scene can be lit from emissive geometry without
+placing light actors for it.</em></p>
+<h2 id="why-pair-ddgi-with-ssgi">Why pair DDGI with SSGI</h2>
+<p>Probe volumes have a spatial resolution. Detail smaller than the probe spacing &mdash; the darkening where a
+chair leg meets the floor, bounce inside a narrow gap, contact shading under a desk &mdash; is not
+represented, because there is no probe there to represent it.</p>
+<p>Screen-space GI operates at pixel resolution and captures exactly that. The two techniques have shortcomings in opposite
+directions: SSGI has no information about anything off-screen or occluded, while DDGI has complete world
+knowledge at coarse resolution. Running both gives you world-scale bounce from DDGI and high-frequency
+contact detail from SSGI. This is an officially recommended setup by NVIDIA from their Unreal Engine DDGI 
+presentations. Vite's SSGI is configured to work alongside DDGI from the get-go.</p>
+<p>This is not possible in UE5. SSGI regressed in both quality and performance when it was folded into Lumen,
+and can no longer be enabled alongside a separate GI solution. In Vite it is the UE4-era implementation and
+composes cleanly.</p>
+<h2 id="enabling-the-recommended-setup">Enabling the recommended setup</h2>
+<div class="highlight"><pre><span></span><code><span class="n">IConsoleManager</span><span class="o">::</span><span class="n">Get</span><span class="p">().</span><span class="n">FindConsoleVariable</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.GlobalIllumination.ExperimentalPlugin&quot;</span><span class="p">))</span><span class="o">-&gt;</span><span class="n">Set</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="n">IConsoleManager</span><span class="o">::</span><span class="n">Get</span><span class="p">().</span><span class="n">FindConsoleVariable</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.SSGI.Enable&quot;</span><span class="p">))</span><span class="o">-&gt;</span><span class="n">Set</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+</code></pre></div>
+<p>Or in configuration, which is preferable for shipping projects because it participates in scalability:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">; Config/DefaultEngine.ini</span>
+<span class="k">[/Script/Engine.RendererSettings]</span>
+<span class="na">r.GlobalIllumination.ExperimentalPlugin</span><span class="o">=</span><span class="s">1</span>
+<span class="na">r.SSGI.Enable</span><span class="o">=</span><span class="s">1</span>
+</code></pre></div>
+<p>You then need to place DDGI volumes in the level. See <a href="../DDGI-Dynamic/">Dynamic DDGI</a> for volume setup,
+probe density and the settings that matter.</p>
+<h2 id="choosing-for-your-hardware-floor">Choosing for your hardware floor</h2>
+<p><procedure title="Pick a GI configuration" id="pick-gi">
+    <step>
+        If your minimum spec has DXR support, use Dynamic DDGI plus SSGI. This is the default
+        recommendation and covers GTX 1060 6&nbsp;GB and above.
+    </step>
+    <step>
+        If your minimum spec has no DXR support at all, use
+        <a href="DDGI-Static.md">Static DDGI</a>. It bakes almost instantly, gives better bounce fidelity
+        than traditional baked lighting, and handles moving objects better because the probe volumes
+        cover the space rather than the surfaces.
+    </step>
+    <step>
+        If you need to support both, ship Static DDGI as a scalability fallback. The volumes and authoring
+        are shared between the two modes, so this is a scalability setting rather than a second lighting
+        pass through the level.
+    </step>
+    <step>
+        Only reach for per-pixel ray-traced GI if you are producing reference imagery or
+        previsualisation. It is far more expensive than DDGI and its advantage does not survive a
+        frame-time budget. It is also compiled out of a default build and requires rebuilding with
+        <code>VITE_RT_PSO_DEBLOAT=0</code> &mdash; see
+        <a href="Compile-Time-Switches.md">Compile-Time Switches</a>.
+    </step>
+</procedure></p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../DDGI-Dynamic/">Dynamic DDGI</a></li>
+<li><a href="../DDGI-Static/">Static DDGI</a></li>
+<li><a href="../SSGI/">SSGI</a></li>
+<li><a href="../Ray-Tracing/">Ray Tracing</a></li>
+<li><a href="Performance-Targets.md">Performance Targets</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

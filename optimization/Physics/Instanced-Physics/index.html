@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Instanced Physics Subsystem - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Instanced Physics Subsystem";
+        var mkdocs_page_input_path = "optimization/Physics/Instanced-Physics.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Instanced Physics Subsystem</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Physics/Instanced-Physics.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="instanced-physics-subsystem">Instanced Physics Subsystem</h1>
+<p><tldr></p>
+<p>
+A Vite plugin that gives individual instances of an Instanced Static Mesh component their own PhysX
+rigid bodies, controlled through stable numeric handles. Built for simulating thousands of objects
+where one actor per object would be unaffordable.
+</p>
+<p></tldr></p>
+<p>The standard way to simulate many objects in Unreal is one actor per object, each with a primitive
+component and a body instance. That works up to a few hundred objects and then falls apart: actor overhead,
+component ticking, transform propagation and scene graph updates cost more than the physics itself.</p>
+<p>The PhysX Instanced Subsystem separates the two concerns. Rendering goes through a single Instanced Static
+Mesh component; physics goes through PhysX bodies the subsystem owns directly. There are no per-object
+actors and no per-object components.</p>
+<table>
+<thead>
+<tr>
+<th>Detail</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Plugin</td>
+<td><code>Engine/Plugins/Runtime/VitePlugins/PhysXInstancedSubsystem</code></td>
+</tr>
+<tr>
+<td>Module</td>
+<td><code>PhysXInstancedSubsystem</code></td>
+</tr>
+<tr>
+<td>Subsystem</td>
+<td><code>UPhysXInstancedWorldSubsystem</code> (tickable world subsystem)</td>
+</tr>
+<tr>
+<td>Actor</td>
+<td><code>APhysXInstancedMeshActor</code></td>
+</tr>
+<tr>
+<td>Component</td>
+<td><code>UPhysXInstancedStaticMeshComponent</code></td>
+</tr>
+<tr>
+<td>Author</td>
+<td>NordVader Inc.</td>
+</tr>
+</tbody>
+</table>
+<p>See the <a href="PhysX-Instanced-Subsystem.md">PhysX Instanced Subsystem demo</a> for a working project.</p>
+<h2 id="core-concepts">Core concepts</h2>
+<p><strong>Instances are addressed by handle, not pointer.</strong> <code>FPhysXInstanceID</code> wraps a <code>uint32</code>, where <code>0</code> means
+invalid. Handles stay stable even when instances move between actors, which matters because ISM instance
+indices shift when instances are removed. Gameplay code holds handles; the subsystem maintains the mapping
+from handle to component and index.</p>
+<p><strong>Dynamic and storage instances are different states of the same instance.</strong> A dynamic instance has a
+PhysX body and simulates. A storage instance lives on a separate storage actor with no PhysX body at all.
+Converting between the two preserves the handle. This is the central performance mechanism: debris that has
+come to rest converts to storage, costs nothing to simulate, and stays visible.</p>
+<p><strong>Work is budgeted per frame.</strong> Creating PhysX bodies, applying forces and expiring lifetimes are all
+queued and processed against per-frame limits, so spawning ten thousand instances in one frame does not
+produce a ten-thousand-body hitch.</p>
+<h2 id="setting-up-an-actor">Setting up an actor</h2>
+<p>Place an <code>APhysXInstancedMeshActor</code> in the level and configure it in the details panel under
+<strong>Phys X Instance</strong>.</p>
+<p><procedure title="Configure an instanced physics actor" id="setup-instanced-actor">
+    <step>Set <b>Static Mesh</b>, and override materials if needed.</step>
+    <step>
+        Choose a <b>Spawn Mode</b>. <b>Manual</b> uses the <b>Instance Relative Transforms</b> array;
+        <b>Grid</b> generates a rows &times; columns &times; layers grid from the spacing settings, which
+        is convenient for benchmarks and test scenes.
+    </step>
+    <step>
+        Set <b>Instance Shape Type</b>. Box, Sphere and Capsule are cheapest; <b>Convex Mesh</b> is
+        accurate and moderately priced; <b>Triangle Mesh</b> is static or kinematic only.
+    </step>
+    <step>
+        Set <b>Simulate Instances</b> and <b>Instances Use Gravity</b>, plus mass override and damping if
+        the defaults are wrong for your object.
+    </step>
+    <step>
+        Leave <b>Disable ISM Physics</b> enabled so the render component does not create its own collision
+        alongside the subsystem's bodies.
+    </step>
+    <step>
+        Enable <b>Auto Register On Begin Play</b>, or call <code>BuildAndRegisterInstances</code>, which is
+        also callable from the editor.
+    </step>
+</procedure></p>
+<p>If no collision mesh is specified for Convex or Triangle shapes, the render mesh is used. Mass is computed
+from the physical material's density on the collision mesh, converted from g/cm³ to kg/m³, and scaled by the
+component's mass scale.</p>
+<h2 id="auto-stop">Auto-stop</h2>
+<p>Auto-stop is what makes large-scale simulation affordable. It detects instances that have effectively
+stopped moving and does something cheaper with them.</p>
+<p>Configure it in <strong>Phys X Instance &gt; Runtime &gt; Auto Stop Config</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enable Auto Stop</td>
+<td><code>false</code></td>
+<td>Master enable</td>
+</tr>
+<tr>
+<td>Condition</td>
+<td>PhysX sleep flag</td>
+<td>How "stopped" is determined</td>
+</tr>
+<tr>
+<td>Linear Speed Threshold</td>
+<td><code>5.0</code> cm/s</td>
+<td>Used by velocity-based conditions</td>
+</tr>
+<tr>
+<td>Angular Speed Threshold</td>
+<td><code>5.0</code> deg/s</td>
+<td>Used by velocity-based conditions</td>
+</tr>
+<tr>
+<td>Min Stopped Time</td>
+<td><code>0.5</code> s</td>
+<td>How long the condition must hold before acting</td>
+</tr>
+<tr>
+<td>Action</td>
+<td>Destroy Body</td>
+<td>What happens when it fires</td>
+</tr>
+</tbody>
+</table>
+<p>Conditions are <strong>PhysX sleep flag only</strong>, <strong>velocity thresholds only</strong>, <strong>sleep OR velocity</strong>, or
+<strong>sleep AND velocity</strong>. The sleep flag is cheapest and usually sufficient; velocity thresholds catch bodies
+that are drifting slowly enough to be visually stopped but not sleeping.</p>
+<p>Actions, in ascending order of aggressiveness:</p>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Do nothing</td>
+<td>Track state only</td>
+</tr>
+<tr>
+<td>Disable simulation (keep body)</td>
+<td>Body stays but stops simulating</td>
+</tr>
+<tr>
+<td>Destroy body (keep instance)</td>
+<td>PhysX body freed, visual instance remains in place</td>
+</tr>
+<tr>
+<td>Destroy body and remove instance</td>
+<td>Both freed. Shifts ISM indices &mdash; use handles, not indices.</td>
+</tr>
+<tr>
+<td>Convert to storage</td>
+<td>Instance moves to a storage actor, body freed, handle preserved</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Convert to storage</strong> is usually the right choice for debris you want to keep visible. <strong>Destroy body</strong> is
+right when you want the object to remain but never move again.</p>
+<h3 id="safety-rules">Safety rules</h3>
+<p>Two additional rules catch instances that will never stop on their own:</p>
+<ul>
+<li><strong>Max Fall Time</strong> fires the stop action after an instance has been falling continuously for longer than
+  the threshold. Catches objects that fell through world geometry.</li>
+<li><strong>Max Distance From Actor</strong> fires when an instance travels further than the threshold from its owner.
+  Catches objects launched by a bad impulse.</li>
+</ul>
+<p>Separately, <strong>Use Custom Kill Z</strong> with a <strong>Custom Kill Z</strong> height and a <strong>Lost Instance Action</strong> handles
+instances that fall below a world Z threshold.</p>
+<h2 id="lifetime">Lifetime</h2>
+<p>Instances can expire on a timer. Set <strong>Enable Lifetime</strong>, a <strong>Default Life Time Seconds</strong> and a
+<strong>Default Lifetime Action</strong> on the actor, or override per spawn through the spawn request.</p>
+<p>Expirations are held in a min-heap keyed on expiry time, so the per-frame cost is proportional to the number
+of instances actually expiring rather than the total instance count.</p>
+<h2 id="continuous-collision-detection">Continuous collision detection</h2>
+<p>CCD prevents fast bodies tunnelling through thin geometry, and it is not free. <strong>CCD Config</strong> offers four
+modes:</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Behaviour</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Off</td>
+<td>Never</td>
+</tr>
+<tr>
+<td>Simulating bodies only</td>
+<td>Only bodies that are actually dynamic</td>
+</tr>
+<tr>
+<td>Auto (by velocity)</td>
+<td>Enabled above <strong>Min CCD Velocity</strong> (default 2000 cm/s), optionally capped by <strong>Max CCD Velocity</strong></td>
+</tr>
+<tr>
+<td>All bodies</td>
+<td>Always</td>
+</tr>
+</tbody>
+</table>
+<p>Auto by velocity is the right default for debris: slow-moving chunks skip CCD entirely, and only the fast
+ones pay for it.</p>
+<h2 id="runtime-api">Runtime API</h2>
+<p>Everything is Blueprint-callable. Get the subsystem from the world, then work through handles.</p>
+<h3 id="spawning">Spawning</h3>
+<div class="highlight"><pre><span></span><code><span class="n">FPhysXSpawnInstanceRequest</span><span class="w"> </span><span class="n">Request</span><span class="p">;</span>
+<span class="n">Request</span><span class="p">.</span><span class="n">ActorMode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EPhysXInstanceActorMode</span><span class="o">::</span><span class="n">FindOrCreateByMeshAndMats</span><span class="p">;</span>
+<span class="n">Request</span><span class="p">.</span><span class="n">StaticMesh</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DebrisMesh</span><span class="p">;</span>
+<span class="n">Request</span><span class="p">.</span><span class="n">InstanceWorldTransform</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SpawnTransform</span><span class="p">;</span>
+<span class="n">Request</span><span class="p">.</span><span class="n">bStartSimulating</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="n">Request</span><span class="p">.</span><span class="n">InitialLinearVelocity</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LaunchVelocity</span><span class="p">;</span>
+<span class="n">Request</span><span class="p">.</span><span class="n">bOverrideLifetime</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="n">Request</span><span class="p">.</span><span class="n">LifeTimeSeconds</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">15.0f</span><span class="p">;</span>
+<span class="n">Request</span><span class="p">.</span><span class="n">LifetimeAction</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EPhysXInstanceStopAction</span><span class="o">::</span><span class="n">ConvertToStorage</span><span class="p">;</span>
+
+<span class="k">const</span><span class="w"> </span><span class="n">FPhysXSpawnInstanceResult</span><span class="w"> </span><span class="n">Result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Subsystem</span><span class="o">-&gt;</span><span class="n">SpawnPhysicsInstance</span><span class="p">(</span><span class="n">Request</span><span class="p">);</span>
+</code></pre></div>
+<p><strong>Actor Mode</strong> decides where the instance lands: <code>AlwaysCreateNew</code> spawns a fresh actor,
+<code>FindOrCreateByMeshAndMats</code> reuses an existing actor with matching mesh and materials, and
+<code>UseExplicitActor</code> targets an actor you supply. <code>FindOrCreateByMeshAndMats</code> is the usual choice &mdash; it
+keeps instance counts consolidated into as few ISM components as possible, which is what makes the rendering
+side efficient.</p>
+<p>For bulk registration of instances that already exist on a component, <code>RegisterInstancesBatch</code> spreads the
+work across frames.</p>
+<h3 id="forces-and-queries">Forces and queries</h3>
+<p>Force and impulse functions come in plain and Advanced variants. The Advanced versions take
+<code>bIncludeStorage</code> and <code>bConvertStorageToDynamic</code>, which control whether a storage instance is woken back
+into a dynamic body by the call &mdash; that is how a settled debris field reacts to a later explosion.</p>
+<div class="highlight"><pre><span></span><code><span class="n">Subsystem</span><span class="o">-&gt;</span><span class="n">AddRadialImpulse</span><span class="p">(</span>
+<span class="w">    </span><span class="n">ExplosionOrigin</span><span class="p">,</span><span class="w"> </span><span class="cm">/*Radius=*/</span><span class="mf">500.0f</span><span class="p">,</span><span class="w"> </span><span class="cm">/*Strength=*/</span><span class="mf">80000.0f</span><span class="p">,</span>
+<span class="w">    </span><span class="cm">/*bVelChange=*/</span><span class="nb">false</span><span class="p">,</span>
+<span class="w">    </span><span class="cm">/*bIncludeStorage=*/</span><span class="nb">true</span><span class="p">,</span>
+<span class="w">    </span><span class="cm">/*bConvertStorageToDynamic=*/</span><span class="nb">true</span><span class="p">,</span>
+<span class="w">    </span><span class="cm">/*bLinearFalloff=*/</span><span class="nb">true</span><span class="p">);</span>
+</code></pre></div>
+<p>Spatial queries return handles rather than hit results: <code>RaycastInstanceID</code>, <code>SweepSphereInstanceID</code>,
+<code>OverlapSphereInstanceIDs</code>, <code>FindNearestInstance</code> and <code>FindNearestInstanceAdvanced</code>. Each takes an optional
+debug mode (<code>None</code>, <code>Basic</code>, <code>Detailed</code>) and draw duration, which is the fastest way to understand why a
+query is not hitting what you expect.</p>
+<h3 id="events">Events</h3>
+<p><code>APhysXInstancedMeshActor</code> exposes six multicast delegates: <code>OnInstancePreRemove</code>, <code>OnInstancePostRemove</code>,
+<code>OnInstancePreConvert</code>, <code>OnInstancePostConvert</code>, <code>OnInstancePrePhysics</code> and <code>OnInstancePostPhysics</code>.</p>
+<p>Events are gated by the <strong>Instance Event Mask</strong> bitmask on the actor. Leave the mask empty unless you are
+actually binding, since broadcasting to nothing across thousands of instances is wasted work. Remove and
+convert events carry a reason (<code>Explicit</code>, <code>Expired</code>, <code>AutoStop</code>, <code>KillZ</code>, <code>Lost</code>) and the world transform
+at the time, which is what you need to spawn a particle effect or play a sound as debris settles.</p>
+<h2 id="performance-tuning">Performance tuning</h2>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Default</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MaxAddActorsPerFrame</code></td>
+<td><code>64</code></td>
+<td>Bodies added to the PhysX scene per frame. <code>0</code> means no limit.</td>
+</tr>
+<tr>
+<td><code>MaxInstanceTasksPerFrame</code></td>
+<td><code>4096</code></td>
+<td>Queued force/impulse/sleep/wake operations per frame. <code>0</code> means no limit.</td>
+</tr>
+<tr>
+<td><code>MaxLifetimeExpirationsPerTick</code></td>
+<td><code>4096</code></td>
+<td>Lifetime expirations processed per tick. <code>0</code> means no limit.</td>
+</tr>
+</tbody>
+</table>
+<p>All three are config properties on the subsystem, so they can be set in <code>DefaultGame.ini</code> and tuned per
+platform.</p>
+<p><code>MaxAddActorsPerFrame</code> is the one to adjust first. Adding a PhysX body to a scene is not cheap, and a burst
+of spawns is the most likely source of a hitch. Lowering it spreads the cost; raising it reduces the delay
+before newly spawned debris starts moving.</p>
+<p>The subsystem evaluates instances in parallel where it can. Worker threads read PhysX state and actor
+configuration through copied snapshots and never touch UObjects; the game thread applies results back as
+batched transform updates per component.</p>
+<h2 id="guidance">Guidance</h2>
+<p><strong>Use this for</strong> debris, shell casings, destructible fragments after they detach, knocked-over props,
+scattered clutter, and anything where you want hundreds or thousands of simulated objects.</p>
+<p><strong>Do not use it for</strong> objects that need their own gameplay logic, components, replication or Blueprint
+behaviour. Those are actors, and they should stay actors.</p>
+<p><strong>Watch out for</strong> ISM index shifting. Removing a visual instance changes the indices of instances after it.
+The subsystem repairs its own mapping, but any index you cached in your own code is now wrong. Cache
+handles.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../PhysX/">PhysX</a></li>
+<li><a href="PhysX-Instanced-Subsystem.md">PhysX Instanced Subsystem demo</a></li>
+<li><a href="../Destruction-And-Cloth/">Destruction and Cloth</a></li>
+<li><a href="Physics-Cube-Bench.md">Physics Cube Bench</a></li>
+<li><a href="Profiling.md">Profiling</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

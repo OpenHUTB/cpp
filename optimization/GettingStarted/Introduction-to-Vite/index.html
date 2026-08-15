@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Introduction to Vite - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Introduction to Vite";
+        var mkdocs_page_input_path = "optimization/GettingStarted/Introduction-to-Vite.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Introduction to Vite</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/GettingStarted/Introduction-to-Vite.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="introduction-to-vite">Introduction to Vite</h1>
+<p><tldr></p>
+<p>
+Vite is a production-oriented fork of Unreal Engine 4.27, based on NVIDIA's NvRTX Caustics branch.
+It keeps PhysX 3.4 and an engine-agnostic ray tracing pipeline, and replaces Epic's UE5 feature stack
+(Lumen, Nanite, VSM, TSR, Chaos) with lighter alternatives that hit native resolution at high frame rates.
+</p>
+<p></tldr></p>
+<p>Unreal Engine Vite is built for professional game development and supports titles currently in active
+production. Its long-term goal is a continuously evolving modern engine that delivers CPU and rendering
+throughput competitive with proprietary in-house engines, with ongoing performance, stability and
+graphics-pipeline work aimed at contemporary console hardware.</p>
+<p>The objective is specific enough to be falsifiable: <strong>beat Epic's UE5 on fidelity per millisecond and on
+simulation scale</strong>, and be competitive with the proprietary AAA engines on both. Fidelity per millisecond
+is what <a href="Performance-Targets.md">Performance Targets</a> and
+<a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 versus UE5 Cost Analysis</a> measure. Simulation scale is what the
+<a href="Physics-Cube-Bench.md">physics</a> and <a href="400-Characters-CMC-Bench.md">character</a> benchmarks measure. Where
+Vite does not currently win, this manual says so.</p>
+<h2 id="the-design-argument">The design argument</h2>
+<p>Epic's Unreal Engine 5.7 and 5.8 target roughly 60 FPS at dynamic internal resolutions of 720p&ndash;1080p
+on PlayStation 5 using Lumen, Nanite, Virtual Shadow Maps, Temporal Super Resolution and Chaos. That is
+what shipped titles on the engine demonstrate in practice.</p>
+<p>The virtualized approach &mdash; virtualized geometry, shadows and textures, plus reconstructed resolution
+&mdash; adds processing, streaming and memory overhead. Temporal reconstruction, denoising and stochastic
+sampling introduce noise, ghosting, instability and blur. Substrate, GPU Scene, RDG, heavier shader models
+and general feature expansion increase base renderer overhead, shader permutation counts, bytecode size,
+PSO counts, compilation time and cache sizes relative to UE4. Beyond Chaos, CPU cost grows through heavier
+scene maintenance, GPU Scene uploads, Lumen updates, Nanite streaming, VSM invalidation, World Partition,
+and render-thread and RHI workloads.</p>
+<p>Meanwhile the hardware is moving the other way. The Nintendo Switch 2 has shipped with an expected
+seven-to-eight year lifespan. Handhelds substantially less powerful than a PS5 are now a mainstream
+segment, including Valve's Steam Deck and Steam Machine. Hardware costs are rising under AI demand. Against
+that backdrop, UE5's performance targets look increasingly misaligned with the machines games actually ship
+on, and the rendering stack is arguably better suited to film, virtual production and high-end PC than to
+sustainable long-term game development across mass-market hardware.</p>
+<p>Vite takes the opposite position: prioritise high visual fidelity while holding strict frame-time budgets
+at high native resolutions on console-class hardware.</p>
+<blockquote>
+<p>A scene running in Vite with ray-traced global illumination, ray-traced reflections and tessellation
+outperforms the same scene in UE 5.7 with no ray tracing, Lumen, Nanite or tessellation at all. This
+holds at 4K native on an RTX 4080 Super and on an RDNA2 RX 6700 (PS5 equivalent), and at native
+resolution on Steam Deck hardware.</p>
+<p>{style="note"}</p>
+</blockquote>
+<h2 id="what-vite-is-made-of">What Vite is made of</h2>
+<p>Vite began as a fork of NvRTX 4.27 Caustics, which added DX12, ray tracing and rendering improvements over
+Epic's standard 4.27 branch, along with DLSS, NVIDIA Reflex, improved denoisers and comprehensive ray
+tracing support including DDGI-lit ray-traced reflections.</p>
+<p>On top of that base:</p>
+<ul>
+<li>Epic's UE 4.27 Plus branch is fully merged.</li>
+<li>NVIDIA's NvRTX 5.0 branch is merged.</li>
+<li>Rendering features from AMD's engine branches are integrated.</li>
+<li>More than 300 backports from UE 5.0 through the 5.8 era are in the release branch, with over 1,200
+  integrated in internal staging branches.</li>
+</ul>
+<p>The integration work is done by engine programmers with extensive Unreal Engine source experience, using
+proper code guards, managed shader permutations, and manual adaptation of each cherry-picked UE5 change to
+the Vite codebase rather than blind merging.</p>
+<p>With PhysX and a combined DDGI plus SSGI lighting pipeline, Vite closely resembles the bespoke Unreal
+Engine build used for the launch of <em>The Finals</em>.</p>
+<h2 id="headline-features">Headline features</h2>
+<p><strong><a href="DDGI-Dynamic.md">Dynamic DDGI</a>.</strong> A noise-free global illumination alternative to Lumen. Higher quality
+bounce and less light leaking than software Lumen, comparable to hardware Lumen for bounce, and typically
+around twice the frame rate. DDGI implementations ship in Metro Exodus, Overwatch 2, The Finals, Control,
+The Witcher 3, Warhammer 40,000: Darktide, DOOM: The Dark Ages, Indiana Jones and the Great Circle,
+007 First Light, Ghost of Yotei and Star Wars Outlaws including its Switch 2 version.</p>
+<p><strong><a href="DDGI-Static.md">Static DDGI</a>.</strong> A baked mode with near-instant bake times, higher bounce fidelity than
+traditional baked lighting and better coverage of moving objects, viable on GPUs without ray tracing
+support at all.</p>
+<p><strong><a href="PhysX.md">PhysX 3.4</a>.</strong> Stable, commercially proven, and in Vite upgraded to build under newer
+Clang versions for meaningful compiler optimisation gains. Internal stress tests show Chaos running over
+five times slower than PhysX in physics-bound scenarios.</p>
+<p><strong><a href="RTXDI.md">RTXDI</a>.</strong> A less noisy alternative to MegaLights, in its standalone form rather than the
+Lumen-integrated version found in UE 5.1 and later NvRTX branches.</p>
+<p><strong><a href="Tessellation.md">Tessellation</a>.</strong> Distance- and displacement-driven geometric detail without Nanite's
+overhead.</p>
+<p><strong><a href="Ray-Tracing.md">Full ray tracing suite</a>.</strong> Reflections, ambient occlusion, shadows, skylight,
+translucency, caustics, direct lighting, per-pixel ray-traced GI and path tracing &mdash; the rendering
+stack Black Myth: Wukong shipped on.</p>
+<p>For the complete list, see <a href="Release-Notes.md">Release Notes</a>.</p>
+<h2 id="is-ue4-not-a-deprecated-codebase">Is UE4 not a deprecated codebase?</h2>
+<p>It is a fair question, and the answer is that Unreal Engine 4 continues to power recent AAA releases:
+Final Fantasy VII Rebirth (4.26, 2024), Stellar Blade (4.26, 2024), Days Gone Remastered (4.11, 2025),
+Delta Force (4.22, 2026), Mortal Kombat 1 (4.27, 2023), Mario &amp; Luigi: Brothership (4.26, 2024),
+Princess Peach: Showtime! (4.26, 2024), Pikmin 4 (4.26, 2023), Square Enix's Dragon Quest VII Reimagined
+(4.27, 2026) and the upcoming Final Fantasy VII: Revelation (4.27, 2027). All of them ship PhysX.</p>
+<p>These productions stay on UE4 to retain specific features and meet fidelity and performance targets. UE4
+also continues to receive updates from major studios through the 4.27 Plus branch, and remains a priority
+for Nintendo platforms.</p>
+<p>Vite's plan is to keep upgrading that codebase: optimise core systems, modernise the rendering core, improve
+the UI and update the toolchains, rather than treat 4.27 as a frozen artifact. See
+<a href="Why-NvRTX-427.md">Why NvRTX 4.27</a> for the technical reasoning behind the base version choice.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="Performance-Targets.md">Performance Targets</a></li>
+<li><a href="Why-NvRTX-427.md">Why NvRTX 4.27</a></li>
+<li><a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 versus UE5 Cost Analysis</a></li>
+<li><a href="../Getting-Started/">Getting Started</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

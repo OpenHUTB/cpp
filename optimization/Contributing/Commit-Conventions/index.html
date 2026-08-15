@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Commit Conventions - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Commit Conventions";
+        var mkdocs_page_input_path = "optimization/Contributing/Commit-Conventions.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Commit Conventions</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Contributing/Commit-Conventions.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="commit-conventions">Commit Conventions</h1>
+<p><tldr></p>
+<p>
+Prefix every commit subject with one or more category tags. Stack them from broad to specific. Backports
+and plugin additions must link to the original commit or repository.
+</p>
+<p></tldr></p>
+<p>A fork that tracks an upstream engine accumulates a long history of changes from many sources. Being able
+to scan that history and tell an optimisation from a rendering feature from a backport is what makes future
+merges tractable.</p>
+<h2 id="prefixes">Prefixes</h2>
+<p>Use one of the following at the start of the commit subject.</p>
+<table>
+<thead>
+<tr>
+<th>Prefix</th>
+<th>Use for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>[Rendering]</code></td>
+<td>Renderer work generally &mdash; the most used tag in the tree</td>
+</tr>
+<tr>
+<td><code>[Rendering Feature]</code></td>
+<td>New or changed rendering functionality specifically</td>
+</tr>
+<tr>
+<td><code>[RT]</code></td>
+<td>Ray tracing</td>
+</tr>
+<tr>
+<td><code>[Forward]</code></td>
+<td>Forward renderer path</td>
+</tr>
+<tr>
+<td><code>[Optimization]</code></td>
+<td>Performance work with no behaviour change</td>
+</tr>
+<tr>
+<td><code>[Backport]</code></td>
+<td>A change cherry-picked from a later engine version</td>
+</tr>
+<tr>
+<td><code>[Animation]</code></td>
+<td>Animation systems</td>
+</tr>
+<tr>
+<td><code>[GameplayFramework]</code></td>
+<td>Cameras, Character Movement, AI and the rest of the gameplay framework</td>
+</tr>
+<tr>
+<td><code>[Memory]</code></td>
+<td>The UObject memory subsystem</td>
+</tr>
+<tr>
+<td><code>[DOP]</code></td>
+<td>Data-oriented work, including ECS</td>
+</tr>
+<tr>
+<td><code>[PhysX]</code></td>
+<td>Physics</td>
+</tr>
+<tr>
+<td><code>[Plugin]</code></td>
+<td>Adding, updating or removing a plugin</td>
+</tr>
+<tr>
+<td><code>[Lib]</code></td>
+<td>Third-party library updates</td>
+</tr>
+<tr>
+<td><code>[Toolchain]</code></td>
+<td>Compiler, SDK and build environment</td>
+</tr>
+<tr>
+<td><code>[Defaults]</code></td>
+<td>Changes to shipped engine defaults</td>
+</tr>
+<tr>
+<td><code>[Debloat]</code></td>
+<td>Removing or gating cost from a default build</td>
+</tr>
+<tr>
+<td><code>[Mobile]</code></td>
+<td>Mobile-specific work</td>
+</tr>
+<tr>
+<td><code>[VR]</code></td>
+<td>VR-specific work</td>
+</tr>
+<tr>
+<td><code>[AMD]</code></td>
+<td>AMD-specific work</td>
+</tr>
+<tr>
+<td><code>[NVIDIA]</code></td>
+<td>NVIDIA-specific work</td>
+</tr>
+<tr>
+<td><code>[Fix]</code></td>
+<td>Bug fixes</td>
+</tr>
+</tbody>
+</table>
+<h3 id="stacking-prefixes">Stacking prefixes</h3>
+<p>Most non-trivial changes carry more than one tag. Order them broad to specific, and put the backport marker
+last so the origin of the change reads at the end:</p>
+<div class="highlight"><pre><span></span><code>[Rendering][RT][Optimization][Adapted Backport 5.3] Exclude raygen shaders from RTPSOs
+unless the corresponding feature is enabled
+[Rendering][Forward][Backport 5.6] Fix incorrect alpha from MSAA resolve with explicit fmask
+[Rendering][Shading Models] Remove unnecessary branch for the Toon shading model
+</code></pre></div>
+<p><code>Adapted Backport</code> rather than <code>Backport</code> signals that the upstream change did not apply cleanly and was
+rewritten against the Vite codebase. That distinction matters later, when someone is working out whether an
+upstream fix to the original commit also applies here.</p>
+<p>Single-tag commits are fine when the change genuinely is one thing:</p>
+<div class="highlight"><pre><span></span><code>[Toolchain] Compiling on VS 18.8.2 (_MSC_VER 1950) and Windows SDK 10.0.26100
+[Plugin] PhysX Blast + engine-side changes for proper support
+[Gating] RT translucency guard
+[Fix] Guard RTXDI CVar behind ShouldRenderRayTracingSampledLighting
+</code></pre></div>
+<p>If a change spans genuinely unrelated areas, split it rather than stacking every tag in the table onto one
+commit.</p>
+<h2 id="attribution">Attribution</h2>
+<p><warning>
+When making backports or adding a plugin, include the correct links to the original commits or
+repositories in the commit body.
+</warning></p>
+<p>This is not a courtesy, it is a practical requirement. Without the link, nobody can determine what version
+was integrated, whether upstream has since fixed a bug in it, or whether the licence permits redistribution.</p>
+<div class="highlight"><pre><span></span><code>[Plugin] Add Kawaii Physics 1.18.0, backported from UE5
+
+Source: https://github.com/pafuhana1213/KawaiiPhysics
+Upstream tag: v1.18.0
+Changes: UE5 API calls replaced with 4.27 equivalents in
+KawaiiPhysicsEditMode.cpp and AnimNode_KawaiiPhysics.cpp
+</code></pre></div>
+<p>For backports of individual upstream commits, link the commit itself, not just the repository. See
+<a href="../Backporting/">Backporting</a>.</p>
+<h2 id="commit-body">Commit body</h2>
+<p>The subject line says what changed. The body should say why, and what a reviewer needs to know:</p>
+<ul>
+<li>What problem the change solves</li>
+<li>Measured impact, for anything claiming to be an optimisation</li>
+<li>Any console variable or <a href="Compile-Time-Switches.md">compile-time switch</a> added, with its default</li>
+<li>Anything deliberately left undone</li>
+</ul>
+<p>Measured impact matters. A commit prefixed <code>[Optimization]</code> with no numbers is an assertion, not a result.
+See <a href="Profiling.md">Profiling</a> for how to produce a credible before-and-after.</p>
+<h2 id="branches">Branches</h2>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Work in progress goes on alternative branches</td>
+<td>Do not push half-finished work to shared branches</td>
+</tr>
+<tr>
+<td>Note what remains</td>
+<td>A brief comment on the branch or in the commit body</td>
+</tr>
+<tr>
+<td>Delete temporary branches</td>
+<td>Once merged or abandoned</td>
+</tr>
+<tr>
+<td>Tell other forkers</td>
+<td>So parallel effort is not wasted</td>
+</tr>
+</tbody>
+</table>
+<h2 id="console-variables-and-switches">Console variables and switches</h2>
+<p>New console variables follow the engine's existing naming. Vite-specific ones are prefixed with the
+subsystem, then <code>Vite</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Example</th>
+<th>Subsystem</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.Vite.SMAA.Mode</code></td>
+<td>Renderer</td>
+</tr>
+<tr>
+<td><code>r.Vite.SSAO</code></td>
+<td>Renderer</td>
+</tr>
+<tr>
+<td><code>p.VitePhysXFixedTimestep.Enabled</code></td>
+<td>Physics</td>
+</tr>
+</tbody>
+</table>
+<p>Compile-time switches use the <code>VITE_</code> prefix and must be defined with a default in
+<code>Engine\Source\Runtime\Core\Public\Misc\CoreDefines.h</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="cp">#ifndef VITE_MY_FEATURE</span>
+<span class="w">    </span><span class="cp">#define VITE_MY_FEATURE 0</span>
+<span class="cp">#endif</span>
+</code></pre></div>
+<p>Document any new switch in <a href="Compile-Time-Switches.md">Compile-Time Switches</a> in the same change. A switch
+that is not documented will be discovered by someone debugging a console variable that silently does
+nothing &mdash; which is exactly the failure mode <code>VITE_RT_PSO_DEBLOAT</code> caused before it was written up.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Contributing/">Contributing</a></li>
+<li><a href="../Coding-Guidelines/">Coding Guidelines</a></li>
+<li><a href="../Backporting/">Backporting</a></li>
+<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

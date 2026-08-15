@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>PhysX - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "PhysX";
+        var mkdocs_page_input_path = "optimization/Physics/PhysX.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">PhysX</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Physics/PhysX.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="physx">PhysX</h1>
+<p><tldr></p>
+<p>
+Vite integrates <b>NVIDIA PhysX 3.4</b> for rigid-body simulation, collision queries, constraints,
+vehicles and skeletal physics. Vite extends the backend with modern compiler support, fixed-timestep
+simulation, NVIDIA Blast and a high-count instanced physics subsystem.
+</p>
+<p></tldr></p>
+<p>PhysX is exposed through Unreal Engine's standard physics framework. Existing engine types such as body
+instances, physical materials, physics assets, collision profiles and constraint components use the PhysX
+scene underneath.</p>
+<h2 id="core-simulation-features">Core simulation features</h2>
+<h3 id="rigid-bodies">Rigid bodies</h3>
+<ul>
+<li>static, dynamic and kinematic actors;</li>
+<li>box, sphere, capsule, convex and triangle-mesh collision geometry;</li>
+<li>physical materials with friction, restitution and density;</li>
+<li>gravity, damping, forces, impulses and torque;</li>
+<li>sleeping, waking and active-body tracking;</li>
+<li>continuous collision detection for fast-moving bodies;</li>
+<li>collision filtering and simulation/query shape flags;</li>
+<li>contact, overlap and wake/sleep notifications.</li>
+</ul>
+<h3 id="scene-queries">Scene queries</h3>
+<p>PhysX provides the collision-query path used throughout the engine:</p>
+<ul>
+<li>raycasts;</li>
+<li>shape sweeps;</li>
+<li>overlaps;</li>
+<li>single-hit and multi-hit queries;</li>
+<li>object-channel, trace-channel and profile filtering;</li>
+<li>synchronous scene queries used by movement, weapons, navigation and gameplay systems.</li>
+</ul>
+<p>Query cost depends on collision complexity, broad-phase population, filter callbacks and result count. Use
+simple collision for repeated gameplay queries and avoid requesting multi-hit results when only the first
+blocking hit is needed.</p>
+<h3 id="constraints">Constraints</h3>
+<p>The integration supports fixed, distance, hinge, spherical and D6-style constraints through Unreal's
+constraint framework. Available controls include:</p>
+<ul>
+<li>linear and angular limits;</li>
+<li>motors and drives;</li>
+<li>break force and break torque;</li>
+<li>constraint projection;</li>
+<li>collision enablement between constrained bodies;</li>
+<li>mass and inertia scaling;</li>
+<li>skeletal constraint chains authored in Physics Assets.</li>
+</ul>
+<h3 id="character-and-skeletal-physics">Character and skeletal physics</h3>
+<p>PhysX supplies collision queries for Character Movement and rigid-body simulation for Physics Assets. This
+includes ragdolls, physical animation, hit reactions, body welding and per-body collision configuration.</p>
+<h3 id="vehicles">Vehicles</h3>
+<p>Vite retains the UE4.27 PhysX vehicle stack, including wheel simulation, suspension, tire friction, engine,
+gearing, differential and drivetrain configuration. Vehicle behavior is authored through the standard
+vehicle and tire data assets used by UE4 projects.</p>
+<h2 id="destruction-cloth-and-blast">Destruction, cloth and Blast</h2>
+<p>The Vite physics stack includes the following NVIDIA systems:</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>APEX Destruction</td>
+<td>Authored destructible meshes, support chunks, damage and fracture events</td>
+</tr>
+<tr>
+<td>APEX Cloth</td>
+<td>Vertex-painted cloth constraints and skeletal-mesh clothing simulation</td>
+</tr>
+<tr>
+<td>NVIDIA Blast</td>
+<td>Destruction assets and fracture workflows integrated alongside the PhysX backend</td>
+</tr>
+</tbody>
+</table>
+<p>See <a href="../Destruction-And-Cloth/">Destruction and Cloth</a> for authoring and runtime guidance.</p>
+<h2 id="vite-extensions">Vite extensions</h2>
+<h3 id="modern-toolchain-support">Modern toolchain support</h3>
+<p>Vite's PhysX libraries and build files have been updated for newer MSVC and Clang toolchains, including the
+Android NDK Clang path used by current Vite builds. Toolchain changes are validated with the physics test and
+stress workloads before release.</p>
+<h3 id="fixed-timestep-simulation">Fixed-timestep simulation</h3>
+<p>The optional fixed-timestep path decouples the simulation cadence from variable render frames and adds render
+interpolation. It is intended for projects that require a stable simulation delta or reproducible captures.
+See <a href="../Fixed-Timestep/">Fixed Timestep</a> for compile-time setup and integration requirements.</p>
+<h3 id="instanced-physics-subsystem">Instanced physics subsystem</h3>
+<p>The instanced subsystem represents large homogeneous rigid-body sets through instanced meshes instead of one
+Actor and component hierarchy per body. It is intended for debris, shells, environmental objects and other
+high-count simulations. See <a href="../Instanced-Physics/">Instanced Physics Subsystem</a>.</p>
+<h3 id="native-actor-path">Native actor path</h3>
+<p>Engine-level systems that already own compact simulation state can operate closer to native PhysX actors and
+avoid unnecessary high-level Actor/component work. This is a specialized integration path: ownership,
+lifetime, transform synchronization, collision filtering and teardown remain the caller's responsibility.</p>
+<h2 id="configuration">Configuration</h2>
+<p>Physics settings are under <strong>Project Settings &gt; Engine &gt; Physics</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Function</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default Gravity Z</td>
+<td>World gravity; <code>-980.0</code> corresponds to 1 uu = 1 cm</td>
+</tr>
+<tr>
+<td>Substepping</td>
+<td>Divides a long frame into smaller simulation steps</td>
+</tr>
+<tr>
+<td>Max Substep Delta Time</td>
+<td>Maximum delta processed by one substep</td>
+</tr>
+<tr>
+<td>Max Substeps</td>
+<td>Upper bound on simulation steps performed for one frame</td>
+</tr>
+<tr>
+<td>Simulate Skeletal Mesh on Dedicated Server</td>
+<td>Enables skeletal rigid-body simulation on server targets</td>
+</tr>
+<tr>
+<td>Default Degrees Of Freedom</td>
+<td>Constrains motion for planar or limited-axis games</td>
+</tr>
+</tbody>
+</table>
+<h3 id="substepping">Substepping</h3>
+<p>Without substepping, the physics scene advances with the frame delta. Large or variable deltas can reduce
+contact and constraint stability. Substepping performs multiple smaller advances when required; its CPU cost
+increases with the number of executed substeps.</p>
+<p>Choose <code>Max Substep Delta Time</code> from the fastest interaction that must remain stable, then set <code>Max Substeps</code>
+to cap worst-case work. A cap prevents a slow frame from creating an unbounded simulation backlog.</p>
+<p>For a fixed simulation cadence rather than frame-triggered substeps, use the
+<a href="../Fixed-Timestep/">fixed-timestep path</a>.</p>
+<h2 id="physx-visual-debugger">PhysX Visual Debugger</h2>
+<p>PhysX Visual Debugger can inspect a connected scene, including actors, shapes, contacts, constraints and
+simulation state. Use a development build with PVD support, connect before reproducing the issue, and limit
+capture duration when the scene contains many bodies.</p>
+<p>Viewport collision visualization remains useful for confirming authored geometry and filtering before a
+full PVD capture.</p>
+<h2 id="profiling">Profiling</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>stat physics</code></td>
+<td>Physics timing divided by engine phase</td>
+</tr>
+<tr>
+<td><code>stat game</code></td>
+<td>Physics cost in the context of game-thread work</td>
+</tr>
+<tr>
+<td><code>p.NumPhysScenes</code></td>
+<td>Number of active physics scenes</td>
+</tr>
+<tr>
+<td><code>show Collision</code></td>
+<td>Collision geometry in the viewport</td>
+</tr>
+</tbody>
+</table>
+<p>Profile with representative collision geometry, body counts, sleeping behavior and event generation. Record
+physics milliseconds, body/shape counts, active-body count, solver settings, substeps and worker configuration
+with every comparison.</p>
+<p>For high body counts, compare standard Actor-based simulation with the
+<a href="../Instanced-Physics/">instanced subsystem</a> using the same shapes and solver settings.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Physics/">Physics</a></li>
+<li><a href="../Fixed-Timestep/">Fixed Timestep</a></li>
+<li><a href="../Destruction-And-Cloth/">Destruction and Cloth</a></li>
+<li><a href="../Instanced-Physics/">Instanced Physics Subsystem</a></li>
+<li><a href="Physics-Cube-Bench.md">Physics Cube Bench</a></li>
+<li><a href="PhysXTest.md">PhysX Test</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

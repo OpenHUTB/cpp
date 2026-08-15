@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Bundled Plugins - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Bundled Plugins";
+        var mkdocs_page_input_path = "optimization/Plugins/Bundled-Plugins.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Bundled Plugins</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Plugins/Bundled-Plugins.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="bundled-plugins">Bundled Plugins</h1>
+<p><tldr></p>
+<p>
+Everything Vite adds on top of stock UE 4.27, with versions and default enablement. Stock 4.27 plugins are
+not listed &mdash; only Vite's additions and the vendor integrations.
+</p>
+<p></tldr></p>
+<p>Versions are as of the July major integration. Check the <code>.uplugin</code> file for the authoritative value in
+your tree.</p>
+<p><img src="VitePlugins.png" alt="Contents of Engine/Plugins/Runtime/VitePlugins in Explorer" border-effect="line"/></p>
+<p><em>Vite's own additions live under <code>Engine\Plugins\Runtime\VitePlugins</code>. Vendor integrations from NVIDIA sit
+separately under <code>Engine\Plugins\Runtime\Nvidia</code>.</em></p>
+<h2 id="upscaling-and-frame-generation">Upscaling and frame generation</h2>
+<table>
+<thead>
+<tr>
+<th>Plugin</th>
+<th>Version</th>
+<th>Default</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NVIDIA DLSS Super Resolution / Ray Reconstruction / DLAA</td>
+<td>8.7.0 (NGX 310.7.0)</td>
+<td>Off</td>
+<td><code>Runtime\Nvidia\DLSS</code></td>
+</tr>
+<tr>
+<td>NVIDIA DLSS Frame Generation (Streamline)</td>
+<td>1.3.0-SL2.4.0</td>
+<td>Off</td>
+<td><code>Runtime\Nvidia\Streamline</code></td>
+</tr>
+<tr>
+<td>NVIDIA NIS</td>
+<td>1.2.1</td>
+<td>Off</td>
+<td><code>Runtime\Nvidia\NIS</code></td>
+</tr>
+<tr>
+<td>NVIDIA RTX Dynamic Vibrance (DeepDVC)</td>
+<td>1.3.0-SL2.4.0</td>
+<td>Off</td>
+<td><code>Runtime\Nvidia\StreamlineDeepDVC</code></td>
+</tr>
+<tr>
+<td>AMD FSR 4</td>
+<td>4.1.1</td>
+<td>&mdash;</td>
+<td><code>Runtime\VitePlugins\FSR4-427</code></td>
+</tr>
+<tr>
+<td>AMD AntiLag 2</td>
+<td>2.0.4</td>
+<td>&mdash;</td>
+<td><code>Runtime\VitePlugins\AntiLag2.0.4</code></td>
+</tr>
+<tr>
+<td>Intel XeSS</td>
+<td>3.0.5</td>
+<td>&mdash;</td>
+<td><code>Runtime\VitePlugins\XeSS_UE4.27_Plugin_v3.0.5</code></td>
+</tr>
+<tr>
+<td>Movie Render Queue DLSS/DLAA support</td>
+<td>2.3.3</td>
+<td>&mdash;</td>
+<td><code>Runtime\Nvidia\DLSSMoviePipelineSupport</code></td>
+</tr>
+</tbody>
+</table>
+<p>FSR 4 uses the native ffx-api and is DX12-only. It was backported to 4.27 specifically for Vite. Full
+detail in <a href="Upscalers.md">Upscalers</a>.</p>
+<h2 id="ray-tracing-and-rendering">Ray tracing and rendering</h2>
+<table>
+<thead>
+<tr>
+<th>Plugin</th>
+<th>Version</th>
+<th>Default</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NVIDIA RTX Global Illumination (RTXGI)</td>
+<td>1.1.50</td>
+<td><strong>On</strong></td>
+<td><code>Runtime\Nvidia\RTXGI</code></td>
+</tr>
+<tr>
+<td>NVIDIA Real-Time Denoiser (NRD/ReLAX)</td>
+<td>2.10.00-relax</td>
+<td><strong>On</strong></td>
+<td><code>Runtime\Nvidia\NRD</code></td>
+</tr>
+<tr>
+<td>NVIDIA Reflex</td>
+<td>&mdash;</td>
+<td>&mdash;</td>
+<td><code>Runtime\Nvidia\Reflex</code></td>
+</tr>
+<tr>
+<td>NVIDIA Ansel</td>
+<td>&mdash;</td>
+<td>&mdash;</td>
+<td><code>Runtime\Nvidia\Ansel</code></td>
+</tr>
+<tr>
+<td>Graphics Card Info Utilities</td>
+<td>1.0</td>
+<td>Off</td>
+<td><code>Runtime\Nvidia\GraphicsCardInfoUtils</code></td>
+</tr>
+</tbody>
+</table>
+<p>RTXGI provides the DDGI implementation that is Vite's recommended dynamic GI solution. NRD/ReLAX denoises
+ray-traced output. Both being on by default is deliberate: they are the basis of Vite's recommended
+lighting setup. See <a href="Global-Illumination.md">Global Illumination</a> and
+<a href="DDGI-Dynamic.md">Dynamic DDGI</a>.</p>
+<h2 id="hair">Hair</h2>
+<table>
+<thead>
+<tr>
+<th>Plugin</th>
+<th>Version</th>
+<th>Default</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TressFX 5.0</td>
+<td>5.0</td>
+<td>&mdash;</td>
+<td><code>Runtime\TressFX</code></td>
+</tr>
+<tr>
+<td>Groom (HairStrands)</td>
+<td>1.0</td>
+<td>Off</td>
+<td><code>Runtime\HairStrands</code></td>
+</tr>
+</tbody>
+</table>
+<p>Two independent hair systems with different authoring pipelines. See
+<a href="Hair-Rendering.md">Hair Rendering</a>.</p>
+<h2 id="physics-and-destruction">Physics and destruction</h2>
+<table>
+<thead>
+<tr>
+<th>Plugin</th>
+<th>Version</th>
+<th>Default</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Blast (runtime)</td>
+<td>1.0</td>
+<td>Off</td>
+<td><code>GameWorks\Blast</code></td>
+</tr>
+<tr>
+<td>Blast Plugin (authoring)</td>
+<td>0.1</td>
+<td>Off</td>
+<td><code>Experimental\BlastPlugin</code></td>
+</tr>
+<tr>
+<td>PhysX Instanced Subsystem</td>
+<td>1.11</td>
+<td>&mdash;</td>
+<td><code>Runtime\VitePlugins\PhysXInstancedSubsystem</code></td>
+</tr>
+<tr>
+<td>Kawaii Physics</td>
+<td>1.18.0</td>
+<td>&mdash;</td>
+<td><code>Runtime\VitePlugins\KawaiiPhysics</code></td>
+</tr>
+</tbody>
+</table>
+<p>Apex Destruction, Apex Cloth and PhysX Vehicles are stock 4.27 plugins that Vite retains &mdash; they were
+removed in UE5 when Chaos replaced PhysX. See <a href="Destruction-And-Cloth.md">Destruction and Cloth</a>.</p>
+<p>Kawaii Physics is a UE5 secondary-motion bone solver backported to Vite. It gives hair, cloth and
+accessories physical follow-through from a single animation node, far more cheaply than a full cloth
+simulation.</p>
+<p>The PhysX Instanced Subsystem manages large numbers of PhysX-backed instanced bodies through a world
+subsystem, writing poses back into ISM/HISM instance transforms rather than spawning individual actors.
+See <a href="Instanced-Physics.md">Instanced Physics</a>.</p>
+<h2 id="animation">Animation</h2>
+<table>
+<thead>
+<tr>
+<th>Plugin</th>
+<th>Version</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Animation Compression Library (ACL)</td>
+<td>2.1.0</td>
+<td><code>Runtime\VitePlugins\ACLPlugin</code></td>
+</tr>
+<tr>
+<td>Motion Symphony</td>
+<td>1.09</td>
+<td><code>Runtime\VitePlugins\MotionSymphony</code></td>
+</tr>
+</tbody>
+</table>
+<p>ACL replaces Unreal's built-in animation compression with a substantially better size/quality curve. On a
+project with a large animation set the memory saving is significant, and it is one of the cheapest wins
+available &mdash; see <a href="Performance-Targets.md">Performance Targets</a>.</p>
+<p>Motion Symphony provides motion matching and pose matching, the Ubisoft-style approach to animation
+synthesis. It is the closest 4.27 equivalent to UE5's Motion Matching.
+<a href="https://www.wikiful.com/@AnimationUprising/motion-symphony/motion-matching">Documentation</a> ·
+<a href="https://github.com/Animation-Uprising/MotionSymphony_ExampleProject/tree/main">Sample project</a></p>
+<h2 id="gameplay">Gameplay</h2>
+<table>
+<thead>
+<tr>
+<th>Plugin</th>
+<th>Version</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Abilities (SplashAbilities)</td>
+<td>1.1</td>
+<td><code>Runtime\VitePlugins\SplashAbilities</code></td>
+</tr>
+<tr>
+<td>Flecs ECS</td>
+<td>1.0 (Flecs 3.2.12)</td>
+<td><code>Runtime\FlecsECS</code></td>
+</tr>
+</tbody>
+</table>
+<p>Abilities is a lighter alternative to <code>GameplayAbilities</code> for projects that want an ability system without
+GAS's complexity and replication model.</p>
+<p>Flecs ECS is an engine-level integration of the Flecs entity component system, providing a world subsystem,
+Blueprint entity handles, an ISM-based rendering demo and optional Flecs Explorer support. It is off by
+default. Useful when actor-per-entity overhead is the bottleneck &mdash; see the
+<a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 vs UE5 cost analysis</a> on core class base costs.</p>
+<h2 id="debug-and-profiling">Debug and profiling</h2>
+<table>
+<thead>
+<tr>
+<th>Plugin</th>
+<th>Version</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dear ImGui</td>
+<td>0.1.0</td>
+<td><code>Runtime\VitePlugins\UnrealImGui</code></td>
+</tr>
+<tr>
+<td>ImGui Tools</td>
+<td>1.0</td>
+<td><code>Runtime\VitePlugins\ImGuiTools</code></td>
+</tr>
+<tr>
+<td>Intel GPA</td>
+<td>1.0</td>
+<td><code>Runtime\VitePlugins\GPAPlugin</code></td>
+</tr>
+<tr>
+<td>Automatron</td>
+<td>1.1a</td>
+<td><code>Runtime\VitePlugins\Automatron</code></td>
+</tr>
+</tbody>
+</table>
+<p>ImGui gives you immediate-mode debug UI that works in the viewport and in standalone builds, where Slate
+debug widgets are awkward. ImGui Tools builds functional development tools on top of it.</p>
+<p>The GPA plugin integrates Intel Graphics Performance Analyzers into the editor. Automatron improves
+automated testing for C++ and Blueprints. See <a href="Profiling.md">Profiling</a>.</p>
+<h2 id="content-and-utilities">Content and utilities</h2>
+<table>
+<thead>
+<tr>
+<th>Plugin</th>
+<th>Version</th>
+<th>Default</th>
+<th>Path</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Custom Splash Preload Screen</td>
+<td>1.0</td>
+<td><strong>On</strong></td>
+<td><code>Runtime\PostSplashScreen</code></td>
+</tr>
+<tr>
+<td>Impostor Baker</td>
+<td>1.0</td>
+<td>&mdash;</td>
+<td><code>Experimental\ImpostorBaker</code></td>
+</tr>
+<tr>
+<td>Shallow Water</td>
+<td>1.0</td>
+<td>Off</td>
+<td><code>Experimental\ShallowWater</code></td>
+</tr>
+</tbody>
+</table>
+<p>The splash screen plugin displays a custom screen after the system splash during engine preinit, covering
+the gap before the first frame.</p>
+<p>Impostor Baker generates impostors for use as distant mesh LODs &mdash; the standard technique for
+rendering large numbers of distant trees or props cheaply, and worth reaching for before accepting a draw
+call cost you cannot afford.</p>
+<h2 id="default-enablement-summary">Default enablement summary</h2>
+<p>Only three bundled plugins are on by default:</p>
+<table>
+<thead>
+<tr>
+<th>Plugin</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RTXGI</td>
+<td>Provides DDGI, Vite's recommended dynamic GI</td>
+</tr>
+<tr>
+<td>NRD</td>
+<td>Denoises ray-traced output, needed by the ray tracing suite</td>
+</tr>
+<tr>
+<td>Custom Splash Preload Screen</td>
+<td>Cosmetic, negligible cost</td>
+</tr>
+</tbody>
+</table>
+<p>Everything else is opt-in. If a feature appears not to work, check that its plugin is enabled before
+debugging further &mdash; and for ray tracing features, check the
+<a href="Ray-Tracing.md">compile-time switch availability table</a> as well.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Plugins/">Plugins</a></li>
+<li><a href="../Proposed-Plugins/">Proposed Plugins</a></li>
+<li><a href="Upscalers.md">Upscalers</a></li>
+<li><a href="Hair-Rendering.md">Hair Rendering</a></li>
+<li><a href="Instanced-Physics.md">Instanced Physics</a></li>
+<li><a href="Debloat-Guide.md">Debloat Guide</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Why NvRTX 4.27 - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Why NvRTX 4.27";
+        var mkdocs_page_input_path = "optimization/EngineOverview/Why-NvRTX-427.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Why NvRTX 4.27</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/EngineOverview/Why-NvRTX-427.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="why-nvrtx-427">Why NvRTX 4.27</h1>
+<p><tldr></p>
+<p>
+Unreal Engine 4.27 is the last iteration with an <b>engine-agnostic ray tracing pipeline</b>, closer in
+design to other AAA engines. From UE 5.1 onward, BLAS/TLAS management, culling and ray hit shading became
+progressively coupled to Lumen, Nanite, VSM and GPU Scene, and the PhysX API was removed.
+</p>
+<p></tldr></p>
+<p>Choosing a base version is the single most consequential decision in a long-lived engine fork. This page
+sets out why Vite is built on NvRTX 4.27 Caustics rather than a UE5 branch.</p>
+<h2 id="the-ray-tracing-pipeline-argument">The ray tracing pipeline argument</h2>
+<p>Unreal Engine 4.27 has an agnostic ray tracing pipeline. Acceleration structures are built and updated in a
+way that is not tied to any particular lighting solution, so a third-party GI or reflection technique can be
+integrated by hooking into the scene representation the renderer already maintains.</p>
+<p>From UE 5.1 onward, the default rendering path &mdash; including ray tracing scene construction and update
+&mdash; became increasingly integrated around Lumen, Nanite, Virtual Shadow Maps and Temporal Super
+Resolution. Concretely:</p>
+<ul>
+<li><strong>BLAS/TLAS management</strong> was adapted to support GPU Scene, Nanite fallback meshes and streamed ray
+  tracing geometry.</li>
+<li><strong>Culling</strong> was reworked around the same systems.</li>
+<li><strong>Ray hit shading</strong> increasingly relied on Lumen's separate Surface Cache and mesh-card representation
+  rather than shading the actual hit surface.</li>
+</ul>
+<p>Each of these is a reasonable decision in service of Lumen. Together they mean that integrating an
+alternative RTGI or reflection technique stops being a matter of consuming the scene and becomes a matter of
+fighting the scene. That is the concrete reason DDGI integrates cleanly into 4.27 and awkwardly into 5.x.</p>
+<p>In parallel, as PhysX was deprecated in favour of Chaos, the remaining PhysX-specific APIs and compatibility
+code were gradually removed &mdash; which independently rules out the UE5 branches for a fork whose physics
+argument depends on PhysX.</p>
+<blockquote>
+<p>For detailed reasoning and proofs, see the Technical Reference document on moving Vite base to UE4 Latest.
+<a href="https://docs.google.com/document/d/1gA0MGkzeWWzKkgwBDOP5xRPouSKaOIW6xlPZ2q6BXO0/edit?usp=sharing">4.27 versus 5.0</a>.</p>
+<p>{style="note"}</p>
+</blockquote>
+<h2 id="why-the-nvrtx-caustics-branch-specifically">Why the NvRTX Caustics branch specifically</h2>
+<p>NvRTX 4.27 Caustics is NVIDIA's ray tracing branch of Unreal Engine 4.27.1. On top of Epic's 4.27 it adds:</p>
+<ul>
+<li>DirectX 12 and DXR improvements, and a range of ray tracing performance optimisations tested against
+  real Marketplace content rather than synthetic scenes.</li>
+<li>DLSS, NVIDIA Reflex and improved denoisers.</li>
+<li>Ray-traced mesh caustics and water caustics.</li>
+<li>Enhanced translucency, including hybrid translucency modes that let rasterised and ray-traced
+  translucency coexist.</li>
+<li>Multi-bounce refraction optimisation with absorption and total internal reflection.</li>
+<li>ReStir GI with a new SVGF-based denoiser, emissive material support and a reservoir-resampling final
+  gather.</li>
+<li>Engine-side DDGI upgrades, including DDGI-lit ray-traced reflections.</li>
+</ul>
+<p>That last item matters more than it sounds. The stock 4.27 launcher DDGI plugin is a plugin; the NvRTX
+integration reaches into the ray tracing pipeline, which is what makes probe-based ray-traced reflections
+possible. See <a href="DDGI-Dynamic.md">DDGI Dynamic</a>.</p>
+<p>Starting from a branch that already had this work done saved the fork a very large amount of integration
+effort, and meant the ray tracing features were already validated against shipped NVIDIA sample content.</p>
+<h2 id="what-has-been-merged-on-top">What has been merged on top</h2>
+<p>Vite is not frozen at its base. The following are fully merged:</p>
+<table>
+<thead>
+<tr>
+<th>Source</th>
+<th>What it contributes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Epic UE 4.27 Plus</td>
+<td>Ongoing EpicGames fixes &amp; updates to 4.27, plus the last toolchain compliance updates</td>
+</tr>
+<tr>
+<td>NvRTX 5.0</td>
+<td>Further NVIDIA rendering work backported down</td>
+</tr>
+<tr>
+<td>AMD GPUOpen engine branches</td>
+<td>FSR, AMD-specific rendering optimisations highly relevant to console GPUs</td>
+</tr>
+<tr>
+<td>UE 5.0&ndash;5.8</td>
+<td>300+ backports in release; 1,000+ at internal staging</td>
+</tr>
+</tbody>
+</table>
+<p>Backports are generally not straight cherry-picks. They are adapted properly to Vite codebase, 
+by engineers with several years of experience with Unreal Engine private forks. 
+<a href="Backporting.md">Backporting Workflow</a> page documents the process.</p>
+<h2 id="the-counter-argument-and-the-answer">The counter-argument, and the answer</h2>
+<p>The obvious objection is that Unreal Engine 4 is a dead codebase. In practice it is not. Recent and upcoming
+AAA releases on UE4 include Stellar Blade (4.26, 2024),
+Days Gone Remastered (4.11, 2025), Delta Force (4.22, 2026), Mortal Kombat 1 (4.27, 2023),
+Mario &amp; Luigi: Brothership (4.26, 2024), Princess Peach: Showtime! (4.26, 2024), Pikmin 4 (4.26, 2023), 
+and Square Enix's Final Fantasy VII Rebirth (4.26, 2024)
+Dragon Quest VII Reimagined (4.27, 2026) and Final Fantasy VII: Revelation (4.27, 2027).</p>
+<p>All of them ship PhysX. These teams stayed on UE4 to retain specific features and hit fidelity and
+performance targets &mdash; the same reasoning Vite is built on. UE4 also continues to receive updates from
+major studios via the 4.27 Plus branch, and remains a priority target for Nintendo platforms.</p>
+<p>The difference between "using a deprecated codebase" and "maintaining a fork" is whether anyone is still
+improving it. Vite's plan is continued optimisation of core systems, rendering core modernisation, UI work
+and toolchain updates &mdash; see <a href="../Release-Notes/">Release Notes</a> for what that has produced so far.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../UE4-Versus-UE5-Cost-Analysis/">UE4 versus UE5 Cost Analysis</a></li>
+<li><a href="../Performance-Targets/">Performance Targets</a></li>
+<li><a href="Ray-Tracing.md">Ray Tracing</a></li>
+<li><a href="PhysX.md">PhysX Overview</a></li>
+<li><a href="Backporting.md">Backporting Workflow</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Anti-Aliasing - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Anti-Aliasing";
+        var mkdocs_page_input_path = "optimization/Rendering/Anti-Aliasing.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Anti-Aliasing</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/Anti-Aliasing.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="anti-aliasing">Anti-Aliasing</h1>
+<p><tldr></p>
+<p>
+Vite adds <b>SMAA</b> as a fourth antialiasing method alongside None, FXAA, TemporalAA and MSAA. SMAA is
+the recommended for hihest raw Image Quality and specially competitive titles.
+Vite improves upon <b>UE4's TAA</b> Image quality with both improved stabalization and improved Colour
+Reproduction of Materials, specially Glossy ones and textures sharpness.
+</p>
+<p></tldr></p>
+<p>Antialiasing is where Vite’s rendering philosophy is most apparent. Unlike Epic’s Unreal Engine 5, Vite renders at native resolution by default and targets high frame rates. Its antialiasing solution therefore prioritizes temporal stability while preserving the image-quality benefits of a full native 4K output, 
+whose higher pixel density already reduces aliasing compared with lower internal resolutions. Compared with UE5, Vite effectively uses supersampling when the two engines are evaluated at the same output resolution but different internal rendering resolutions.</p>
+<p><note>
+Epic’s UE 5.8 defaults to an internal resolution with only one-quarter of the target pixel count—a 50% scale on each axis. 
+This behavior appears across several rendering paths: even when TSR is disabled, the engine may "insist" to fall back to another non-native scaling method, 
+such as TAAU or basic spatial upscaling. Vite has no such behavior, it always defaults to the Screen Full Native Resolution.
+When comparing Vite with UE5, always verify that both engines are rendering at the same native internal 
+resolution. Use stat unit to confirm the active resolution and performance characteristics.
+</note></p>
+<h2 id="available-methods">Available methods</h2>
+<p>The <strong>Anti-Aliasing Method</strong> setting under <strong>Project Settings &gt; Engine &gt; Rendering &gt; Default Settings</strong>
+offers:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Enum</th>
+<th><code>r.DefaultFeature.AntiAliasing</code></th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>None</td>
+<td><code>AAM_None</code></td>
+<td>0</td>
+<td>Aliased. Useful for comparison and for debugging AA artefacts.</td>
+</tr>
+<tr>
+<td>FXAA</td>
+<td><code>AAM_FXAA</code></td>
+<td>1</td>
+<td>Cheap post-process filter. Blurs texture detail along with edges. Vite implements a higher IQ option</td>
+</tr>
+<tr>
+<td>TemporalAA</td>
+<td><code>AAM_TemporalAA</code></td>
+<td>2</td>
+<td>Vite improves over UE4 TAA with higher IQ and stability. Better AA Handling with a cost on Image Quality</td>
+</tr>
+<tr>
+<td>MSAA</td>
+<td><code>AAM_MSAA</code></td>
+<td>3</td>
+<td>Forward shading only. Sample count via <code>r.MSAACount</code>.</td>
+</tr>
+<tr>
+<td><strong>SMAA</strong></td>
+<td><code>AAM_SMAA</code></td>
+<td><strong>4</strong></td>
+<td>Vite's SMAA implementation faster and higher quality than other stock Morphological solutions</td>
+</tr>
+</tbody>
+</table>
+<h2 id="smaa">SMAA</h2>
+<p>Subpixel Morphological Anti-Aliasing analyses the image for edge patterns and blends across them
+geometrically. It is a spatial technique: it looks at one frame and resolves the aliasing in that frame.</p>
+<p>That single property is why it fits Vite. Temporal techniques accumulate samples across frames, which is
+what produces ghosting behind moving objects, smearing on fast camera motion, and the general softness that
+makes TAA output look like it is rendered behind a thin layer of vaseline. SMAA has no history buffer, so it
+has none of those failure modes. What it gives up is subpixel detail reconstruction &mdash; it cannot
+recover information that was never rendered &mdash; which matters much less when you are rendering at native
+4K in the first place.</p>
+<p>Vite's bespoke SMAA implementation is 32% faster than CMAA2 in Unreal Engine, that's why CMAA2 was deemed redundant.
+Other morphological solutions were evaluated; none of them provided any objective argument to be implemented in Vite 
+the logical choice was to simply keep improving the base SMAA shader beyond its original form. </p>
+<h3 id="enabling-smaa">Enabling SMAA</h3>
+<div class="highlight"><pre><span></span><code><span class="c1">; Config/DefaultEngine.ini</span>
+<span class="k">[/Script/Engine.RendererSettings]</span>
+<span class="na">r.DefaultFeature.AntiAliasing</span><span class="o">=</span><span class="s">4</span>
+</code></pre></div>
+<p>Or per-camera through the post process volume's <strong>Anti-Aliasing Method</strong> override, or at runtime:</p>
+<div class="highlight"><pre><span></span><code>r.DefaultFeature.AntiAliasing 4
+</code></pre></div>
+<h3 id="quality">Quality</h3>
+<table>
+<thead>
+<tr>
+<th>CVar</th>
+<th>Default</th>
+<th>Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.Vite.SMAA.Mode</code></td>
+<td><code>1</code></td>
+<td><code>0</code> = Low, <code>1</code> = High</td>
+</tr>
+</tbody>
+</table>
+<p>Marked <code>ECVF_Scalability</code>, so it can be driven from scalability groups. High quality is the default and is
+what the <a href="Performance-Targets.md">performance targets</a> assume; Low exists for the lowest scalability bucket
+where the difference in edge quality is a reasonable trade for the frame time.</p>
+<h3 id="where-smaa-runs-in-the-pipeline">Where SMAA runs in the pipeline</h3>
+<p>Vite applies SMAA <strong>before tonemapping</strong>, unlike FXAA which runs after. This is deliberate: resolving edges
+in linear HDR space avoids the tonemapper amplifying partially-resolved edge pixels into visible fringing on
+high-contrast boundaries, which is a common complaint about post-tonemap SMAA implementations.</p>
+<p>The practical consequence is that post-process materials in the <strong>After Tonemapping</strong> blend location see an
+already-anti-aliased image, and that SMAA composes correctly with HDR output.</p>
+<h3 id="debugging">Debugging</h3>
+<p>In non-Shipping builds:</p>
+<table>
+<thead>
+<tr>
+<th>CVar</th>
+<th>Values</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.AntiAliasing.SMAA.Debug</code></td>
+<td><code>0</code> = off, <code>1</code> = show detected edges, <code>2</code> = show blend weights</td>
+</tr>
+</tbody>
+</table>
+<p>Edge visualisation is the fastest way to diagnose SMAA that appears to be doing nothing (usually the method
+is not actually selected) or is over-blurring (usually excessive high-frequency content in the source image,
+often from an aggressive sharpening or noise post-process).</p>
+<h2 id="aliasing-that-anti-aliasing-will-not-fix">Aliasing that anti-aliasing will not fix</h2>
+<p>Some aliasing is authored in rather than introduced by rasterisation, and no regular AA method resolves it:</p>
+<ul>
+<li><strong>Specular aliasing</strong> from high-frequency normal maps on smooth materials. Fix with proper mip generation
+  and normal-to-roughness conversion, not with AA.</li>
+<li><strong>Texture aliasing</strong> from missing or badly generated mips. Fix in the texture import settings.</li>
+<li><strong>Alpha-test shimmer</strong> on foliage. Consider dithered opacity, or reduce the alpha-tested surface area.</li>
+</ul>
+<p>Diagnose these by switching to <code>AAM_None</code> and looking at where the aliasing appears. Aliasing that moves
+with the surface rather than sitting on silhouette edges is a content problem.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Rendering/">Rendering</a></li>
+<li><a href="../Upscalers/">Upscalers and Frame Generation</a></li>
+<li><a href="Performance-Targets.md">Performance Targets</a></li>
+<li><a href="../Color-Management/">Colour Management</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

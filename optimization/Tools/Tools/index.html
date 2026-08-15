@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Tools and Automation - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Tools and Automation";
+        var mkdocs_page_input_path = "optimization/Tools/Tools.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Tools and Automation</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Tools/Tools.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="tools-and-automation">Tools and Automation</h1>
+<p><tldr></p>
+<p>
+Vite ships batch tooling for the whole engine lifecycle: <code>ViteSetup.bat</code> for setup and building,
+<code>RunUAT.bat</code> for installed builds, the <code>LocalBuilds\</code> scripts for packaging and
+registration, and <code>WipeShaderCache.bat</code> for when caches go stale.
+</p>
+<p></tldr></p>
+<p>Building Unreal from source involves a long sequence of steps, each with its own failure modes. Vite wraps
+that sequence in tooling so the common paths do not require remembering the exact command lines.</p>
+<h2 id="in-this-section">In this section</h2>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Covers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../ViteSetup/">ViteSetup Assistant</a></td>
+<td>The guided setup and build assistant, and its menu mode</td>
+</tr>
+<tr>
+<td><a href="../Installed-Builds/">Installed Builds</a></td>
+<td>Producing and packaging a redistributable binary engine</td>
+</tr>
+<tr>
+<td><a href="../Cache-Management/">Cache Management</a></td>
+<td>Wiping shader and DDC caches when things go wrong</td>
+</tr>
+</tbody>
+</table>
+<h2 id="the-tools-at-a-glance">The tools at a glance</h2>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Location</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ViteSetup.bat</code></td>
+<td>Engine root</td>
+<td>Guided nine-step setup, or a menu of individual operations</td>
+</tr>
+<tr>
+<td><code>RunUAT.bat</code></td>
+<td>Engine root</td>
+<td>Installed engine build via BuildGraph</td>
+</tr>
+<tr>
+<td><code>WipeShaderCache.bat</code></td>
+<td>Engine root</td>
+<td>Clears engine-level shader and DDC caches</td>
+</tr>
+<tr>
+<td><code>LocalBuilds\CompressBuild*.bat</code></td>
+<td><code>LocalBuilds\</code></td>
+<td>Packages a staged installed build into a 7z archive</td>
+</tr>
+<tr>
+<td><code>LocalBuilds\RegistryAdd.bat</code></td>
+<td><code>LocalBuilds\</code></td>
+<td>Registers the build as <code>UEViteFork</code></td>
+</tr>
+<tr>
+<td><code>LocalBuilds\RegistryRemove.bat</code></td>
+<td><code>LocalBuilds\</code></td>
+<td>Unregisters it</td>
+</tr>
+<tr>
+<td><code>LocalBuilds\MakeShortcut.bat</code></td>
+<td><code>LocalBuilds\</code></td>
+<td>Creates <code>UEViteFork.lnk</code></td>
+</tr>
+<tr>
+<td><code>devops\ueVite-debloat-*.bat</code></td>
+<td><code>devops\</code></td>
+<td>Engine debloat suite &mdash; see <a href="Debloat-Guide.md">Debloat Guide</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="which-one-you-want">Which one you want</h2>
+<p><deflist>
+<def title="I just cloned the repository">
+Run <code>ViteSetup.bat</code>. It walks the whole sequence from environment check to a launched editor.
+See <a href="ViteSetup.md">ViteSetup Assistant</a>.
+</def>
+<def title="I want a binary engine to hand to artists">
+Run <code>ViteSetup.bat</code> and choose the binary build option at step 4, or drive
+<code>RunUAT.bat</code> and the <code>LocalBuilds\</code> scripts directly. See
+<a href="Installed-Builds.md">Installed Builds</a>.
+</def>
+<def title="Shaders are behaving strangely after a change">
+Run <code>WipeShaderCache.bat</code>. See <a href="Cache-Management.md">Cache Management</a>.
+</def>
+<def title="The engine is taking too much disk space">
+Run the <code>devops\</code> debloat suite. See <a href="Debloat-Guide.md">Debloat Guide</a>.
+</def>
+<def title="I only need to regenerate project files">
+<code>ViteSetup.bat menu</code> and choose option 3, or run <code>GenerateProjectFiles.bat</code>
+directly.
+</def>
+</deflist></p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="Build-From-Source.md">Build from Source</a></li>
+<li><a href="Toolchain-Requirements.md">Toolchain Requirements</a></li>
+<li><a href="Build-Troubleshooting.md">Build Troubleshooting</a></li>
+<li><a href="Debloat-Guide.md">Debloat Guide</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

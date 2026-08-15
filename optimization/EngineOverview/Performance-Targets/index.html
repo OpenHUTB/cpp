@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Performance Targets - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Performance Targets";
+        var mkdocs_page_input_path = "optimization/EngineOverview/Performance-Targets.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Performance Targets</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/EngineOverview/Performance-Targets.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="performance-targets">Performance Targets</h1>
+<p><tldr></p>
+<p>
+Four PS5-class reference configurations, all including ray tracing: <b>4K120</b> stylised,
+<b>4K60</b> performance, <b>4K30</b> fidelity, and <b>1440p30</b> with the full RT effect suite.
+All figures are at native resolution.
+</p>
+<p></tldr></p>
+<p>Vite's performance targets are not aspirational marketing numbers; they are the configurations the engine is
+tuned against and the ones the demo projects are built to hit. Every one of them includes ray tracing, and
+every one of them is stated at native resolution rather than an upscaled internal one.</p>
+<h2 id="the-four-targets">The four targets</h2>
+<table>
+<thead>
+<tr>
+<th>Target</th>
+<th>Resolution and frame rate</th>
+<th>Feature set</th>
+<th>Intended for</th>
+<th>Demonstraded in</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Stylised</strong></td>
+<td>4K, 120 FPS</td>
+<td>RT DDGI</td>
+<td>Competitive multiplayer titles</td>
+<td>Stylized Demo</td>
+</tr>
+<tr>
+<td><strong>Performance, high end</strong></td>
+<td>4K, 60 FPS</td>
+<td>DDGI + RT Reflections + Tessellation</td>
+<td>Fidelity-focused titles that still need 60</td>
+<td>Unreal Tournament Vite Scene</td>
+</tr>
+<tr>
+<td><strong>Fidelity, high end</strong></td>
+<td>4K, 30 FPS</td>
+<td>As above, scaled for geometric density</td>
+<td>Large open worlds</td>
+<td>Demo In Progress</td>
+</tr>
+<tr>
+<td><strong>Fidelity, full RT</strong></td>
+<td>1440p, 30 FPS</td>
+<td>DDGI + RT Reflections + RTAO + RT Shadows</td>
+<td>Maximum image quality</td>
+<td>NVIDIA Demos</td>
+</tr>
+</tbody>
+</table>
+<p>The reference hardware for all four is PlayStation 5 class, which on desktop means roughly an RDNA2
+RX 6700/RTX 2080</p>
+<p>Real-time path tracing is also available in the codebase, using the NVIDIA path tracing technology featured
+in Black Myth: Wukong. &mdash; see <a href="Path-Tracing.md">Path Tracing</a>.</p>
+<h2 id="the-comparison-being-made">The comparison being made</h2>
+<p>Epic's UE 5.7 and 5.8 target approximately 60 FPS at dynamic internal resolutions of 720p&ndash;1080p on
+PS5, using Lumen, Nanite, VSM, TSR and Chaos. Vite's headline claim is a base performance improvement of up
+to 2.5x real game frame rate against that intended feature set.</p>
+<p>The clearest single demonstration: a scene running in Vite with ray-traced global illumination, ray-traced
+reflections and tessellation outperforms the <em>same scene</em> in UE 5.7 with no ray tracing, no Lumen, no Nanite
+and no tessellation. This holds at 4K native on an RTX 4080 Super, at 4K native on an RDNA2 RX 6700, and at
+native resolution on Steam Deck hardware.</p>
+<p><a href="https://youtu.be/2vfG3W-Gy5E"><img alt="Vite RT GI and RT Reflections" src="https://img.youtube.com/vi/2vfG3W-Gy5E/maxresdefault.jpg" /></a></p>
+<h2 id="measured-reference-points">Measured reference points</h2>
+<p>These are specific measurements from the benchmark scenes, reproduced here so the targets above have
+something concrete behind them. Each is a like-for-like comparison in the same scene.</p>
+<table>
+<thead>
+<tr>
+<th>Measurement</th>
+<th>Vite</th>
+<th>UE5</th>
+<th>Ratio</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DDGI test scene, RTX 4080S, 1440p native</td>
+<td>811 FPS (RTXGI)</td>
+<td>324 FPS (Lumen 5.7)</td>
+<td>~2.5x</td>
+</tr>
+<tr>
+<td>DDGI test scene, RX 6600, 1080p native</td>
+<td>245 FPS (RTXGI)</td>
+<td>&mdash;</td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td>Physics stress scene</td>
+<td>157 FPS (PhysX)</td>
+<td>33.3 FPS (Chaos 5.7.3)</td>
+<td>~4.7x</td>
+</tr>
+<tr>
+<td>Physics, native PhysX actor fast path</td>
+<td>~2x regular PhysX</td>
+<td>&mdash;</td>
+<td>&mdash;</td>
+</tr>
+<tr>
+<td>Character movement and collision</td>
+<td>4.27 baseline</td>
+<td>5.6</td>
+<td>2.2&ndash;2.8x faster on 4.27</td>
+</tr>
+<tr>
+<td>Typical multiplayer map memory</td>
+<td>~1 GB less than 5.7</td>
+<td>&mdash;</td>
+<td>&mdash;</td>
+</tr>
+</tbody>
+</table>
+<p>The DDGI comparison is the most representative of the rendering argument; the physics comparison is the most
+representative of the CPU argument. The benchmark scenes themselves are downloadable from
+<a href="ProjectsAndDemos.md">Projects and Demos</a>.</p>
+<h2 id="why-native-resolution-is-the-constraint">Why native resolution is the constraint</h2>
+<p>Temporal reconstruction, denoising and stochastic sampling introduce noise, ghosting, temporal instability
+and blur. A 60 FPS target at a dynamic 720p&ndash;1080p internal resolution reconstructed to 4K is a
+different product than 60 FPS at native 4K, even when the frame rate number matches.</p>
+<p>Vite's position is that image clarity and gameplay responsiveness are the things that degrade first and are
+hardest to recover, so the frame-time budget should be spent holding native resolution and using lighting
+techniques that are noise-free by construction. DDGI's use of spherical harmonics to store and filter
+irradiance in probe volumes is precisely why it produces stable results without a denoiser.</p>
+<p>Upscalers are fully supported &mdash; DLSS 4.5, FSR 2 and 4, XeSS and NIS all ship with the engine. They are
+positioned as a way to exceed a target on weaker hardware, not as a way to reach it on the reference
+hardware. See <a href="Upscalers.md">Upscalers and Frame Generation</a>.</p>
+<h2 id="designing-to-a-target">Designing to a target</h2>
+<p>Pick your target before you build content, because it determines your entire art budget.</p>
+<p><procedure title="Choose and hold a performance target" id="choose-target">
+    <step>
+        Pick the row from the table above that matches your genre. Competitive multiplayer almost always
+        means the Stylised 4K120 target; a narrative single-player title can usually afford Fidelity.
+    </step>
+    <step>
+        Configure the corresponding feature set and nothing more. Vite enables most ray tracing effects by
+        default, so this usually means turning things <i>off</i>. See <a href="Ray-Tracing.md">Ray Tracing</a>.
+    </step>
+    <step>
+        Establish a frame-time budget per system &mdash; GI, reflections, shadows, geometry, post &mdash; and
+        measure against it with <code>stat gpu</code> from the first playable scene onward.
+    </step>
+    <step>
+        Test on the lowest hardware in your matrix regularly, not at the end. See
+        <a href="System-Requirements.md">System Requirements</a> for the reference hardware list.
+    </step>
+    <step>
+        Use <a href="Engine-Defaults.md">scalability</a> settings to scale down, rather than designing for the
+        weakest machine and scaling up.
+    </step>
+</procedure></p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../UE4-Versus-UE5-Cost-Analysis/">UE4 versus UE5 Cost Analysis</a></li>
+<li><a href="Profiling.md">Profiling and Benchmarking</a></li>
+<li><a href="Engine-Defaults.md">Scalability</a></li>
+<li><a href="ProjectsAndDemos.md">Projects and Demos</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

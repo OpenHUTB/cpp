@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Shader Compilation and PSO - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Shader Compilation and PSO";
+        var mkdocs_page_input_path = "optimization/Performance/Shader-Compilation-And-PSO.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Shader Compilation and PSO</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Performance/Shader-Compilation-And-PSO.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="shader-compilation-and-pso">Shader Compilation and PSO</h1>
+<p><tldr></p>
+<p>
+Shader permutation count drives compile time, package size and runtime hitching. Vite's main lever is
+<code>VITE_RT_PSO_DEBLOAT</code>, which removes ray tracing permutations for effects it does not ship.
+Your main levers are shading model discipline and PSO caching.
+</p>
+<p></tldr></p>
+<p>A shader permutation is one compiled variant of a shader for one specific combination of features. Unreal
+generates permutations combinatorially, so each independent option roughly doubles the count.</p>
+<p>This matters in four places: how long a full build takes, how large the packaged game is, how long the
+first-run shader compile takes on a player's machine, and whether the game hitches when it encounters a
+material for the first time.</p>
+<h2 id="ray-tracing-permutations">Ray tracing permutations</h2>
+<p>Ray tracing is the worst case, because ray tracing pipeline state objects must include every ray generation
+shader that could be dispatched. A console variable set to <code>0</code> does not remove its shaders &mdash; they are
+still compiled, packaged and bound into the pipeline.</p>
+<p><code>VITE_RT_PSO_DEBLOAT</code>, which defaults to <code>1</code>, addresses this by returning <code>false</code> from
+<code>ShouldCompilePermutation</code> for ray tracing effects outside Vite's recommended configuration: per-pixel
+ray-traced GI, RTXDI, path tracing, ray-traced translucency, mesh and water caustics, ray-traced reflection
+captures, and the non-deferred reflection path.</p>
+<p>This is a large reduction. It is also the reason those effects do not work in a default build. Full detail
+is in <a href="../Compile-Time-Switches/">Compile-Time Switches</a>.</p>
+<h2 id="material-permutations">Material permutations</h2>
+<p>The controls you have over material shader count:</p>
+<p><strong>Shading models.</strong> Every <a href="Shading-Models.md">shading model</a> in use adds permutations. A project using
+Default Lit and Callisto BRDF compiles far fewer shaders than one using six models. This is a real budget,
+not a theoretical one.</p>
+<p><strong>Material usage flags.</strong> Each <strong>Used With</strong> flag on a material adds a vertex factory permutation: used
+with skeletal mesh, instanced static meshes, particle sprites, splines and so on. Unreal sets these
+automatically when it encounters a new usage, which means a material can silently accumulate flags it no
+longer needs. Audit them.</p>
+<p><strong>Static switches.</strong> Static switch parameters double the permutation count each. Two switches is four
+variants; ten is 1024. Use dynamic branches or separate materials when the count gets away from you.</p>
+<p><strong>Quality levels and feature levels.</strong> Each shader platform and quality level the project targets
+multiplies everything above.</p>
+<p><strong>Tessellation.</strong> Enabling <a href="Tessellation.md">tessellation</a> on a material adds hull and domain shader
+permutations.</p>
+<h2 id="compile-times">Compile times</h2>
+<p>Reference figures from the Vite repository, measured on a Ryzen 9 9950X3D:</p>
+<table>
+<thead>
+<tr>
+<th>Configuration</th>
+<th>Full engine build</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Full repository</td>
+<td>~15 minutes</td>
+</tr>
+<tr>
+<td>Without Vite plugins</td>
+<td>~12 minutes</td>
+</tr>
+</tbody>
+</table>
+<p>Houdini is the single largest contributor among the added plugins. See the
+<a href="../Debloat-Guide/">Debloat Guide</a> for how to strip plugins you do not need.</p>
+<p>To speed up shader compilation specifically:</p>
+<ul>
+<li>Increase worker count in <code>BuildConfiguration.xml</code>, if you have the cores and RAM. Each worker needs
+  memory, so oversubscribing causes swapping and makes things worse.</li>
+<li>Use a shared Derived Data Cache across the team. This is the single largest win for a team of more than
+  one person: shaders compiled once by anyone are available to everyone.</li>
+<li>Avoid touching global shader headers. A change to a widely-included <code>.ush</code> file rebuilds everything.</li>
+</ul>
+<h2 id="pso-caching">PSO caching</h2>
+<p>A pipeline state object bundles shaders and render state into the object the GPU driver actually needs.
+Creating one at the moment a material is first drawn is what causes shader compilation hitches in shipping
+games.</p>
+<p>PSO caching solves this by recording which PSOs a build actually uses and precompiling them at startup or
+during loading.</p>
+<p><procedure title="Set up PSO caching" id="pso-caching">
+    <step>Enable PSO caching in <b>Project Settings &gt; Packaging</b>.</step>
+    <step>
+        Package a build with logging enabled and play through it, covering every level, every material and
+        every effect the shipping game contains. Coverage is the whole point: a PSO not encountered during
+        recording will still hitch.
+    </step>
+    <step>Collect the recorded PSO cache files from the build.</step>
+    <step>Use the shader pipeline cache tools to consolidate them into a single cache.</step>
+    <step>Include the cache in the shipping build and verify the hitches are gone.</step>
+</procedure></p>
+<p>This is genuinely tedious work and it is usually left too late. Schedule it before content lock, not after.</p>
+<h2 id="cache-problems">Cache problems</h2>
+<p>Stale shader caches produce some of the most confusing failures in Unreal: shaders that do not match the
+source, materials that render incorrectly, editor crashes on load, and changes to compile-time switches that
+appear to have no effect.</p>
+<p>If you changed <code>VITE_RT_PSO_DEBLOAT</code> or any other switch affecting shader permutations, wipe the cache. See
+<a href="Cache-Management.md">Cache Management</a> for <code>WipeShaderCache.bat</code>, which clears the engine-level derived
+data cache, intermediate shaders and shader debug info.</p>
+<h2 id="diagnosing">Diagnosing</h2>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Likely cause</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hitch the first time an effect or material appears</td>
+<td>Missing PSO cache entry</td>
+</tr>
+<tr>
+<td>Very long first launch after a build</td>
+<td>Global shader recompile, often from a header change</td>
+</tr>
+<tr>
+<td>Shaders recompiling every launch</td>
+<td>DDC not persisting, or a non-deterministic input to the shader hash</td>
+</tr>
+<tr>
+<td>Console variable has no visible effect</td>
+<td>Feature compiled out. See <a href="../Compile-Time-Switches/">Compile-Time Switches</a>.</td>
+</tr>
+<tr>
+<td>Compile times growing over time</td>
+<td>Permutation creep from accumulated material usage flags and static switches</td>
+</tr>
+</tbody>
+</table>
+<p><code>r.ShaderDevelopmentMode 1</code> and <code>r.DumpShaderDebugInfo 1</code> produce diagnostic output when you need to
+understand what is actually being compiled.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Compile-Time-Switches/">Compile-Time Switches</a></li>
+<li><a href="Shading-Models.md">Shading Models</a></li>
+<li><a href="Cache-Management.md">Cache Management</a></li>
+<li><a href="Build-Troubleshooting.md">Build Troubleshooting</a></li>
+<li><a href="../Debloat-Guide/">Debloat Guide</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

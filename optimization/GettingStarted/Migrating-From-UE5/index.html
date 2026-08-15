@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Migrating from Unreal Engine 5 - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Migrating from Unreal Engine 5";
+        var mkdocs_page_input_path = "optimization/GettingStarted/Migrating-From-UE5.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Migrating from Unreal Engine 5</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/GettingStarted/Migrating-From-UE5.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="migrating-from-unreal-engine-5">Migrating from Unreal Engine 5</h1>
+<p><tldr></p>
+<p>
+Assets move down with the <a href="Proposed-Plugins.md">UE Downgrader</a> plugin, which supports UE 5.8 and
+below back to 4.27. Code moves more easily than on stock 4.27, because Vite backports many UE5 container,
+game framework and GAS APIs. Features that do not exist in 4.27 &mdash; Nanite, Lumen, VSM, World Partition
+&mdash; have no equivalent and need design decisions, not conversion.
+</p>
+<p></tldr></p>
+<p>Moving a project from Unreal Engine 5 down to Vite is a real migration, not a version bump. This page sets
+out what transfers cleanly, what needs replacing, and in what order to do it.</p>
+<h2 id="what-transfers-what-does-not">What transfers, what does not</h2>
+<table>
+<thead>
+<tr>
+<th>UE5 feature</th>
+<th>Status on Vite</th>
+<th>What to do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Static meshes, textures, materials, animations</td>
+<td>Transfers</td>
+<td>Downgrade with the UE Downgrader plugin</td>
+</tr>
+<tr>
+<td>Blueprints</td>
+<td>Transfers</td>
+<td>Downgrade; re-test node-for-node, some UE5-only nodes have no target</td>
+</tr>
+<tr>
+<td>C++ gameplay code</td>
+<td>Transfers</td>
+<td>Vite backports many UE5 APIs; see below</td>
+</tr>
+<tr>
+<td>Gameplay Ability System</td>
+<td>Transfers</td>
+<td>Vite includes GAS updates backported from UE5</td>
+</tr>
+<tr>
+<td>Nanite</td>
+<td>No equivalent</td>
+<td>Author conventional LODs; use <a href="Tessellation.md">Tessellation</a> for surface detail</td>
+</tr>
+<tr>
+<td>Lumen</td>
+<td>Replaced</td>
+<td>Use <a href="DDGI-Dynamic.md">DDGI</a>, optionally with <a href="SSGI.md">SSGI</a></td>
+</tr>
+<tr>
+<td>Virtual Shadow Maps</td>
+<td>No equivalent</td>
+<td>Cascaded shadow maps, or <a href="RT-Shadows-And-Ambient-Occlusion.md">ray-traced shadows</a></td>
+</tr>
+<tr>
+<td>TSR</td>
+<td>Replaced</td>
+<td><a href="Upscalers.md">DLSS, FSR, XeSS</a>, or native with <a href="Anti-Aliasing.md">SMAA</a></td>
+</tr>
+<tr>
+<td>MegaLights</td>
+<td>Replaced</td>
+<td><a href="RTXDI.md">RTXDI</a></td>
+</tr>
+<tr>
+<td>Chaos physics</td>
+<td>Replaced</td>
+<td><a href="PhysX.md">PhysX</a></td>
+</tr>
+<tr>
+<td>Chaos Destruction</td>
+<td>Replaced</td>
+<td><a href="Destruction-And-Cloth.md">Apex Destruction</a> and <a href="Destruction-And-Cloth.md">Blast</a></td>
+</tr>
+<tr>
+<td>Chaos Cloth</td>
+<td>Replaced</td>
+<td><a href="Destruction-And-Cloth.md">Apex Cloth</a></td>
+</tr>
+<tr>
+<td>Substrate</td>
+<td>No equivalent</td>
+<td>Standard material model, plus <a href="Shading-Models.md">Callisto BRDF</a></td>
+</tr>
+<tr>
+<td>World Partition</td>
+<td>Replaced</td>
+<td>World Composition and level streaming</td>
+</tr>
+<tr>
+<td>Niagara</td>
+<td>Transfers</td>
+<td>Available; <a href="Proposed-Plugins.md">PopcornFX</a> is a faster alternative</td>
+</tr>
+<tr>
+<td>MetaSounds</td>
+<td>No equivalent</td>
+<td>Sound Cues, or <a href="Proposed-Plugins.md">Wwise</a></td>
+</tr>
+</tbody>
+</table>
+<h2 id="downgrading-assets">Downgrading assets</h2>
+<p>The UE Downgrader plugin converts assets from UE 5.8 and below back to 4.27 and 4.26. It works by first
+upgrading assets to its source version(usually latest UE5), then applying patches to the <code>.uasset</code> files so they are readable by
+the target version, minus the data the older format cannot represent. Nanite data, for instance, is stripped
+during a 4.27 downgrade.</p>
+<p>What the plugin cannot do is invent 4.27 equivalents for features that do not exist there. Nanite on masked
+materials, new material nodes and new Niagara modules will not survive the trip. Budget for reauthoring
+those.</p>
+<p>The plugin is commercial. Its author, Ciprian Stanciu, is active on the
+<a href="https://discord.gg/n9zQrYFhMb">Vite Discord</a> and has provided direct support for several Vite projects.
+There is a <a href="https://youtu.be/yXvJfDNfrSQ">video walkthrough</a> of the workflow.</p>
+<h2 id="migrating-code">Migrating code</h2>
+<p>This is the part that is easier on Vite than on stock 4.27. The fork deliberately backports UE5 API surface
+so that UE5-era code compiles with fewer changes: updated container classes, game framework updates, and
+Gameplay Ability System functionality are all present.</p>
+<p>You will still hit differences. Work through them in this order:</p>
+<ol>
+<li><strong>Physics.</strong> Anything touching <code>Chaos</code> namespaces, <code>FChaosScene</code>, geometry collections or Chaos vehicles
+   needs to move to PhysX equivalents. This is usually the largest single chunk of work. See
+   <a href="PhysX.md">PhysX Overview</a>.</li>
+<li><strong>Rendering.</strong> Code that queries or drives Lumen, Nanite or VSM console variables has no target. Replace
+   with the Vite equivalents in <a href="Rendering.md">Rendering</a>.</li>
+<li><strong>Core API drift.</strong> <code>FVector</code> is double-precision in UE5 (<code>FVector3d</code>) and single-precision in 4.27.
+   Large-world-coordinate assumptions do not hold. Audit any code doing precision-sensitive maths at large
+   world offsets.</li>
+<li><strong>Module and build rules.</strong> <code>.Build.cs</code> files referencing UE5-only modules need those dependencies
+   removed or replaced.</li>
+</ol>
+<h2 id="recommended-migration-order">Recommended migration order</h2>
+<p><procedure title="Migrate a UE5 project to Vite" id="migration-order">
+    <step>
+        Stand up an empty Vite project first and confirm your toolchain and engine build are healthy.
+        Do not debug two problems at once.
+    </step>
+    <step>
+        Port the C++ modules with no content. Get them compiling against Vite before any assets move.
+        Check physics and rendering API breakage here.
+    </step>
+    <step>
+        Downgrade and import a small, representative slice of content &mdash; one character, one
+        environment, a handful of materials. Validate that it looks and behaves correctly.
+    </step>
+    <step>
+        Replace the lighting setup. Lumen has no direct translation; set up
+        <a href="DDGI-Dynamic.md">DDGI</a> volumes and tune them against the slice you just imported.
+    </step>
+    <step>
+        Rebuild the physics setup. Re-author destruction with
+        <a href="Destruction-And-Cloth.md">Apex Destruction</a> and cloth with
+        <a href="Destruction-And-Cloth.md">Apex Cloth</a>.
+    </step>
+    <step>
+        Bulk-migrate the remaining content once the slice is proven.
+    </step>
+    <step>
+        Profile against your target hardware and set scalability. See
+        <a href="Profiling.md">Profiling and Benchmarking</a>.
+    </step>
+</procedure></p>
+<h2 id="a-mixed-version-workflow">A mixed-version workflow</h2>
+<p>You do not have to move everyone at once. A common arrangement is for programmers to work in Vite while
+artists and content creators continue in a stock Epic Games Launcher install of 4.27, with content flowing
+one way. For that to work, the launcher-side users need the standalone
+<a href="https://github.com/GapingPixel/UE4-RTXGI-1.1.5-Latest-Official">DDGI 1.1.5 plugin</a> so that lighting looks
+approximately right on their end. This is exactly what we do at Vite Studio, and has work so far with no issues
+for modeling, animation and sound design work.</p>
+<blockquote>
+<p>Do not use the launcher DDGI plugin into a Vite project. Vite already ships DDGI as part of the
+engine, and the two will conflict. *DDGI in Vite is handled better than DDGI plugin for Launcher Version.
+(Due to both Engine side/DDGI plugin Side changes)</p>
+<p>{style="warning"}</p>
+</blockquote>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Introduction-to-Vite/">Introduction to Vite</a></li>
+<li><a href="PhysX.md">PhysX Overview</a></li>
+<li><a href="Global-Illumination.md">Global Illumination</a></li>
+<li><a href="Proposed-Plugins.md">Proposed Plugins</a></li>
+<li><a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 versus UE5 Cost Analysis</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

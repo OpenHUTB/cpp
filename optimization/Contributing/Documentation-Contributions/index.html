@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Contributing to the Documentation - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Contributing to the Documentation";
+        var mkdocs_page_input_path = "optimization/Contributing/Documentation-Contributions.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Contributing to the Documentation</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Contributing/Documentation-Contributions.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="contributing-to-the-documentation">Contributing to the Documentation</h1>
+<p><tldr></p>
+<p>
+These docs are a JetBrains Writerside project. Add a Markdown file under
+<code>Writerside\topics\</code>, register it in <code>Writerside\hi.tree</code>, and push to
+<code>main</code> &mdash; GitHub Actions builds and deploys to GitHub Pages.
+</p>
+<p></tldr></p>
+<p>Documentation that lags the engine is worse than no documentation, because people trust it. If you change
+a default, add a console variable or compile out a feature, the page describing it needs to change in the
+same pass.</p>
+<h2 id="repository-layout">Repository layout</h2>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Writerside\topics\</code></td>
+<td>All topic Markdown files, organised in subfolders by section</td>
+</tr>
+<tr>
+<td><code>Writerside\images\</code></td>
+<td>Images, referenced by filename alone</td>
+</tr>
+<tr>
+<td><code>Writerside\hi.tree</code></td>
+<td>Navigation tree; a topic not listed here is not published</td>
+</tr>
+<tr>
+<td><code>Writerside\writerside.cfg</code></td>
+<td>Project configuration</td>
+</tr>
+<tr>
+<td><code>Writerside\v.list</code></td>
+<td>Variables</td>
+</tr>
+<tr>
+<td><code>Writerside\c.list</code></td>
+<td>Categories</td>
+</tr>
+<tr>
+<td><code>.github\workflows\DocsBuild.yml</code></td>
+<td>Build and deploy pipeline</td>
+</tr>
+</tbody>
+</table>
+<h2 id="adding-a-topic">Adding a topic</h2>
+<p><procedure title="Add a documentation page" id="add-topic">
+    <step>
+        Create the Markdown file in the appropriate <code>Writerside\topics\</code> subfolder. Use
+        <code>Title-Case-With-Hyphens.md</code>.
+    </step>
+    <step>
+        Add a <code>&lt;toc-element topic="Your-File.md"/&gt;</code> entry to
+        <code>Writerside\hi.tree</code> in the right section.
+    </step>
+    <step>
+        Cross-link it. Add it to the parent section page's topic table and to the
+        <b>See also</b> lists of related pages.
+    </step>
+    <step>Push to <code>main</code>. The workflow builds and deploys automatically.</step>
+</procedure></p>
+<p><note>
+Writerside resolves topic links by filename, not by path, so <code><a href="Ray-Tracing.md">Ray Tracing</a></code>
+works regardless of which folder either file is in. Filenames must therefore be unique across the whole
+project.
+</note></p>
+<h2 id="writing-conventions">Writing conventions</h2>
+<h3 id="structure">Structure</h3>
+<p>Most pages follow the same shape:</p>
+<ol>
+<li><code># Title</code></li>
+<li>A <code>&lt;tldr&gt;</code> block giving the answer in two or three sentences</li>
+<li>Body sections</li>
+<li>A <code>## See also</code> list</li>
+</ol>
+<p>The <code>&lt;tldr&gt;</code> is not optional on substantial pages. Readers arriving from search need to know within a
+sentence whether they are in the right place.</p>
+<h3 id="writerside-elements">Writerside elements</h3>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;tldr&gt;</code></td>
+<td>The summary at the top</td>
+</tr>
+<tr>
+<td><code>&lt;note&gt;</code></td>
+<td>Useful context that is not a hazard</td>
+</tr>
+<tr>
+<td><code>&lt;warning&gt;</code></td>
+<td>Something that will cost the reader time or break their build</td>
+</tr>
+<tr>
+<td><code>&lt;procedure&gt;</code></td>
+<td>Numbered steps with an <code>id</code> attribute</td>
+</tr>
+<tr>
+<td><code>&lt;deflist&gt;</code> / <code>&lt;def&gt;</code></td>
+<td>Term-and-explanation lists</td>
+</tr>
+<tr>
+<td><code>&lt;code-block lang="ini"&gt;</code></td>
+<td>Code inside an HTML-like element, where fenced blocks do not work</td>
+</tr>
+</tbody>
+</table>
+<p>Inside <code>&lt;tldr&gt;</code>, <code>&lt;note&gt;</code>, <code>&lt;warning&gt;</code> and <code>&lt;def&gt;</code>, use HTML rather than Markdown &mdash; <code>&lt;b&gt;</code>, <code>&lt;code&gt;</code>,
+<code>&lt;a href="Page.md"&gt;</code>, <code>&lt;p&gt;</code>. Markdown syntax is not processed there.</p>
+<h3 id="tone">Tone</h3>
+<ul>
+<li>State the answer, then the reasoning. Not the reverse.</li>
+<li>Say what something costs, not only what it does.</li>
+<li>Where a feature is unavailable by default, say so at the top of the page, not in a footnote. The
+  <a href="RTXDI.md">RTXDI</a> and <a href="Path-Tracing.md">path tracing</a> pages are the pattern to follow.</li>
+<li>Tables for enumerable facts, prose for explanation. Do not put explanations in table cells.</li>
+</ul>
+<h3 id="accuracy">Accuracy</h3>
+<p>Ground claims in the engine source. Console variable names, defaults and help text should be checked
+against their definition rather than remembered:</p>
+<div class="highlight"><pre><span></span><code>Engine\Source\Runtime\Renderer\Private\        renderer CVars
+Engine\Source\Runtime\Engine\Classes\Engine\Scene.h    post-process settings
+Engine\Source\Runtime\Core\Public\Misc\CoreDefines.h   VITE_* compile switches
+</code></pre></div>
+<p><warning>
+Console variable help text in the engine is sometimes out of date. HBAO+ describes itself as DX11-only in
+its help string but has a working D3D12 implementation. When source and help text disagree, trust the
+source and document the discrepancy.
+</warning></p>
+<h2 id="building-locally">Building locally</h2>
+<p>Install the Writerside plugin for a JetBrains IDE, or Writerside standalone, and open the repository root.
+The instance ID is <code>hi</code>.</p>
+<p>Writerside's own inspections catch broken topic links, unreferenced topics and missing images, which is
+faster than discovering them after a deploy.</p>
+<h2 id="the-build-pipeline">The build pipeline</h2>
+<p><code>.github\workflows\DocsBuild.yml</code> runs on every push to <code>main</code> and on manual dispatch. It builds the <code>hi</code>
+instance with the Writerside Docker builder, uploads the artifact, then deploys to GitHub Pages.</p>
+<p>A build failure usually means a topic referenced in <code>hi.tree</code> does not exist, or a topic exists but is not
+referenced. Both are reported by name in the workflow log.</p>
+<h2 id="documenting-engine-changes">Documenting engine changes</h2>
+<p>If your engine change affects any of the following, update the documentation in the same pull request:</p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Page to update</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>New or changed console variable</td>
+<td>The relevant feature page</td>
+</tr>
+<tr>
+<td>New <code>VITE_*</code> switch</td>
+<td><a href="Compile-Time-Switches.md">Compile-Time Switches</a></td>
+</tr>
+<tr>
+<td>Changed engine default</td>
+<td><a href="Engine-Defaults.md">Engine Defaults</a></td>
+</tr>
+<tr>
+<td>New or updated plugin</td>
+<td><a href="Bundled-Plugins.md">Bundled Plugins</a></td>
+</tr>
+<tr>
+<td>New tool or script</td>
+<td>The <a href="Tools.md">Tools</a> section</td>
+</tr>
+<tr>
+<td>A feature becoming unavailable in default builds</td>
+<td>The feature's page, and <a href="Ray-Tracing.md">Ray Tracing</a> if applicable</td>
+</tr>
+</tbody>
+</table>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Contributing/">Contributing</a></li>
+<li><a href="../Coding-Guidelines/">Coding Guidelines</a></li>
+<li><a href="../Commit-Conventions/">Commit Conventions</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

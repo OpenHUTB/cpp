@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Console Variables - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Console Variables";
+        var mkdocs_page_input_path = "optimization/Reference/Console-Variables.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Console Variables</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Reference/Console-Variables.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="console-variables">Console Variables</h1>
+<p><tldr></p>
+<p>
+Vite-specific console variables and the stock ones you most often need, grouped by subsystem. This is a
+curated list, not an exhaustive dump &mdash; use <code>help</code> or the console's autocomplete for the
+full set.
+</p>
+<p></tldr></p>
+<p><warning>
+Several ray tracing variables in this list are <b>compiled out</b> in a default build. They will set
+successfully and render nothing. Availability is noted per variable; see
+<a href="Compile-Time-Switches.md">Compile-Time Switches</a>.
+</warning></p>
+<p>Set variables at runtime in the console, or persistently in <code>Config\DefaultEngine.ini</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="k">[/Script/Engine.RendererSettings]</span>
+<span class="na">r.Vite.SMAA.Mode</span><span class="o">=</span><span class="s">1</span>
+<span class="na">r.HBAO.Enable</span><span class="o">=</span><span class="s">1</span>
+</code></pre></div>
+<h2 id="vite-specific">Vite-specific</h2>
+<p>These do not exist in stock UE 4.27.</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.Vite.SMAA.Mode</code></td>
+<td>1</td>
+<td>SMAA quality. 0 = Low, 1 = High. See <a href="Anti-Aliasing.md">Anti-Aliasing</a>.</td>
+</tr>
+<tr>
+<td><code>r.Vite.SSAO</code></td>
+<td>&mdash;</td>
+<td>Vite's optimised SSAO path. See <a href="Ambient-Occlusion.md">Ambient Occlusion</a>.</td>
+</tr>
+<tr>
+<td><code>r.AntiAliasing.SMAA.Debug</code></td>
+<td>&mdash;</td>
+<td>SMAA debug visualisation</td>
+</tr>
+<tr>
+<td><code>p.VitePhysXFixedTimestep.Enabled</code></td>
+<td>0</td>
+<td>Enable fixed timestep physics</td>
+</tr>
+<tr>
+<td><code>p.VitePhysXFixedTimestep.DeltaTime</code></td>
+<td>1/60</td>
+<td>Fixed step duration in seconds</td>
+</tr>
+<tr>
+<td><code>p.VitePhysXFixedTimestep.MaxTimesteps</code></td>
+<td>&mdash;</td>
+<td>Maximum steps per frame</td>
+</tr>
+<tr>
+<td><code>p.VitePhysXFixedTimestep.MaxCumulativeExtraSteps</code></td>
+<td>&mdash;</td>
+<td>Cap on accumulated catch-up steps</td>
+</tr>
+<tr>
+<td><code>p.VitePhysXFixedTimestep.LimitType</code></td>
+<td>&mdash;</td>
+<td>How overload is handled</td>
+</tr>
+<tr>
+<td><code>p.VitePhysXFixedTimestep.InterpolationMode</code></td>
+<td>&mdash;</td>
+<td>Render interpolation between fixed steps</td>
+</tr>
+</tbody>
+</table>
+<p><note>
+The <code>p.VitePhysXFixedTimestep.*</code> variables require a build with
+<code>VITE_PHYSX_FIXED_TIMESTEP=1</code>. See <a href="Fixed-Timestep.md">Fixed Timestep</a>.
+</note></p>
+<h2 id="ray-tracing">Ray tracing</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>Availability</th>
+<th>Page</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.RayTracing.Reflections</code></td>
+<td>0</td>
+<td>Available</td>
+<td><a href="RT-Reflections.md">RT Reflections</a></td>
+</tr>
+<tr>
+<td><code>r.RayTracing.Shadows</code></td>
+<td>0</td>
+<td>Available</td>
+<td><a href="RT-Shadows-And-Ambient-Occlusion.md">RT Shadows and AO</a></td>
+</tr>
+<tr>
+<td><code>r.RayTracing.AmbientOcclusion</code></td>
+<td>0</td>
+<td>Available</td>
+<td><a href="Ambient-Occlusion.md">Ambient Occlusion</a></td>
+</tr>
+<tr>
+<td><code>r.RayTracing.SkyLight</code></td>
+<td>&mdash;</td>
+<td>Available</td>
+<td><a href="Ray-Tracing.md">Ray Tracing</a></td>
+</tr>
+<tr>
+<td><code>r.RayTracing.GlobalIllumination</code></td>
+<td>-1</td>
+<td><strong>Compiled out</strong></td>
+<td><a href="Global-Illumination.md">Global Illumination</a></td>
+</tr>
+<tr>
+<td><code>r.RayTracing.Translucency</code></td>
+<td>0</td>
+<td><strong>Compiled out</strong></td>
+<td><a href="RT-Translucency-And-Caustics.md">RT Translucency and Caustics</a></td>
+</tr>
+<tr>
+<td><code>r.RayTracing.SampledDirectLighting</code></td>
+<td>0</td>
+<td><strong>Compiled out</strong></td>
+<td><a href="RTXDI.md">RTXDI</a></td>
+</tr>
+</tbody>
+</table>
+<p>A value of <code>-1</code> means the setting is driven by the post-process volume rather than the console variable.</p>
+<h3 id="culling-and-scene-setup">Culling and scene setup</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.RayTracing.Culling</code></td>
+<td>Ray tracing instance culling mode</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.Culling.Radius</code></td>
+<td>Culling distance</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.Culling.Angle</code></td>
+<td>Angular culling threshold</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.SceneCaptures</code></td>
+<td>Whether scene captures build ray tracing scenes</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.PreGather</code></td>
+<td>Pre-gather pass control</td>
+</tr>
+</tbody>
+</table>
+<p>Culling settings are among the most effective ray tracing performance levers, and Vite changes some of
+their defaults &mdash; see <a href="Engine-Defaults.md">Engine Defaults</a>.</p>
+<h3 id="sky-light">Sky light</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.RayTracing.SkyLight.SamplesPerPixel</code></td>
+<td>Sample count</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.SkyLight.MaxRayDistance</code></td>
+<td>Ray length limit</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.SkyLight.ScreenPercentage</code></td>
+<td>Resolution scale for the sky light pass</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.SkyLight.Denoiser</code></td>
+<td>Denoiser selection</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.SkyLight.EnableMaterials</code></td>
+<td>Evaluate materials on hit</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.SkyLight.EnableTwoSidedGeometry</code></td>
+<td>Two-sided geometry handling</td>
+</tr>
+</tbody>
+</table>
+<p><code>ScreenPercentage</code> and <code>SamplesPerPixel</code> are the two to reach for when the sky light pass is too expensive.</p>
+<h3 id="translucency">Translucency</h3>
+<p>Compiled out by default.</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.RayTracing.Translucency.HalfRes</code></td>
+<td>Half-resolution translucency</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.Translucency.HybridDepthThreshold</code></td>
+<td>Hybrid translucency depth threshold</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.Translucency.HybridDepthBias</code></td>
+<td>Hybrid translucency depth bias</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.PrimaryRays.IncludeDOF</code></td>
+<td>Include depth of field in primary rays</td>
+</tr>
+</tbody>
+</table>
+<h3 id="rtxdi-sampled-lighting">RTXDI (sampled lighting)</h3>
+<p>Compiled out by default. <code>r.RayTracing.SampledDirectLighting</code> is the master switch; the
+<code>r.RayTracing.SampledLighting.*</code> family &mdash; over sixty variables covering reservoir counts, spatial and
+temporal resampling, ReGIR cell configuration and per-light-type toggles &mdash; tunes it.</p>
+<p>The ones worth knowing first:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.RayTracing.SampledLighting.Mode</code></td>
+<td>1</td>
+<td>Sampling mode</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.SampledLighting.InitialSamples</code></td>
+<td>8</td>
+<td>Initial candidate samples</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.SampledLighting.Spatial</code></td>
+<td>1</td>
+<td>Spatial resampling</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.SampledLighting.Temporal</code></td>
+<td>1</td>
+<td>Temporal resampling</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.SampledLighting.NumReservoirs</code></td>
+<td>-1</td>
+<td>Reservoir count, -1 for automatic</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.SampledLighting.Denoiser</code></td>
+<td>&mdash;</td>
+<td>Denoiser selection</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.SampledLighting.DebugMode</code></td>
+<td>&mdash;</td>
+<td>Debug visualisation</td>
+</tr>
+</tbody>
+</table>
+<p>See <a href="RTXDI.md">RTXDI</a>.</p>
+<h3 id="caustics">Caustics</h3>
+<p>Mesh and water caustics are driven primarily by post-process volume settings rather than console variables,
+and both are compiled out by default. Related variables:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.RayTracing.BuildRayTracingMeshForCaustics</code></td>
+<td>Build caustics-capable ray tracing geometry</td>
+</tr>
+<tr>
+<td><code>r.ParallelCausticsMap</code></td>
+<td>Parallel caustics map rendering</td>
+</tr>
+<tr>
+<td><code>r.PathTracing.ApproximateCaustics</code></td>
+<td>Approximate caustics in the path tracer</td>
+</tr>
+</tbody>
+</table>
+<p>See <a href="RT-Translucency-And-Caustics.md">RT Translucency and Caustics</a>.</p>
+<h2 id="global-illumination">Global illumination</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.RTXGI.DDGI</code></td>
+<td>Master DDGI toggle</td>
+</tr>
+<tr>
+<td><code>r.RTXGI.DDGI.LightingPass.Scale</code></td>
+<td>Lighting pass resolution scale</td>
+</tr>
+<tr>
+<td><code>r.RTXGI.DDGI.LightingPass.RelativeDistanceThreshold</code></td>
+<td>Distance rejection threshold</td>
+</tr>
+<tr>
+<td><code>r.RTXGI.DDGI.LightingPass.NormalPower</code></td>
+<td>Normal weighting</td>
+</tr>
+<tr>
+<td><code>r.RTXGI.DDGI.ProbesTextureVis</code></td>
+<td>Probe texture visualisation</td>
+</tr>
+<tr>
+<td><code>r.RTXGI.DDGI.ProbesTextureVis.IrradianceScalar</code></td>
+<td>Visualisation scaling</td>
+</tr>
+<tr>
+<td><code>r.RTXGI.DDGI.StatVolume</code></td>
+<td>Per-volume statistics</td>
+</tr>
+<tr>
+<td><code>r.RTXGI.MemoryUsed</code></td>
+<td>Report DDGI memory usage</td>
+</tr>
+</tbody>
+</table>
+<p>The RTXGI plugin is enabled by default. See <a href="DDGI-Dynamic.md">Dynamic DDGI</a> and
+<a href="Global-Illumination.md">Global Illumination</a>.</p>
+<h2 id="ambient-occlusion">Ambient occlusion</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.HBAO.Enable</code></td>
+<td>0</td>
+<td>Enable HBAO+. Multiplies over the screen-space AO buffer.</td>
+</tr>
+<tr>
+<td><code>r.HBAO.HighPrecisionDepth</code></td>
+<td>0</td>
+<td>0 = FP16 internal depth, 1 = FP32. Use FP32 to avoid self-occlusion banding on distant objects.</td>
+</tr>
+<tr>
+<td><code>r.HBAO.GBufferNormals</code></td>
+<td>1</td>
+<td>0 = reconstruct normals from depth, 1 = fetch GBuffer normals</td>
+</tr>
+</tbody>
+</table>
+<p>HBAO+ has additional per-volume settings in the post-process volume: power exponent (default 2.0), radius
+(2.0), bias (0.1), small-scale AO (1.0), blur radius (2 pixels), blur sharpness (16.0), max view depth
+(9500), depth sharpness (50.0), and foreground and background AO distances.</p>
+<p><note>
+The <code>r.HBAO.Enable</code> help text describes HBAO+ as DX11-only. This is out of date; there is a
+working D3D12 implementation. See <a href="Ambient-Occlusion.md">Ambient Occlusion</a>.
+</note></p>
+<h2 id="tessellation">Tessellation</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.TessellationAdaptivePixelsPerTriangle</code></td>
+<td>48.0</td>
+<td>Global tessellation factor multiplier. Lower means more triangles.</td>
+</tr>
+</tbody>
+</table>
+<p>See <a href="Tessellation.md">Tessellation</a>.</p>
+<h2 id="hair">Hair</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.TressFX.StrandsMode</code></td>
+<td>Debug render mode. 0 = off, 1 = simulation strands, 2 = render strands with simulation influence, 3 = hair UV, 4 = root UV, 5 = seed, 6 = dimensions</td>
+</tr>
+<tr>
+<td><code>r.TressFX.Interoplation.FrustumCulling</code></td>
+<td>Frustum culling for interpolation. Default 1.</td>
+</tr>
+<tr>
+<td><code>r.TressFX.MorphTargetMeshVisualization</code></td>
+<td>Morph target mesh visualisation</td>
+</tr>
+</tbody>
+</table>
+<p>See <a href="Hair-Rendering.md">Hair Rendering</a>.</p>
+<h2 id="volumetric-fog">Volumetric fog</h2>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.RayTracing.VolumeFogMode</code></td>
+<td>Ray traced volumetric fog mode</td>
+</tr>
+<tr>
+<td><code>r.VolumetricFog.UseUpScaledSizeVolumetricFog</code></td>
+<td>Render volumetric fog at output rather than internal resolution</td>
+</tr>
+</tbody>
+</table>
+<p><note>
+<code>r.VolumetricFog.UseUpScaledSizeVolumetricFog</code> only exists in builds with
+<code>VITE_DLSS_PATCH=1</code>. It exists to fix volumetric fog resolution when upscaling. See
+<a href="Upscalers.md">Upscalers</a>.
+</note></p>
+<h2 id="profiling">Profiling</h2>
+<p>Standard Unreal, but worth having in one place:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>stat unit</code></td>
+<td>Frame, Game, Draw, GPU and RHIT timings. Start here.</td>
+</tr>
+<tr>
+<td><code>stat unitgraph</code></td>
+<td>The same over time</td>
+</tr>
+<tr>
+<td><code>stat game</code></td>
+<td>Game thread breakdown</td>
+</tr>
+<tr>
+<td><code>stat scenerendering</code></td>
+<td>Render thread breakdown</td>
+</tr>
+<tr>
+<td><code>stat gpu</code></td>
+<td>GPU pass breakdown</td>
+</tr>
+<tr>
+<td><code>stat physics</code></td>
+<td>Physics solver time</td>
+</tr>
+<tr>
+<td><code>stat rhi</code></td>
+<td>RHI resource statistics</td>
+</tr>
+<tr>
+<td><code>stat memory</code></td>
+<td>Memory usage</td>
+</tr>
+<tr>
+<td><code>profilegpu</code></td>
+<td>Single-frame GPU capture</td>
+</tr>
+<tr>
+<td><code>recompileshaders changed</code></td>
+<td>Recompile modified shaders</td>
+</tr>
+<tr>
+<td><code>recompileshaders global</code></td>
+<td>Recompile global shaders</td>
+</tr>
+</tbody>
+</table>
+<p>See <a href="Profiling.md">Profiling</a>.</p>
+<h2 id="finding-variables-yourself">Finding variables yourself</h2>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>help</code></td>
+<td>Dumps all console variables and commands to the log</td>
+</tr>
+<tr>
+<td><code>&lt;partial name&gt;</code> then Tab</td>
+<td>Autocomplete in the console</td>
+</tr>
+<tr>
+<td><code>&lt;variable&gt;</code> with no value</td>
+<td>Prints the current value and help text</td>
+</tr>
+<tr>
+<td><code>DumpConsoleCommands</code></td>
+<td>Lists commands</td>
+</tr>
+</tbody>
+</table>
+<p><warning>
+Help text in the engine is occasionally stale &mdash; HBAO+'s DX11-only claim is one example. When
+behaviour and help text disagree, the source is authoritative.
+</warning></p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
+<li><a href="Engine-Defaults.md">Engine Defaults</a></li>
+<li><a href="Profiling.md">Profiling</a></li>
+<li><a href="../Glossary/">Glossary</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

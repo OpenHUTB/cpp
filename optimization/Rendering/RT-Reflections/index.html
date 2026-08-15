@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Ray-Traced Reflections - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Ray-Traced Reflections";
+        var mkdocs_page_input_path = "optimization/Rendering/RT-Reflections.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Ray-Traced Reflections</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/RT-Reflections.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="ray-traced-reflections">Ray-Traced Reflections</h1>
+<p><tldr></p>
+<p>
+Enabled with <code>r.RayTracing.Reflections 1</code>. Vite's reflections are heavily optimised and can
+run at 4K native 60 FPS on PS5-class hardware. When <a href="DDGI-Dynamic.md">DDGI</a> is active,
+reflection rays sample probe irradiance for their secondary bounce, which is a large quality win.
+</p>
+<p></tldr></p>
+<p>Ray-traced reflections replace screen-space reflections with rays traced against the actual scene, which
+resolves the two fundamental SSR failures: reflections of off-screen geometry, and reflections of surfaces
+facing away from the camera.</p>
+<p><img src="SSRArtifacts.png" alt="Reflective surfaces showing screen-space reflection dropout where the reflected geometry leaves the frame" border-effect="line"/></p>
+<p><em>The failure mode, circled. The reflection terminates where the reflected geometry leaves the screen,
+because screen-space reflection has nothing left to sample.</em></p>
+<h2 id="performance">Performance</h2>
+<p>This is one of the areas Vite has invested the most optimisation work in, because reflections are usually
+the second most expensive ray tracing effect after per-pixel GI.</p>
+<p>Vite's reflections are capable of running at 4K native 60 FPS on a PS5-class GPU, as demonstrated by the
+Unreal Tournament Vite demo, which combines them with DDGI and tessellation. That configuration is the
+"Performance, high end" row in <a href="Performance-Targets.md">Performance Targets</a>.</p>
+<p>Further RT reflection performance work is ongoing, with the stated goal of reaching performance
+characteristics comparable to RE Engine's implementation as seen in Devil May Cry 5 Special Edition on PS5.</p>
+<h2 id="ddgi-lit-reflections">DDGI-lit reflections</h2>
+<p>The most important interaction in the renderer, and one of the concrete reasons Vite is built on the NvRTX
+branch rather than stock 4.27.</p>
+<p>A reflection ray hits a surface. That surface needs to be shaded, which requires knowing the indirect light
+arriving at it. Without a global illumination representation available to the ray tracing pipeline, the
+options are to return direct lighting only (reflections of shadowed areas go black), or to fall back to a
+cubemap (reflections look wrong and static).</p>
+<p>With DDGI active, the reflection ray samples probe irradiance at the hit point. Reflected surfaces are lit
+consistently with the rest of the scene, shadowed areas in reflections retain bounce light, and the whole
+image becomes coherent.</p>
+<p>This is enabled by the engine-side integration rather than by a separate switch: run DDGI and RT reflections
+together and you get it.</p>
+<h2 id="tuning">Tuning</h2>
+<p>The controls that matter, in rough order of impact on cost:</p>
+<p><strong>Resolution.</strong> Reflections can be traced at reduced resolution and upscaled. This is usually the largest
+single saving available and the quality cost is modest on rough surfaces.</p>
+<p><strong>Maximum roughness.</strong> Surfaces rougher than this threshold fall back to cheaper techniques. Lowering it is
+very effective, because rough reflections are exactly the case where the expensive accurate answer is least
+visible.</p>
+<p><strong>Maximum bounces.</strong> Additional bounces are expensive and rarely visible outside of scenes deliberately
+built with facing mirrors.</p>
+<p><strong>Ray distance.</strong> Limiting how far reflection rays travel bounds cost in large open scenes.</p>
+<p><strong>Denoiser settings.</strong> Reflections use a denoiser, unlike DDGI. If you see boiling or ghosting in
+reflections under motion, this is where to look.</p>
+<h2 id="which-reflection-algorithm-runs">Which reflection algorithm runs</h2>
+<p>Vite has two ray-traced reflection implementations inherited from 4.27 and NvRTX: the older
+<code>FRayTracingReflectionsRGS</code> path, which supports hybrid reflections and reflected translucency, and the
+newer sorted deferred path.</p>
+<p>In a default build, <code>VITE_RT_PSO_DEBLOAT</code> forces the <strong>sorted deferred</strong> path and compiles out the older
+one. This is the faster of the two and the one Vite's <a href="Performance-Targets.md">performance targets</a> are
+measured against.</p>
+<p>Consequences worth knowing:</p>
+<ul>
+<li><code>r.RayTracing.Reflections.ExperimentalDeferred</code> has no effect &mdash; the deferred path is used
+  unconditionally.</li>
+<li>Hybrid reflections and the reflected translucency controls below are unavailable.</li>
+<li>Ray-traced reflection captures and reflection probes
+  (<code>r.RayTracing.Reflections.RayTraceEnvironmentCaptures</code>) are compiled out.</li>
+<li>Single layer water ray-traced reflections (<code>r.Water.SingleLayer.RTR</code>) are compiled out.</li>
+</ul>
+<p>See <a href="Compile-Time-Switches.md">Compile-Time Switches</a> to restore the full set.</p>
+<h2 id="reflected-translucency">Reflected translucency</h2>
+<p><note>
+Requires <code>VITE_RT_PSO_DEBLOAT=0</code>. These controls are permutation dimensions on the non-deferred
+reflection shader, which is compiled out by default.
+</note></p>
+<p>By default, Unreal Engine 4 only blends the emissive colour of reflected translucent meshes when rendering
+ray-traced reflections, which makes glass and similar surfaces look wrong in reflections. Vite inherits the
+NvRTX option to render fully ray-traced translucent objects inside reflections:</p>
+<table>
+<thead>
+<tr>
+<th>Console variable</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.RayTracing.Reflections.ReflectedTranslucencyMode</code></td>
+<td>0 emissive only, 1 shading, 2 shading and refraction, 3 shading, refraction and absorption. Default 0.</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.Reflections.ReflectedTranslucencyMaxBounces</code></td>
+<td>Maximum ray-traced translucency bounces inside reflections. Default 8.</td>
+</tr>
+<tr>
+<td><code>r.RayTracing.Reflections.ReflectedTranslucencyTransmissionThreshold</code></td>
+<td>Stops the translucency walk when accumulated transmission falls below this. Default 0.1.</td>
+</tr>
+</tbody>
+</table>
+<p>Mode 3 gives the best result and the highest cost. In scenes with a lot of glass visible in reflections, the
+difference is substantial; in scenes without, leave it at 0.</p>
+<h2 id="when-to-use-ssr-instead">When to use SSR instead</h2>
+<p>Screen-space reflections remain the right answer for the 4K120 stylised target and for any project whose
+minimum spec lacks DXR. SSR is dramatically cheaper, and in scenes without large flat reflective surfaces
+its failures are frequently not noticeable.</p>
+<p>The cases where RT reflections earn their cost are wet streets, polished floors, water, glass architecture
+and vehicle paint &mdash; anywhere a large, smooth surface reflects something the camera cannot see.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Ray-Tracing/">Ray Tracing</a></li>
+<li><a href="../DDGI-Dynamic/">Dynamic DDGI</a></li>
+<li><a href="../RT-Translucency-And-Caustics/">RT Translucency and Caustics</a></li>
+<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
+<li><a href="Performance-Targets.md">Performance Targets</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Profiling - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Profiling";
+        var mkdocs_page_input_path = "optimization/Performance/Profiling.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Profiling</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Performance/Profiling.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="profiling">Profiling</h1>
+<p><tldr></p>
+<p>
+Find the bottleneck before optimising. <code>stat unit</code> tells you which thread is limiting the
+frame; everything else follows from that answer.
+</p>
+<p></tldr></p>
+<p>Unreal Engine 4.27's profiling tools are mature and well documented. This page covers how to use them
+in the context of Vite's <a href="Performance-Targets.md">performance targets</a>, and the Vite-specific things worth
+watching.</p>
+<h2 id="start-with-stat-unit">Start with stat unit</h2>
+<div class="highlight"><pre><span></span><code>stat unit
+</code></pre></div>
+<p>This is the first command in every profiling session. It reports:</p>
+<table>
+<thead>
+<tr>
+<th>Line</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Frame</strong></td>
+<td>Total frame time. This is your actual frame rate.</td>
+</tr>
+<tr>
+<td><strong>Game</strong></td>
+<td>Game thread: gameplay, ticks, physics, animation</td>
+</tr>
+<tr>
+<td><strong>Draw</strong></td>
+<td>Render thread: building draw commands, RHI submission</td>
+</tr>
+<tr>
+<td><strong>GPU</strong></td>
+<td>GPU time</td>
+</tr>
+<tr>
+<td><strong>RHIT</strong></td>
+<td>RHI thread, where present</td>
+</tr>
+</tbody>
+</table>
+<p>The largest of Game, Draw and GPU is your bottleneck. Frame time will be roughly equal to it, because the
+threads run in parallel and the slowest one gates the rest.</p>
+<p>This one reading determines everything that follows. Optimising a system on a thread that is not the
+bottleneck produces exactly zero improvement in frame rate, which is the most common wasted effort in Unreal
+performance work.</p>
+<p><procedure title="Identify the bottleneck" id="find-bottleneck">
+    <step>Run <code>stat unit</code> in a representative scene, in a build configuration close to shipping.</step>
+    <step>Note which of Game, Draw or GPU is closest to Frame.</step>
+    <step>
+        Confirm with <code>r.ScreenPercentage 50</code>. If frame time drops significantly, you are GPU
+        bound at pixel cost. If it barely changes, you are not.
+    </step>
+    <step>Follow the relevant section below.</step>
+</procedure></p>
+<h2 id="game-thread-bound">Game thread bound</h2>
+<p>The game thread is where UE4-era engines most often bottleneck, and where Vite has the most inherited
+advantage over UE5.</p>
+<div class="highlight"><pre><span></span><code>stat game        // top-level game thread breakdown
+stat physics     // physics simulation cost
+stat anim        // animation and skeletal mesh evaluation
+stat engine      // tick counts and general engine stats
+stat slate       // UI cost
+</code></pre></div>
+<p>The usual suspects:</p>
+<p><strong>Actor tick count.</strong> Every ticking actor costs, even one whose tick does nothing. <code>stat engine</code> reports
+tick counts. Disable tick on actors that do not need it, and use tick intervals rather than early-outs
+inside <code>Tick</code>.</p>
+<p><strong>Character movement.</strong> CMC is expensive and scales badly with character count. The
+<a href="400-Characters-CMC-Bench.md">400 Characters CMC Bench</a> demo exists to measure exactly this. If you have
+many characters, this is likely your cost.</p>
+<p><strong>Physics.</strong> See <a href="PhysX.md">PhysX</a>. Watch physics time as a fraction of game thread time. Large numbers of
+simulated bodies should move to the <a href="Instanced-Physics.md">instanced subsystem</a>.</p>
+<p><strong>Overlap events.</strong> Vite disables overlap events by default on primitive components precisely because they
+are a common hidden cost. See <a href="../Engine-Defaults/">Engine Default Changes</a>.</p>
+<p><strong>Blueprint.</strong> Blueprint VM execution is slower than native C++. Hot per-frame logic belongs in C++.</p>
+<h2 id="render-thread-bound">Render thread bound</h2>
+<div class="highlight"><pre><span></span><code>stat scenerendering    // render thread breakdown
+stat initviews         // visibility and culling cost
+stat rhi               // draw calls, primitives, triangles
+</code></pre></div>
+<p>Render thread cost is dominated by draw call count and visibility work.</p>
+<p><strong>Draw calls.</strong> <code>stat rhi</code> reports the count. Reduce with instancing, mesh merging and fewer material slots
+per mesh. Note that Vite has no Nanite, so draw call discipline matters more than it does in UE5.</p>
+<p><strong>Visibility.</strong> <code>stat initviews</code> shows culling cost. Very high primitive counts make culling itself
+expensive. Precomputed visibility and occlusion culling help; so does simply having fewer primitives.</p>
+<h2 id="gpu-bound">GPU bound</h2>
+<div class="highlight"><pre><span></span><code>stat gpu               // GPU pass breakdown
+profilegpu             // detailed single-frame GPU capture
+r.ScreenPercentage 50  // A/B test for pixel-cost bound
+</code></pre></div>
+<p><code>profilegpu</code> is the important one. It produces a per-pass breakdown of a single frame, which tells you
+whether your GPU time is in base pass, shadows, ray tracing, post processing or something unexpected.</p>
+<p>For a Vite project, the passes worth scrutinising:</p>
+<table>
+<thead>
+<tr>
+<th>Pass</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ray tracing passes</td>
+<td>See <a href="Ray-Tracing.md">Ray Tracing</a>. <code>r.RayTracing.ForceAllRayTracingEffects 0</code> establishes how much of the frame they account for.</td>
+</tr>
+<tr>
+<td>DDGI</td>
+<td>Should be modest and stable. See <a href="DDGI-Dynamic.md">Dynamic DDGI</a>.</td>
+</tr>
+<tr>
+<td>Base pass</td>
+<td>Driven by material complexity and overdraw</td>
+</tr>
+<tr>
+<td>Shadow depths</td>
+<td>Driven by shadow-casting light count and cascade configuration</td>
+</tr>
+<tr>
+<td>Translucency</td>
+<td>Driven by overdraw. Particles are the usual cause.</td>
+</tr>
+<tr>
+<td>SMAA</td>
+<td>Small and fixed. If it is large, check <code>r.Vite.SMAA.Mode</code>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="view-modes">View modes</h2>
+<p>Viewport view modes are often faster than a profile capture for locating a problem:</p>
+<table>
+<thead>
+<tr>
+<th>View mode</th>
+<th>Reveals</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Shader Complexity</td>
+<td>Expensive materials and overdraw</td>
+</tr>
+<tr>
+<td>Quad Overdraw</td>
+<td>Small triangles wasting quad occupancy</td>
+</tr>
+<tr>
+<td>Light Complexity</td>
+<td>Overlapping dynamic lights</td>
+</tr>
+<tr>
+<td>Lightmap Density</td>
+<td>Lightmap resolution problems</td>
+</tr>
+<tr>
+<td>Wireframe</td>
+<td>Runaway <a href="Tessellation.md">tessellation</a> and unexpected geometry density</td>
+</tr>
+</tbody>
+</table>
+<h2 id="session-frontend">Session Frontend</h2>
+<p><strong>Window &gt; Developer Tools &gt; Session Frontend &gt; Profiler</strong> captures a timeline you can scrub through, which
+is the right tool for intermittent hitches. A hitch that happens once every thirty seconds will not show up
+in <code>stat unit</code>.</p>
+<p>Common hitch sources in a Vite project:</p>
+<ul>
+<li>Shader compilation on first encounter with a material. See
+  <a href="../Shader-Compilation-And-PSO/">Shader Compilation and PSO</a>.</li>
+<li>Ray tracing acceleration structure builds when large amounts of geometry stream in.</li>
+<li>Physics body creation bursts. See <code>MaxAddActorsPerFrame</code> in
+  <a href="Instanced-Physics.md">Instanced Physics</a>.</li>
+<li>Level streaming and asset loading.</li>
+<li>Garbage collection.</li>
+</ul>
+<h2 id="profiling-against-a-target">Profiling against a target</h2>
+<p>Reading a number is only useful against a budget. Vite's <a href="Performance-Targets.md">performance targets</a>
+give you one:</p>
+<table>
+<thead>
+<tr>
+<th>Target</th>
+<th>Frame budget</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stylised 4K120</td>
+<td>8.3&nbsp;ms</td>
+</tr>
+<tr>
+<td>Performance High End 4K60</td>
+<td>16.6&nbsp;ms</td>
+</tr>
+<tr>
+<td>Fidelity High End 4K30</td>
+<td>33.3&nbsp;ms</td>
+</tr>
+<tr>
+<td>Fidelity Full RT 1440p30</td>
+<td>33.3&nbsp;ms</td>
+</tr>
+</tbody>
+</table>
+<p>Profile on hardware representative of your minimum spec, in a Development or Test build rather than in the
+editor, in a scene representative of worst-case gameplay rather than an empty level. Editor overhead alone
+can be several milliseconds, and a profile taken in an empty level tells you nothing about the frame you
+have to ship.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="Performance-Targets.md">Performance Targets</a></li>
+<li><a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 versus UE5 Cost Analysis</a></li>
+<li><a href="../Engine-Defaults/">Engine Default Changes</a></li>
+<li><a href="../Shader-Compilation-And-PSO/">Shader Compilation and PSO</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

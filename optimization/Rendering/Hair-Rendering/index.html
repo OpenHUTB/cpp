@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../../img/favicon.ico" />
+    <title>Hair Rendering - 引擎实现文档</title>
+    <link rel="stylesheet" href="../../../css/theme.css" />
+    <link rel="stylesheet" href="../../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../../extra.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Hair Rendering";
+        var mkdocs_page_input_path = "optimization/Rendering/Hair-Rendering.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../../.." class="icon icon-home"> 引擎实现文档
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+      <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../..">首页</a>
+                </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../..">引擎实现文档</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Hair Rendering</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/Hair-Rendering.md"> 编辑页面</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="hair-rendering">Hair Rendering</h1>
+<p><tldr></p>
+<p>
+Two strand-based hair systems ship with Vite: AMD <b>TressFX 5.0</b> and Epic's <b>Groom</b>
+(HairStrands). TressFX is the one Vite adds; Groom is the stock 4.27 system. Both are disabled by default.
+</p>
+<p></tldr></p>
+<p>Hair is one of the hardest surfaces to render convincingly. Card-based hair is cheap and predictable but
+never quite reads correctly under motion or from grazing angles. Strand-based hair simulates and renders
+individual fibres, which looks dramatically better and costs dramatically more.</p>
+<h2 id="available-systems">Available systems</h2>
+<table>
+<thead>
+<tr>
+<th>System</th>
+<th>Plugin</th>
+<th>Origin</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TressFX 5.0</td>
+<td><code>Engine/Plugins/Runtime/TressFX</code></td>
+<td>AMD</td>
+<td>Added by Vite. Simulation, rendering and editor tooling.</td>
+</tr>
+<tr>
+<td>Groom (HairStrands)</td>
+<td><code>Engine/Plugins/Runtime/HairStrands</code></td>
+<td>Epic</td>
+<td>Stock 4.27. Alembic-based, works with the <code>Hair</code> shading model.</td>
+</tr>
+<tr>
+<td>Alembic Hair Importer</td>
+<td><code>Engine/Plugins/Importers/AlembicHairImporter</code></td>
+<td>Epic</td>
+<td>Import path for Groom assets</td>
+</tr>
+</tbody>
+</table>
+<p>Neither hair system is enabled by default. Enable one from <strong>Edit &gt; Plugins</strong>; there is little reason to
+enable both in the same project.</p>
+<h2 id="tressfx-50">TressFX 5.0</h2>
+<p>TressFX is AMD's open hair and fur system. The Vite integration includes three modules: <code>TressFXCore</code> for
+runtime simulation and rendering, <code>TressFXImportTranslator</code> for asset import, and <code>TressFXEditor</code> for
+authoring tools.</p>
+<p>It handles simulation (strands respond to head movement, wind and collision) and rendering (order-
+independent transparency, self-shadowing and the anisotropic specular that hair requires) as one system.</p>
+<h3 id="console-variables">Console variables</h3>
+<table>
+<thead>
+<tr>
+<th>CVar</th>
+<th>Default</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r.TressFX.StrandsMode</code></td>
+<td><code>0</code></td>
+<td>Debug visualisation. <code>0</code> off, <code>1</code> simulation strands, <code>2</code> render strands coloured by simulation influence, <code>3</code> hair UV, <code>4</code> hair root UV, <code>5</code> hair seed, <code>6</code> dimensions</td>
+</tr>
+<tr>
+<td><code>r.TressFX.Interoplation.FrustumCulling</code></td>
+<td><code>1</code></td>
+<td>Frustum culling during strand interpolation. Experimental.</td>
+</tr>
+<tr>
+<td><code>r.TressFX.MorphTargetMeshVisualization</code></td>
+<td><code>0</code></td>
+<td>Accurate transmittance pass, improves rendering of small-scale TressFX</td>
+</tr>
+</tbody>
+</table>
+<p><note>
+<code>r.TressFX.Interoplation.FrustumCulling</code> is spelled as shown in the source, including the
+transposed letters in "Interpolation". Use the literal string.
+</note></p>
+<p>The debug modes are the fastest way to diagnose hair problems. Mode <code>2</code> in particular &mdash; render strands
+coloured by simulation influence &mdash; immediately shows whether your guide strand distribution is
+reasonable or whether large regions of render strands are being driven by too few guides.</p>
+<h3 id="cost">Cost</h3>
+<p>Strand hair is expensive in a way that is easy to underestimate, because the cost is split across
+simulation (compute), rendering (heavy overdraw with transparency) and shadowing. A single character with
+full TressFX hair can consume a meaningful fraction of a
+<a href="Performance-Targets.md">4K60 frame budget</a>.</p>
+<p>Practical guidance:</p>
+<ul>
+<li>Budget strand hair for hero characters only. Crowd and background characters should use cards.</li>
+<li>Use LODs aggressively. Strand count should drop hard with distance, and switching to cards at mid-range
+  is normal.</li>
+<li>Test with your actual <a href="../Anti-Aliasing/">anti-aliasing</a> configuration. Thin geometry is exactly the case
+  where AA method matters most, and hair that looks acceptable with TAA may shimmer with SMAA.</li>
+</ul>
+<h2 id="groom">Groom</h2>
+<p>Groom is Epic's strand system, present in stock 4.27. It imports Alembic groom caches from Maya, Houdini or
+Blender via the Alembic Hair Importer, and renders through the <code>Hair</code> shading model with its <strong>Scatter</strong>
+(Metallic pin) and <strong>Backlit</strong> (Custom Data 0) parameters, plus <strong>Tangent</strong> on the Normal pin.</p>
+<p>Groom is the better-documented path and has more third-party tooling around it, since it is standard Unreal.
+TressFX is the better choice if you are coming from an AMD-oriented pipeline or need its specific
+simulation behaviour.</p>
+<h2 id="interaction-with-ray-tracing">Interaction with ray tracing</h2>
+<p>Hair and ray tracing interact poorly by default. Strand geometry generates enormous numbers of tiny
+primitives in the acceleration structure, and ray-traced <a href="../RT-Shadows-And-Ambient-Occlusion/">shadows</a> and
+<a href="../RT-Reflections/">reflections</a> against hair are both expensive and noisy.</p>
+<p>Consider excluding hair from ray tracing (via the primitive's <strong>Visible in Ray Tracing</strong> flag) and letting
+it receive raster shadows instead. The visual difference is usually small; the performance difference is
+not.</p>
+<h2 id="see-also">See also</h2>
+<ul>
+<li><a href="../Shading-Models/">Shading Models</a></li>
+<li><a href="../Anti-Aliasing/">Anti-Aliasing</a></li>
+<li><a href="Bundled-Plugins.md">Bundled Plugins</a></li>
+<li><a href="Performance-Targets.md">Performance Targets</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+      <p>OpenHUTB 版权所有 &copy; 2025</p>
+  </div>
+
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/OpenHUTB/cpp" style="color: #fcfcfc">OpenHUTB</a>
+        </span>
+    
+    
+    
+  </span>
+</div>
+    <script src="../../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../../..";</script>
+    <script src="../../../js/theme_extra.js"></script>
+    <script src="../../../js/theme.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+      <script src="https://cdn.rawgit.com/knsv/mermaid/6.0.0/dist/mermaid.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.2.7/raphael.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="../../../js/umlconvert.js"></script>
+      <script src="../../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
