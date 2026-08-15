@@ -7,7 +7,8 @@ title: 主页
 
 * [__引擎 C++ 开发教程__](#dev)  
     * [UE 4 C++ 教程](#plugin)
-* [__引擎源码解析__](#src) 
+* [__引擎源码解析__](#src)
+* [__引擎优化__](#optimization)
 
 ---
 
@@ -87,6 +88,22 @@ title: 主页
 ## 源代码解析
 
 * [游戏模式](./engine/game_mode.md)
+
+
+## 引擎优化 <span id='optimization'></span>
+
+### 贡献
+
+* [反向移植](./optimization/Default-topic.md)
+
+
+
+
+## 参考
+
+* [UnrealEngineVite](https://vitestudio-tech.github.io/UnrealEngineVite-Docs)
+
+
 
 
 
