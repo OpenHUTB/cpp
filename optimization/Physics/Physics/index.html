@@ -273,9 +273,9 @@ additional worker scaling. The multi-thread results show that scaling widens a d
 solver work, data access, collision and constraint processing, build configuration and engine integration.
 The stock NVIDIA result also separates the base PhysX architecture from the additional improvements in
 Vite's PhysX build.</p>
-<p><img src="BoxContainerPile10KChaos.jpg" alt="Unreal Chaos Box Container Pile 10K benchmark report across one to 24 threads" border-effect="line"/></p>
+<p><img src="../../img/optimization/BoxContainerPile10KChaos.jpg" alt="Unreal Chaos Box Container Pile 10K benchmark report across one to 24 threads" border-effect="line"/></p>
 <p><em>Unreal Chaos report. Median physics milliseconds per frame; lower is better.</em></p>
-<p><img src="BoxContainerPile10KVitePhysX.jpg" alt="Vite PhysX and comparison engines Box Container Pile 10K benchmark report" border-effect="line"/></p>
+<p><img src="../../img/optimization/BoxContainerPile10KVitePhysX.jpg" alt="Vite PhysX and comparison engines Box Container Pile 10K benchmark report" border-effect="line"/></p>
 <p><em>Vite PhysX and comparison-engine report. The shared table above uses only thread counts reported for Chaos,
 NVIDIA PhysX 3.4 and Vite PhysX 3.4 in the supplied reports.</em></p>
 <p><note>
@@ -351,7 +351,7 @@ not physics-solver milliseconds in isolation.</p>
 <p>The captured Chaos game time is <strong>4.91×</strong> the Vite PhysX game time, while its frame time is <strong>4.75×</strong> the
 Vite PhysX frame time. Game time accounts for almost the complete frame in both captures, so the result is
 CPU-side rather than a GPU-limited comparison.</p>
-<p><img src="ChaosVsPhysX3000.png" alt="In-engine comparison of 3,000 simulated cubes in Unreal 5.7 Chaos and Unreal Vite 26 PhysX 3.4" border-effect="line"/></p>
+<p><img src="../../img/optimization/ChaosVsPhysX3000.png" alt="In-engine comparison of 3,000 simulated cubes in Unreal 5.7 Chaos and Unreal Vite 26 PhysX 3.4" border-effect="line"/></p>
 <p><em>In-engine 3,000-cube capture. Both sides report 3,016 rendered primitives.</em></p>
 <h3 id="1425-native-physx-actors">1,425 native PhysX actors</h3>
 <p>The native-path capture represents simulated cubes directly as PhysX actors instead of giving every body a
@@ -392,7 +392,7 @@ transform-bridge cost depends on the native integration.</p>
 </tr>
 </tbody>
 </table>
-<p><img src="NativePhysXActors1425.png" alt="In-engine Vite native PhysX actor test with 1,425 simulated cubes" border-effect="line"/></p>
+<p><img src="../../img/optimization/NativePhysXActors1425.png" alt="In-engine Vite native PhysX actor test with 1,425 simulated cubes" border-effect="line"/></p>
 <p><em>Native PhysX actor capture running in Unreal Engine without a separate UE Actor representation for each
 simulated cube.</em></p>
 <p><warning>

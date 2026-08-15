@@ -92,7 +92,7 @@ event. In a stock project the majority of primitives generate overlap events tha
 <p><strong>What this means for you:</strong> components that need overlap events must set <strong>Generate Overlap Events</strong>
 explicitly. Trigger volumes, pickup detection and anything driven by <code>OnComponentBeginOverlap</code> need the
 flag set. This is the most likely source of "my trigger stopped working" after migrating a project.</p>
-<p><img src="OverlapEventsDisabled.png" alt="Commit diff replacing SetGenerateOverlapEvents(true) with bGenerateOverlapEvents = false in PrimitiveComponent.cpp" border-effect="line"/></p>
+<p><img src="../../img/optimization/OverlapEventsDisabled.png" alt="Commit diff replacing SetGenerateOverlapEvents(true) with bGenerateOverlapEvents = false in PrimitiveComponent.cpp" border-effect="line"/></p>
 <p><em>One line in <code>UPrimitiveComponent</code>, applied to every primitive in every project.</em></p>
 <p><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/02d7c0ad0a7542b382a70dc3e37877d6ec052d76">Commit</a></p>
 <h3 id="optimised-actor-runtime">Optimised actor runtime</h3>
@@ -127,7 +127,7 @@ flag set. This is the most likely source of "my trigger stopped working" after m
 </tr>
 </tbody>
 </table>
-<p><img src="OptimizedActorRuntime.png" alt="Commit diff in Actor.cpp changing SetCanBeDamaged, bRelevantForNetworkReplays and bRelevantForLevelBounds defaults" border-effect="line"/></p>
+<p><img src="../../img/optimization/OptimizedActorRuntime.png" alt="Commit diff in Actor.cpp changing SetCanBeDamaged, bRelevantForNetworkReplays and bRelevantForLevelBounds defaults" border-effect="line"/></p>
 <p><em>Large meshes, blocking volumes and foliage that must define world bounds need <code>bRelevantForLevelBounds</code>
 set back to <code>true</code>.</em></p>
 <p><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/970cbb989c3712f13be1fa370b778e769e5d864c">Commit</a></p>
@@ -172,7 +172,7 @@ path as the default and opting into the expensive options where they are needed 
 </tr>
 </tbody>
 </table>
-<p><img src="SkeletalMeshesOptimizedConfig.png" alt="Commit diff in SkeletalMeshComponent.cpp showing the five changed defaults against Epic's originals" border-effect="line"/></p>
+<p><img src="../../img/optimization/SkeletalMeshesOptimizedConfig.png" alt="Commit diff in SkeletalMeshComponent.cpp showing the five changed defaults against Epic's originals" border-effect="line"/></p>
 <p><em>Each changed line keeps Epic's original value in a trailing comment, so the stock behaviour is recoverable
 without consulting upstream.</em></p>
 <p><code>VisibilityBasedAnimTickOption</code> is the one to watch. <code>OnlyTickPoseWhenRendered</code> means an off-screen
@@ -181,7 +181,7 @@ characters &mdash; weapon muzzle positions, IK targets, attach points on a dista
 the component back to <code>AlwaysTickPose</code> or <code>AlwaysTickPoseAndRefreshBones</code>.</p>
 <p><code>bDisablePostProcessBlueprint = true</code> is the second: post-process anim Blueprints, commonly used for IK
 and bone corrections, no longer run unless re-enabled per component.</p>
-<p><img src="SkeletalMeshDefault.png" alt="SkeletalMeshComponent.cpp constructor showing the surrounding default block" border-effect="line"/></p>
+<p><img src="../../img/optimization/SkeletalMeshDefault.png" alt="SkeletalMeshComponent.cpp constructor showing the surrounding default block" border-effect="line"/></p>
 <p><em>The surrounding constructor block in <code>SkeletalMeshComponent.cpp</code>, for context on where these defaults are
 set.</em></p>
 <p><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/33fe7c638829b8120e8a02ecc639acda761df835">Commit</a></p>
