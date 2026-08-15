@@ -11,7 +11,7 @@ Not everything useful belongs in the engine repository. A plugin bundled with Vi
 every clone, the length of every build and the surface area of every integration. This page tracks what has
 been proposed and which tier it belongs in.
 
-<img src="Plugins1.png" alt="Explorer view of Engine/Plugins/Runtime/VitePlugins showing the integrated plugin folders" border-effect="line"/>
+<img src="../../img/optimization/Plugins1.png" alt="Explorer view of Engine/Plugins/Runtime/VitePlugins showing the integrated plugin folders" border-effect="line"/>
 
 *Plugins already integrated live in `Engine\Plugins\Runtime\VitePlugins`.*
 
@@ -74,7 +74,7 @@ A patched build by bunnyofficial fixes a compile error:
 Backend platform for live games: player authentication, data storage, matchmaking, multiplayer networking,
 analytics and LiveOps such as events and A/B testing, on Azure infrastructure.
 
-<img src="Plugins2.png" alt="Azure PlayFab backend services overview" border-effect="line"/>
+<img src="../../img/optimization/Plugins2.png" alt="Azure PlayFab backend services overview" border-effect="line"/>
 
 [PlayFab Unreal Marketplace Plugin](https://github.com/PlayFab/UnrealMarketplacePlugin)
 
@@ -96,7 +96,7 @@ Features that do not exist in the older version cannot be ported: Nanite on mask
 nodes and new Niagara modules among them. The downgrader moves data, not capability.
 </warning>
 
-<img src="AssetDwongrader.png" alt="Asset Downgrader plugin interface showing target version selection" border-effect="line"/>
+<img src="../../img/optimization/AssetDwongrader.png" alt="Asset Downgrader plugin interface showing target version selection" border-effect="line"/>
 
 *Target versions the downgrader supports, from 5.6.1 down to 4.26.*
 
@@ -104,14 +104,14 @@ This is the practical route for using UE5 marketplace content in Vite. See
 [Migrating from UE5](Migrating-From-UE5.md). The author, Ciprian Stanciu, is active on the Vite Discord and
 has provided direct help on several Vite projects.
 
-<img src="CiprianStanciu.png" alt="Asset Downgrader author on the Vite Discord" border-effect="line"/>
+<img src="../../img/optimization/CiprianStanciu.png" alt="Asset Downgrader author on the Vite Discord" border-effect="line"/>
 
 ### HTN Planner &mdash; FAB / paid
 
 Hierarchical Task Network AI framework for Unreal. Goal-driven strategy built by separating *what* to do
 from *how* to do it. Version 1.18.3 was recently backported to 4.27.
 
-<img src="HTN.png" alt="HTN Planner task network in the Unreal editor" border-effect="line"/>
+<img src="../../img/optimization/HTN.png" alt="HTN Planner task network in the Unreal editor" border-effect="line"/>
 
 *A hierarchical task network separates the goal from the method used to reach it, which is what makes plans
 composable across agents.*
@@ -150,7 +150,7 @@ full root motion source functionality directly in Blueprints.
 Field testing on a laggy network reports that following normal CMC logic gives clean results without
 jitter or server-side corrections during root motion animations.
 
-<img src="Plugins3.png" alt="Root Motion Source Blueprint nodes" border-effect="line"/>
+<img src="../../img/optimization/Plugins3.png" alt="Root Motion Source Blueprint nodes" border-effect="line"/>
 
 [VJien/RootMotionSource](https://github.com/VJien/RootMotionSource) ·
 [write-up](https://supervj.top/2022/03/24/RootMotionSource/?highlight=root+motion+source)

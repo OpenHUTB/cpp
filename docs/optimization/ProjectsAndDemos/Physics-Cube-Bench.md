@@ -7,7 +7,7 @@ Rigid body throughput test using conventional PhysX actors. The baseline that th
 </p>
 </tldr>
 
-<img src="PhysicsCubeBench.png" alt="Side-by-side capture of 1400 simulated cubes, Chaos at 75.45 FPS against PhysX 3.4 at 148.44 FPS" border-effect="line"/>
+<img src="../../img/optimization/PhysicsCubeBench.png" alt="Side-by-side capture of 1400 simulated cubes, Chaos at 75.45 FPS against PhysX 3.4 at 148.44 FPS" border-effect="line"/>
 
 *1400 simulated cubes, identical scene. Chaos (left) 75.45 FPS at a 13.25 ms frame; PhysX 3.4 (right)
 148.44 FPS at a 6.74 ms frame.*

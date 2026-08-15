@@ -7,7 +7,7 @@ Cloth. The reference project for verifying that a build works correctly.
 </p>
 </tldr>
 
-<img src="TechDemo.png" alt="Tech Demo Project scene rendered in Unreal Engine Vite" border-effect="line"/>
+<img src="../../img/optimization/TechDemo.png" alt="Tech Demo Project scene rendered in Unreal Engine Vite" border-effect="line"/>
 
 *The Tech Demo package is the reference project for verifying that a fresh build renders and simulates
 correctly.*

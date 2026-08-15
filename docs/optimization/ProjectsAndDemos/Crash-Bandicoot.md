@@ -7,7 +7,7 @@ A complete gameplay level rather than a lighting scene.
 </p>
 </tldr>
 
-<img src="CrashBandicootRemake.png" alt="Tomb Wader level remake running in the engine" border-effect="line"/>
+<img src="../../img/optimization/CrashBandicootRemake.png" alt="Tomb Wader level remake running in the engine" border-effect="line"/>
 
 *A complete playable level rather than a lighting scene, which gives it a frame cost profile closer to a
 real project.*

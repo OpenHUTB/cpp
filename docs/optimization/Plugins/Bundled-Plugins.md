@@ -10,7 +10,7 @@ not listed &mdash; only Vite's additions and the vendor integrations.
 Versions are as of the July major integration. Check the `.uplugin` file for the authoritative value in
 your tree.
 
-<img src="VitePlugins.png" alt="Contents of Engine/Plugins/Runtime/VitePlugins in Explorer" border-effect="line"/>
+<img src="../../img/optimization/VitePlugins.png" alt="Contents of Engine/Plugins/Runtime/VitePlugins in Explorer" border-effect="line"/>
 
 *Vite's own additions live under `Engine\Plugins\Runtime\VitePlugins`. Vendor integrations from NVIDIA sit
 separately under `Engine\Plugins\Runtime\Nvidia`.*

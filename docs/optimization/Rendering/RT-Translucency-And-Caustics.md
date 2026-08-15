@@ -138,12 +138,12 @@ strongly recommended alongside RT DOF. DLSS is supported automatically.
 Renders interactive caustics for translucent and metallic objects. Supports all four UE4 light types,
 multiple light sources, reflective and refractive caustics, dispersion and soft caustics.
 
-<img src="MeshCaustics.jpg" alt="POV-Ray Glasses scene with ray-traced refractive caustics cast onto a tiled surface" border-effect="line"/>
+<img src="../../img/optimization/MeshCaustics.jpg" alt="POV-Ray Glasses scene with ray-traced refractive caustics cast onto a tiled surface" border-effect="line"/>
 
 *The POV-Ray Glasses scene. Every bright pattern on the tile is a refractive caustic, traced rather than
 authored.*
 
-<img src="CausticsDispersion.jpg" alt="Prisms splitting a white beam into a spectrum through ray-traced dispersion" border-effect="line"/>
+<img src="../../img/optimization/CausticsDispersion.jpg" alt="Prisms splitting a white beam into a spectrum through ray-traced dispersion" border-effect="line"/>
 
 *Dispersion. Requires **Ray Traced Caustics Dispersion Amount** above 0 in the material root node together
 with `r.RayTracing.MeshCaustics.EnableDispersion 1`.*
@@ -200,7 +200,7 @@ Count**. Around 100k photons produces decent results in typical cases. If the co
 Renders interactive caustics for water areas from ponds to open sea. Supports all four light types, multiple
 lights, reflective and refractive caustics, dispersion, soft caustics and cascaded caustics maps.
 
-<img src="WaterCaustics.jpg" alt="Swimming pool floor lit by ray-traced water caustics with a character disturbing the surface" border-effect="line"/>
+<img src="../../img/optimization/WaterCaustics.jpg" alt="Swimming pool floor lit by ray-traced water caustics with a character disturbing the surface" border-effect="line"/>
 
 *The Swimming Pool scene under a single directional light. The caustics respond to surface disturbance
 because they are traced against the water mesh each frame.*
@@ -261,7 +261,7 @@ Swimming Pool scene for water caustics, and the Office scene mixing particles, r
 mesh caustics and RTGI. See also [Abandoned Apartment](Abandone-Apartment.md) and
 [Attic Scene](Attic-Scene.md) in this manual.
 
-<img src="RTOfficeScene.jpg" alt="Office scene combining volumetric light, translucent spheres, ray-traced reflections and refractions" border-effect="line"/>
+<img src="../../img/optimization/RTOfficeScene.jpg" alt="Office scene combining volumetric light, translucent spheres, ray-traced reflections and refractions" border-effect="line"/>
 
 *The Office scene is the one that exercises the whole stack at once: particles, translucent reflection and
 refraction, mesh caustics and ray-traced GI in a single frame.*

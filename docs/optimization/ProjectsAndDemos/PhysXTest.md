@@ -17,11 +17,11 @@ A broad exercise of PhysX behaviour rather than a throughput benchmark: collisio
 stacking stability, sleeping and waking, and the general question of whether the solver behaves the way it
 should.
 
-<img src="PhysXTest1.png" alt="PhysX test project, collision and constraint scenario" border-effect="line"/>
+<img src="../../img/optimization/PhysXTest1.png" alt="PhysX test project, collision and constraint scenario" border-effect="line"/>
 
-<img src="PhysXTest2.png" alt="PhysX test project, stacking stability scenario" border-effect="line"/>
+<img src="../../img/optimization/PhysXTest2.png" alt="PhysX test project, stacking stability scenario" border-effect="line"/>
 
-<img src="PhysXTest3.png" alt="PhysX test project, sleeping and waking scenario" border-effect="line"/>
+<img src="../../img/optimization/PhysXTest3.png" alt="PhysX test project, sleeping and waking scenario" border-effect="line"/>
 
 *Scenarios from the test project. Each isolates one behaviour so a regression shows up as a visible
 difference rather than as a number that moved.*

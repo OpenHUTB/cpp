@@ -7,7 +7,7 @@ useful place to evaluate it.
 </p>
 </tldr>
 
-<img src="AbandonedAppartment.png" alt="Abandoned apartment interior lit entirely by indirect bounce light" border-effect="line"/>
+<img src="../../img/optimization/AbandonedAppartment.png" alt="Abandoned apartment interior lit entirely by indirect bounce light" border-effect="line"/>
 
 *Almost every surface visible here is lit by bounce rather than by the sun directly. That is what makes
 interiors the honest test of a GI solution.*

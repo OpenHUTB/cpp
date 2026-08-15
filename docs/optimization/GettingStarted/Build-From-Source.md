@@ -81,7 +81,7 @@ GenerateProjectFiles.bat
 
 This produces `UE4.sln` in the repository root.
 
-<img src="UE4SolutionFiles.jpg" alt="Repository root in Explorer after project file generation, showing UE4.sln" border-effect="line"/>
+<img src="../../img/optimization/UE4SolutionFiles.jpg" alt="Repository root in Explorer after project file generation, showing UE4.sln" border-effect="line"/>
 
 *`UE4.sln` appears alongside the setup scripts once generation succeeds. If it is missing, generation
 failed &mdash; read its output rather than opening Visual Studio.*
@@ -91,7 +91,7 @@ failed &mdash; read its output rather than opening Visual Studio.*
 Open `UE4.sln` and set **UE4** as the startup project if it is not already. Build the
 **Development Editor** configuration for **Win64**.
 
-<img src="VSBuildUE4.jpg" alt="Visual Studio Solution Explorer with the UE4 project selected and the Build command open" border-effect="line"/>
+<img src="../../img/optimization/VSBuildUE4.jpg" alt="Visual Studio Solution Explorer with the UE4 project selected and the Build command open" border-effect="line"/>
 
 *Build **UE4** under **Engine**, not the solution. Building the whole solution compiles program targets you
 do not need for an editor build.*

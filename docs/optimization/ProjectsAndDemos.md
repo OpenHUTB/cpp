@@ -3,7 +3,7 @@
 <tldr>
 <p>
 Downloadable projects demonstrating Vite's features and establishing its performance numbers. Several are
-the benchmarks the <a href="Performance-Targets.md">performance targets</a> are measured against.
+the benchmarks the <a href="./EngineOverview/Performance-Targets.md">performance targets</a> are measured against.
 </p>
 </tldr>
 

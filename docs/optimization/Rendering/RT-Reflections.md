@@ -12,7 +12,7 @@ Ray-traced reflections replace screen-space reflections with rays traced against
 resolves the two fundamental SSR failures: reflections of off-screen geometry, and reflections of surfaces
 facing away from the camera.
 
-<img src="SSRArtifacts.png" alt="Reflective surfaces showing screen-space reflection dropout where the reflected geometry leaves the frame" border-effect="line"/>
+<img src="../../img/optimization/SSRArtifacts.png" alt="Reflective surfaces showing screen-space reflection dropout where the reflected geometry leaves the frame" border-effect="line"/>
 
 *The failure mode, circled. The reflection terminates where the reflected geometry leaves the screen,
 because screen-space reflection has nothing left to sample.*

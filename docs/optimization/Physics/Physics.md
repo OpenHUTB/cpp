@@ -129,11 +129,11 @@ solver work, data access, collision and constraint processing, build configurati
 The stock NVIDIA result also separates the base PhysX architecture from the additional improvements in
 Vite's PhysX build.
 
-<img src="BoxContainerPile10KChaos.jpg" alt="Unreal Chaos Box Container Pile 10K benchmark report across one to 24 threads" border-effect="line"/>
+<img src="../../img/optimization/BoxContainerPile10KChaos.jpg" alt="Unreal Chaos Box Container Pile 10K benchmark report across one to 24 threads" border-effect="line"/>
 
 *Unreal Chaos report. Median physics milliseconds per frame; lower is better.*
 
-<img src="BoxContainerPile10KVitePhysX.jpg" alt="Vite PhysX and comparison engines Box Container Pile 10K benchmark report" border-effect="line"/>
+<img src="../../img/optimization/BoxContainerPile10KVitePhysX.jpg" alt="Vite PhysX and comparison engines Box Container Pile 10K benchmark report" border-effect="line"/>
 
 *Vite PhysX and comparison-engine report. The shared table above uses only thread counts reported for Chaos,
 NVIDIA PhysX 3.4 and Vite PhysX 3.4 in the supplied reports.*
@@ -185,7 +185,7 @@ The captured Chaos game time is **4.91×** the Vite PhysX game time, while its f
 Vite PhysX frame time. Game time accounts for almost the complete frame in both captures, so the result is
 CPU-side rather than a GPU-limited comparison.
 
-<img src="ChaosVsPhysX3000.png" alt="In-engine comparison of 3,000 simulated cubes in Unreal 5.7 Chaos and Unreal Vite 26 PhysX 3.4" border-effect="line"/>
+<img src="../../img/optimization/ChaosVsPhysX3000.png" alt="In-engine comparison of 3,000 simulated cubes in Unreal 5.7 Chaos and Unreal Vite 26 PhysX 3.4" border-effect="line"/>
 
 *In-engine 3,000-cube capture. Both sides report 3,016 rendered primitives.*
 
@@ -206,7 +206,7 @@ transform-bridge cost depends on the native integration.
 | Frame time |                 2.67 ms |
 | Game time |                 2.11 ms |
 
-<img src="NativePhysXActors1425.png" alt="In-engine Vite native PhysX actor test with 1,425 simulated cubes" border-effect="line"/>
+<img src="../../img/optimization/NativePhysXActors1425.png" alt="In-engine Vite native PhysX actor test with 1,425 simulated cubes" border-effect="line"/>
 
 *Native PhysX actor capture running in Unreal Engine without a separate UE Actor representation for each
 simulated cube.*

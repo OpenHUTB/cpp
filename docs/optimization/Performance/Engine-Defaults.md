@@ -32,7 +32,7 @@ event. In a stock project the majority of primitives generate overlap events tha
 explicitly. Trigger volumes, pickup detection and anything driven by `OnComponentBeginOverlap` need the
 flag set. This is the most likely source of "my trigger stopped working" after migrating a project.
 
-<img src="OverlapEventsDisabled.png" alt="Commit diff replacing SetGenerateOverlapEvents(true) with bGenerateOverlapEvents = false in PrimitiveComponent.cpp" border-effect="line"/>
+<img src="../../img/optimization/OverlapEventsDisabled.png" alt="Commit diff replacing SetGenerateOverlapEvents(true) with bGenerateOverlapEvents = false in PrimitiveComponent.cpp" border-effect="line"/>
 
 *One line in `UPrimitiveComponent`, applied to every primitive in every project.*
 
@@ -48,7 +48,7 @@ Actor runtime defaults are changed to reduce per-actor overhead in `AActor::Init
 | `bRelevantForNetworkReplays` | `true` | `false` | Keeps actors out of demo net recording unless wanted |
 | `bRelevantForLevelBounds` | `true` | `false` | Avoids level-bounds iteration over actors that do not define bounds |
 
-<img src="OptimizedActorRuntime.png" alt="Commit diff in Actor.cpp changing SetCanBeDamaged, bRelevantForNetworkReplays and bRelevantForLevelBounds defaults" border-effect="line"/>
+<img src="../../img/optimization/OptimizedActorRuntime.png" alt="Commit diff in Actor.cpp changing SetCanBeDamaged, bRelevantForNetworkReplays and bRelevantForLevelBounds defaults" border-effect="line"/>
 
 *Large meshes, blocking volumes and foliage that must define world bounds need `bRelevantForLevelBounds`
 set back to `true`.*
@@ -70,7 +70,7 @@ path as the default and opting into the expensive options where they are needed 
 | `bDisablePostProcessBlueprint` | `false` | `true` |
 | `bUpdateOverlapsOnAnimationFinalize` | `true` | `false` |
 
-<img src="SkeletalMeshesOptimizedConfig.png" alt="Commit diff in SkeletalMeshComponent.cpp showing the five changed defaults against Epic's originals" border-effect="line"/>
+<img src="../../img/optimization/SkeletalMeshesOptimizedConfig.png" alt="Commit diff in SkeletalMeshComponent.cpp showing the five changed defaults against Epic's originals" border-effect="line"/>
 
 *Each changed line keeps Epic's original value in a trailing comment, so the stock behaviour is recoverable
 without consulting upstream.*
@@ -83,7 +83,7 @@ the component back to `AlwaysTickPose` or `AlwaysTickPoseAndRefreshBones`.
 `bDisablePostProcessBlueprint = true` is the second: post-process anim Blueprints, commonly used for IK
 and bone corrections, no longer run unless re-enabled per component.
 
-<img src="SkeletalMeshDefault.png" alt="SkeletalMeshComponent.cpp constructor showing the surrounding default block" border-effect="line"/>
+<img src="../../img/optimization/SkeletalMeshDefault.png" alt="SkeletalMeshComponent.cpp constructor showing the surrounding default block" border-effect="line"/>
 
 *The surrounding constructor block in `SkeletalMeshComponent.cpp`, for context on where these defaults are
 set.*

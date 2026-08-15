@@ -12,7 +12,7 @@ instanced mesh transforms with PhysX bodies managed from a world subsystem.
 [Demo project](https://drive.google.com/file/d/1NulunBP2Qre5vLyYnkiqywovsycNuWdQ/view) ·
 [Plugin repository](https://github.com/Dragomirson/PhysXInstancedSubsystem)
 
-<img src="PhysXInstancedSubsystem.png" alt="Large number of instanced rigid bodies simulated by the PhysX instanced subsystem" border-effect="line"/>
+<img src="../../img/optimization/PhysXInstancedSubsystem.png" alt="Large number of instanced rigid bodies simulated by the PhysX instanced subsystem" border-effect="line"/>
 
 *Instanced rendering with real per-instance PhysX bodies. The body count here is well past what
 actor-per-body simulation reaches on the same budget.*

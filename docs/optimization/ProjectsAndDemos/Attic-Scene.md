@@ -7,7 +7,7 @@ how global illumination handles high-contrast interiors.
 </p>
 </tldr>
 
-<img src="AtticScene.png" alt="Attic interior with strong directional sunlight entering through a small window" border-effect="line"/>
+<img src="../../img/optimization/AtticScene.png" alt="Attic interior with strong directional sunlight entering through a small window" border-effect="line"/>
 
 *Direct sun and deep shadow in the same frame, with a large volume of dim indirect light between them.*
 
@@ -15,7 +15,7 @@ how global illumination handles high-contrast interiors.
 
 [Attic Scene](https://drive.google.com/file/d/12CEdigm95nuu7GhRd_KjYIGeCi9_QvVT/view?usp=sharing)
 
-<img src="AtticRTGIV2.jpg" alt="The attic scene rendered with the enhanced ray-traced GI path, volumetric shafts through the window" border-effect="line"/>
+<img src="../../img/optimization/AtticRTGIV2.jpg" alt="The attic scene rendered with the enhanced ray-traced GI path, volumetric shafts through the window" border-effect="line"/>
 
 *The same scene under NVIDIA's enhanced RTGI path, which the NvRTX Caustics branch contributes to Vite.*
 
