@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Migrating from Unreal Engine 5 - 引擎实现文档</title>
+    <title>从虚幻引擎 5 迁移 - 引擎实现文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Migrating from Unreal Engine 5";
+        var mkdocs_page_name = "\u4ece\u865a\u5e7b\u5f15\u64ce 5 \u8fc1\u79fb";
         var mkdocs_page_input_path = "optimization/GettingStarted/Migrating-From-UE5.md";
         var mkdocs_page_url = null;
       </script>
@@ -70,7 +70,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Migrating from Unreal Engine 5</li>
+      <li class="breadcrumb-item active">从虚幻引擎 5 迁移</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/GettingStarted/Migrating-From-UE5.md"> 编辑页面</a>
     </li>
@@ -80,188 +80,156 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="migrating-from-unreal-engine-5">Migrating from Unreal Engine 5</h1>
+                <h1 id="5">从虚幻引擎 5 迁移</h1>
 <p><tldr></p>
 <p>
-Assets move down with the <a href="Proposed-Plugins.md">UE Downgrader</a> plugin, which supports UE 5.8 and
-below back to 4.27. Code moves more easily than on stock 4.27, because Vite backports many UE5 container,
-game framework and GAS APIs. Features that do not exist in 4.27 &mdash; Nanite, Lumen, VSM, World Partition
-&mdash; have no equivalent and need design decisions, not conversion.
+使用 <a href="Propose-Plugins.md">UE Downgrader</a> 插件将资源向下移动，该插件支持 UE 5.8 及更低版本，直至回到 4.27。代码移动比原生 4.27 更容易，因为 Vite 向后移植了许多 UE5 容器、游戏框架和 GAS API。 4.27 中不存在的功能（Nanite、Lumen、VSM、World Partition）没有等效项，需要设计决策，而不是转换。
 </p>
 <p></tldr></p>
-<p>Moving a project from Unreal Engine 5 down to Vite is a real migration, not a version bump. This page sets
-out what transfers cleanly, what needs replacing, and in what order to do it.</p>
-<h2 id="what-transfers-what-does-not">What transfers, what does not</h2>
+<p>将项目从虚幻引擎 5 迁移到 Vite 是真正的迁移，而不是版本升级。本页列出了哪些内容可以干净地迁移，哪些内容需要替换，以及按什么顺序进行。</p>
+<h2 id="_1">什么迁移了，什么没有迁移</h2>
 <table>
 <thead>
 <tr>
-<th>UE5 feature</th>
-<th>Status on Vite</th>
-<th>What to do</th>
+<th>UE5 特性</th>
+<th>Vite 中的状态</th>
+<th>该怎么办</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Static meshes, textures, materials, animations</td>
-<td>Transfers</td>
-<td>Downgrade with the UE Downgrader plugin</td>
+<td>静态网格物体、纹理、材质、动画</td>
+<td>迁移</td>
+<td>使用 UE Downgrader 插件降级</td>
 </tr>
 <tr>
-<td>Blueprints</td>
-<td>Transfers</td>
-<td>Downgrade; re-test node-for-node, some UE5-only nodes have no target</td>
+<td>蓝图</td>
+<td>迁移</td>
+<td>降级；逐个节点重新测试，某些仅 UE5 的节点没有目标</td>
 </tr>
 <tr>
-<td>C++ gameplay code</td>
-<td>Transfers</td>
-<td>Vite backports many UE5 APIs; see below</td>
+<td>C++ 游戏代码</td>
+<td>迁移</td>
+<td>Vite 向后移植了许多 UE5 API；见下文</td>
 </tr>
 <tr>
-<td>Gameplay Ability System</td>
-<td>Transfers</td>
-<td>Vite includes GAS updates backported from UE5</td>
+<td>游戏能力系统</td>
+<td>迁移</td>
+<td>Vite 包括从 UE5 反向移植的 GAS 更新</td>
 </tr>
 <tr>
 <td>Nanite</td>
-<td>No equivalent</td>
-<td>Author conventional LODs; use <a href="Tessellation.md">Tessellation</a> for surface detail</td>
+<td>没有等同的</td>
+<td>编写常规 LOD；使用 <a href="Tessellation.md">Tessellation</a> 获取表面细节</td>
 </tr>
 <tr>
-<td>Lumen</td>
-<td>Replaced</td>
-<td>Use <a href="DDGI-Dynamic.md">DDGI</a>, optionally with <a href="SSGI.md">SSGI</a></td>
+<td>流明</td>
+<td>替换</td>
+<td>使用 <a href="DDGI-Dynamic.md">DDGI</a>，可选择与 <a href="SSGI.md">SSGI</a> 一起使用</td>
 </tr>
 <tr>
-<td>Virtual Shadow Maps</td>
-<td>No equivalent</td>
-<td>Cascaded shadow maps, or <a href="RT-Shadows-And-Ambient-Occlusion.md">ray-traced shadows</a></td>
+<td>虚拟阴影贴图</td>
+<td>没有等同的</td>
+<td>级联阴影贴图，或<a href="RT-Shadows-And-Ambient-Occlusion.md">光线追踪阴影</a></td>
 </tr>
 <tr>
 <td>TSR</td>
-<td>Replaced</td>
+<td>替换</td>
 <td><a href="Upscalers.md">DLSS, FSR, XeSS</a>, or native with <a href="Anti-Aliasing.md">SMAA</a></td>
 </tr>
 <tr>
 <td>MegaLights</td>
-<td>Replaced</td>
+<td>替换</td>
 <td><a href="RTXDI.md">RTXDI</a></td>
 </tr>
 <tr>
 <td>Chaos physics</td>
-<td>Replaced</td>
+<td>替换</td>
 <td><a href="PhysX.md">PhysX</a></td>
 </tr>
 <tr>
 <td>Chaos Destruction</td>
-<td>Replaced</td>
-<td><a href="Destruction-And-Cloth.md">Apex Destruction</a> and <a href="Destruction-And-Cloth.md">Blast</a></td>
+<td>替换</td>
+<td><a href="Destruction-And-Cloth.md">Apex Destruction</a> 和 <a href="Destruction-And-Cloth.md">Blast</a></td>
 </tr>
 <tr>
 <td>Chaos Cloth</td>
-<td>Replaced</td>
+<td>替换</td>
 <td><a href="Destruction-And-Cloth.md">Apex Cloth</a></td>
 </tr>
 <tr>
 <td>Substrate</td>
-<td>No equivalent</td>
-<td>Standard material model, plus <a href="Shading-Models.md">Callisto BRDF</a></td>
+<td>没有等同的</td>
+<td>标准材质模型，加上 <a href="Shading-Models.md">Callisto BRDF</a></td>
 </tr>
 <tr>
-<td>World Partition</td>
-<td>Replaced</td>
-<td>World Composition and level streaming</td>
+<td>世界分区</td>
+<td>替换</td>
+<td>世界构成和关卡流</td>
 </tr>
 <tr>
 <td>Niagara</td>
-<td>Transfers</td>
-<td>Available; <a href="Proposed-Plugins.md">PopcornFX</a> is a faster alternative</td>
+<td>迁移</td>
+<td>可用的; <a href="Propose-Plugins.md">PopcornFX</a> 是更快的替代方案</td>
 </tr>
 <tr>
 <td>MetaSounds</td>
-<td>No equivalent</td>
-<td>Sound Cues, or <a href="Proposed-Plugins.md">Wwise</a></td>
+<td>没有等同的</td>
+<td>声音提示，或 <a href="Proproped-Plugins.md">Wwise</a></td>
 </tr>
 </tbody>
 </table>
-<h2 id="downgrading-assets">Downgrading assets</h2>
-<p>The UE Downgrader plugin converts assets from UE 5.8 and below back to 4.27 and 4.26. It works by first
-upgrading assets to its source version(usually latest UE5), then applying patches to the <code>.uasset</code> files so they are readable by
-the target version, minus the data the older format cannot represent. Nanite data, for instance, is stripped
-during a 4.27 downgrade.</p>
-<p>What the plugin cannot do is invent 4.27 equivalents for features that do not exist there. Nanite on masked
-materials, new material nodes and new Niagara modules will not survive the trip. Budget for reauthoring
-those.</p>
-<p>The plugin is commercial. Its author, Ciprian Stanciu, is active on the
-<a href="https://discord.gg/n9zQrYFhMb">Vite Discord</a> and has provided direct support for several Vite projects.
-There is a <a href="https://youtu.be/yXvJfDNfrSQ">video walkthrough</a> of the workflow.</p>
-<h2 id="migrating-code">Migrating code</h2>
-<p>This is the part that is easier on Vite than on stock 4.27. The fork deliberately backports UE5 API surface
-so that UE5-era code compiles with fewer changes: updated container classes, game framework updates, and
-Gameplay Ability System functionality are all present.</p>
-<p>You will still hit differences. Work through them in this order:</p>
+<h2 id="_2">资产降级</h2>
+<p>UE Downgrader 插件可将 UE 5.8 及更低版本的资源转换回 4.27 和 4.26。它的工作原理是首先将资源升级到其源版本（通常是最新的 UE5），然后对“.uasset”文件应用补丁，以便目标版本可以读取它们，减去旧格式无法表示的数据。例如，Nanite 数据在 4.27 降级期间被删除。</p>
+<p>该插件无法做的是为 4.27 中不存在的功能发明等效项。蒙版材料、新材料节点和新 Niagara 模块上的 Nanite 将无法在旅途中幸存。需要为重新创作这些内容的指定预算。</p>
+<p>该插件是商业的。其作者 Ciprian Stanciu 活跃于 <a href="https://discord.gg/n9zQrYFhMb">Vite Discord</a>，并为多个 Vite 项目提供了直接支持。有一个工作流程的<a href="https://youtu.be/yXvJfDNfrSQ">视频演练</a>。</p>
+<h2 id="_3">迁移代码</h2>
+<p>这是 Vite 上比 Stock 4.27 更容易的部分。该分支故意向后移植 UE5 API 表面，以便 UE5 时代的代码编译时只需较少的更改：更新的容器类、游戏框架更新和游戏能力系统功能都存在。</p>
+<p>你仍然会遇到分歧。按以下顺序完成它们：</p>
 <ol>
-<li><strong>Physics.</strong> Anything touching <code>Chaos</code> namespaces, <code>FChaosScene</code>, geometry collections or Chaos vehicles
-   needs to move to PhysX equivalents. This is usually the largest single chunk of work. See
-   <a href="PhysX.md">PhysX Overview</a>.</li>
-<li><strong>Rendering.</strong> Code that queries or drives Lumen, Nanite or VSM console variables has no target. Replace
-   with the Vite equivalents in <a href="Rendering.md">Rendering</a>.</li>
-<li><strong>Core API drift.</strong> <code>FVector</code> is double-precision in UE5 (<code>FVector3d</code>) and single-precision in 4.27.
-   Large-world-coordinate assumptions do not hold. Audit any code doing precision-sensitive maths at large
-   world offsets.</li>
-<li><strong>Module and build rules.</strong> <code>.Build.cs</code> files referencing UE5-only modules need those dependencies
-   removed or replaced.</li>
+<li><strong>物理.</strong> 任何涉及“Chaos”命名空间、“FCaosScene”、几何集合或 Chaos 载具的内容都需要转移到 PhysX 等效项。这通常是最大的单个工作块。请参阅 <a href="PhysX.md">PhysX 概述</a>。</li>
+<li><strong>渲染.</strong> 查询或驱动 Lumen、Nanite 或 VSM 控制台变量的代码没有目标。替换为 <a href="Rendering.md">Rendering</a> 中的 Vite 等效项。</li>
+<li><strong>核心 API 漂移.</strong> <code>FVector</code> 在 UE5 (<code>FVector3d</code>) 中是双精度，在 4.27 中是单精度。大世界坐标假设不成立。需要审核在大世界偏移量下执行精度敏感数学的任何代码。</li>
+<li><strong>模块和构建规则.</strong> 引用仅限 UE5 的模块的 .build.cs 文件需要删除或替换这些依赖项。</li>
 </ol>
-<h2 id="recommended-migration-order">Recommended migration order</h2>
-<p><procedure title="Migrate a UE5 project to Vite" id="migration-order">
-    <step>
-        Stand up an empty Vite project first and confirm your toolchain and engine build are healthy.
-        Do not debug two problems at once.
-    </step>
-    <step>
-        Port the C++ modules with no content. Get them compiling against Vite before any assets move.
-        Check physics and rendering API breakage here.
-    </step>
-    <step>
-        Downgrade and import a small, representative slice of content &mdash; one character, one
-        environment, a handful of materials. Validate that it looks and behaves correctly.
-    </step>
-    <step>
-        Replace the lighting setup. Lumen has no direct translation; set up
-        <a href="DDGI-Dynamic.md">DDGI</a> volumes and tune them against the slice you just imported.
-    </step>
-    <step>
-        Rebuild the physics setup. Re-author destruction with
-        <a href="Destruction-And-Cloth.md">Apex Destruction</a> and cloth with
-        <a href="Destruction-And-Cloth.md">Apex Cloth</a>.
-    </step>
-    <step>
-        Bulk-migrate the remaining content once the slice is proven.
-    </step>
-    <step>
-        Profile against your target hardware and set scalability. See
-        <a href="Profiling.md">Profiling and Benchmarking</a>.
-    </step>
-</procedure></p>
-<h2 id="a-mixed-version-workflow">A mixed-version workflow</h2>
-<p>You do not have to move everyone at once. A common arrangement is for programmers to work in Vite while
-artists and content creators continue in a stock Epic Games Launcher install of 4.27, with content flowing
-one way. For that to work, the launcher-side users need the standalone
-<a href="https://github.com/GapingPixel/UE4-RTXGI-1.1.5-Latest-Official">DDGI 1.1.5 plugin</a> so that lighting looks
-approximately right on their end. This is exactly what we do at Vite Studio, and has work so far with no issues
-for modeling, animation and sound design work.</p>
-<blockquote>
-<p>Do not use the launcher DDGI plugin into a Vite project. Vite already ships DDGI as part of the
-engine, and the two will conflict. *DDGI in Vite is handled better than DDGI plugin for Launcher Version.
-(Due to both Engine side/DDGI plugin Side changes)</p>
-<p>{style="warning"}</p>
-</blockquote>
-<h2 id="see-also">See also</h2>
+<h2 id="_4">推荐的迁移顺序</h2>
+<h3 id="ue5-vite">将 UE5 项目迁移到 Vite</h3>
+<ol>
+<li>
+<p>首先创建一个空的 Vite 项目，并确认你的工具链和引擎构建正常。不要同时调试两个问题。</p>
+</li>
+<li>
+<p>移植不包含任何内容的 C++ 模块。在迁移任何资源之前，确保它们能够针对 Vite 进行编译。在此处检查物理和渲染 API 是否存在兼容性问题。</p>
+</li>
+<li>
+<p>降级并导入一个具有代表性的小型内容片段——一个角色、一个场景和少量材质。验证其外观和行为是否正确。</p>
+</li>
+<li>
+<p>替换光照设置。Lumen 没有直接的转换；设置 <a href="../../Rendering/DDGI-Dynamic/">DDGI</a> 体积并根据刚刚导入的内容片段进行调整。</p>
+</li>
+<li>
+<p>重建物理设置。使用 <a href="../../Physics/Destruction-And-Cloth/">Apex Destruction</a> 重新制作物体破坏效果，使用 <a href="../../Physics/Destruction-And-Cloth/">Apex Cloth</a> 重新制作布料效果。</p>
+</li>
+<li>
+<p>验证内容片段后，批量迁移剩余内容。</p>
+</li>
+<li>
+<p>针对目标硬件进行性能分析并设置可扩展性。请参阅<a href="../../Performance/Profiling/">性能分析和基准测试</a>。</p>
+</li>
+</ol>
+<h2 id="_5">混合版本工作流程</h2>
+<p>您不必立即移动所有人。一种常见的安排是程序员在 Vite 中工作，而美术师和内容创作者则继续使用 Epic Games Launcher 4.27 的库存安装，内容以单向流动。为此，启动器端用户需要独立的 <a href="https://github.com/GapingPixel/UE4-RTXGI-1.1.5-Latest-Official">DDGI 1.1.5 插件</a>，以便照明看起来大致正确。这正是我们在 Vite Studio 所做的，到目前为止，建模、动画和声音设计工作没有出现任何问题。</p>
+<div class="admonition 警告">
+<p class="admonition-title">警告</p>
+<p>不要在 Vite 项目中使用启动器 DDGI 插件。 Vite 已经将 DDGI 作为引擎的一部分提供，两者会发生冲突。 Vite 中的 DDGI 比 Launcher 版本的 DDGI 插件处理得更好。 （由于引擎端/DDGI插件端均发生变化）</p>
+</div>
+<h2 id="_6">参见</h2>
 <ul>
-<li><a href="../Introduction-to-Vite/">Introduction to Vite</a></li>
-<li><a href="PhysX.md">PhysX Overview</a></li>
-<li><a href="Global-Illumination.md">Global Illumination</a></li>
-<li><a href="Proposed-Plugins.md">Proposed Plugins</a></li>
-<li><a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 versus UE5 Cost Analysis</a></li>
+<li><a href="../Introduction-to-Vite/">Vite 简介</a></li>
+<li><a href="PhysX.md">PhysX 概述</a></li>
+<li><a href="Global-Illumination.md">全局照明</a></li>
+<li><a href="Proposed-Plugins.md">建议的插件</a></li>
+<li><a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 与 UE5 成本分析</a></li>
 </ul>
               
             </div>

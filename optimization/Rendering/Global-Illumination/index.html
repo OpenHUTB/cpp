@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Global Illumination - 引擎实现文档</title>
+    <title>全局照明 - 引擎实现文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Global Illumination";
+        var mkdocs_page_name = "\u5168\u5c40\u7167\u660e";
         var mkdocs_page_input_path = "optimization/Rendering/Global-Illumination.md";
         var mkdocs_page_url = null;
       </script>
@@ -70,7 +70,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Global Illumination</li>
+      <li class="breadcrumb-item active">全局照明</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/Global-Illumination.md"> 编辑页面</a>
     </li>
@@ -80,151 +80,118 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="global-illumination">Global Illumination</h1>
-<p><tldr></p>
-<p>
-Vite's recommended GI setup is <b>Dynamic DDGI plus SSGI</b>. DDGI resolves world-scale bounce without
-noise; SSGI fills in the high-frequency contact detail that probe volumes are too coarse to capture.
-Enable with <code>r.GlobalIllumination.ExperimentalPlugin 1</code> and <code>r.SSGI.Enable 1</code>.
-</p>
-<p></tldr></p>
-<p>Global illumination is the single biggest reason Vite exists as a separate fork. This page explains the
-options and how to choose between them; the individual techniques have their own pages.</p>
-<h2 id="the-options">The options</h2>
+                <h1 id="_1">全局照明</h1>
+<p>Vite推荐的GI设置是动态<strong>动态漫反射全局光照</strong>（Dynamic Diffuse Global Illumination, DDGI）加<strong>屏幕空间全局光照</strong>（Screen Space Global Illumination, SSGI）。DDGI 可以无噪声地解析世界尺度的反射；SSGI 可以填充探针体积过于粗糙而无法捕捉的高频接触细节。
+使用 <code>r.GlobalIllumination.ExperimentalPlugin 1</code> 和 <code>r.SSGI.Enable 1</code> 启用。</p>
+<p>全局照明是 Vite 作为独立分支存在的最大原因。本页解释了这些选项以及如何在它们之间进行选择；各个技术都有自己的页面。</p>
+<h2 id="_2">选项</h2>
 <table>
 <thead>
 <tr>
-<th>Solution</th>
-<th>Cost</th>
-<th>Requires DXR</th>
-<th>Dynamic lighting</th>
-<th>Best for</th>
+<th>解决方案</th>
+<th>成本</th>
+<th>需要 DXR</th>
+<th>动态照明</th>
+<th>最适合</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><a href="../DDGI-Dynamic/">Dynamic DDGI</a></td>
-<td>Low</td>
-<td>Yes</td>
-<td>Fully dynamic</td>
-<td>Almost everything</td>
+<td><a href="../DDGI-Dynamic/">动态 DDGI</a></td>
+<td>低</td>
+<td>是</td>
+<td>完全动态</td>
+<td>几乎所有的东西</td>
 </tr>
 <tr>
-<td><a href="../DDGI-Static/">Static DDGI</a></td>
-<td>Near zero at runtime</td>
+<td><a href="../DDGI-Static/">静态 DDGI</a></td>
+<td>运行时接近于零</td>
 <td>No</td>
-<td>Baked</td>
-<td>Low-end and no-DXR hardware</td>
+<td>烘焙</td>
+<td>低端和无 DXR 硬件</td>
 </tr>
 <tr>
 <td><a href="../SSGI/">SSGI</a></td>
-<td>Low</td>
-<td>No</td>
-<td>Fully dynamic</td>
-<td>High Frequency Detail, made to run alongside DDGI</td>
+<td>低</td>
+<td>否</td>
+<td>完全动态</td>
+<td>高频细节，与 DDGI 一起运行</td>
 </tr>
 <tr>
 <td><a href="../Ray-Tracing/">Per-pixel RT GI</a></td>
-<td>High</td>
-<td>Yes</td>
-<td>Fully dynamic</td>
-<td>GPUs non trivially faster than PS5, Reference</td>
+<td>高</td>
+<td>是</td>
+<td>完全动态</td>
+<td>GPU 比 PS5 快得多，参考</td>
 </tr>
 <tr>
-<td>Path-Tracing</td>
-<td>Ultra</td>
-<td>Yes</td>
-<td>Fully dynamic</td>
-<td>RTX 5080 and above, Ground Truth Reference</td>
+<td>路径追踪</td>
+<td>极端主义者</td>
+<td>是</td>
+<td>完全动态</td>
+<td>RTX 5080 及以上，Ground Truth 参考</td>
 </tr>
 <tr>
-<td>Baked lightmaps</td>
-<td>Zero at runtime</td>
-<td>No</td>
-<td>Static only</td>
-<td>Fully static scenes, Always use CPU LightMass for maximum quality</td>
+<td>烘焙光照贴图</td>
+<td>运行时为零</td>
+<td>否</td>
+<td>仅静态</td>
+<td>全静态场景，始终使用 CPU LightMass 以获得最高质量</td>
 </tr>
 </tbody>
 </table>
-<p><note>
-"Vite includes several secondary Indirect Bounce solutions, such as Distance Fields Bounce and IBL capture (Vite specific addition). 
-These are rarely considered over the solutions listed above, except for very specific target platforms or specialized setups."
-</note></p>
-<h2 id="why-ddgi-rather-than-lumen">Why DDGI rather than Lumen</h2>
-<p>Dynamic Diffuse Global Illumination stores irradiance in a grid of probes and filters it using spherical
-harmonics. Because the representation is smooth by construction, the result is noise-free without a
-denoiser &mdash; which is the root cause of most of its advantages over Lumen.</p>
-<p>Against Software Lumen, DDGI provides higher quality bounce and less light leaking. Against Hardware Lumen,
-it is comparable for bounce quality while typically running around twice as fast (End Scene FPS not just the isolated GI cost).
-In one representative test scene at 1440p native on an RTX 4080 Super, DDGI measured 811 FPS against Lumen 5.7's 324 FPS. 
-On AMD hardware the technique holds up well: the same class of test scene runs at 245 FPS at 1080p native on an
-RX 6600.</p>
-<p>DDGI is also not experimental technology. Implementations ship in Metro Exodus, Overwatch 2, The Finals,
-Control, The Witcher 3, Warhammer 40,000: Darktide, DOOM: The Dark Ages, Indiana Jones and the Great Circle,
-007 First Light, Ghost of Yotei and Star Wars Outlaws including its Switch 2 version. AAA engines including
-Anvil and Snowdrop use DDGI probes as part of their ray-traced GI pipelines. The technique was designed to
-scale across a wide hardware range, starting from Xbox One S GPU for Static Mode and GTX 1060 class GPUs for Dynamic RT mode.</p>
-<p><img src="../../img/optimization/StylizedRTDemo.png" alt="Stylized scene lit by Dynamic DDGI with the frame counter reading 811 FPS" border-effect="line"/></p>
-<p><em>811 FPS, RTX 4080 Super, 1440p native, Dynamic DDGI. The same scene on Lumen in 5.7 measures 324 FPS.</em></p>
-<p><img src="../../img/optimization/DDGIEmissiveSurfaces.png" alt="Interior lit by emissive surfaces contributing to DDGI" border-effect="line"/></p>
-<p><em>Emissive materials contribute to DDGI directly, so a scene can be lit from emissive geometry without
-placing light actors for it.</em></p>
-<h2 id="why-pair-ddgi-with-ssgi">Why pair DDGI with SSGI</h2>
-<p>Probe volumes have a spatial resolution. Detail smaller than the probe spacing &mdash; the darkening where a
-chair leg meets the floor, bounce inside a narrow gap, contact shading under a desk &mdash; is not
-represented, because there is no probe there to represent it.</p>
-<p>Screen-space GI operates at pixel resolution and captures exactly that. The two techniques have shortcomings in opposite
-directions: SSGI has no information about anything off-screen or occluded, while DDGI has complete world
-knowledge at coarse resolution. Running both gives you world-scale bounce from DDGI and high-frequency
-contact detail from SSGI. This is an officially recommended setup by NVIDIA from their Unreal Engine DDGI 
-presentations. Vite's SSGI is configured to work alongside DDGI from the get-go.</p>
-<p>This is not possible in UE5. SSGI regressed in both quality and performance when it was folded into Lumen,
-and can no longer be enabled alongside a separate GI solution. In Vite it is the UE4-era implementation and
-composes cleanly.</p>
-<h2 id="enabling-the-recommended-setup">Enabling the recommended setup</h2>
+<div class="admonition 注意">
+<p class="admonition-title">注意</p>
+<p>Vite 包括多个辅助间接反弹解决方案，例如距离场反弹和 IBL 捕获（Vite 特定添加）。除了非常具体的目标平台或专门的设置之外，很少考虑上面列出的解决方案。</p>
+</div>
+<h2 id="ddgi-lumen">为什么选择 DDGI 而不是 Lumen</h2>
+<p>动态漫反射全局照明将辐照度存储在探头网格中，并使用球谐函数对其进行过滤。由于表示在结构上是平滑的，因此结果是无噪声的，无需降噪器 -这是其相对于 Lumen 的大部分优势的根本原因。</p>
+<p>与软件流明相比，DDGI 提供更高质量的反射和更少的漏光。与硬件流明相比，它的反弹质量相当，但通常运行速度大约是前者的两倍（最终场景 FPS 不仅仅是孤立的 GI 成本）。在 RTX 4080 Super 上以 1440p 原生播放的一个代表性测试场景中，DDGI 测得的帧率为 811 FPS，而 Lumen 5.7 的帧率为 324 FPS。在 AMD 硬件上，该技术表现良好：同类型的测试场景在 RX 6600 上以 245 FPS、1080p 本机运行。</p>
+<p>DDGI 也不是实验性技术。已在《地铁：离去》、《守望先锋 2》、《总决赛》、《控制》、《巫师 3》、《战锤 40,000：暗潮》、《DOOM：黑暗时代》、《夺宝奇兵》、《007 曙光》、《羊蹄之魂》和《星球大战亡命之徒》（包括 Switch 2 版本）中发布。包括 Anvil 和 Snowdrop 在内的 AAA 引擎使用 DDGI 探针作为其光线追踪 GI 管道的一部分。该技术旨在跨广泛的硬件范围进行扩展，从用于静态模式的 Xbox One S GPU 和用于动态 RT 模式的 GTX 1060 级 GPU 开始。</p>
+<p><img alt="" src="../../../img/optimization/StylizedRTDemo.png" /></p>
+<p><em>动态 DDGI 灯光营造出风格化的场景，帧计数器显示 811 FPS。</em></p>
+<p><em>811 FPS，RTX 4080 Super，1440p原生分辨率，动态DDGI。同一场景在Lumen 5.7模式下测得324 FPS。</em></p>
+<p><img alt="" src="../../../img/optimization/DDGIEmissiveSurfaces.png" /></p>
+<p><em>室内照明由发光表面提供，有助于DDGI（直接、分散、增强）。</em></p>
+<p><em>自发光材质直接影响 DDGI，因此无需放置光源即可通过自发光几何体照亮场景。</em></p>
+<h2 id="ddgi-ssgi">为什么将 DDGI 与 SSGI 配对</h2>
+<p>探测体积具有空间分辨率。小于探头间距的细节（椅子腿与地板接触处的变暗​​、狭窄间隙内的弹跳、桌子下的接触阴影）未显示，因为那里没有探头来表示它。</p>
+<p>屏幕空间 GI 以像素分辨率运行并准确捕获该分辨率。这两种技术在相反的方向上都有缺点：SSGI 没有关于屏幕外或被遮挡的任何信息，而 DDGI 具有粗分辨率下的完整世界知识。运行两者可为您提供来自 DDGI 的世界范围反弹​​和来自 SSGI 的高频联系详细信息。这是 NVIDIA 在 Unreal Engine DDGI 演示中官方推荐的设置。 Vite 的 SSGI 从一开始就配置为与 DDGI 一起工作。</p>
+<p>这在 UE5 中是不可能的。当 SSGI 合并到 Lumen 中时，其质量和性能均有所下降，并且无法再与单独的 GI 解决方案一起启用。在 Vite 中，它是 UE4 时代的实现，并且组成干净。</p>
+<h2 id="_3">启用推荐设置</h2>
 <div class="highlight"><pre><span></span><code><span class="n">IConsoleManager</span><span class="o">::</span><span class="n">Get</span><span class="p">().</span><span class="n">FindConsoleVariable</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.GlobalIllumination.ExperimentalPlugin&quot;</span><span class="p">))</span><span class="o">-&gt;</span><span class="n">Set</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
 <span class="n">IConsoleManager</span><span class="o">::</span><span class="n">Get</span><span class="p">().</span><span class="n">FindConsoleVariable</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.SSGI.Enable&quot;</span><span class="p">))</span><span class="o">-&gt;</span><span class="n">Set</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
 </code></pre></div>
-<p>Or in configuration, which is preferable for shipping projects because it participates in scalability:</p>
+<p>或者在配置中，这对于交付项目来说是更可取的，因为它参与了可扩展性：</p>
 <div class="highlight"><pre><span></span><code><span class="c1">; Config/DefaultEngine.ini</span>
 <span class="k">[/Script/Engine.RendererSettings]</span>
 <span class="na">r.GlobalIllumination.ExperimentalPlugin</span><span class="o">=</span><span class="s">1</span>
 <span class="na">r.SSGI.Enable</span><span class="o">=</span><span class="s">1</span>
 </code></pre></div>
-<p>You then need to place DDGI volumes in the level. See <a href="../DDGI-Dynamic/">Dynamic DDGI</a> for volume setup,
-probe density and the settings that matter.</p>
-<h2 id="choosing-for-your-hardware-floor">Choosing for your hardware floor</h2>
-<p><procedure title="Pick a GI configuration" id="pick-gi">
-    <step>
-        If your minimum spec has DXR support, use Dynamic DDGI plus SSGI. This is the default
-        recommendation and covers GTX 1060 6&nbsp;GB and above.
-    </step>
-    <step>
-        If your minimum spec has no DXR support at all, use
-        <a href="DDGI-Static.md">Static DDGI</a>. It bakes almost instantly, gives better bounce fidelity
-        than traditional baked lighting, and handles moving objects better because the probe volumes
-        cover the space rather than the surfaces.
-    </step>
-    <step>
-        If you need to support both, ship Static DDGI as a scalability fallback. The volumes and authoring
-        are shared between the two modes, so this is a scalability setting rather than a second lighting
-        pass through the level.
-    </step>
-    <step>
-        Only reach for per-pixel ray-traced GI if you are producing reference imagery or
-        previsualisation. It is far more expensive than DDGI and its advantage does not survive a
-        frame-time budget. It is also compiled out of a default build and requires rebuilding with
-        <code>VITE_RT_PSO_DEBLOAT=0</code> &mdash; see
-        <a href="Compile-Time-Switches.md">Compile-Time Switches</a>.
-    </step>
-</procedure></p>
-<h2 id="see-also">See also</h2>
+<p>然后，您需要将 DDGI 体积放置在关卡中。请参阅 <a href="../DDGI-Dynamic/">动态 DDGI</a> 了解体积设置、探针密度和重要的设置。</p>
+<h2 id="gi">根据硬件配置选择合适的全局光照 (GI) 配置</h2>
+<h3 id="gi_1">选择 GI 配置</h3>
+<ol>
+<li>
+<p>如果您的最低配置支持 DXR，请使用动态 DDGI + SSGI。这是默认推荐配置，适用于 GTX 1060 6GB 及以上显卡。</p>
+</li>
+<li>
+<p>如果您的最低配置完全不支持 DXR，请使用<a href="../DDGI-Static/">静态 DDGI</a>。它几乎可以瞬间完成烘焙，比传统的烘焙光照提供更好的反射保真度，并且由于探测体积覆盖的是空间而非表面，因此能更好地处理移动物体。</p>
+</li>
+<li>
+<p>如果您需要同时支持这两种模式，请将静态 DDGI 作为可扩展性的备选方案。两种模式共享体积和创作过程，因此这是一种可扩展性设置，而不是对关卡进行第二次光照渲染。</p>
+</li>
+<li>
+<p>只有在生成参考图像或预可视化时才使用逐像素光线追踪全局光照。它比 DDGI 的开销大得多，而且其优势无法弥补帧时间预算的限制。它还是从默认构建中编译出来的，需要使用 VITE_RT_PSO_DEBLOAT=0 重新构建——请参阅<a href="../../Performance/Compile-Time-Switches/">编译时开关</a>。</p>
+</li>
+</ol>
+<h2 id="_4">参见</h2>
 <ul>
-<li><a href="../DDGI-Dynamic/">Dynamic DDGI</a></li>
-<li><a href="../DDGI-Static/">Static DDGI</a></li>
+<li><a href="../DDGI-Dynamic/">动态 DDGI</a></li>
+<li><a href="../DDGI-Static/">静态 DDGI</a></li>
 <li><a href="../SSGI/">SSGI</a></li>
-<li><a href="../Ray-Tracing/">Ray Tracing</a></li>
-<li><a href="Performance-Targets.md">Performance Targets</a></li>
+<li><a href="../Ray-Tracing/">光线追踪</a></li>
+<li><a href="Performance-Targets.md">性能目标</a></li>
 </ul>
               
             </div>

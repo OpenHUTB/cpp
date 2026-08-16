@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Getting Started - 引擎实现文档</title>
+    <title>入门 - 引擎实现文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Getting Started";
+        var mkdocs_page_name = "\u5165\u95e8";
         var mkdocs_page_input_path = "optimization/GettingStarted/Getting-Started.md";
         var mkdocs_page_url = null;
       </script>
@@ -70,7 +70,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Getting Started</li>
+      <li class="breadcrumb-item active">入门</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/GettingStarted/Getting-Started.md"> 编辑页面</a>
     </li>
@@ -80,116 +80,96 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="getting-started">Getting Started</h1>
-<p><tldr></p>
-<p>
-Fastest path: download an installed binary build, run <code>RegistryAdd.bat</code>, and open the editor.
-Building from source takes roughly 15&ndash;30 minutes of compile time on a modern desktop CPU and
-requires a pinned toolchain.
-</p>
-<p></tldr></p>
-<p>This section takes you from nothing installed to a running editor and a first project on Unreal Engine
-Vite. Read <a href="../Introduction-to-Vite/">Introduction to Vite</a> first if you have not yet decided whether the
-fork is right for your project.</p>
-<h2 id="choose-how-you-install">Choose how you install</h2>
-<p>Vite ships in two forms. They are functionally the same editor; the difference is whether you compile
-the engine yourself.</p>
+                <h1 id="_1">入门</h1>
+<div class="admonition 最快方法">
+<p class="admonition-title">最快方法</p>
+</div>
+<p>下载已安装的二进制版本，运行 <code>RegistryAdd.bat</code>，然后打开编辑器。在现代桌面 CPU 上，从源代码构建大约需要 15-30 分钟的编译时间，并且需要固定的工具链。</p>
+<p>本节将带您从不安装任何东西到运行编辑器和虚幻引擎 Vite 上的第一个项目。如果您还没有确定分叉是否适合您的项目，请先阅读<a href="../Introduction-to-Vite/">Vite简介</a>。</p>
+<h2 id="_2">选择安装方式</h2>
+<p>Vite 交付有两种形式。它们在功能上是相同的编辑器；区别在于你是否自己编译引擎。</p>
 <table>
 <thead>
 <tr>
 <th></th>
-<th>Installed binary build</th>
-<th>Source build</th>
+<th>安装的二进制版本</th>
+<th>源码构建</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Setup time</td>
-<td>Minutes</td>
-<td>15&ndash;30 min compile, plus dependency download</td>
+<td>设置时间</td>
+<td>分钟</td>
+<td>15–30 分钟编译，加上依赖项下载</td>
 </tr>
 <tr>
-<td>Disk footprint</td>
-<td>Smaller, no intermediates</td>
-<td>Large, includes full source and intermediates</td>
+<td>磁盘占用空间</td>
+<td>更小，无中间文件</td>
+<td>更大，包括完整源代码和中间文件</td>
 </tr>
 <tr>
-<td>Can modify engine code</td>
-<td>No</td>
-<td>Yes</td>
+<td>可以修改引擎代码</td>
+<td>不可以</td>
+<td>可以</td>
 </tr>
 <tr>
-<td>Can debug into engine code</td>
-<td>Only with symbols shipped</td>
-<td>Yes</td>
+<td>可以调试到引擎代码</td>
+<td>仅附带符号</td>
+<td>可以</td>
 </tr>
 <tr>
-<td>Recommended for</td>
-<td>Artists, designers, evaluation</td>
-<td>Programmers, anyone contributing to the fork</td>
+<td>推荐用于</td>
+<td>艺术家、设计师、评价</td>
+<td>程序员，任何为分支做贡献的人</td>
 </tr>
 </tbody>
 </table>
-<p>Most teams run a mixed setup: engineers on source builds, everyone else on an installed build produced
-from the same commit. See <a href="Installed-Builds.md">Installed Builds</a> for how to produce one.</p>
-<h2 id="steps-in-order">Steps in order</h2>
+<p>大多数团队都运行混合设置：工程师负责源构建，其他人则负责从同一提交生成的已安装构建。请参阅 <a href="Installed-Builds.md">Installed Builds</a> 了解如何生成一个。</p>
+<h2 id="_3">步骤按顺序</h2>
 <ol>
-<li>Check <a href="../System-Requirements/">System Requirements</a> so you know what hardware and disk space you need.</li>
-<li>Install the <a href="../Toolchain-Requirements/">Toolchain Requirements</a>. This step is mandatory and unforgiving
-   &mdash; the wrong MSVC or Windows SDK version produces confusing compile errors rather than a clear
-   message.</li>
-<li>Either <a href="../Install-Binary-Build/">Install a Binary Build</a> or <a href="../Build-From-Source/">Build from Source</a>.</li>
-<li>Create your <a href="../First-Project/">First Project</a>.</li>
-<li>If you are bringing existing content across, read <a href="../Migrating-From-UE5/">Migrating from Unreal Engine 5</a>.</li>
+<li>检查<a href="../System-Requirements/">系统要求</a>，以便了解您需要什么硬件和磁盘空间。</li>
+<li>安装<a href="../Toolchain-Requirements/">工具链要求</a>。此步骤是强制性且不可原谅的 -错误的 MSVC 或 Windows SDK 版本会产生令人困惑的编译错误，而不是清晰的消息。</li>
+<li><a href="../Install-Binary-Build/">安装二进制构建</a> 或 <a href="../Build-From-Source/">从源代码构建</a>。</li>
+<li>创建您的<a href="../First-Project/">第一个项目</a>。</li>
+<li>如果您要引入现有内容，请阅读<a href="../Migrating-From-UE5/">从虚幻引擎 5 迁移</a>。</li>
 </ol>
-<p>If anything fails along the way, <a href="../Build-Troubleshooting/">Build Troubleshooting</a> covers the errors that
-come up most often, including the <code>C4668: '__has_feature' is not defined</code> error that signals a toolchain
-mismatch.</p>
-<h2 id="what-is-different-from-stock-unreal-engine-427">What is different from stock Unreal Engine 4.27</h2>
-<p>If you have built Unreal Engine from source before, three things will surprise you.</p>
-<p><strong>GitDeps is already patched.</strong> Stock 4.27 fails to download dependencies because the CDN endpoints have
-moved. Vite ships the fix, so <code>Setup.bat</code> works with no manual edits. When <code>Setup.bat</code> asks whether to
-overwrite local changes, answer <code>N</code>.</p>
-<p><strong>Ray tracing is on by default.</strong> New projects enable ray-traced shadows, reflections, translucency and
-ambient occlusion out of the box. This is deliberate, so that the features are discoverable, but it means
-a new empty project is heavier than a stock 4.27 one. See <a href="Ray-Tracing.md">Ray Tracing</a> for how to turn
-individual effects off.</p>
-<p><strong>Several engine defaults are changed for performance.</strong> Overlap events, skeletal mesh settings, lightmap
-UV generation and a number of plugins differ from stock. These changes affect gameplay behaviour, not just
-frame time, so read <a href="Engine-Defaults.md">Engine Default Changes</a> before you ship.</p>
-<h2 id="unreal-engine-fundamentals">Unreal Engine fundamentals</h2>
-<p>This manual documents the fork, not the engine underneath it. Everything Vite does not change works the way
-Unreal Engine 4.27 works, and Epic's own 4.27 documentation is the correct reference for it:</p>
+<p>如果在此过程中出现任何问题，<a href="../Build-Troubleshooting/">构建故障排除</a> 会涵盖最常出现的错误，包括表示工具链不匹配的<code>C4668: '__has_feature' is not defined</code>错误。</p>
+<h2 id="427">与原版虚幻引擎 4.27 有何不同</h2>
+<p>如果您以前从源代码构建过虚幻引擎，那么三件事会让您感到惊讶。</p>
+<p><strong>GitDeps 已修补</strong>。Stock 4.27 无法下载依赖项，因为 CDN 端点已移动。 Vite 提供了修复程序，因此“Setup.bat”无需手动编辑即可工作。当“Setup.bat”询问是否覆盖本地更改时，回答“N”。</p>
+<p><strong>默认情况下，光线追踪处于开启状态</strong>。新项目支持开箱即用的光线追踪阴影、反射、半透明和环境光遮挡。这是故意的，以便可以发现这些功能，但这意味着新的空项目比库存 4.27 项目重。请参阅<a href="Ray-Tracing.md">光线追踪</a>了解如何关闭个别效果。</p>
+<p><strong>为了提高性能，更改了多个引擎默认值</strong>。重叠事件、骨架网格物体设置、光照贴图 UV 生成和许多插件与库存不同。这些更改会影响游戏行为，而不仅仅是帧时间，因此请在发布之前阅读<a href="Engine-Defaults.md">引擎默认更改</a>。</p>
+<h2 id="_4">虚幻引擎基础知识</h2>
+<p>本手册记录了分支，而不是其下方的引擎。 Vite 不会改变的所有内容都按照虚幻引擎 4.27 的工作方式工作，Epic 自己的 4.27 文档是它的正确参考：</p>
 <table>
 <thead>
 <tr>
-<th>Topic</th>
-<th>Epic's 4.27 documentation</th>
+<th>话题</th>
+<th>Epic 4.27 的文档</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Projects, templates and directory structure</td>
-<td><a href="https://dev.epicgames.com/documentation/unreal-engine/working-with-unreal-projects-and-templates?application_version=4.27">Working with Unreal Projects and Templates</a></td>
+<td>项目、模板和目录结构</td>
+<td><a href="https://dev.epicgames.com/documentation/unreal-engine/working-with-unreal-projects-and-templates?application_version=4.27">使用虚幻项目和模板</a></td>
 </tr>
 <tr>
-<td>Setting up Visual Studio for source builds</td>
-<td><a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/setting-up-visual-studio-development-environment-for-cplusplus-projects-in-unreal-engine?application_version=4.27">Setting Up Visual Studio</a></td>
+<td>设置 Visual Studio 进行源代码构建</td>
+<td><a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/setting-up-visual-studio-development-environment-for-cplusplus-projects-in-unreal-engine?application_version=4.27">设置 Visual Studio</a></td>
 </tr>
 <tr>
-<td>Blueprints and the gameplay framework</td>
-<td><a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/unreal-engine-4-27-documentation">Unreal Engine 4.27 documentation</a></td>
+<td>蓝图和游戏框架</td>
+<td><a href="https://dev.epicgames.com/documentation/en-us/unreal-engine/unreal-engine-4-27-documentation">虚幻引擎 4.27 文档</a></td>
 </tr>
 </tbody>
 </table>
-<p>Keep the version selector on 4.27. UE5 documentation describes systems Vite deliberately does not have,
-and following it is a common source of confusion for people arriving from UE5.</p>
-<h2 id="see-also">See also</h2>
+<p>将版本选择器保持在 4.27。 UE5 文档描述了 Vite 故意不具备的系统，对于来自 UE5 的人们来说，遵循它是一个常见的困惑源。</p>
+<h2 id="_5">参见</h2>
 <ul>
-<li><a href="../Introduction-to-Vite/">Introduction to Vite</a></li>
-<li><a href="../Toolchain-Requirements/">Toolchain Requirements</a></li>
-<li><a href="ViteSetup.md">ViteSetup Assistant</a></li>
-<li><a href="Engine-Defaults.md">Engine Default Changes</a></li>
+<li><a href="../Introduction-to-Vite/">Vite 简介</a></li>
+<li><a href="../Toolchain-Requirements/">工具链要求</a></li>
+<li><a href="ViteSetup.md">Vite 设置助手</a></li>
+<li><a href="Engine-Defaults.md">引擎默认更改</a></li>
 </ul>
               
             </div>
