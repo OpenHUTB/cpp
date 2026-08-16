@@ -1,26 +1,22 @@
-# Plugins
+# 插件
 
-<tldr>
-<p>
 Vite bundles vendor technology (NVIDIA, AMD, Intel), backported UE5 plugins and third-party additions
 directly in the engine tree. Most live under <code>Engine\Plugins\Runtime\VitePlugins</code>.
-</p>
-</tldr>
 
 Stock UE 4.27 ships a large plugin set, most of which Vite keeps. On top of that, Vite bundles plugins that
 either do not exist for 4.27 upstream, exist only for UE5, or are vendor SDKs that normally have to be
 integrated by hand.
 
-## In this section
+## 在这部分
 
-| Topic | Covers |
+| 主题 | 覆盖内容 |
 |---|---|
-| [Bundled Plugins](Bundled-Plugins.md) | Everything Vite adds on top of stock 4.27, with versions and enablement state |
-| [Proposed Plugins](Proposed-Plugins.md) | Candidates for integration, and recommended external plugins |
+| [Bundled 插件](Bundled-Plugins.md) | Everything Vite adds on top of stock 4.27, with versions and enablement state |
+| [提议的插件](Proposed-Plugins.md) | 候选集成并推荐的外部插件 |
 
-## Where plugins live
+## 插件生效的位置
 
-| Directory | Contents |
+| 目录 | 内容 |
 |---|---|
 | `Engine\Plugins\Runtime\VitePlugins` | Vite's own additions: FSR 4, XeSS, ACL, ImGui, Motion Symphony, Kawaii Physics, PhysX Instanced Subsystem and others |
 | `Engine\Plugins\Runtime\Nvidia` | DLSS, Streamline, NIS, NRD, RTXGI, DeepDVC, Reflex, Ansel |
@@ -29,7 +25,7 @@ integrated by hand.
 | `Engine\Plugins\Experimental\BlastPlugin` | Blast authoring tools |
 | Everywhere else | Stock 4.27 plugins |
 
-## Enabling a plugin
+## 启用一个插件
 
 Most bundled plugins ship with `EnabledByDefault` set to `false`, so they cost nothing until you ask for
 them. Enable per project:
@@ -58,7 +54,7 @@ Enabling a plugin adds its shader permutations, modules and startup cost to ever
 use; leave the rest off. See <a href="Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a>.
 </note>
 
-## Plugins and debloating
+## 插件和 debloating
 
 The [debloat suite](Debloat-Guide.md) can strip plugins from the engine tree using
 `ExcludedPlugins.txt`. That list is aggressive and includes plugins many projects genuinely need &mdash;
@@ -72,17 +68,15 @@ will not fail cleanly &mdash; assets referencing it fail to load.
 The same list is used by `LocalBuilds\CompressBuildSeparate.bat` to split plugins into their own archive,
 which is a non-destructive alternative. See [Installed Builds](Installed-Builds.md).
 
-## Adding your own
+## 添加自己的插件
 
-Project plugins go in `<Project>\Plugins`, as with stock Unreal. Engine plugins that the whole team should
-have go in `Engine\Plugins\Runtime\VitePlugins` and require an engine rebuild and redistribution.
+Project plugins go in `<Project>\Plugins`, as with stock Unreal. Engine plugins that the whole team should have go in `Engine\Plugins\Runtime\VitePlugins` and require an engine rebuild and redistribution.
 
-If you want a plugin bundled with Vite, it must be compatible with 4.21&ndash;4.27. UE5-only plugins are
-out of scope. See [Proposed Plugins](Proposed-Plugins.md) for the criteria and the current candidate list.
+If you want a plugin bundled with Vite, it must be compatible with 4.21&ndash;4.27. UE5-only plugins are out of scope. See [Proposed Plugins](Proposed-Plugins.md) for the criteria and the current candidate list.
 
-## See also
+## 参见
 
-- [Bundled Plugins](Bundled-Plugins.md)
-- [Proposed Plugins](Proposed-Plugins.md)
-- [Debloat Guide](Debloat-Guide.md)
+- [Bundled 插件](Bundled-Plugins.md)
+- [提议的插件](Proposed-Plugins.md)
+- [Debloat 指南](Debloat-Guide.md)
 - [Upscalers](Upscalers.md)
