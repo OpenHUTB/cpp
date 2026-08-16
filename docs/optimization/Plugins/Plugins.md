@@ -1,4 +1,4 @@
-# Plugins
+# 插件
 
 <tldr>
 <p>
@@ -11,12 +11,12 @@ Stock UE 4.27 ships a large plugin set, most of which Vite keeps. On top of that
 either do not exist for 4.27 upstream, exist only for UE5, or are vendor SDKs that normally have to be
 integrated by hand.
 
-## In this section
+## 在这部分
 
-| Topic | Covers |
+| 主题 | 覆盖内容 |
 |---|---|
-| [Bundled Plugins](Bundled-Plugins.md) | Everything Vite adds on top of stock 4.27, with versions and enablement state |
-| [Proposed Plugins](Proposed-Plugins.md) | Candidates for integration, and recommended external plugins |
+| [Bundled 插件](Bundled-Plugins.md) | Everything Vite adds on top of stock 4.27, with versions and enablement state |
+| [提议的插件](Proposed-Plugins.md) | 候选集成并推荐的外部插件 |
 
 ## Where plugins live
 
