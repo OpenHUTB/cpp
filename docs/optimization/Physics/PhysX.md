@@ -1,57 +1,46 @@
 # PhysX
 
-<tldr>
-<p>
-Vite integrates <b>NVIDIA PhysX 3.4</b> for rigid-body simulation, collision queries, constraints,
-vehicles and skeletal physics. Vite extends the backend with modern compiler support, fixed-timestep
-simulation, NVIDIA Blast and a high-count instanced physics subsystem.
-</p>
-</tldr>
+Vite 集成了 <b>NVIDIA PhysX 3.4</b>，用于刚体模拟、碰撞查询、约束、车辆和骨骼物理。 Vite 通过现代编译器支持、固定时间步长模拟、NVIDIA Blast 和高计数实例物理子系统扩展了后端。
 
-PhysX is exposed through Unreal Engine's standard physics framework. Existing engine types such as body
-instances, physical materials, physics assets, collision profiles and constraint components use the PhysX
-scene underneath.
+PhysX 通过虚幻引擎的标准物理框架公开。现有的引擎类型（例如主体实例、物理材质、物理资产、碰撞轮廓和约束组件）使用下面的 PhysX 场景。
 
-## Core simulation features
+## 核心模拟功能
 
-### Rigid bodies
+### 刚体
 
-- static, dynamic and kinematic actors;
-- box, sphere, capsule, convex and triangle-mesh collision geometry;
-- physical materials with friction, restitution and density;
-- gravity, damping, forces, impulses and torque;
-- sleeping, waking and active-body tracking;
-- continuous collision detection for fast-moving bodies;
-- collision filtering and simulation/query shape flags;
-- contact, overlap and wake/sleep notifications.
+- 静态、动态和运动参与者；
+- 盒子、球体、胶囊、凸面和三角网格碰撞几何体；
+- 具有摩擦力、恢复力和密度的物理材料；
+- 重力、阻尼、力、脉冲和扭矩；
+- 睡眠、清醒和主动身体跟踪；
+- 快速移动物体的连续碰撞检测；
+- 碰撞过滤和模拟/查询形状标志；
+- 接触、重叠和唤醒/睡眠通知。
 
-### Scene queries
+### 场景查询
 
-PhysX provides the collision-query path used throughout the engine:
+PhysX 提供了整个引擎使用的碰撞查询路径：
 
-- raycasts;
-- shape sweeps;
-- overlaps;
-- single-hit and multi-hit queries;
-- object-channel, trace-channel and profile filtering;
-- synchronous scene queries used by movement, weapons, navigation and gameplay systems.
+- 光线投射;
+- 形状扫描;
+- 重叠;
+- 单次命中和多次命中查询;
+- 对象通道、跟踪通道和配置文件过滤;
+- 运动、武器、导航和游戏系统使用的同步场景查询.
 
-Query cost depends on collision complexity, broad-phase population, filter callbacks and result count. Use
-simple collision for repeated gameplay queries and avoid requesting multi-hit results when only the first
-blocking hit is needed.
+查询成本取决于冲突复杂性、宽相填充、过滤器回调和结果计数。对重复的游戏查询使用简单碰撞，并避免在仅需要第一次阻止命中时请求多次命中结果。
 
-### Constraints
+### 约束
 
-The integration supports fixed, distance, hinge, spherical and D6-style constraints through Unreal's
-constraint framework. Available controls include:
+该集成通过 Unreal 的约束框架支持固定、距离、铰链、球形和 D6 式约束。可用的控件包括：
 
-- linear and angular limits;
-- motors and drives;
-- break force and break torque;
-- constraint projection;
-- collision enablement between constrained bodies;
-- mass and inertia scaling;
-- skeletal constraint chains authored in Physics Assets.
+- 线性和角度限制;
+- 运动和驱动;
+- 断裂力和断裂扭矩;
+- 约束投影;
+- 受约束物体之间的碰撞启用;
+- 质量和惯性标度;
+- 在 Physics Assets 中创作的骨骼约束链.
 
 ### Character and skeletal physics
 

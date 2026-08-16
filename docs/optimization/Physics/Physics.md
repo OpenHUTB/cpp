@@ -1,18 +1,10 @@
-# Physics
+# 物理
 
-<tldr>
-<p>
-Vite's physics stack uses <b>PhysX 3.4</b>, with Vite extensions for fixed-timestep simulation,
-modern toolchains, NVIDIA Blast and high-count instanced rigid bodies. This page describes the physics
-architecture and its measured CPU behavior; the <a href="PhysX.md">PhysX page</a> documents backend features.
-</p>
-</tldr>
+Vite 的物理堆栈使用 <b>PhysX 3.4</b>，以及用于固定时间步长模拟、现代工具链、NVIDIA Blast 和高计数实例刚体的 Vite 扩展。本页描述了物理架构及其测量的 CPU 行为； <a href="PhysX.md">PhysX 页面</a>记录了后端功能。
 
-Vite treats physics as a frame-time-critical engine system. Simulation cost includes more than the solver:
-broad phase, contact generation, island construction, constraint preparation, iterative solving, integration,
-callbacks and synchronization with engine state all contribute to the final physics time.
+Vite 将物理视为帧时间关键的引擎系统。仿真成本不仅仅包括求解器：广泛阶段、接触生成、岛构建、约束准备、迭代求解、集成、回调以及与引擎状态的同步都对最终物理时间有贡献。
 
-## What is in this section
+## 本节内容
 
 | Topic | Covers |
 |---|---|

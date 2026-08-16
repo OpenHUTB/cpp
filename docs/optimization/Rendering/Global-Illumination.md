@@ -1,83 +1,66 @@
-# Global Illumination
+# 全局照明
 
-<tldr>
-<p>
-Vite's recommended GI setup is <b>Dynamic DDGI plus SSGI</b>. DDGI resolves world-scale bounce without
-noise; SSGI fills in the high-frequency contact detail that probe volumes are too coarse to capture.
-Enable with <code>r.GlobalIllumination.ExperimentalPlugin 1</code> and <code>r.SSGI.Enable 1</code>.
-</p>
-</tldr>
+Vite推荐的GI设置是动态**动态漫反射全局光照**（Dynamic Diffuse Global Illumination, DDGI）加**屏幕空间全局光照**（Screen Space Global Illumination, SSGI）。DDGI 可以无噪声地解析世界尺度的反射；SSGI 可以填充探针体积过于粗糙而无法捕捉的高频接触细节。
+使用 <code>r.GlobalIllumination.ExperimentalPlugin 1</code> 和 <code>r.SSGI.Enable 1</code> 启用。
 
-Global illumination is the single biggest reason Vite exists as a separate fork. This page explains the
-options and how to choose between them; the individual techniques have their own pages.
 
-## The options
+全局照明是 Vite 作为独立分支存在的最大原因。本页解释了这些选项以及如何在它们之间进行选择；各个技术都有自己的页面。
 
-| Solution                          | Cost                 | Requires DXR | Dynamic lighting | Best for                                                          |
+## 选项
+
+| 解决方案                          | 成本                 | 需要 DXR | 动态照明 | 最适合                                                          |
 |-----------------------------------|----------------------|---|---|-------------------------------------------------------------------|
-| [Dynamic DDGI](DDGI-Dynamic.md)   | Low                  | Yes | Fully dynamic | Almost everything                                                 |
-| [Static DDGI](DDGI-Static.md)     | Near zero at runtime | No | Baked | Low-end and no-DXR hardware                                       |
-| [SSGI](SSGI.md)                   | Low                  | No | Fully dynamic | High Frequency Detail, made to run alongside DDGI                 |
-| [Per-pixel RT GI](Ray-Tracing.md) | High                 | Yes | Fully dynamic | GPUs non trivially faster than PS5, Reference                     |
-| Path-Tracing                      | Ultra                | Yes | Fully dynamic | RTX 5080 and above, Ground Truth Reference                        |
-| Baked lightmaps                   | Zero at runtime      | No | Static only | Fully static scenes, Always use CPU LightMass for maximum quality |
+| [动态 DDGI](DDGI-Dynamic.md)   | 低                  | 是 | 完全动态 | 几乎所有的东西                                                 |
+| [静态 DDGI](DDGI-Static.md)     | 运行时接近于零 | No | 烘焙 | 低端和无 DXR 硬件                                       |
+| [SSGI](SSGI.md)                   | 低                  | 否 | 完全动态 | 高频细节，与 DDGI 一起运行                 |
+| [Per-pixel RT GI](Ray-Tracing.md) | 高                 | 是 | 完全动态 | GPU 比 PS5 快得多，参考                     |
+| 路径追踪                      | 极端主义者                | 是 | 完全动态 | RTX 5080 及以上，Ground Truth 参考                        |
+| 烘焙光照贴图                   | 运行时为零      | 否 | 仅静态 | 全静态场景，始终使用 CPU LightMass 以获得最高质量 |
 
-<note>
-"Vite includes several secondary Indirect Bounce solutions, such as Distance Fields Bounce and IBL capture (Vite specific addition). 
-These are rarely considered over the solutions listed above, except for very specific target platforms or specialized setups."
-</note>
 
-## Why DDGI rather than Lumen
+!!! 注意
+    Vite 包括多个辅助间接反弹解决方案，例如距离场反弹和 IBL 捕获（Vite 特定添加）。除了非常具体的目标平台或专门的设置之外，很少考虑上面列出的解决方案。
 
-Dynamic Diffuse Global Illumination stores irradiance in a grid of probes and filters it using spherical
-harmonics. Because the representation is smooth by construction, the result is noise-free without a
-denoiser &mdash; which is the root cause of most of its advantages over Lumen.
 
-Against Software Lumen, DDGI provides higher quality bounce and less light leaking. Against Hardware Lumen,
-it is comparable for bounce quality while typically running around twice as fast (End Scene FPS not just the isolated GI cost).
-In one representative test scene at 1440p native on an RTX 4080 Super, DDGI measured 811 FPS against Lumen 5.7's 324 FPS. 
-On AMD hardware the technique holds up well: the same class of test scene runs at 245 FPS at 1080p native on an
-RX 6600.
+## 为什么选择 DDGI 而不是 Lumen
 
-DDGI is also not experimental technology. Implementations ship in Metro Exodus, Overwatch 2, The Finals,
-Control, The Witcher 3, Warhammer 40,000: Darktide, DOOM: The Dark Ages, Indiana Jones and the Great Circle,
-007 First Light, Ghost of Yotei and Star Wars Outlaws including its Switch 2 version. AAA engines including
-Anvil and Snowdrop use DDGI probes as part of their ray-traced GI pipelines. The technique was designed to
-scale across a wide hardware range, starting from Xbox One S GPU for Static Mode and GTX 1060 class GPUs for Dynamic RT mode.
+动态漫反射全局照明将辐照度存储在探头网格中，并使用球谐函数对其进行过滤。由于表示在结构上是平滑的，因此结果是无噪声的，无需降噪器 -这是其相对于 Lumen 的大部分优势的根本原因。
 
-<img src="../../img/optimization/StylizedRTDemo.png" alt="Stylized scene lit by Dynamic DDGI with the frame counter reading 811 FPS" border-effect="line"/>
+与软件流明相比，DDGI 提供更高质量的反射和更少的漏光。与硬件流明相比，它的反弹质量相当，但通常运行速度大约是前者的两倍（最终场景 FPS 不仅仅是孤立的 GI 成本）。在 RTX 4080 Super 上以 1440p 原生播放的一个代表性测试场景中，DDGI 测得的帧率为 811 FPS，而 Lumen 5.7 的帧率为 324 FPS。在 AMD 硬件上，该技术表现良好：同类型的测试场景在 RX 6600 上以 245 FPS、1080p 本机运行。
 
-*811 FPS, RTX 4080 Super, 1440p native, Dynamic DDGI. The same scene on Lumen in 5.7 measures 324 FPS.*
 
-<img src="../../img/optimization/DDGIEmissiveSurfaces.png" alt="Interior lit by emissive surfaces contributing to DDGI" border-effect="line"/>
+DDGI 也不是实验性技术。已在《地铁：离去》、《守望先锋 2》、《总决赛》、《控制》、《巫师 3》、《战锤 40,000：暗潮》、《DOOM：黑暗时代》、《夺宝奇兵》、《007 曙光》、《羊蹄之魂》和《星球大战亡命之徒》（包括 Switch 2 版本）中发布。包括 Anvil 和 Snowdrop 在内的 AAA 引擎使用 DDGI 探针作为其光线追踪 GI 管道的一部分。该技术旨在跨广泛的硬件范围进行扩展，从用于静态模式的 Xbox One S GPU 和用于动态 RT 模式的 GTX 1060 级 GPU 开始。
 
-*Emissive materials contribute to DDGI directly, so a scene can be lit from emissive geometry without
-placing light actors for it.*
+![](../../img/optimization/StylizedRTDemo.png)
 
-## Why pair DDGI with SSGI
+*动态 DDGI 灯光营造出风格化的场景，帧计数器显示 811 FPS。*
 
-Probe volumes have a spatial resolution. Detail smaller than the probe spacing &mdash; the darkening where a
-chair leg meets the floor, bounce inside a narrow gap, contact shading under a desk &mdash; is not
-represented, because there is no probe there to represent it.
 
-Screen-space GI operates at pixel resolution and captures exactly that. The two techniques have shortcomings in opposite
-directions: SSGI has no information about anything off-screen or occluded, while DDGI has complete world
-knowledge at coarse resolution. Running both gives you world-scale bounce from DDGI and high-frequency
-contact detail from SSGI. This is an officially recommended setup by NVIDIA from their Unreal Engine DDGI 
-presentations. Vite's SSGI is configured to work alongside DDGI from the get-go.
+*811 FPS，RTX 4080 Super，1440p原生分辨率，动态DDGI。同一场景在Lumen 5.7模式下测得324 FPS。*
 
-This is not possible in UE5. SSGI regressed in both quality and performance when it was folded into Lumen,
-and can no longer be enabled alongside a separate GI solution. In Vite it is the UE4-era implementation and
-composes cleanly.
+![](../../img/optimization/DDGIEmissiveSurfaces.png)
 
-## Enabling the recommended setup
+*室内照明由发光表面提供，有助于DDGI（直接、分散、增强）。*
+
+*自发光材质直接影响 DDGI，因此无需放置光源即可通过自发光几何体照亮场景。*
+
+## 为什么将 DDGI 与 SSGI 配对
+
+探测体积具有空间分辨率。小于探头间距的细节（椅子腿与地板接触处的变暗​​、狭窄间隙内的弹跳、桌子下的接触阴影）未显示，因为那里没有探头来表示它。
+
+
+屏幕空间 GI 以像素分辨率运行并准确捕获该分辨率。这两种技术在相反的方向上都有缺点：SSGI 没有关于屏幕外或被遮挡的任何信息，而 DDGI 具有粗分辨率下的完整世界知识。运行两者可为您提供来自 DDGI 的世界范围反弹​​和来自 SSGI 的高频联系详细信息。这是 NVIDIA 在 Unreal Engine DDGI 演示中官方推荐的设置。 Vite 的 SSGI 从一开始就配置为与 DDGI 一起工作。
+
+这在 UE5 中是不可能的。当 SSGI 合并到 Lumen 中时，其质量和性能均有所下降，并且无法再与单独的 GI 解决方案一起启用。在 Vite 中，它是 UE4 时代的实现，并且组成干净。
+
+## 启用推荐设置
 
 ```c++
 IConsoleManager::Get().FindConsoleVariable(TEXT("r.GlobalIllumination.ExperimentalPlugin"))->Set(1);
 IConsoleManager::Get().FindConsoleVariable(TEXT("r.SSGI.Enable"))->Set(1);
 ```
 
-Or in configuration, which is preferable for shipping projects because it participates in scalability:
+或者在配置中，这对于交付项目来说是更可取的，因为它参与了可扩展性：
 
 ```ini
 ; Config/DefaultEngine.ini
@@ -86,40 +69,25 @@ r.GlobalIllumination.ExperimentalPlugin=1
 r.SSGI.Enable=1
 ```
 
-You then need to place DDGI volumes in the level. See [Dynamic DDGI](DDGI-Dynamic.md) for volume setup,
-probe density and the settings that matter.
+然后，您需要将 DDGI 体积放置在关卡中。请参阅 [动态 DDGI](DDGI-Dynamic.md) 了解体积设置、探针密度和重要的设置。
 
-## Choosing for your hardware floor
+## 根据硬件配置选择合适的全局光照 (GI) 配置
 
-<procedure title="Pick a GI configuration" id="pick-gi">
-    <step>
-        If your minimum spec has DXR support, use Dynamic DDGI plus SSGI. This is the default
-        recommendation and covers GTX 1060 6&nbsp;GB and above.
-    </step>
-    <step>
-        If your minimum spec has no DXR support at all, use
-        <a href="DDGI-Static.md">Static DDGI</a>. It bakes almost instantly, gives better bounce fidelity
-        than traditional baked lighting, and handles moving objects better because the probe volumes
-        cover the space rather than the surfaces.
-    </step>
-    <step>
-        If you need to support both, ship Static DDGI as a scalability fallback. The volumes and authoring
-        are shared between the two modes, so this is a scalability setting rather than a second lighting
-        pass through the level.
-    </step>
-    <step>
-        Only reach for per-pixel ray-traced GI if you are producing reference imagery or
-        previsualisation. It is far more expensive than DDGI and its advantage does not survive a
-        frame-time budget. It is also compiled out of a default build and requires rebuilding with
-        <code>VITE_RT_PSO_DEBLOAT=0</code> &mdash; see
-        <a href="Compile-Time-Switches.md">Compile-Time Switches</a>.
-    </step>
-</procedure>
+### 选择 GI 配置
 
-## See also
+1. 如果您的最低配置支持 DXR，请使用动态 DDGI + SSGI。这是默认推荐配置，适用于 GTX 1060 6GB 及以上显卡。
 
-- [Dynamic DDGI](DDGI-Dynamic.md)
-- [Static DDGI](DDGI-Static.md)
+2. 如果您的最低配置完全不支持 DXR，请使用[静态 DDGI](../Rendering/DDGI-Static.md)。它几乎可以瞬间完成烘焙，比传统的烘焙光照提供更好的反射保真度，并且由于探测体积覆盖的是空间而非表面，因此能更好地处理移动物体。
+
+3. 如果您需要同时支持这两种模式，请将静态 DDGI 作为可扩展性的备选方案。两种模式共享体积和创作过程，因此这是一种可扩展性设置，而不是对关卡进行第二次光照渲染。
+
+4. 只有在生成参考图像或预可视化时才使用逐像素光线追踪全局光照。它比 DDGI 的开销大得多，而且其优势无法弥补帧时间预算的限制。它还是从默认构建中编译出来的，需要使用 VITE_RT_PSO_DEBLOAT=0 重新构建——请参阅[编译时开关](../Performance/Compile-Time-Switches.md)。
+
+
+## 参见
+
+- [动态 DDGI](DDGI-Dynamic.md)
+- [静态 DDGI](DDGI-Static.md)
 - [SSGI](SSGI.md)
-- [Ray Tracing](Ray-Tracing.md)
-- [Performance Targets](Performance-Targets.md)
+- [光线追踪](Ray-Tracing.md)
+- [性能目标](Performance-Targets.md)

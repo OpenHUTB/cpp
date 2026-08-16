@@ -1,20 +1,13 @@
-# Building from Source
+# 从源代码构建
 
-<tldr>
-<p>
-<code>Setup.bat</code> (answer <code>N</code> when asked to overwrite) &rarr; <code>GenerateProjectFiles.bat</code>
-&rarr; build <b>UE4</b> in <b>Development Editor</b> / <b>Win64</b>. Or run <code>ViteSetup.bat</code>
-and let the assistant do all of it.
-</p>
-</tldr>
+!!! 注意
 
-This page covers building the engine from source on Windows. Install the
-[toolchain](Toolchain-Requirements.md) first &mdash; almost every build failure reported against Vite turns
-out to be a toolchain problem, not a code problem.
+    `Setup.bat`（询问是否覆盖时选择`N`）→ `GenerateProjectFiles.bat` → 在“Development Editor”中构建 “UE4”
 
-If you have never built Unreal Engine from source before, Epic's
-[Visual Studio setup guide for 4.27](https://dev.epicgames.com/documentation/en-us/unreal-engine/setting-up-visual-studio-development-environment-for-cplusplus-projects-in-unreal-engine?application_version=4.27)
-is still the best background reading.
+本页介绍了在 Windows 上从源代码构建引擎。首先安装[工具链](Toolchain-Requirements.md)——几乎所有针对Vite报告的构建失败都被证明是工具链问题，而不是代码问题。
+
+如果您以前从未从源代码构建过虚幻引擎，请参阅 Epic 的 [Visual Studio 4.27 设置指南](https://dev.epicgames.com/documentation/en-us/unreal-engine/setting-up-visual-studio-development-environment-for-cplusplus-projects-in-unreal-engine?application_version=4.27)
+仍然是最好的背景读物。
 
 ## Guided build with ViteSetup
 
