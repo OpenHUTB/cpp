@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Plugins - 引擎实现文档</title>
+    <title>插件 - 引擎实现文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Plugins";
+        var mkdocs_page_name = "\u63d2\u4ef6";
         var mkdocs_page_input_path = "optimization/Plugins/Plugins.md";
         var mkdocs_page_url = null;
       </script>
@@ -70,7 +70,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Plugins</li>
+      <li class="breadcrumb-item active">插件</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Plugins/Plugins.md"> 编辑页面</a>
     </li>
@@ -80,41 +80,37 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="plugins">Plugins</h1>
-<p><tldr></p>
-<p>
-Vite bundles vendor technology (NVIDIA, AMD, Intel), backported UE5 plugins and third-party additions
-directly in the engine tree. Most live under <code>Engine\Plugins\Runtime\VitePlugins</code>.
-</p>
-<p></tldr></p>
+                <h1 id="_1">插件</h1>
+<p>Vite bundles vendor technology (NVIDIA, AMD, Intel), backported UE5 plugins and third-party additions
+directly in the engine tree. Most live under <code>Engine\Plugins\Runtime\VitePlugins</code>.</p>
 <p>Stock UE 4.27 ships a large plugin set, most of which Vite keeps. On top of that, Vite bundles plugins that
 either do not exist for 4.27 upstream, exist only for UE5, or are vendor SDKs that normally have to be
 integrated by hand.</p>
-<h2 id="in-this-section">In this section</h2>
+<h2 id="_2">在这部分</h2>
 <table>
 <thead>
 <tr>
-<th>Topic</th>
-<th>Covers</th>
+<th>主题</th>
+<th>覆盖内容</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><a href="../Bundled-Plugins/">Bundled Plugins</a></td>
+<td><a href="../Bundled-Plugins/">Bundled 插件</a></td>
 <td>Everything Vite adds on top of stock 4.27, with versions and enablement state</td>
 </tr>
 <tr>
-<td><a href="../Proposed-Plugins/">Proposed Plugins</a></td>
-<td>Candidates for integration, and recommended external plugins</td>
+<td><a href="../Proposed-Plugins/">提议的插件</a></td>
+<td>候选集成并推荐的外部插件</td>
 </tr>
 </tbody>
 </table>
-<h2 id="where-plugins-live">Where plugins live</h2>
+<h2 id="_3">插件生效的位置</h2>
 <table>
 <thead>
 <tr>
-<th>Directory</th>
-<th>Contents</th>
+<th>目录</th>
+<th>内容</th>
 </tr>
 </thead>
 <tbody>
@@ -144,7 +140,7 @@ integrated by hand.</p>
 </tr>
 </tbody>
 </table>
-<h2 id="enabling-a-plugin">Enabling a plugin</h2>
+<h2 id="_4">启用一个插件</h2>
 <p>Most bundled plugins ship with <code>EnabledByDefault</code> set to <code>false</code>, so they cost nothing until you ask for
 them. Enable per project:</p>
 <p><procedure title="Enable a bundled plugin" id="enable-plugin">
@@ -166,7 +162,7 @@ them. Enable per project:</p>
 Enabling a plugin adds its shader permutations, modules and startup cost to every build. Enable what you
 use; leave the rest off. See <a href="Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a>.
 </note></p>
-<h2 id="plugins-and-debloating">Plugins and debloating</h2>
+<h2 id="debloating">插件和 debloating</h2>
 <p>The <a href="Debloat-Guide.md">debloat suite</a> can strip plugins from the engine tree using
 <code>ExcludedPlugins.txt</code>. That list is aggressive and includes plugins many projects genuinely need &mdash;
 <code>GameplayAbilities</code>, <code>ApexDestruction</code>, <code>HairStrands</code> and the NVIDIA plugins among them.</p>
@@ -176,16 +172,14 @@ will not fail cleanly &mdash; assets referencing it fail to load.
 </warning></p>
 <p>The same list is used by <code>LocalBuilds\CompressBuildSeparate.bat</code> to split plugins into their own archive,
 which is a non-destructive alternative. See <a href="Installed-Builds.md">Installed Builds</a>.</p>
-<h2 id="adding-your-own">Adding your own</h2>
-<p>Project plugins go in <code>&lt;Project&gt;\Plugins</code>, as with stock Unreal. Engine plugins that the whole team should
-have go in <code>Engine\Plugins\Runtime\VitePlugins</code> and require an engine rebuild and redistribution.</p>
-<p>If you want a plugin bundled with Vite, it must be compatible with 4.21&ndash;4.27. UE5-only plugins are
-out of scope. See <a href="../Proposed-Plugins/">Proposed Plugins</a> for the criteria and the current candidate list.</p>
-<h2 id="see-also">See also</h2>
+<h2 id="_5">添加自己的插件</h2>
+<p>Project plugins go in <code>&lt;Project&gt;\Plugins</code>, as with stock Unreal. Engine plugins that the whole team should have go in <code>Engine\Plugins\Runtime\VitePlugins</code> and require an engine rebuild and redistribution.</p>
+<p>If you want a plugin bundled with Vite, it must be compatible with 4.21&ndash;4.27. UE5-only plugins are out of scope. See <a href="../Proposed-Plugins/">Proposed Plugins</a> for the criteria and the current candidate list.</p>
+<h2 id="_6">参见</h2>
 <ul>
-<li><a href="../Bundled-Plugins/">Bundled Plugins</a></li>
-<li><a href="../Proposed-Plugins/">Proposed Plugins</a></li>
-<li><a href="Debloat-Guide.md">Debloat Guide</a></li>
+<li><a href="../Bundled-Plugins/">Bundled 插件</a></li>
+<li><a href="../Proposed-Plugins/">提议的插件</a></li>
+<li><a href="Debloat-Guide.md">Debloat 指南</a></li>
 <li><a href="Upscalers.md">Upscalers</a></li>
 </ul>
               
