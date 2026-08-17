@@ -67,5 +67,5 @@ If this benchmark's shape matches your bottleneck:
 
 - [性能目标](Performance-Targets.md)
 - [分析](Profiling.md)
-- [UE4 versus UE5 Cost Analysis](UE4-Versus-UE5-Cost-Analysis.md)
-- [Engine Defaults](Engine-Defaults.md)
+- [UE4 和 UE5 的消耗对比分析](UE4-Versus-UE5-Cost-Analysis.md)
+- [引擎默认](Engine-Defaults.md)
