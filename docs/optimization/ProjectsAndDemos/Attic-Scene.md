@@ -1,19 +1,14 @@
-﻿# Attic Scene
+﻿# 阁楼场景
 
-<tldr>
-<p>
-Interior lighting scene with strong directional light through a limited opening. A good case for observing
-how global illumination handles high-contrast interiors.
-</p>
-</tldr>
+Interior lighting scene with strong directional light through a limited opening. A good case for observing how global illumination handles high-contrast interiors.
 
 <img src="../../img/optimization/AtticScene.png" alt="Attic interior with strong directional sunlight entering through a small window" border-effect="line"/>
 
 *Direct sun and deep shadow in the same frame, with a large volume of dim indirect light between them.*
 
-## Download
+## 下载
 
-[Attic Scene](https://drive.google.com/file/d/12CEdigm95nuu7GhRd_KjYIGeCi9_QvVT/view?usp=sharing)
+[阁楼场景](https://drive.google.com/file/d/12CEdigm95nuu7GhRd_KjYIGeCi9_QvVT/view?usp=sharing)
 
 <img src="../../img/optimization/AtticRTGIV2.jpg" alt="The attic scene rendered with the enhanced ray-traced GI path, volumetric shafts through the window" border-effect="line"/>
 
@@ -43,10 +38,10 @@ angle or an occluder changes. Moving the directional light makes the distinction
 Then look at the [anti-aliasing](Anti-Aliasing.md) treatment. Fine clutter geometry against a bright
 window is a hard case, and it is where SMAA's behaviour differs most visibly from TAA's.
 
-## See also
+## 参见
 
-- [Global Illumination](Global-Illumination.md)
-- [Static DDGI](DDGI-Static.md)
-- [Color Management](Color-Management.md)
-- [Anti-Aliasing](Anti-Aliasing.md)
-- [Abandoned Apartment](Abandone-Apartment.md)
+- [全局照明](Global-Illumination.md)
+- [静态 DDGI](DDGI-Static.md)
+- [颜色管理](Color-Management.md)
+- [抗锯齿](Anti-Aliasing.md)
+- [废弃的公寓场景](Abandone-Apartment.md)
