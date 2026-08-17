@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Destruction and Cloth - 引擎实现文档</title>
+    <title>破损与布料 - 引擎实现文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Destruction and Cloth";
+        var mkdocs_page_name = "\u7834\u635f\u4e0e\u5e03\u6599";
         var mkdocs_page_input_path = "optimization/Physics/Destruction-And-Cloth.md";
         var mkdocs_page_url = null;
       </script>
@@ -70,7 +70,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Destruction and Cloth</li>
+      <li class="breadcrumb-item active">破损与布料</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Physics/Destruction-And-Cloth.md"> 编辑页面</a>
     </li>
@@ -80,89 +80,72 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="destruction-and-cloth">Destruction and Cloth</h1>
-<p><tldr></p>
-<p>
-Vite keeps <b>Apex Destruction</b> and <b>Apex Cloth</b>, both removed in Unreal Engine 5, and adds
-NVIDIA <b>Blast</b> for modern fracture. Existing 4.27 destructible and clothing assets continue to work.
-</p>
-<p></tldr></p>
-<p>Destruction and cloth are the two areas where the <a href="../PhysX/">PhysX decision</a> has the most visible
-consequences for content. Both Apex systems are tied to PhysX; removing PhysX removed them.</p>
-<h2 id="apex-destruction">Apex Destruction</h2>
-<p>Apex Destruction fractures a mesh into a hierarchy of chunks that break apart under impact. Assets are
-authored as Destructible Meshes, either fractured in-editor with Voronoi decomposition or imported from
-external tools.</p>
+                <h1 id="_1">破损与布料</h1>
+<p>Vite 保留了虚幻引擎 5 中删除的 <b>Apex 破损</b> 和 <b>Apex 布料</b>，并添加了 NVIDIA <b>Blast</b> 以实现现代断裂。现有的 4.27 可破损资产和布料资产继续发挥作用。</p>
+<p>破损和布料是 <a href="../PhysX/">PhysX 决策</a> 对内容影响最明显的两个领域。两个 Apex 系统都与 PhysX 绑定；删除 PhysX 就删除了它们。</p>
+<h2 id="apex">Apex 破损</h2>
+<p>Apex 破损将网格分解成层次结构的块，这些块在冲击下会破裂。资产被创作为可破损的网格，可以在编辑器中通过 Voronoi 分解进行破碎，也可以从外部工具导入。</p>
 <table>
 <thead>
 <tr>
-<th>Detail</th>
+<th>细节</th>
 <th></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Plugin</td>
-<td><code>Engine/Plugins/Runtime/ApexDestruction</code></td>
+<td>插件</td>
+<td><a href="https://github.com/OpenHUTB/engine/tree/hutb/Engine/Plugins/Runtime/ApexDestruction">Engine/Plugins/Runtime/ApexDestruction</a></td>
 </tr>
 <tr>
-<td>Asset type</td>
-<td>Destructible Mesh</td>
+<td>资产类型</td>
+<td>可破碎网格</td>
 </tr>
 <tr>
-<td>Component</td>
-<td><code>UDestructibleComponent</code></td>
+<td>组件</td>
+<td><a href="https://github.com/OpenHUTB/engine/blob/8a229f05c4dca7b900cfe5867a6cb477d23d0670/Engine/Plugins/Runtime/ApexDestruction/Source/ApexDestruction/Private/DestructibleComponent.cpp#L34">UDestructibleComponent</a></td>
 </tr>
 <tr>
-<td>Status in UE5</td>
-<td>Removed</td>
+<td>UE5中的状态</td>
+<td>已删除</td>
 </tr>
 </tbody>
 </table>
-<p>It is a mature, well-understood system with a straightforward cost model: chunk count drives everything. A
-destructible with a two-level hierarchy and modest chunk counts is cheap; one with deep hierarchies and
-hundreds of chunks is not.</p>
-<p>Key settings live on the Destructible Mesh asset:</p>
+<p>它是一个成熟、易于理解的系统，具有简单的成本模型：块数驱动一切。具有两级层次结构和适度块数的很便宜的可破坏物；一个具有很深层次结构和数百个块的系统则不然。</p>
+<p>可破坏网格体资源上的关键设置：</p>
 <ul>
-<li><strong>Depth</strong> controls how many fracture levels exist. Each level multiplies chunk count.</li>
-<li><strong>Damage Threshold</strong> and <strong>Damage Spread</strong> control how readily chunks break and how far damage propagates.</li>
-<li><strong>Support Depth</strong> determines which level participates in structural support calculations.</li>
-<li><strong>Debris Timeout</strong> and <strong>Debris Max Separation</strong> clean up chunks after they settle. Set these. Chunks that
-  never despawn accumulate until frame time collapses.</li>
+<li><strong>深度</strong> 控制存在多少破损级别。每个级别都会增加块数。</li>
+<li><strong>伤害阈值</strong> and <strong>伤害扩散</strong> 控制块破裂的容易程度以及损坏传播的距离。</li>
+<li><strong>支撑深度</strong> 确定哪个级别参与结构支撑计算。</li>
+<li><strong>碎片超时</strong> 和 <strong>碎片最大分离度</strong> 确定后清理大块。设置这些。永不消失的块会不断累积，直到帧时间崩溃。</li>
 </ul>
-<p>Instructional video on Apex Destruction <a href="https://youtu.be/Stn7eL1TFBg"><img alt="Instructional video by MeanLemur" src="https://img.youtube.com/vi/Stn7eL1TFBg/hqdefault.jpg" /></a></p>
-<h2 id="apex-cloth">Apex Cloth</h2>
-<p>Apex Cloth is the PhysX-era clothing system, authored either through the in-editor Clothing Tool or imported
-from APEX clothing assets produced in external DCC tools.</p>
+<p>Apex 破损教学视频 <a href="https://youtu.be/Stn7eL1TFBg"><img alt="MeanLemur 制作的教学视频" src="https://img.youtube.com/vi/Stn7eL1TFBg/hqdefault.jpg" /></a></p>
+<h2 id="apex_1">Apex 布料</h2>
+<p>Apex Cloth 是 PhysX 时代的布料系统，可以通过编辑器内的 Clothing Tool 编写，也可以从外部 DCC 工具生成的 APEX 布料资产导入。</p>
 <table>
 <thead>
 <tr>
-<th>Detail</th>
+<th>细节</th>
 <th></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Asset type</td>
-<td>APEX Clothing asset or in-editor clothing data on a skeletal mesh</td>
+<td>资产类型</td>
+<td>骨架网格物体上的 APEX 布料资源或编辑器内服装数据</td>
 </tr>
 <tr>
-<td>Status in UE5</td>
-<td>Removed in favour of Chaos Cloth</td>
+<td>UE5中的状态</td>
+<td>被移除以支持 Chaos Cloth</td>
 </tr>
 </tbody>
 </table>
-<p>The in-editor workflow paints cloth parameters directly onto a skeletal mesh: max distance, backstop
-radius and backstop distance. Max distance is the primary control &mdash; it defines how far each vertex may
-move from its skinned position, so painting it to zero pins a region and increasing it lets the cloth
-swing free.</p>
-<p>Practical notes:</p>
+<p>编辑器内的工作流程将布料参数直接绘制到骨架网格物体上：最大距离、逆止半径和逆止距离。最大距离是主要控制 -它定义每个顶点可以从其蒙皮位置移动多远，因此将其绘制到零针区域并增加它可以让布料自由摆动。</p>
+<p>实用注意事项：</p>
 <ul>
-<li>Cloth cost scales with simulated vertex count. Paint a low-resolution simulation mesh and skin the render
-  mesh to it rather than simulating the render mesh directly.</li>
-<li>Cloth is simulated per skeletal mesh component. Ten characters in cloth cost ten times one character.</li>
-<li>Cloth does not substep with the rest of the scene. Fast character motion can produce stretching that no
-  amount of parameter tuning fixes; the answer is usually reducing how fast the attachment point moves.</li>
+<li>布料成本随模拟顶点数变化。绘制低分辨率模拟网格并将渲染网格蒙皮到其上，而不是直接模拟渲染网格。</li>
+<li>布料是根据骨架网格物体组件进行模拟的。布料上十个字符的成本是一个字符的十倍。</li>
+<li>布料不会与场景的其余部分重叠。快速的角色运动可以产生拉伸，无需调整参数即可解决；答案通常是降低附着点移动的速度。</li>
 </ul>
 <h2 id="nvidia-blast">NVIDIA Blast</h2>
 <p>Blast is NVIDIA's successor to Apex Destruction, and the more capable of the two fracture systems.</p>
