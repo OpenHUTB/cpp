@@ -1,34 +1,26 @@
-﻿# Abandoned Apartment
+﻿# 废弃公寓的场景
 
-<tldr>
-<p>
-Interior lighting scene. Interiors are the hardest case for global illumination, which makes them the most
-useful place to evaluate it.
-</p>
-</tldr>
+Interior lighting scene. Interiors are the hardest case for global illumination, which makes them the most useful place to evaluate it.
 
 <img src="../../img/optimization/AbandonedAppartment.png" alt="Abandoned apartment interior lit entirely by indirect bounce light" border-effect="line"/>
 
-*Almost every surface visible here is lit by bounce rather than by the sun directly. That is what makes
-interiors the honest test of a GI solution.*
+*Almost every surface visible here is lit by bounce rather than by the sun directly. That is what makes interiors the honest test of a GI solution.*
 
-## Download
+## 下载
 
-[Abandoned Apartment](https://drive.google.com/file/d/1OCb9sW9xH3FsFUza0ZG1tKWOPMMus5XA/view?usp=sharing)
+[废弃公寓的场景](https://drive.google.com/file/d/1OCb9sW9xH3FsFUza0ZG1tKWOPMMus5XA/view?usp=sharing)
 
-## Why interiors
+## 为什么选用室内场景
 
-An interior is almost entirely indirect light. Sun enters through a small number of openings and everything
-else the eye sees is bounce. Get the GI wrong and the scene reads as flat or as leaking; there is no
-direct lighting to hide behind.
+An interior is almost entirely indirect light. Sun enters through a small number of openings and everything else the eye sees is bounce. Get the GI wrong and the scene reads as flat or as leaking; there is no direct lighting to hide behind.
 
 That makes scenes like this the right place to evaluate the practical differences between Vite's GI
 options:
 
-| Approach | Behaviour in an interior |
+| 方法 | 在室内的行为 |
 |---|---|
-| [Static DDGI](DDGI-Static.md) | Baked probe data. Cheapest, and correct if nothing moves. |
-| [Dynamic DDGI](DDGI-Dynamic.md) | Probes update at runtime. Handles time of day and moving occluders. |
+| [静态 DDGI](DDGI-Static.md) | Baked probe data. Cheapest, and correct if nothing moves. |
+| [动态 DDGI](DDGI-Dynamic.md) | Probes update at runtime. Handles time of day and moving occluders. |
 | [SSGI](SSGI.md) | Adds contact-scale detail the probe grid cannot resolve |
 | Per-pixel ray-traced GI | Reference quality, unaffordable at frame rate, and compiled out by default |
 
@@ -47,10 +39,10 @@ fills in the detail near contacts and in corners. See
 - **Ray-traced reflections.** Interior surfaces reflect a great deal of off-screen geometry, which is
   exactly the case screen-space reflections cannot handle.
 
-## See also
+## 参见
 
-- [Global Illumination](Global-Illumination.md)
-- [Dynamic DDGI](DDGI-Dynamic.md)
+- [全局照明](Global-Illumination.md)
+- [动态 DDGI](DDGI-Dynamic.md)
 - [SSGI](SSGI.md)
-- [Ambient Occlusion](Ambient-Occlusion.md)
-- [Attic Scene](Attic-Scene.md)
+- [环境遮蔽](Ambient-Occlusion.md)
+- [阁楼场景](Attic-Scene.md)
