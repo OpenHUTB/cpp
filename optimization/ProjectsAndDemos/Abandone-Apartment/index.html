@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Abandoned Apartment - 引擎实现文档</title>
+    <title>废弃的公寓场景 - 引擎实现文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Abandoned Apartment";
+        var mkdocs_page_name = "\u5e9f\u5f03\u7684\u516c\u5bd3\u573a\u666f";
         var mkdocs_page_input_path = "optimization/ProjectsAndDemos/Abandone-Apartment.md";
         var mkdocs_page_url = null;
       </script>
@@ -70,7 +70,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Abandoned Apartment</li>
+      <li class="breadcrumb-item active">废弃的公寓场景</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/ProjectsAndDemos/Abandone-Apartment.md"> 编辑页面</a>
     </li>
@@ -80,38 +80,30 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="abandoned-apartment">Abandoned Apartment</h1>
-<p><tldr></p>
-<p>
-Interior lighting scene. Interiors are the hardest case for global illumination, which makes them the most
-useful place to evaluate it.
-</p>
-<p></tldr></p>
+                <h1 id="_1">废弃的公寓场景</h1>
+<p>Interior lighting scene. Interiors are the hardest case for global illumination, which makes them the most useful place to evaluate it.</p>
 <p><img src="../../img/optimization/AbandonedAppartment.png" alt="Abandoned apartment interior lit entirely by indirect bounce light" border-effect="line"/></p>
-<p><em>Almost every surface visible here is lit by bounce rather than by the sun directly. That is what makes
-interiors the honest test of a GI solution.</em></p>
-<h2 id="download">Download</h2>
-<p><a href="https://drive.google.com/file/d/1OCb9sW9xH3FsFUza0ZG1tKWOPMMus5XA/view?usp=sharing">Abandoned Apartment</a></p>
-<h2 id="why-interiors">Why interiors</h2>
-<p>An interior is almost entirely indirect light. Sun enters through a small number of openings and everything
-else the eye sees is bounce. Get the GI wrong and the scene reads as flat or as leaking; there is no
-direct lighting to hide behind.</p>
+<p><em>Almost every surface visible here is lit by bounce rather than by the sun directly. That is what makes interiors the honest test of a GI solution.</em></p>
+<h2 id="_2">下载</h2>
+<p><a href="https://drive.google.com/file/d/1OCb9sW9xH3FsFUza0ZG1tKWOPMMus5XA/view?usp=sharing">废弃的公寓场景</a></p>
+<h2 id="_3">为什么选用室内场景</h2>
+<p>An interior is almost entirely indirect light. Sun enters through a small number of openings and everything else the eye sees is bounce. Get the GI wrong and the scene reads as flat or as leaking; there is no direct lighting to hide behind.</p>
 <p>That makes scenes like this the right place to evaluate the practical differences between Vite's GI
 options:</p>
 <table>
 <thead>
 <tr>
-<th>Approach</th>
-<th>Behaviour in an interior</th>
+<th>方法</th>
+<th>在室内的行为</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><a href="DDGI-Static.md">Static DDGI</a></td>
+<td><a href="DDGI-Static.md">静态 DDGI</a></td>
 <td>Baked probe data. Cheapest, and correct if nothing moves.</td>
 </tr>
 <tr>
-<td><a href="DDGI-Dynamic.md">Dynamic DDGI</a></td>
+<td><a href="DDGI-Dynamic.md">动态 DDGI</a></td>
 <td>Probes update at runtime. Handles time of day and moving occluders.</td>
 </tr>
 <tr>
@@ -138,13 +130,13 @@ fills in the detail near contacts and in corners. See
 <li><strong>Ray-traced reflections.</strong> Interior surfaces reflect a great deal of off-screen geometry, which is
   exactly the case screen-space reflections cannot handle.</li>
 </ul>
-<h2 id="see-also">See also</h2>
+<h2 id="_4">参见</h2>
 <ul>
-<li><a href="Global-Illumination.md">Global Illumination</a></li>
-<li><a href="DDGI-Dynamic.md">Dynamic DDGI</a></li>
+<li><a href="Global-Illumination.md">全局照明</a></li>
+<li><a href="DDGI-Dynamic.md">动态 DDGI</a></li>
 <li><a href="SSGI.md">SSGI</a></li>
-<li><a href="Ambient-Occlusion.md">Ambient Occlusion</a></li>
-<li><a href="../Attic-Scene/">Attic Scene</a></li>
+<li><a href="Ambient-Occlusion.md">环境遮蔽</a></li>
+<li><a href="../Attic-Scene/">阁楼场景</a></li>
 </ul>
               
             </div>

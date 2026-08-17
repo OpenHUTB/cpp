@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Attic Scene - 引擎实现文档</title>
+    <title>阁楼场景 - 引擎实现文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Attic Scene";
+        var mkdocs_page_name = "\u9601\u697c\u573a\u666f";
         var mkdocs_page_input_path = "optimization/ProjectsAndDemos/Attic-Scene.md";
         var mkdocs_page_url = null;
       </script>
@@ -70,7 +70,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Attic Scene</li>
+      <li class="breadcrumb-item active">阁楼场景</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/ProjectsAndDemos/Attic-Scene.md"> 编辑页面</a>
     </li>
@@ -80,17 +80,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="attic-scene">Attic Scene</h1>
-<p><tldr></p>
-<p>
-Interior lighting scene with strong directional light through a limited opening. A good case for observing
-how global illumination handles high-contrast interiors.
-</p>
-<p></tldr></p>
+                <h1 id="_1">阁楼场景</h1>
+<p>Interior lighting scene with strong directional light through a limited opening. A good case for observing how global illumination handles high-contrast interiors.</p>
 <p><img src="../../img/optimization/AtticScene.png" alt="Attic interior with strong directional sunlight entering through a small window" border-effect="line"/></p>
 <p><em>Direct sun and deep shadow in the same frame, with a large volume of dim indirect light between them.</em></p>
-<h2 id="download">Download</h2>
-<p><a href="https://drive.google.com/file/d/12CEdigm95nuu7GhRd_KjYIGeCi9_QvVT/view?usp=sharing">Attic Scene</a></p>
+<h2 id="_2">下载</h2>
+<p><a href="https://drive.google.com/file/d/12CEdigm95nuu7GhRd_KjYIGeCi9_QvVT/view?usp=sharing">阁楼场景</a></p>
 <p><img src="../../img/optimization/AtticRTGIV2.jpg" alt="The attic scene rendered with the enhanced ray-traced GI path, volumetric shafts through the window" border-effect="line"/></p>
 <p><em>The same scene under NVIDIA's enhanced RTGI path, which the NvRTX Caustics branch contributes to Vite.</em></p>
 <h2 id="what-it-exercises">What it exercises</h2>
@@ -112,13 +107,13 @@ where nothing moves, and it is the cheaper option; the value of dynamic DDGI onl
 angle or an occluder changes. Moving the directional light makes the distinction obvious.</p>
 <p>Then look at the <a href="Anti-Aliasing.md">anti-aliasing</a> treatment. Fine clutter geometry against a bright
 window is a hard case, and it is where SMAA's behaviour differs most visibly from TAA's.</p>
-<h2 id="see-also">See also</h2>
+<h2 id="_3">参见</h2>
 <ul>
-<li><a href="Global-Illumination.md">Global Illumination</a></li>
-<li><a href="DDGI-Static.md">Static DDGI</a></li>
-<li><a href="Color-Management.md">Color Management</a></li>
-<li><a href="Anti-Aliasing.md">Anti-Aliasing</a></li>
-<li><a href="../Abandone-Apartment/">Abandoned Apartment</a></li>
+<li><a href="Global-Illumination.md">全局照明</a></li>
+<li><a href="DDGI-Static.md">静态 DDGI</a></li>
+<li><a href="Color-Management.md">颜色管理</a></li>
+<li><a href="Anti-Aliasing.md">抗锯齿</a></li>
+<li><a href="../Abandone-Apartment/">废弃的公寓场景</a></li>
 </ul>
               
             </div>

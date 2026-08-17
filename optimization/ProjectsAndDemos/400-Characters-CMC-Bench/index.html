@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>400 Characters CMC Bench - 引擎实现文档</title>
+    <title>400 角色 CMC 基准测试 - 引擎实现文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "400 Characters CMC Bench";
+        var mkdocs_page_name = "400 \u89d2\u8272 CMC \u57fa\u51c6\u6d4b\u8bd5";
         var mkdocs_page_input_path = "optimization/ProjectsAndDemos/400-Characters-CMC-Bench.md";
         var mkdocs_page_url = null;
       </script>
@@ -70,7 +70,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">400 Characters CMC Bench</li>
+      <li class="breadcrumb-item active">400 角色 CMC 基准测试</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/ProjectsAndDemos/400-Characters-CMC-Bench.md"> 编辑页面</a>
     </li>
@@ -80,7 +80,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="400-characters-cmc-bench">400 Characters CMC Bench</h1>
+                <h1 id="400-cmc">400 角色 CMC 基准测试</h1>
 <p><tldr></p>
 <p>
 400 simultaneously moving characters driven by the Character Movement Component. Measures the game thread
@@ -90,16 +90,13 @@ cost that dominates crowd-heavy scenes.
 <p><img src="../../img/optimization/400CharCMCBench.png" alt="Side-by-side stat capture, Vite at 73.4 FPS against Unreal Engine 5.6 at 22.7 FPS with 400 characters" border-effect="line"/></p>
 <p><em>The same 400-character scene on the same hardware. Vite (left) 73.4 FPS, Unreal Engine 5.6 (right)
 22.7 FPS. World Tick 11.56 ms against 40.45 ms; Char Movement Total 5.73 ms against 12.49 ms.</em></p>
-<h2 id="download">Download</h2>
+<h2 id="_1">下载</h2>
 <p><a href="https://drive.google.com/file/d/1RrOXCeJEhO4H2x1QK9FlBv0GDD8qSsN7/view">400 Characters CMC Bench</a></p>
-<h2 id="what-it-measures">What it measures</h2>
-<p>The Character Movement Component is one of the most expensive stock Unreal components per instance. Every
-moving character runs collision sweeps, floor checks, root motion evaluation and network-prediction
-bookkeeping every tick, on the game thread.</p>
-<p>At one character it is invisible. At 400 it is often the entire frame budget, and it is the reason so many
-projects hit a game thread wall long before their GPU is saturated.</p>
+<h2 id="_2">测试内容</h2>
+<p>The Character Movement Component is one of the most expensive stock Unreal components per instance. Every moving character runs collision sweeps, floor checks, root motion evaluation and network-prediction bookkeeping every tick, on the game thread.</p>
+<p>At one character it is invisible. At 400 it is often the entire frame budget, and it is the reason so many projects hit a game thread wall long before their GPU is saturated.</p>
 <p>This benchmark exists to make that cost measurable rather than theoretical.</p>
-<h2 id="running-it">Running it</h2>
+<h2 id="_3">运行</h2>
 <p>Enable <code>stat unit</code> and watch <strong>Game</strong> rather than <strong>Frame</strong>. If Game is the largest number, you are
 CPU-bound on the game thread and no amount of rendering optimisation will help.</p>
 <p>Then narrow it down:</p>
@@ -130,31 +127,31 @@ CPU-bound on the game thread and no amount of rendering optimisation will help.<
 </tbody>
 </table>
 <p>See <a href="Profiling.md">Profiling</a>.</p>
-<h2 id="why-it-matters-for-vite">Why it matters for Vite</h2>
+<h2 id="vite">这对 Vite 为什么重要</h2>
 <p>Game thread cost is where UE 4.27 has a structural advantage over UE5, and it is central to
 <a href="Why-NvRTX-427.md">Vite's rationale</a>. The base cost of core classes, the tick pipeline and the movement
 component are all lighter in 4.27, and Vite trims them further &mdash; see
 <a href="Engine-Defaults.md">Engine Defaults</a> for the specific changes.</p>
 <p>The relevant comparison numbers are in
 <a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 versus UE5 Cost Analysis</a>.</p>
-<h2 id="reducing-cmc-cost-in-your-own-project">Reducing CMC cost in your own project</h2>
+<h2 id="cmc">在自己的项目中减少 CMC 消耗</h2>
 <p>If this benchmark's shape matches your bottleneck:</p>
 <ul>
-<li><strong>Tick less.</strong> Distant or off-screen characters do not need full-rate movement. Significance Manager and
+<li><strong>更少的节拍。</strong> Distant or off-screen characters do not need full-rate movement. Significance Manager and
   tick interval both apply.</li>
-<li><strong>Simplify collision.</strong> Movement sweeps cost in proportion to collision complexity.</li>
-<li><strong>Budget animation.</strong> The Animation Budget Allocator plugin is stock 4.27 and directly targets this.</li>
-<li><strong>Consider not using CMC.</strong> For crowds that do not need networked prediction, a simpler custom movement
+<li><strong>简化碰撞。</strong> Movement sweeps cost in proportion to collision complexity.</li>
+<li><strong>Budget 动画。</strong> The Animation Budget Allocator plugin is stock 4.27 and directly targets this.</li>
+<li><strong>考虑不使用 CMC.</strong> For crowds that do not need networked prediction, a simpler custom movement
   path avoids most of the cost.</li>
-<li><strong>Consider ECS.</strong> For very large entity counts, the bundled <a href="Bundled-Plugins.md">Flecs ECS</a> integration
+<li><strong>考虑 ECS.</strong> For very large entity counts, the bundled <a href="Bundled-Plugins.md">Flecs ECS</a> integration
   sidesteps actor-per-entity overhead entirely.</li>
 </ul>
-<h2 id="see-also">See also</h2>
+<h2 id="_4">参见</h2>
 <ul>
-<li><a href="Performance-Targets.md">Performance Targets</a></li>
-<li><a href="Profiling.md">Profiling</a></li>
-<li><a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 versus UE5 Cost Analysis</a></li>
-<li><a href="Engine-Defaults.md">Engine Defaults</a></li>
+<li><a href="Performance-Targets.md">性能目标</a></li>
+<li><a href="Profiling.md">分析</a></li>
+<li><a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 和 UE5 的消耗对比分析</a></li>
+<li><a href="Engine-Defaults.md">引擎默认</a></li>
 </ul>
               
             </div>
