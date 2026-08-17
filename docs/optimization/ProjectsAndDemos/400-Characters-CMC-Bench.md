@@ -54,13 +54,13 @@ The relevant comparison numbers are in
 
 If this benchmark's shape matches your bottleneck:
 
-- **Tick less.** Distant or off-screen characters do not need full-rate movement. Significance Manager and
+- **更少的节拍。** Distant or off-screen characters do not need full-rate movement. Significance Manager and
   tick interval both apply.
-- **Simplify collision.** Movement sweeps cost in proportion to collision complexity.
-- **Budget animation.** The Animation Budget Allocator plugin is stock 4.27 and directly targets this.
-- **Consider not using CMC.** For crowds that do not need networked prediction, a simpler custom movement
+- **简化碰撞。** Movement sweeps cost in proportion to collision complexity.
+- **Budget 动画。** The Animation Budget Allocator plugin is stock 4.27 and directly targets this.
+- **考虑不使用 CMC.** For crowds that do not need networked prediction, a simpler custom movement
   path avoids most of the cost.
-- **Consider ECS.** For very large entity counts, the bundled [Flecs ECS](Bundled-Plugins.md) integration
+- **考虑 ECS.** For very large entity counts, the bundled [Flecs ECS](Bundled-Plugins.md) integration
   sidesteps actor-per-entity overhead entirely.
 
 ## 参见
