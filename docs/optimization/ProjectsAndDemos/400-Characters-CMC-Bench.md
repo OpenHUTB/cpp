@@ -1,4 +1,4 @@
-﻿# 400 Characters CMC Bench
+﻿# 400 角色 CMC 基准测试
 
 <tldr>
 <p>
@@ -12,22 +12,19 @@ cost that dominates crowd-heavy scenes.
 *The same 400-character scene on the same hardware. Vite (left) 73.4 FPS, Unreal Engine 5.6 (right)
 22.7 FPS. World Tick 11.56 ms against 40.45 ms; Char Movement Total 5.73 ms against 12.49 ms.*
 
-## Download
+## 下载
 
 [400 Characters CMC Bench](https://drive.google.com/file/d/1RrOXCeJEhO4H2x1QK9FlBv0GDD8qSsN7/view)
 
-## What it measures
+## 测试内容
 
-The Character Movement Component is one of the most expensive stock Unreal components per instance. Every
-moving character runs collision sweeps, floor checks, root motion evaluation and network-prediction
-bookkeeping every tick, on the game thread.
+The Character Movement Component is one of the most expensive stock Unreal components per instance. Every moving character runs collision sweeps, floor checks, root motion evaluation and network-prediction bookkeeping every tick, on the game thread.
 
-At one character it is invisible. At 400 it is often the entire frame budget, and it is the reason so many
-projects hit a game thread wall long before their GPU is saturated.
+At one character it is invisible. At 400 it is often the entire frame budget, and it is the reason so many projects hit a game thread wall long before their GPU is saturated.
 
 This benchmark exists to make that cost measurable rather than theoretical.
 
-## Running it
+## 运行
 
 Enable `stat unit` and watch **Game** rather than **Frame**. If Game is the largest number, you are
 CPU-bound on the game thread and no amount of rendering optimisation will help.
@@ -43,7 +40,7 @@ Then narrow it down:
 
 See [Profiling](Profiling.md).
 
-## Why it matters for Vite
+## 这对 Vite 为什么重要
 
 Game thread cost is where UE 4.27 has a structural advantage over UE5, and it is central to
 [Vite's rationale](Why-NvRTX-427.md). The base cost of core classes, the tick pipeline and the movement
@@ -53,7 +50,7 @@ component are all lighter in 4.27, and Vite trims them further &mdash; see
 The relevant comparison numbers are in
 [UE4 versus UE5 Cost Analysis](UE4-Versus-UE5-Cost-Analysis.md).
 
-## Reducing CMC cost in your own project
+## 在自己的项目中减少 CMC 消耗
 
 If this benchmark's shape matches your bottleneck:
 
@@ -66,9 +63,9 @@ If this benchmark's shape matches your bottleneck:
 - **Consider ECS.** For very large entity counts, the bundled [Flecs ECS](Bundled-Plugins.md) integration
   sidesteps actor-per-entity overhead entirely.
 
-## See also
+## 参见
 
-- [Performance Targets](Performance-Targets.md)
-- [Profiling](Profiling.md)
+- [性能目标](Performance-Targets.md)
+- [分析](Profiling.md)
 - [UE4 versus UE5 Cost Analysis](UE4-Versus-UE5-Cost-Analysis.md)
 - [Engine Defaults](Engine-Defaults.md)
