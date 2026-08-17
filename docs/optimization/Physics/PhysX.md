@@ -42,110 +42,89 @@ PhysX 提供了整个引擎使用的碰撞查询路径：
 - 质量和惯性标度;
 - 在 Physics Assets 中创作的骨骼约束链.
 
-### Character and skeletal physics
+### 角色和骨骼物理
 
-PhysX supplies collision queries for Character Movement and rigid-body simulation for Physics Assets. This
-includes ragdolls, physical animation, hit reactions, body welding and per-body collision configuration.
+PhysX 提供角色运动的碰撞查询和物理资源的刚体模拟。这包括布娃娃、物理动画、命中反应、身体焊接和每个身体的碰撞配置。
 
-### Vehicles
+### 载具
 
-Vite retains the UE4.27 PhysX vehicle stack, including wheel simulation, suspension, tire friction, engine,
-gearing, differential and drivetrain configuration. Vehicle behavior is authored through the standard
-vehicle and tire data assets used by UE4 projects.
+Vite 保留了 UE4.27 PhysX 车辆堆栈，包括车轮模拟、悬架、轮胎摩擦、发动机、传动装置、差速器和传动系统配置。车辆行为是通过 UE4 项目使用的标准车辆和轮胎数据资产编写的。
 
-## Destruction, cloth and Blast
+## 破坏（Destruction）、布料（cloth）和爆炸（Blast）
 
-The Vite physics stack includes the following NVIDIA systems:
+Vite 物理堆栈包括以下 NVIDIA 系统：
 
-| Feature | Function |
+| 特性 | 功能 |
 |---|---|
-| APEX Destruction | Authored destructible meshes, support chunks, damage and fracture events |
-| APEX Cloth | Vertex-painted cloth constraints and skeletal-mesh clothing simulation |
-| NVIDIA Blast | Destruction assets and fracture workflows integrated alongside the PhysX backend |
+| APEX Destruction（破坏） | 编写可破坏网格、支撑块、损坏和断裂事件 |
+| APEX Cloth（布料） | 顶点绘制的布料约束和骨架网格物体布料模拟 |
+| NVIDIA Blast（爆炸） | 破坏资产和断裂工作流程与 PhysX 后端集成 |
 
-See [Destruction and Cloth](Destruction-And-Cloth.md) for authoring and runtime guidance.
+请参阅[破坏和布料](Destruction-And-Cloth.md)以获取创作和运行时指南。
 
-## Vite extensions
+## Vite 扩展
 
-### Modern toolchain support
+### 现代工具链支持
 
-Vite's PhysX libraries and build files have been updated for newer MSVC and Clang toolchains, including the
-Android NDK Clang path used by current Vite builds. Toolchain changes are validated with the physics test and
-stress workloads before release.
+Vite 的 PhysX 库和构建文件已针对较新的 MSVC 和 Clang 工具链进行了更新，包括当前 Vite 构建使用的 Android NDK Clang 路径。工具链更改在发布前通过物理测试和压力工作负载进行验证。
 
-### Fixed-timestep simulation
+### 固定时间步长模拟
 
-The optional fixed-timestep path decouples the simulation cadence from variable render frames and adds render
-interpolation. It is intended for projects that require a stable simulation delta or reproducible captures.
-See [Fixed Timestep](Fixed-Timestep.md) for compile-time setup and integration requirements.
+可选的固定时间步长路径将模拟节奏与可变渲染帧解耦，并添加渲染插值。它适用于需要稳定的模拟增量或可重复捕获的项目。有关编译时设置和集成要求，请参阅[固定时间步长](Fixed-Timestep.md)。
 
-### Instanced physics subsystem
+### 实例物理子系统
 
-The instanced subsystem represents large homogeneous rigid-body sets through instanced meshes instead of one
-Actor and component hierarchy per body. It is intended for debris, shells, environmental objects and other
-high-count simulations. See [Instanced Physics Subsystem](Instanced-Physics.md).
+实例化子系统通过实例化网格表示大型同质刚体集，而不是每个主体一个 Actor 和组件层次结构。它适用于碎片、炮弹、环境物体和其他高计数模拟。请参阅[实例物理子系统](Instanced-Physics.md)。
 
-### Native actor path
+### 原生 actor 路径
 
-Engine-level systems that already own compact simulation state can operate closer to native PhysX actors and
-avoid unnecessary high-level Actor/component work. This is a specialized integration path: ownership,
-lifetime, transform synchronization, collision filtering and teardown remain the caller's responsibility.
+已经拥有紧凑模拟状态的引擎级系统可以更接近本机 PhysX Actor 运行，并避免不必要的高级 Actor/组件工作。这是一个专门的集成路径：所有权、生命周期、转换同步、冲突过滤和拆卸仍然是调用者的责任。
 
-## Configuration
+## 配置
 
-Physics settings are under **Project Settings > Engine > Physics**.
+物理设置位于**项目设置 > 引擎 > 物理**下。
 
-| Setting | Function |
+| 设置 | 功能 |
 |---|---|
-| Default Gravity Z | World gravity; `-980.0` corresponds to 1 uu = 1 cm |
-| Substepping | Divides a long frame into smaller simulation steps |
-| Max Substep Delta Time | Maximum delta processed by one substep |
-| Max Substeps | Upper bound on simulation steps performed for one frame |
-| Simulate Skeletal Mesh on Dedicated Server | Enables skeletal rigid-body simulation on server targets |
-| Default Degrees Of Freedom | Constrains motion for planar or limited-axis games |
+| 默认重力 Z | 世界重力； `-980.0` 对应 1 uu = 1 cm |
+| 子步进 | 将长帧分成更小的模拟步骤 |
+| 最大子步增量时间 | 一个子步处理的最大增量 |
+| 最大子步数 | 一帧执行的模拟步骤的上限 |
+| 在专用服务器上模拟骨架网格体 | 在服务器目标上启用骨骼刚体模拟 |
+| 默认自由度 | 限制平面或有限轴游戏的运动 |
 
-### Substepping
+### 子步进
 
-Without substepping, the physics scene advances with the frame delta. Large or variable deltas can reduce
-contact and constraint stability. Substepping performs multiple smaller advances when required; its CPU cost
-increases with the number of executed substeps.
+如果不进行子步进，物理场景会随着帧增量而前进。大的或可变的增量会降低接触和约束稳定性。需要时，子步执行多个较小的前进；它的 CPU 成本随着执行的子步骤数量的增加而增加。
 
-Choose `Max Substep Delta Time` from the fastest interaction that must remain stable, then set `Max Substeps`
-to cap worst-case work. A cap prevents a slow frame from creating an unbounded simulation backlog.
+从必须保持稳定的最快交互中选择“最大子步增量时间”，然后设置“最大子步”以限制最坏情况的工作。上限可防止慢速帧产生无限制的模拟积压。
 
-For a fixed simulation cadence rather than frame-triggered substeps, use the
-[fixed-timestep path](Fixed-Timestep.md).
+对于固定模拟节奏而不是帧触发子步，请使用[固定时间步路径](Fixed-Timestep.md)。
 
-## PhysX Visual Debugger
+## PhysX 可视化调试器
 
-PhysX Visual Debugger can inspect a connected scene, including actors, shapes, contacts, constraints and
-simulation state. Use a development build with PVD support, connect before reproducing the issue, and limit
-capture duration when the scene contains many bodies.
+PhysX Visual Debugger（PVD）可以检查连接的场景，包括参与者、形状、接触、约束和模拟状态。使用支持 PVD ​​的开发版本，在重现问题之前进行连接，并在场景包含许多尸体时限制捕获持续时间。
 
-Viewport collision visualization remains useful for confirming authored geometry and filtering before a
-full PVD capture.
+视口碰撞可视化对于在完整 PVD ​​捕获之前确认创作的几何体和过滤仍然有用。
 
-## Profiling
+## 分析
 
-| Command | Shows |
+| 命令 | 显示 |
 |---|---|
-| `stat physics` | Physics timing divided by engine phase |
-| `stat game` | Physics cost in the context of game-thread work |
-| `p.NumPhysScenes` | Number of active physics scenes |
-| `show Collision` | Collision geometry in the viewport |
+| `stat physics` | 物理时序除以引擎相位 |
+| `stat game` | 游戏线程工作背景下的物理成本 |
+| `p.NumPhysScenes` | 激活的物理场景数 |
+| `show Collision` | 视窗中的碰撞几何体 |
 
-Profile with representative collision geometry, body counts, sleeping behavior and event generation. Record
-physics milliseconds, body/shape counts, active-body count, solver settings, substeps and worker configuration
-with every comparison.
+具有代表性碰撞几何形状、刚体计数、睡眠行为和事件生成的分析。每次比较时记录物理毫秒、刚体/形状计数、激活刚体计数、求解器设置、子步骤和工作配置。
 
-For high body counts, compare standard Actor-based simulation with the
-[instanced subsystem](Instanced-Physics.md) using the same shapes and solver settings.
+对于高刚体数，请使用相同的形状和求解器设置将基于 Actor 的标准模拟与[实例子系统](Instanced-Physics.md)进行比较。
 
-## See also
+## 参见
 
-- [Physics](Physics.md)
-- [Fixed Timestep](Fixed-Timestep.md)
-- [Destruction and Cloth](Destruction-And-Cloth.md)
-- [Instanced Physics Subsystem](Instanced-Physics.md)
-- [Physics Cube Bench](Physics-Cube-Bench.md)
-- [PhysX Test](PhysXTest.md)
+- [物理](Physics.md)
+- [固定时间步长](Fixed-Timestep.md)
+- [破坏与布料](Destruction-And-Cloth.md)
+- [实例物理子系统](Instanced-Physics.md)
+- [物理立方台](../ProjectsAndDemos/Physics-Cube-Bench.md)
+- [PhysX 测试](../ProjectsAndDemos/PhysXTest.md)

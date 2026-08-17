@@ -1,61 +1,48 @@
-﻿# PhysX Test
+﻿# PhysX 测试
 
-<tldr>
-<p>
-General PhysX behaviour and stability test project. Useful for verifying that a build's physics layer is
-intact after engine changes.
-</p>
-</tldr>
+通用 PhysX 行为和稳定性测试项目。对于验证引擎更改后构建的物理层是否完好无损非常有用。
 
-## Download
+## 下载
 
-[PhysicsTest repository](https://github.com/tanger1n/PhysicsTest)
+[PhysicsTest 存储库](https://github.com/tanger1n/PhysicsTest)
 
-## What it covers
+## 它涵盖什么
 
-A broad exercise of PhysX behaviour rather than a throughput benchmark: collision response, constraints,
-stacking stability, sleeping and waking, and the general question of whether the solver behaves the way it
-should.
+PhysX 行为的广泛练习，而不是吞吐量基准：碰撞响应、约束、堆叠稳定性、睡眠和唤醒，以及求解器是否按其应有的方式运行的一般问题。
 
-<img src="../../img/optimization/PhysXTest1.png" alt="PhysX test project, collision and constraint scenario" border-effect="line"/>
+![](../../img/optimization/PhysXTest1.png)
+*PhysX 测试项目、碰撞和约束场景*
 
-<img src="../../img/optimization/PhysXTest2.png" alt="PhysX test project, stacking stability scenario" border-effect="line"/>
+![](../../img/optimization/PhysXTest2.png)
+*PhysX 测试项目，堆叠稳定性场景*
 
-<img src="../../img/optimization/PhysXTest3.png" alt="PhysX test project, sleeping and waking scenario" border-effect="line"/>
+![](../../img/optimization/PhysXTest3.png)
+*PhysX 测试项目，睡眠和唤醒场景*
 
-*Scenarios from the test project. Each isolates one behaviour so a regression shows up as a visible
-difference rather than as a number that moved.*
+*测试项目的场景。每个都隔离了一种行为，因此回归显示为可见的差异，而不是移动的数字。*
 
-This is the project to run when you have changed something physics-adjacent and want to know whether you
-broke it, as opposed to how fast it is.
+当您更改了与物理相关的内容并想知道您是否破坏了它，而不是它的速度有多快时，可以运行这个项目。
 
-## Relevance to Vite
+## 与 Vite 的相关性
 
-Vite retains PhysX rather than migrating to Chaos, and that choice is only defensible if the PhysX layer
-stays correct through engine changes. Anything touching:
+Vite 保留 PhysX 而不是迁移到 Chaos，只有当 PhysX 层通过引擎更改保持正确时，这种选择才合理。任何触及以下几点的事：
 
-- The physics scene or substepping, particularly with
-  [`VITE_PHYSX_FIXED_TIMESTEP`](Fixed-Timestep.md) enabled
-- Body instance transforms or interpolation
-- Collision query paths, which the Character Movement Component uses heavily
-- Apex Destruction or Cloth integration
+- 物理场景或子步进，特别是在启用 [`VITE_PHYSX_FIXED_TIMESTEP`](../Physics/Fixed-Timestep.md) 的情况下
+- 刚体实例变换或插值
+- 碰撞查询路径，大量使用角色移动组件（Character Movement Component）
+- Apex 破坏或布料整合
 
-should be verified here before it is considered done. See
-[Coding Guidelines](Coding-Guidelines.md) for the verification requirements.
+在认为完成之前应在此处进行验证。验证要求请参见[编码指南](../Contributing/Coding-Guidelines.md)。
 
-## Fixed timestep testing
+## 固定时间步测试
 
-If you are evaluating [fixed timestep physics](Fixed-Timestep.md), this project is a reasonable place to
-observe the difference. Run it at an unlocked frame rate and then with `t.MaxFPS` set to various values:
-with the default variable timestep the simulation result changes with frame rate, and with fixed timestep
-it should not.
+如果您正在评估[固定时间步物理](../Physics/Fixed-Timestep.md)，那么该项目是观察差异的合理场所。以解锁的帧速率运行它，然后将`t.MaxFPS`设置为各种值：使用默认变量时间步长，模拟结果会随帧速率变化，而使用固定时间步长则不会。
 
-Remember that fixed timestep is a compile-time feature. Without `VITE_PHYSX_FIXED_TIMESTEP=1` in the
-build, `p.VitePhysXFixedTimestep.Enabled` does nothing.
+请记住，固定时间步是编译时功能。如果构建中没有`VITE_PHYSX_FIXED_TIMESTEP=1`，则`p.VitePhysXFixedTimestep.Enabled`不会执行任何操作。
 
-## See also
+## 参见
 
-- [PhysX](PhysX.md)
-- [Fixed Timestep](Fixed-Timestep.md)
-- [Physics Cube Bench](Physics-Cube-Bench.md)
-- [Compile-Time Switches](Compile-Time-Switches.md)
+- [PhysX](../Physics/PhysX.md)
+- [固定时间步长](../Physics/Fixed-Timestep.md)
+- [物理立方台](Physics-Cube-Bench.md)
+- [编译时开关](../Performance/Compile-Time-Switches.md)

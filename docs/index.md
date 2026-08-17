@@ -99,7 +99,8 @@ title: 主页
 
 ## 参考
 
-* [UnrealEngineVite](https://vitestudio-tech.github.io/UnrealEngineVite-Docs)
+* [UnrealEngineVite-PhysX](https://github.com/GapingPixel/UnrealEngineVite-PhysX)
+* [UnrealEngineVite 文档](https://vitestudio-tech.github.io/UnrealEngineVite-Docs)
 
 
 
