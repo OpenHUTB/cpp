@@ -30,7 +30,7 @@ Vite 保留 PhysX 而不是迁移到 Chaos，只有当 PhysX 层通过引擎更�
 - 物理场景或子步进，特别是在启用 [`VITE_PHYSX_FIXED_TIMESTEP`](../Physics/Fixed-Timestep.md) 的情况下
 - 刚体实例变换或插值
 - 碰撞查询路径，大量使用角色移动组件（Character Movement Component）
-- Apex 破坏或布料整合
+- Apex 或布料整合
 
 在认为完成之前应在此处进行验证。验证要求请参见[编码指南](../Contributing/Coding-Guidelines.md)。
 

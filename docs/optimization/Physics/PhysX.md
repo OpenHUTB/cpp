@@ -50,17 +50,17 @@ PhysX 提供角色运动的碰撞查询和物理资源的刚体模拟。这包�
 
 Vite 保留了 UE4.27 PhysX 车辆堆栈，包括车轮模拟、悬架、轮胎摩擦、发动机、传动装置、差速器和传动系统配置。车辆行为是通过 UE4 项目使用的标准车辆和轮胎数据资产编写的。
 
-## 破坏（Destruction）、布料（cloth）和爆炸（Blast）
+## 破损（Destruction）、布料（cloth）和爆炸（Blast）
 
 Vite 物理堆栈包括以下 NVIDIA 系统：
 
 | 特性 | 功能 |
 |---|---|
-| APEX Destruction（破坏） | 编写可破坏网格、支撑块、损坏和断裂事件 |
+| APEX Destruction（破损） | 编写可破损网格、支撑块、损坏和断裂事件 |
 | APEX Cloth（布料） | 顶点绘制的布料约束和骨架网格物体布料模拟 |
-| NVIDIA Blast（爆炸） | 破坏资产和断裂工作流程与 PhysX 后端集成 |
+| NVIDIA Blast（爆炸） | 破损资产和断裂工作流程与 PhysX 后端集成 |
 
-请参阅[破坏和布料](Destruction-And-Cloth.md)以获取创作和运行时指南。
+请参阅[破损和布料](Destruction-And-Cloth.md)以获取创作和运行时指南。
 
 ## Vite 扩展
 
@@ -124,7 +124,7 @@ PhysX Visual Debugger（PVD）可以检查连接的场景，包括参与者、�
 
 - [物理](Physics.md)
 - [固定时间步长](Fixed-Timestep.md)
-- [破坏与布料](Destruction-And-Cloth.md)
+- [破损与布料](Destruction-And-Cloth.md)
 - [实例物理子系统](Instanced-Physics.md)
 - [物理立方台](../ProjectsAndDemos/Physics-Cube-Bench.md)
 - [PhysX 测试](../ProjectsAndDemos/PhysXTest.md)

@@ -1,64 +1,49 @@
-# Destruction and Cloth
+# 破损与布料
 
-<tldr>
-<p>
-Vite keeps <b>Apex Destruction</b> and <b>Apex Cloth</b>, both removed in Unreal Engine 5, and adds
-NVIDIA <b>Blast</b> for modern fracture. Existing 4.27 destructible and clothing assets continue to work.
-</p>
-</tldr>
 
-Destruction and cloth are the two areas where the [PhysX decision](PhysX.md) has the most visible
-consequences for content. Both Apex systems are tied to PhysX; removing PhysX removed them.
+Vite 保留了虚幻引擎 5 中删除的 <b>Apex 破损</b> 和 <b>Apex 布料</b>，并添加了 NVIDIA <b>Blast</b> 以实现现代断裂。现有的 4.27 可破损资产和布料资产继续发挥作用。
 
-## Apex Destruction
 
-Apex Destruction fractures a mesh into a hierarchy of chunks that break apart under impact. Assets are
-authored as Destructible Meshes, either fractured in-editor with Voronoi decomposition or imported from
-external tools.
+破损和布料是 [PhysX 决策](PhysX.md) 对内容影响最明显的两个领域。两个 Apex 系统都与 PhysX 绑定；删除 PhysX 就删除了它们。
 
-| Detail | |
+## Apex 破损
+
+Apex 破损将网格分解成层次结构的块，这些块在冲击下会破裂。资产被创作为可破损的网格，可以在编辑器中通过 Voronoi 分解进行破碎，也可以从外部工具导入。
+
+| 细节 | |
 |---|---|
-| Plugin | `Engine/Plugins/Runtime/ApexDestruction` |
-| Asset type | Destructible Mesh |
-| Component | `UDestructibleComponent` |
-| Status in UE5 | Removed |
+| 插件 | [Engine/Plugins/Runtime/ApexDestruction](https://github.com/OpenHUTB/engine/tree/hutb/Engine/Plugins/Runtime/ApexDestruction) |
+| 资产类型 | 可破碎网格 |
+| 组件 | [UDestructibleComponent](https://github.com/OpenHUTB/engine/blob/8a229f05c4dca7b900cfe5867a6cb477d23d0670/Engine/Plugins/Runtime/ApexDestruction/Source/ApexDestruction/Private/DestructibleComponent.cpp#L34) |
+| UE5中的状态 | 已删除 |
 
-It is a mature, well-understood system with a straightforward cost model: chunk count drives everything. A
-destructible with a two-level hierarchy and modest chunk counts is cheap; one with deep hierarchies and
-hundreds of chunks is not.
+它是一个成熟、易于理解的系统，具有简单的成本模型：块数驱动一切。具有两级层次结构和适度块数的很便宜的可破坏物；一个具有很深层次结构和数百个块的系统则不然。
 
-Key settings live on the Destructible Mesh asset:
+可破坏网格体资源上的关键设置：
 
-- **Depth** controls how many fracture levels exist. Each level multiplies chunk count.
-- **Damage Threshold** and **Damage Spread** control how readily chunks break and how far damage propagates.
-- **Support Depth** determines which level participates in structural support calculations.
-- **Debris Timeout** and **Debris Max Separation** clean up chunks after they settle. Set these. Chunks that
-  never despawn accumulate until frame time collapses.
+- **深度** 控制存在多少破损级别。每个级别都会增加块数。
+- **伤害阈值** and **伤害扩散** 控制块破裂的容易程度以及损坏传播的距离。
+- **支撑深度** 确定哪个级别参与结构支撑计算。
+- **碎片超时** 和 **碎片最大分离度** 确定后清理大块。设置这些。永不消失的块会不断累积，直到帧时间崩溃。
 
-Instructional video on Apex Destruction [![Instructional video by MeanLemur](https://img.youtube.com/vi/Stn7eL1TFBg/hqdefault.jpg)](https://youtu.be/Stn7eL1TFBg)
+Apex 破损教学视频 [![MeanLemur 制作的教学视频](https://img.youtube.com/vi/Stn7eL1TFBg/hqdefault.jpg)](https://youtu.be/Stn7eL1TFBg)
 
-## Apex Cloth
+## Apex 布料
 
-Apex Cloth is the PhysX-era clothing system, authored either through the in-editor Clothing Tool or imported
-from APEX clothing assets produced in external DCC tools.
+Apex Cloth 是 PhysX 时代的布料系统，可以通过编辑器内的 Clothing Tool 编写，也可以从外部 DCC 工具生成的 APEX 布料资产导入。
 
-| Detail | |
+| 细节 | |
 |---|---|
-| Asset type | APEX Clothing asset or in-editor clothing data on a skeletal mesh |
-| Status in UE5 | Removed in favour of Chaos Cloth |
+| 资产类型 | 骨架网格物体上的 APEX 布料资源或编辑器内服装数据 |
+| UE5中的状态 | 被移除以支持 Chaos Cloth |
 
-The in-editor workflow paints cloth parameters directly onto a skeletal mesh: max distance, backstop
-radius and backstop distance. Max distance is the primary control &mdash; it defines how far each vertex may
-move from its skinned position, so painting it to zero pins a region and increasing it lets the cloth
-swing free.
+编辑器内的工作流程将布料参数直接绘制到骨架网格物体上：最大距离、逆止半径和逆止距离。最大距离是主要控制 -它定义每个顶点可以从其蒙皮位置移动多远，因此将其绘制到零针区域并增加它可以让布料自由摆动。
 
-Practical notes:
+实用注意事项：
 
-- Cloth cost scales with simulated vertex count. Paint a low-resolution simulation mesh and skin the render
-  mesh to it rather than simulating the render mesh directly.
-- Cloth is simulated per skeletal mesh component. Ten characters in cloth cost ten times one character.
-- Cloth does not substep with the rest of the scene. Fast character motion can produce stretching that no
-  amount of parameter tuning fixes; the answer is usually reducing how fast the attachment point moves.
+- 布料成本随模拟顶点数变化。绘制低分辨率模拟网格并将渲染网格蒙皮到其上，而不是直接模拟渲染网格。
+- 布料是根据骨架网格物体组件进行模拟的。布料上十个字符的成本是一个字符的十倍。
+- 布料不会与场景的其余部分重叠。快速的角色运动可以产生拉伸，无需调整参数即可解决；答案通常是降低附着点移动的速度。
 
 ## NVIDIA Blast
 

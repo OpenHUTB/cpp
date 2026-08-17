@@ -60,7 +60,7 @@ UE Downgrader 插件可将 UE 5.8 及更低版本的资源转换回 4.27 和 4.2
 
 4. 替换光照设置。Lumen 没有直接的转换；设置 [DDGI](../Rendering/DDGI-Dynamic.md) 体积并根据刚刚导入的内容片段进行调整。
 
-5. 重建物理设置。使用 [Apex Destruction](../Physics/Destruction-And-Cloth.md) 重新制作物体破坏效果，使用 [Apex Cloth](../Physics/Destruction-And-Cloth.md) 重新制作布料效果。
+5. 重建物理设置。使用 [Apex Destruction](../Physics/Destruction-And-Cloth.md) 重新制作物体破损效果，使用 [Apex Cloth](../Physics/Destruction-And-Cloth.md) 重新制作布料效果。
 
 6. 验证内容片段后，批量迁移剩余内容。
 
