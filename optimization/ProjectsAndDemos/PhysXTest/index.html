@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>PhysX Test - 引擎实现文档</title>
+    <title>PhysX 测试 - 引擎实现文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "PhysX Test";
+        var mkdocs_page_name = "PhysX \u6d4b\u8bd5";
         var mkdocs_page_input_path = "optimization/ProjectsAndDemos/PhysXTest.md";
         var mkdocs_page_url = null;
       </script>
@@ -70,7 +70,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">PhysX Test</li>
+      <li class="breadcrumb-item active">PhysX 测试</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/ProjectsAndDemos/PhysXTest.md"> 编辑页面</a>
     </li>
@@ -80,51 +80,38 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="physx-test">PhysX Test</h1>
-<p><tldr></p>
-<p>
-General PhysX behaviour and stability test project. Useful for verifying that a build's physics layer is
-intact after engine changes.
-</p>
-<p></tldr></p>
-<h2 id="download">Download</h2>
-<p><a href="https://github.com/tanger1n/PhysicsTest">PhysicsTest repository</a></p>
-<h2 id="what-it-covers">What it covers</h2>
-<p>A broad exercise of PhysX behaviour rather than a throughput benchmark: collision response, constraints,
-stacking stability, sleeping and waking, and the general question of whether the solver behaves the way it
-should.</p>
-<p><img src="../../img/optimization/PhysXTest1.png" alt="PhysX test project, collision and constraint scenario" border-effect="line"/></p>
-<p><img src="../../img/optimization/PhysXTest2.png" alt="PhysX test project, stacking stability scenario" border-effect="line"/></p>
-<p><img src="../../img/optimization/PhysXTest3.png" alt="PhysX test project, sleeping and waking scenario" border-effect="line"/></p>
-<p><em>Scenarios from the test project. Each isolates one behaviour so a regression shows up as a visible
-difference rather than as a number that moved.</em></p>
-<p>This is the project to run when you have changed something physics-adjacent and want to know whether you
-broke it, as opposed to how fast it is.</p>
-<h2 id="relevance-to-vite">Relevance to Vite</h2>
-<p>Vite retains PhysX rather than migrating to Chaos, and that choice is only defensible if the PhysX layer
-stays correct through engine changes. Anything touching:</p>
+                <h1 id="physx">PhysX 测试</h1>
+<p>通用 PhysX 行为和稳定性测试项目。对于验证引擎更改后构建的物理层是否完好无损非常有用。</p>
+<h2 id="_1">下载</h2>
+<p><a href="https://github.com/tanger1n/PhysicsTest">PhysicsTest 存储库</a></p>
+<h2 id="_2">它涵盖什么</h2>
+<p>PhysX 行为的广泛练习，而不是吞吐量基准：碰撞响应、约束、堆叠稳定性、睡眠和唤醒，以及求解器是否按其应有的方式运行的一般问题。</p>
+<p><img alt="" src="../../../img/optimization/PhysXTest1.png" />
+<em>PhysX 测试项目、碰撞和约束场景</em></p>
+<p><img alt="" src="../../../img/optimization/PhysXTest2.png" />
+<em>PhysX 测试项目，堆叠稳定性场景</em></p>
+<p><img alt="" src="../../../img/optimization/PhysXTest3.png" />
+<em>PhysX 测试项目，睡眠和唤醒场景</em></p>
+<p><em>测试项目的场景。每个都隔离了一种行为，因此回归显示为可见的差异，而不是移动的数字。</em></p>
+<p>当您更改了与物理相关的内容并想知道您是否破坏了它，而不是它的速度有多快时，可以运行这个项目。</p>
+<h2 id="vite">与 Vite 的相关性</h2>
+<p>Vite 保留 PhysX 而不是迁移到 Chaos，只有当 PhysX 层通过引擎更改保持正确时，这种选择才合理。任何触及以下几点的事：</p>
 <ul>
-<li>The physics scene or substepping, particularly with
-  <a href="Fixed-Timestep.md"><code>VITE_PHYSX_FIXED_TIMESTEP</code></a> enabled</li>
-<li>Body instance transforms or interpolation</li>
-<li>Collision query paths, which the Character Movement Component uses heavily</li>
-<li>Apex Destruction or Cloth integration</li>
+<li>物理场景或子步进，特别是在启用 <a href="../../Physics/Fixed-Timestep/"><code>VITE_PHYSX_FIXED_TIMESTEP</code></a> 的情况下</li>
+<li>刚体实例变换或插值</li>
+<li>碰撞查询路径，大量使用角色移动组件（Character Movement Component）</li>
+<li>Apex 破坏或布料整合</li>
 </ul>
-<p>should be verified here before it is considered done. See
-<a href="Coding-Guidelines.md">Coding Guidelines</a> for the verification requirements.</p>
-<h2 id="fixed-timestep-testing">Fixed timestep testing</h2>
-<p>If you are evaluating <a href="Fixed-Timestep.md">fixed timestep physics</a>, this project is a reasonable place to
-observe the difference. Run it at an unlocked frame rate and then with <code>t.MaxFPS</code> set to various values:
-with the default variable timestep the simulation result changes with frame rate, and with fixed timestep
-it should not.</p>
-<p>Remember that fixed timestep is a compile-time feature. Without <code>VITE_PHYSX_FIXED_TIMESTEP=1</code> in the
-build, <code>p.VitePhysXFixedTimestep.Enabled</code> does nothing.</p>
-<h2 id="see-also">See also</h2>
+<p>在认为完成之前应在此处进行验证。验证要求请参见<a href="../../Contributing/Coding-Guidelines/">编码指南</a>。</p>
+<h2 id="_3">固定时间步测试</h2>
+<p>如果您正在评估<a href="../../Physics/Fixed-Timestep/">固定时间步物理</a>，那么该项目是观察差异的合理场所。以解锁的帧速率运行它，然后将<code>t.MaxFPS</code>设置为各种值：使用默认变量时间步长，模拟结果会随帧速率变化，而使用固定时间步长则不会。</p>
+<p>请记住，固定时间步是编译时功能。如果构建中没有<code>VITE_PHYSX_FIXED_TIMESTEP=1</code>，则<code>p.VitePhysXFixedTimestep.Enabled</code>不会执行任何操作。</p>
+<h2 id="_4">参见</h2>
 <ul>
-<li><a href="PhysX.md">PhysX</a></li>
-<li><a href="Fixed-Timestep.md">Fixed Timestep</a></li>
-<li><a href="../Physics-Cube-Bench/">Physics Cube Bench</a></li>
-<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
+<li><a href="../../Physics/PhysX/">PhysX</a></li>
+<li><a href="../../Physics/Fixed-Timestep/">固定时间步长</a></li>
+<li><a href="../Physics-Cube-Bench/">物理立方台</a></li>
+<li><a href="../../Performance/Compile-Time-Switches/">编译时开关</a></li>
 </ul>
               
             </div>

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Fixed Timestep - 引擎实现文档</title>
+    <title>固定时间步长 - 引擎实现文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Fixed Timestep";
+        var mkdocs_page_name = "\u56fa\u5b9a\u65f6\u95f4\u6b65\u957f";
         var mkdocs_page_input_path = "optimization/Physics/Fixed-Timestep.md";
         var mkdocs_page_url = null;
       </script>
@@ -70,7 +70,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Fixed Timestep</li>
+      <li class="breadcrumb-item active">固定时间步长</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Physics/Fixed-Timestep.md"> 编辑页面</a>
     </li>
@@ -80,50 +80,36 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="fixed-timestep">Fixed Timestep</h1>
-<p><tldr></p>
-<p>
-An optional Vite feature that steps PhysX at a fixed rate independent of frame rate, with render
-interpolation so motion stays smooth. Compile-time switch <code>VITE_PHYSX_FIXED_TIMESTEP</code>
-(default <code>0</code>), runtime CVar <code>p.VitePhysXFixedTimestep.Enabled</code>.
-</p>
-<p></tldr></p>
-<p>By default, Unreal steps physics with the frame's delta time. A frame that took 8&nbsp;ms steps physics by
-8&nbsp;ms; a frame that took 33&nbsp;ms steps by 33&nbsp;ms. Simulation results therefore depend on frame
-rate, which means the same input produces different outcomes on different hardware, and a replay recorded on
-one machine does not reproduce on another.</p>
-<p>Vite's fixed timestep mode decouples the two. Physics always advances in identical increments; the renderer
-interpolates between the two most recent physics states to keep motion smooth.</p>
-<h2 id="enabling">Enabling</h2>
-<p>This is a two-stage opt-in. The feature is compiled out by default.</p>
-<p><procedure title="Enable fixed timestep physics" id="enable-fixed-timestep">
-    <step>
-        Set <code>VITE_PHYSX_FIXED_TIMESTEP</code> to <code>1</code>. See
-        <a href="Compile-Time-Switches.md">Compile-Time Switches</a> for how to override it without
-        editing <code>CoreDefines.h</code>.
-    </step>
-    <step>Rebuild the engine.</step>
-    <step>
-        Set <code>p.VitePhysXFixedTimestep.Enabled 1</code> at runtime, or in
-        <code>DefaultEngine.ini</code>.
-    </step>
-    <step>
-        Enable substepping in <b>Project Settings &gt; Engine &gt; Physics</b>. The fixed-step
-        implementation runs through the substepping path.
-    </step>
-</procedure></p>
-<p>The compile-time gate exists because the feature changes hot paths in the physics scene, the substep task
-and the animation physics blend. Projects that do not need determinism should not pay for the extra branches
-and the double-buffered transform storage.</p>
-<h2 id="console-variables">Console variables</h2>
-<p>All of these exist only when <code>VITE_PHYSX_FIXED_TIMESTEP</code> is compiled in.</p>
+                <h1 id="_1">固定时间步长</h1>
+<p>可选的 Vite 功能，以独立于帧速率的固定速率步进 PhysX，并通过渲染插值使运动保持平滑。编译时开关<code>VITE_PHYSX_FIXED_TIMESTEP</code>（默认<code>0</code>），运行时CVar <code>p.VitePhysXFixedTimestep.Enabled</code>。</p>
+<p>默认情况下，Unreal 使用帧的增量时间来步进物理。物理步长为 8 毫秒的帧，物理步长为 8 毫秒；帧的步长为 33 毫秒，步长为 33 毫秒。因此，模拟结果取决于帧速率，这意味着相同的输入在不同的硬件上会产生不同的结果，并且在一台机器上记录的重放不会在另一台机器上再现。</p>
+<p>Vite 的固定时间步长模式将两者解耦。物理总是以相同的增量进步；渲染器在两个最近的物理状态之间进行插值以保持运动平滑。</p>
+<h2 id="_2">启用</h2>
+<p>这是一个两阶段的选择加入。该功能是默认编译出来的。</p>
+<ol>
+<li>
+<p>将 <a href="https://github.com/GapingPixel/UnrealEngineVite-PhysX/blob/ueVite26-JulyMajor-release/Engine/Source/Runtime/Core/Public/Misc/CoreDefines.h#L28">VITE_PHYSX_FIXED_TIMESTEP</a> 设置为 <code>1</code>。请参阅<a href="../Performance/Compile-Time-Switches.md">编译时开关</a>，了解如何在不编辑 <a href="https://github.com/OpenHUTB/engine/tree/hutb/Engine/Source/Runtime/Core/Public/Misc/CoreDefines.h">CoreDefines.h</a>（集中定义引擎核心层的一些全局宏常量和编译开关，供整个 Unreal/引擎核心代码在预处理阶段使用）的情况下覆盖它。</p>
+</li>
+<li>
+<p>重新构建引擎。</p>
+</li>
+<li>
+<p>在运行时或在 <code>DefaultEngine.ini</code> 中设置 <code>p.VitePhysXFixedTimestep.Enabled 1</code>。</p>
+</li>
+<li>
+<p>在<b>项目设置 &gt; 引擎 &gt; 物理</b>中启用子步进。固定步实现贯穿子步路径。</p>
+</li>
+</ol>
+<p>编译时门的存在是因为该功能改变了物理场景、子步骤任务和动画物理混合中的热路径。不需要确定性的项目不应为额外的分支和双缓冲转换存储付费。</p>
+<h2 id="_3">控制台变量</h2>
+<p>所有这些仅在编译<code>VITE_PHYSX_FIXED_TIMESTEP</code>时才存在。</p>
 <table>
 <thead>
 <tr>
 <th>CVar</th>
-<th>Default</th>
-<th>Range</th>
-<th>Purpose</th>
+<th>默认</th>
+<th>范围</th>
+<th>目的</th>
 </tr>
 </thead>
 <tbody>
@@ -131,147 +117,121 @@ and the double-buffered transform storage.</p>
 <td><code>p.VitePhysXFixedTimestep.Enabled</code></td>
 <td><code>0</code></td>
 <td>0/1</td>
-<td>Master enable</td>
+<td>Master 启用</td>
 </tr>
 <tr>
 <td><code>p.VitePhysXFixedTimestep.DeltaTime</code></td>
 <td><code>0.01667</code> (1/60)</td>
 <td>0.0013&ndash;1.0</td>
-<td>Fixed simulation step in seconds</td>
+<td>修复模拟步骤（以秒为单位）</td>
 </tr>
 <tr>
 <td><code>p.VitePhysXFixedTimestep.MaxTimesteps</code></td>
 <td><code>16</code></td>
 <td>1&ndash;50</td>
-<td>Maximum fixed steps per game tick before overload accumulates</td>
+<td>过载累积之前每个游戏节拍的最大固定步数</td>
 </tr>
 <tr>
 <td><code>p.VitePhysXFixedTimestep.MaxCumulativeExtraSteps</code></td>
 <td><code>50</code></td>
 <td>0&ndash;100</td>
-<td>Cumulative overload budget before the limit policy applies</td>
+<td>限制策略实施前累计过载预算</td>
 </tr>
 <tr>
 <td><code>p.VitePhysXFixedTimestep.LimitType</code></td>
 <td><code>0</code></td>
 <td>0/1</td>
-<td><code>0</code> clamp fixed steps, <code>1</code> fall back to variable substeps</td>
+<td><code>0</code> 限制固定步骤，<code>1</code> 回退到可变子步骤</td>
 </tr>
 <tr>
 <td><code>p.VitePhysXFixedTimestep.InterpolationMode</code></td>
 <td><code>1</code></td>
 <td>0/1/2</td>
-<td><code>0</code> disabled, <code>1</code> per component, <code>2</code> always</td>
+<td><code>0</code> 禁用, <code>1</code> 每个组件, <code>2</code> 总是</td>
 </tr>
 </tbody>
 </table>
-<h2 id="how-it-works">How it works</h2>
-<p>The implementation maintains a time accumulator. Each game tick adds the frame's delta to the accumulator,
-then runs as many whole fixed steps as fit. The remainder stays in the accumulator for next frame.</p>
-<p>Because a fast frame may fit zero fixed steps and a slow frame may fit several, the system has to handle two
-things carefully.</p>
-<p><strong>Buffers are not rotated on frames with no physics step.</strong> Standard substepping swaps the physics target
-buffers unconditionally. In fixed-step mode the swap is deferred until a step actually happens, which
-preserves one-shot forces, kinematic targets and custom physics callbacks that were queued during a frame
-that did not step. Without this, an impulse applied on a zero-step frame would be silently discarded.</p>
-<p><strong>Results are only fetched when a step occurred.</strong> <code>fetchResults</code> is skipped on frames with no simulation,
-avoiding redundant work and stale transform reads.</p>
-<h2 id="overload-handling">Overload handling</h2>
-<p>If the game cannot keep up &mdash; a long hitch, or a physics load too heavy for the fixed rate &mdash; the
-accumulator grows faster than it drains. Left alone this becomes a death spiral: each frame takes longer,
-which queues more steps, which makes the next frame longer still.</p>
-<p>Two limits prevent that. <code>MaxTimesteps</code> caps steps per tick. Overload beyond that cap accumulates against
-<code>MaxCumulativeExtraSteps</code>, and when that budget is exhausted, <code>LimitType</code> decides what happens:</p>
+<h2 id="_4">它是如何运作的</h2>
+<p>该实现维护一个时间累加器。每个游戏节拍都会将帧的增量添加到累加器中，然后运行尽可能多的完整固定步骤。余数保留在累加器中以供下一帧使用。</p>
+<p>由于快速帧可能适合零个固定步长，而慢速帧可能适合多个固定步长，因此系统必须仔细处理两件事。</p>
+<p><strong>缓冲区不会在没有物理步骤的帧上旋转。</strong>标准子步骤无条件交换物理目标缓冲区。在固定步长模式下，交换会推迟到实际发生一步为止，这会保留在未步进的帧期间排队的一次性力、运动学目标和自定义物理回调。如果没有这个，施加在零步帧上的脉冲将被默默地丢弃。</p>
+<p><strong>仅在发生步骤时才获取结果。</strong>在没有模拟的帧上跳过<code>fetchResults</code>，避免冗余工作和过时的转换读取。</p>
+<h2 id="_5">过载处理</h2>
+<p>如果游戏无法跟上——长时间的故障，或者物理负载对于固定速率来说太重——累加器的增长速度快于其消耗速度。如果放任不管，这将变成一个死亡螺旋：每一帧需要更长的时间，这会排队更多的步骤，这使得下一帧的时间更长。</p>
+<p>有两个限制可以防止这种情况发生。 “MaxTimesteps”限制每个节拍的步数。超出该上限的过载会根据“MaxCumulativeExtraSteps”进行累积，当预算用完时，“LimitType”将决定会发生什么：</p>
 <table>
 <thead>
 <tr>
 <th><code>LimitType</code></th>
-<th>Behaviour</th>
-<th>Use when</th>
+<th>行为</th>
+<th>什么时候使用</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>0</code> &mdash; Clamp</td>
-<td>Discard excess accumulated time. Simulation falls behind wall-clock time.</td>
-<td>Determinism matters more than real-time correspondence: replays, deterministic tests</td>
+<td><code>0</code> &mdash; 夹钳</td>
+<td>丢弃多余的累积时间。模拟落后于挂钟时间。</td>
+<td>确定性比实时通信更重要：重播、确定性测试</td>
 </tr>
 <tr>
-<td><code>1</code> &mdash; Variable substeps</td>
-<td>Fall back to normal variable-step substepping until caught up.</td>
-<td>Real-time correspondence matters more: general gameplay</td>
+<td><code>1</code> &mdash; 可变子步骤</td>
+<td>回退到正常的变步子步进，直到赶上。</td>
+<td>实时通信更重要：一般 gameplay</td>
 </tr>
 </tbody>
 </table>
-<p>Clamping means physics runs in slow motion under sustained overload but remains bit-identical for a given
-step sequence. Falling back to variable substeps keeps things real-time but sacrifices determinism for the
-frames where it engages.</p>
-<h2 id="render-interpolation">Render interpolation</h2>
-<p>Fixed stepping at 60&nbsp;Hz while rendering at 120&nbsp;fps would show each physics state twice without
-interpolation, producing visible judder. The system stores the two most recent completed transforms per body
-(<code>PreviousPhysicsTransform</code> and <code>LatestPhysicsTransform</code>) and blends between them using the accumulator's
-fractional remainder.</p>
-<p><code>InterpolationMode</code> controls how widely this applies:</p>
+<p>夹钳意味着物理在持续过载的情况下以慢动作运行，但对于给定的步骤序列保持位相同。退回到可变子步骤可以保持实时性，但会牺牲其所涉及的框架的确定性。</p>
+<h2 id="_6">渲染插值</h2>
+<p>修复了在 120 fps 渲染时以 60 Hz 步进的问题，该问题会在没有插值的情况下显示每个物理状态两次，从而产生可见的抖动。系统存储每个实体最近完成的两个变换（<code>PreviousPhysicsTransform</code>和<code>LatestPhysicsTransform</code>），并使用累加器的小数余数在它们之间进行混合。</p>
+<p><code>InterpolationMode</code> 控制其应用范围：</p>
 <ul>
-<li><strong><code>0</code> Disabled.</strong> No interpolation. Bodies snap to the latest physics state. Cheapest, and correct if your
-  render rate matches your fixed step rate exactly.</li>
-<li><strong><code>1</code> Per component (default).</strong> Interpolates only bodies whose <code>bInterpolateWhenSubStepping</code> flag is set.
-  The engine clears this flag for bodies where interpolation cannot be observed &mdash; kinematic
-  query-only bodies, for instance &mdash; so this mode gets the visual benefit without paying for bodies
-  that do not need it.</li>
-<li><strong><code>2</code> Always.</strong> Interpolates every body unconditionally.</li>
+<li><strong><code>0</code> 禁用。</strong> 没有插值。身体捕捉到最新的物理状态。最便宜，并且如果您的渲染速率与您的固定步长速率完全匹配，则更正。</li>
+<li><strong><code>1</code> 每个组件（默认）。</strong> 仅对设置了<code>bInterpolateWhenSubStepping</code>标志的实体进行插值。引擎会为无法观察到插值的实体（例如仅运动查询实体）清除此标志，因此此模式可以获得视觉优势，而无需为不需要的实体付出代价。</li>
+<li><strong><code>2</code> 总是。</strong> 无条件地插值每个实体。</li>
 </ul>
-<p>Interpolation applies to both rigid bodies and the skeletal mesh physics blend, so ragdolls and
-physics-blended animation stay smooth.</p>
-<h2 id="choosing-a-step-rate">Choosing a step rate</h2>
-<p><code>DeltaTime</code> is the central tuning decision.</p>
+<p>插值适用于刚体和骨架网格物体物理混合，因此布娃娃（ragdolls）和物理混合动画保持平滑。</p>
+<h2 id="_7">选择步进速率</h2>
+<p><code>DeltaTime</code>是中央调整决策。</p>
 <table>
 <thead>
 <tr>
-<th>Step rate</th>
-<th>Value</th>
-<th>Notes</th>
+<th>步速</th>
+<th>数值</th>
+<th>笔记</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>30&nbsp;Hz</td>
 <td><code>0.03333</code></td>
-<td>Cheapest. Acceptable for slow, heavy objects. Fast bodies will tunnel.</td>
+<td>最便宜的。可接受缓慢、重的物体。快速的物体会形成隧道。</td>
 </tr>
 <tr>
 <td>60&nbsp;Hz</td>
 <td><code>0.01667</code></td>
-<td>Default. Good general choice.</td>
+<td>默认。不错的一般选择。</td>
 </tr>
 <tr>
 <td>120&nbsp;Hz</td>
 <td><code>0.00833</code></td>
-<td>Better for fast projectiles and tight constraints. Roughly double the CPU cost.</td>
+<td>更适合快速射弹和严格的约束。大约是 CPU 成本的两倍。</td>
 </tr>
 </tbody>
 </table>
-<p>Physics cost scales linearly with step rate, so 120&nbsp;Hz stepping costs about twice 60&nbsp;Hz. Pick the
-lowest rate that keeps your fastest-moving simulated bodies stable, and use CCD rather than a higher step
-rate to solve isolated tunnelling problems.</p>
-<blockquote>
-<p>Choose the step rate early and do not change it after content is tuned. Physics content &mdash; impulse
-magnitudes, constraint stiffness, damping values &mdash; is implicitly tuned against the step rate.
-Changing it late means retuning everything.</p>
-<p>{style="warning"}</p>
-</blockquote>
-<h2 id="when-to-use-this">When to use this</h2>
-<p><strong>Use fixed timestep for</strong> deterministic replays, networked physics where client and server must agree,
-automated tests that assert on physics outcomes, and any game where identical input must produce identical
-results across machines.</p>
-<p><strong>Do not use it for</strong> projects with no determinism requirement. The default variable-step path is cheaper
-and the compile-time switch defaults to off for that reason.</p>
-<h2 id="see-also">See also</h2>
+<p>物理成本与步速成线性关系，因此 120 Hz 步进成本约为 60 Hz 的两倍。选择保持最快移动的模拟物体稳定的最低速率，并使用 CCD 而不是更高的步进速率来解决孤立的隧道问题。</p>
+<div class="admonition 注意">
+<p class="admonition-title">注意</p>
+<p>尽早选择步进速率，并且在内容调整后不要更改它。物理内容——脉冲幅度、约束刚度、阻尼值——根据步长速率隐式调整。晚了改变它意味着重新调整一切。</p>
+</div>
+<h2 id="_8">何时使用这个</h2>
+<p><strong>使用固定时间步长</strong>确定性重播、客户端和服务器必须同意的网络物理、断言物理结果的自动测试，以及相同输入必须在机器上产生相同结果的任何游戏。</p>
+<p><strong>请勿将其用于</strong>没有确定性要求的项目。默认的可变步路径更便宜，因此编译时开关默认为关闭。</p>
+<h2 id="_9">参见</h2>
 <ul>
 <li><a href="../PhysX/">PhysX</a></li>
-<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
-<li><a href="../Instanced-Physics/">Instanced Physics Subsystem</a></li>
-<li><a href="Profiling.md">Profiling</a></li>
+<li><a href="../../Performance/Compile-Time-Switches/">编译时开关</a></li>
+<li><a href="../Instanced-Physics/">实例物理子系统</a></li>
+<li><a href="../../Performance/Profiling/">分析</a></li>
 </ul>
               
             </div>
