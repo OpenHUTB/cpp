@@ -1,4 +1,4 @@
-﻿# 废弃公寓的场景
+﻿# 废弃的公寓场景
 
 Interior lighting scene. Interiors are the hardest case for global illumination, which makes them the most useful place to evaluate it.
 
@@ -8,7 +8,7 @@ Interior lighting scene. Interiors are the hardest case for global illumination,
 
 ## 下载
 
-[废弃公寓的场景](https://drive.google.com/file/d/1OCb9sW9xH3FsFUza0ZG1tKWOPMMus5XA/view?usp=sharing)
+[废弃的公寓场景](https://drive.google.com/file/d/1OCb9sW9xH3FsFUza0ZG1tKWOPMMus5XA/view?usp=sharing)
 
 ## 为什么选用室内场景
 
