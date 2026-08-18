@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Bundled Plugins - 引擎实现文档</title>
+    <title>已捆绑的插件 - 引擎实现文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Bundled Plugins";
+        var mkdocs_page_name = "\u5df2\u6346\u7ed1\u7684\u63d2\u4ef6";
         var mkdocs_page_input_path = "optimization/Plugins/Bundled-Plugins.md";
         var mkdocs_page_url = null;
       </script>
@@ -70,7 +70,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Bundled Plugins</li>
+      <li class="breadcrumb-item active">已捆绑的插件</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Plugins/Bundled-Plugins.md"> 编辑页面</a>
     </li>
@@ -80,26 +80,22 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="bundled-plugins">Bundled Plugins</h1>
-<p><tldr></p>
-<p>
-Everything Vite adds on top of stock UE 4.27, with versions and default enablement. Stock 4.27 plugins are
-not listed &mdash; only Vite's additions and the vendor integrations.
-</p>
-<p></tldr></p>
+                <h1 id="_1">已捆绑的插件</h1>
+<p>Everything Vite adds on top of stock UE 4.27, with versions and default enablement. Stock 4.27 plugins are
+not listed &mdash; only Vite's additions and the vendor integrations.</p>
 <p>Versions are as of the July major integration. Check the <code>.uplugin</code> file for the authoritative value in
 your tree.</p>
 <p><img src="../../img/optimization/VitePlugins.png" alt="Contents of Engine/Plugins/Runtime/VitePlugins in Explorer" border-effect="line"/></p>
 <p><em>Vite's own additions live under <code>Engine\Plugins\Runtime\VitePlugins</code>. Vendor integrations from NVIDIA sit
 separately under <code>Engine\Plugins\Runtime\Nvidia</code>.</em></p>
-<h2 id="upscaling-and-frame-generation">Upscaling and frame generation</h2>
+<h2 id="_2">放大和帧生成</h2>
 <table>
 <thead>
 <tr>
-<th>Plugin</th>
-<th>Version</th>
-<th>Default</th>
-<th>Path</th>
+<th>插件</th>
+<th>版本</th>
+<th>默认值</th>
+<th>路径</th>
 </tr>
 </thead>
 <tbody>
@@ -155,14 +151,14 @@ separately under <code>Engine\Plugins\Runtime\Nvidia</code>.</em></p>
 </table>
 <p>FSR 4 uses the native ffx-api and is DX12-only. It was backported to 4.27 specifically for Vite. Full
 detail in <a href="Upscalers.md">Upscalers</a>.</p>
-<h2 id="ray-tracing-and-rendering">Ray tracing and rendering</h2>
+<h2 id="_3">光线追踪和渲染</h2>
 <table>
 <thead>
 <tr>
-<th>Plugin</th>
-<th>Version</th>
-<th>Default</th>
-<th>Path</th>
+<th>插件</th>
+<th>版本</th>
+<th>默认</th>
+<th>路径</th>
 </tr>
 </thead>
 <tbody>
@@ -198,18 +194,16 @@ detail in <a href="Upscalers.md">Upscalers</a>.</p>
 </tr>
 </tbody>
 </table>
-<p>RTXGI provides the DDGI implementation that is Vite's recommended dynamic GI solution. NRD/ReLAX denoises
-ray-traced output. Both being on by default is deliberate: they are the basis of Vite's recommended
-lighting setup. See <a href="Global-Illumination.md">Global Illumination</a> and
+<p>RTXGI provides the DDGI implementation that is Vite's recommended dynamic GI solution. NRD/ReLAX denoises ray-traced output. Both being on by default is deliberate: they are the basis of Vite's recommended lighting setup. See <a href="Global-Illumination.md">Global Illumination</a> and
 <a href="DDGI-Dynamic.md">Dynamic DDGI</a>.</p>
-<h2 id="hair">Hair</h2>
+<h2 id="_4">头发</h2>
 <table>
 <thead>
 <tr>
-<th>Plugin</th>
-<th>Version</th>
-<th>Default</th>
-<th>Path</th>
+<th>插件</th>
+<th>版本</th>
+<th>默认</th>
+<th>路径</th>
 </tr>
 </thead>
 <tbody>
@@ -229,14 +223,14 @@ lighting setup. See <a href="Global-Illumination.md">Global Illumination</a> and
 </table>
 <p>Two independent hair systems with different authoring pipelines. See
 <a href="Hair-Rendering.md">Hair Rendering</a>.</p>
-<h2 id="physics-and-destruction">Physics and destruction</h2>
+<h2 id="_5">物理和破坏</h2>
 <table>
 <thead>
 <tr>
-<th>Plugin</th>
-<th>Version</th>
-<th>Default</th>
-<th>Path</th>
+<th>插件</th>
+<th>版本</th>
+<th>默认值</th>
+<th>路径</th>
 </tr>
 </thead>
 <tbody>

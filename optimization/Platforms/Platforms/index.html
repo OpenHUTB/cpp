@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Platforms - 引擎实现文档</title>
+    <title>平台 - 引擎实现文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Platforms";
+        var mkdocs_page_name = "\u5e73\u53f0";
         var mkdocs_page_input_path = "optimization/Platforms/Platforms.md";
         var mkdocs_page_url = null;
       </script>
@@ -70,7 +70,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Platforms</li>
+      <li class="breadcrumb-item active">平台</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Platforms/Platforms.md"> 编辑页面</a>
     </li>
@@ -80,27 +80,23 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="platforms">Platforms</h1>
-<p><tldr></p>
-<p>
-Vite main target is Windows 64-bit on DirectX 12. Other platforms inherit 4.27 support.
-</p>
-<p></tldr></p>
+                <h1 id="_1">平台</h1>
+<p>Vite main target is Windows 64-bit on DirectX 12. Other platforms inherit 4.27 support.</p>
 <p>Vite is a focused fork. The features that distinguish it &mdash; the NvRTX ray tracing suite, DDGI, RTXDI,
 DLSS and its alternatives, HBAO+, hardware tessellation &mdash; are Deferred Path GPU features. Mean mainly for Desktop and 9th Gen Consoles</p>
-<h2 id="support-levels">Support levels</h2>
+<h2 id="_2">支持层次</h2>
 <table>
 <thead>
 <tr>
-<th>Platform</th>
-<th>Level</th>
-<th>Notes</th>
+<th>平台</th>
+<th>层次</th>
+<th>说明</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Windows 64-bit</td>
-<td><strong>Primary</strong></td>
+<td><strong>主要</strong></td>
 <td>What everything is built and measured against</td>
 </tr>
 <tr>
@@ -110,39 +106,39 @@ DLSS and its alternatives, HBAO+, hardware tessellation &mdash; are Deferred Pat
 </tr>
 <tr>
 <td>Linux</td>
-<td>Inherited</td>
+<td>已继承</td>
 <td>Stock 4.27 support. Ray tracing suite untested.</td>
 </tr>
 <tr>
 <td>Mac</td>
-<td>Inherited</td>
+<td>已继承</td>
 <td>Stock 4.27 support. No DXR, so the ray tracing suite does not apply.</td>
 </tr>
 <tr>
 <td>Android</td>
-<td>Inherited</td>
+<td>已继承</td>
 <td>Inherits Vite updates to Forward Path.</td>
 </tr>
 <tr>
 <td>iOS / tvOS</td>
-<td>Inherited</td>
+<td>已继承</td>
 <td>Inherits Vite updates to Forward Path.</td>
 </tr>
 <tr>
 <td>HTML5</td>
-<td>Inherited</td>
+<td>已继承</td>
 <td>Stock 4.27 support, long deprecated upstream</td>
 </tr>
 <tr>
-<td>Consoles</td>
-<td>Not addressed</td>
+<td>控制台</td>
+<td>未处理</td>
 <td>Requires platform SDKs Vite cannot make console related changes public</td>
 </tr>
 </tbody>
 </table>
 <p>"Inherited" means the stock 4.27 code is present and has not been deliberately broken, but Vite does not
 test it and the fork's rendering features are unavailable or unvalidated there.</p>
-<h2 id="enabling-other-platforms">Enabling other platforms</h2>
+<h2 id="_3">启用其他平台</h2>
 <p>Platform dependencies are opt-in at setup time.</p>
 <p>Through <a href="ViteSetup.md">ViteSetup</a>, choose the <strong>Win64 + Android</strong> or <strong>Win64 + Linux</strong> profile, or use the
 step-by-step assistant to toggle platforms individually. <strong>Full setup</strong> passes no <code>-exclude</code> argument to
@@ -160,48 +156,48 @@ step-by-step assistant to toggle platforms individually. <strong>Full setup</str
 Adding a platform after the fact requires re-running dependency setup and rebuilding. Decide before your
 first build if you can.
 </warning></p>
-<h2 id="graphics-apis">Graphics APIs</h2>
+<h2 id="api">图形 API</h2>
 <table>
 <thead>
 <tr>
 <th>API</th>
-<th>Status</th>
-<th>Notes</th>
+<th>状态</th>
+<th>笔记</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>DirectX 12</td>
-<td><strong>Primary</strong></td>
+<td><strong>主要</strong></td>
 <td>Required for DXR, and therefore for everything ray-traced</td>
 </tr>
 <tr>
 <td>DirectX 11</td>
-<td>Supported</td>
+<td>已支持</td>
 <td>HBAO+ works here; ray tracing does not</td>
 </tr>
 <tr>
 <td>Vulkan</td>
-<td>Inherited</td>
+<td>已继承</td>
 <td>Stock 4.27 support; Vite's ray tracing suite is DXR-based</td>
 </tr>
 <tr>
 <td>Metal</td>
-<td>Inherited</td>
-<td>Mac only</td>
+<td>已继承</td>
+<td>仅 Mac</td>
 </tr>
 <tr>
 <td>OpenGL ES</td>
-<td>Inherited</td>
+<td>已继承</td>
 <td>Mobile</td>
 </tr>
 </tbody>
 </table>
-<h3 id="what-requires-dx12">What requires DX12</h3>
+<h3 id="dx12">需要 DX12 什么</h3>
 <p>Everything ray-traced needs DXR, which in Vite means DirectX 12:</p>
 <ul>
 <li><a href="RT-Reflections.md">Ray-traced reflections</a>, shadows, ambient occlusion and sky light</li>
-<li><a href="DDGI-Dynamic.md">Dynamic DDGI</a> and per-pixel ray-traced GI</li>
+<li><a href="DDGI-Dynamic.md">动态 DDGI</a> and per-pixel ray-traced GI</li>
 <li><a href="RTXDI.md">RTXDI</a> and <a href="Path-Tracing.md">path tracing</a>, if you rebuild with <code>VITE_RT_PSO_DEBLOAT=0</code></li>
 <li><a href="RT-Translucency-And-Caustics.md">Translucency and caustics</a>, same condition</li>
 </ul>
@@ -217,22 +213,22 @@ first build if you can.
 </ul>
 <p>A DX11 target is viable if you are willing to give up ray tracing. It is the right choice for a project
 whose <a href="Performance-Targets.md">performance targets</a> do not leave budget for DXR.</p>
-<h2 id="hardware">Hardware</h2>
+<h2 id="_4">硬件</h2>
 <p>See <a href="System-Requirements.md">System Requirements</a> for development and runtime hardware.</p>
-<h2 id="packaging">Packaging</h2>
+<h2 id="_5">打包</h2>
 <p>The <a href="Installed-Builds.md">installed build</a> is produced with Development and Shipping game configurations
 for Win64. If you need other configurations or platforms, edit the <code>RunUAT.bat</code> BuildGraph arguments:</p>
 <div class="highlight"><pre><span></span><code>-set:WithLinux=true
 -set:GameConfigurations=Development;Test;Shipping
 </code></pre></div>
 <p>Each additional platform and configuration lengthens an already long build considerably.</p>
-<h2 id="see-also">See also</h2>
+<h2 id="_6">参见</h2>
 <ul>
-<li><a href="System-Requirements.md">System Requirements</a></li>
-<li><a href="Installed-Builds.md">Installed Builds</a></li>
-<li><a href="ViteSetup.md">ViteSetup Assistant</a></li>
-<li><a href="Ray-Tracing.md">Ray Tracing</a></li>
-<li><a href="Debloat-Guide.md">Debloat Guide</a></li>
+<li><a href="System-Requirements.md">系统要求</a></li>
+<li><a href="Installed-Builds.md">已安装好的构建</a></li>
+<li><a href="ViteSetup.md">ViteSetup 助手</a></li>
+<li><a href="Ray-Tracing.md">光线追踪</a></li>
+<li><a href="Debloat-Guide.md">Debloat 指南</a></li>
 </ul>
               
             </div>
