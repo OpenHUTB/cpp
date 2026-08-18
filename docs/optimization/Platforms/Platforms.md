@@ -1,32 +1,28 @@
-# Platforms
+# 平台
 
-<tldr>
-<p>
 Vite main target is Windows 64-bit on DirectX 12. Other platforms inherit 4.27 support.
-</p>
-</tldr>
 
 Vite is a focused fork. The features that distinguish it &mdash; the NvRTX ray tracing suite, DDGI, RTXDI,
 DLSS and its alternatives, HBAO+, hardware tessellation &mdash; are Deferred Path GPU features. Mean mainly for Desktop and 9th Gen Consoles
 
 ## Support levels
 
-| Platform | Level | Notes                                                                  |
+| 平台 | 层次 | 说明                                                                  |
 |---|---|------------------------------------------------------------------------|
-| Windows 64-bit | **Primary** | What everything is built and measured against                          |
+| Windows 64-bit | **主要** | What everything is built and measured against                          |
 | Windows 32-bit | Support files only | Required by Win64 tooling; not a shipping target                       |
-| Linux | Inherited | Stock 4.27 support. Ray tracing suite untested.                        |
-| Mac | Inherited | Stock 4.27 support. No DXR, so the ray tracing suite does not apply.   |
-| Android | Inherited | Inherits Vite updates to Forward Path.                                 |
-| iOS / tvOS | Inherited | Inherits Vite updates to Forward Path.                                 |
-| HTML5 | Inherited | Stock 4.27 support, long deprecated upstream                           |
-| Consoles | Not addressed | Requires platform SDKs Vite cannot make console related changes public |
+| Linux | 已继承 | Stock 4.27 support. Ray tracing suite untested.                        |
+| Mac | 已继承 | Stock 4.27 support. No DXR, so the ray tracing suite does not apply.   |
+| Android | 已继承 | Inherits Vite updates to Forward Path.                                 |
+| iOS / tvOS | 已继承 | Inherits Vite updates to Forward Path.                                 |
+| HTML5 | 已继承 | Stock 4.27 support, long deprecated upstream                           |
+| 控制台 | 未处理 | Requires platform SDKs Vite cannot make console related changes public |
 
 "Inherited" means the stock 4.27 code is present and has not been deliberately broken, but Vite does not
 test it and the fork's rendering features are unavailable or unvalidated there.
 
 
-## Enabling other platforms
+## 启用其他平台
 
 Platform dependencies are opt-in at setup time.
 
@@ -51,9 +47,9 @@ Adding a platform after the fact requires re-running dependency setup and rebuil
 first build if you can.
 </warning>
 
-## Graphics APIs
+## 图形 API
 
-| API | Status | Notes |
+| API | 状态 | 笔记 |
 |---|---|---|
 | DirectX 12 | **Primary** | Required for DXR, and therefore for everything ray-traced |
 | DirectX 11 | Supported | HBAO+ works here; ray tracing does not |
