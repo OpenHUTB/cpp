@@ -5,7 +5,7 @@ Vite main target is Windows 64-bit on DirectX 12. Other platforms inherit 4.27 s
 Vite is a focused fork. The features that distinguish it &mdash; the NvRTX ray tracing suite, DDGI, RTXDI,
 DLSS and its alternatives, HBAO+, hardware tessellation &mdash; are Deferred Path GPU features. Mean mainly for Desktop and 9th Gen Consoles
 
-## Support levels
+## 支持层次
 
 | 平台 | 层次 | 说明                                                                  |
 |---|---|------------------------------------------------------------------------|
@@ -51,18 +51,18 @@ first build if you can.
 
 | API | 状态 | 笔记 |
 |---|---|---|
-| DirectX 12 | **Primary** | Required for DXR, and therefore for everything ray-traced |
-| DirectX 11 | Supported | HBAO+ works here; ray tracing does not |
-| Vulkan | Inherited | Stock 4.27 support; Vite's ray tracing suite is DXR-based |
-| Metal | Inherited | Mac only |
-| OpenGL ES | Inherited | Mobile |
+| DirectX 12 | **主要** | Required for DXR, and therefore for everything ray-traced |
+| DirectX 11 | 已支持 | HBAO+ works here; ray tracing does not |
+| Vulkan | 已继承 | Stock 4.27 support; Vite's ray tracing suite is DXR-based |
+| Metal | 已继承 | 仅 Mac |
+| OpenGL ES | 已继承 | Mobile |
 
-### What requires DX12
+### 需要 DX12 什么
 
 Everything ray-traced needs DXR, which in Vite means DirectX 12:
 
 - [Ray-traced reflections](RT-Reflections.md), shadows, ambient occlusion and sky light
-- [Dynamic DDGI](DDGI-Dynamic.md) and per-pixel ray-traced GI
+- [动态 DDGI](DDGI-Dynamic.md) and per-pixel ray-traced GI
 - [RTXDI](RTXDI.md) and [path tracing](Path-Tracing.md), if you rebuild with `VITE_RT_PSO_DEBLOAT=0`
 - [Translucency and caustics](RT-Translucency-And-Caustics.md), same condition
 
@@ -80,12 +80,12 @@ Everything ray-traced needs DXR, which in Vite means DirectX 12:
 A DX11 target is viable if you are willing to give up ray tracing. It is the right choice for a project
 whose [performance targets](Performance-Targets.md) do not leave budget for DXR.
 
-## Hardware
+## 硬件
 
 See [System Requirements](System-Requirements.md) for development and runtime hardware.
 
 
-## Packaging
+## 打包
 
 The [installed build](Installed-Builds.md) is produced with Development and Shipping game configurations
 for Win64. If you need other configurations or platforms, edit the `RunUAT.bat` BuildGraph arguments:
@@ -97,10 +97,10 @@ for Win64. If you need other configurations or platforms, edit the `RunUAT.bat` 
 
 Each additional platform and configuration lengthens an already long build considerably.
 
-## See also
+## 参见
 
-- [System Requirements](System-Requirements.md)
-- [Installed Builds](Installed-Builds.md)
-- [ViteSetup Assistant](ViteSetup.md)
-- [Ray Tracing](Ray-Tracing.md)
-- [Debloat Guide](Debloat-Guide.md)
+- [系统要求](System-Requirements.md)
+- [已安装好的构建](Installed-Builds.md)
+- [ViteSetup 助手](ViteSetup.md)
+- [光线追踪](Ray-Tracing.md)
+- [Debloat 指南](Debloat-Guide.md)
