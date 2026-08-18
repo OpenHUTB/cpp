@@ -1,11 +1,9 @@
-# Bundled Plugins
+# 已捆绑的插件
 
-<tldr>
-<p>
+
 Everything Vite adds on top of stock UE 4.27, with versions and default enablement. Stock 4.27 plugins are
 not listed &mdash; only Vite's additions and the vendor integrations.
-</p>
-</tldr>
+
 
 Versions are as of the July major integration. Check the `.uplugin` file for the authoritative value in
 your tree.
@@ -15,9 +13,9 @@ your tree.
 *Vite's own additions live under `Engine\Plugins\Runtime\VitePlugins`. Vendor integrations from NVIDIA sit
 separately under `Engine\Plugins\Runtime\Nvidia`.*
 
-## Upscaling and frame generation
+## 放大和帧生成
 
-| Plugin | Version | Default | Path |
+| 插件 | 版本 | 默认值 | 路径 |
 |---|---|---|---|
 | NVIDIA DLSS Super Resolution / Ray Reconstruction / DLAA | 8.7.0 (NGX 310.7.0) | Off | `Runtime\Nvidia\DLSS` |
 | NVIDIA DLSS Frame Generation (Streamline) | 1.3.0-SL2.4.0 | Off | `Runtime\Nvidia\Streamline` |
@@ -31,9 +29,9 @@ separately under `Engine\Plugins\Runtime\Nvidia`.*
 FSR 4 uses the native ffx-api and is DX12-only. It was backported to 4.27 specifically for Vite. Full
 detail in [Upscalers](Upscalers.md).
 
-## Ray tracing and rendering
+## 光线追踪和渲染
 
-| Plugin | Version | Default | Path |
+| 插件 | 版本 | 默认 | 路径 |
 |---|---|---|---|
 | NVIDIA RTX Global Illumination (RTXGI) | 1.1.50 | **On** | `Runtime\Nvidia\RTXGI` |
 | NVIDIA Real-Time Denoiser (NRD/ReLAX) | 2.10.00-relax | **On** | `Runtime\Nvidia\NRD` |
@@ -41,14 +39,12 @@ detail in [Upscalers](Upscalers.md).
 | NVIDIA Ansel | &mdash; | &mdash; | `Runtime\Nvidia\Ansel` |
 | Graphics Card Info Utilities | 1.0 | Off | `Runtime\Nvidia\GraphicsCardInfoUtils` |
 
-RTXGI provides the DDGI implementation that is Vite's recommended dynamic GI solution. NRD/ReLAX denoises
-ray-traced output. Both being on by default is deliberate: they are the basis of Vite's recommended
-lighting setup. See [Global Illumination](Global-Illumination.md) and
+RTXGI provides the DDGI implementation that is Vite's recommended dynamic GI solution. NRD/ReLAX denoises ray-traced output. Both being on by default is deliberate: they are the basis of Vite's recommended lighting setup. See [Global Illumination](Global-Illumination.md) and
 [Dynamic DDGI](DDGI-Dynamic.md).
 
-## Hair
+## 头发
 
-| Plugin | Version | Default | Path |
+| 插件 | 版本 | 默认 | 路径 |
 |---|---|---|---|
 | TressFX 5.0 | 5.0 | &mdash; | `Runtime\TressFX` |
 | Groom (HairStrands) | 1.0 | Off | `Runtime\HairStrands` |
@@ -56,9 +52,9 @@ lighting setup. See [Global Illumination](Global-Illumination.md) and
 Two independent hair systems with different authoring pipelines. See
 [Hair Rendering](Hair-Rendering.md).
 
-## Physics and destruction
+## 物理和破坏
 
-| Plugin | Version | Default | Path |
+| 插件 | 版本 | 默认值 | 路径 |
 |---|---|---|---|
 | Blast (runtime) | 1.0 | Off | `GameWorks\Blast` |
 | Blast Plugin (authoring) | 0.1 | Off | `Experimental\BlastPlugin` |
