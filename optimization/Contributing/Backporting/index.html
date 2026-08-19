@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Backporting - 引擎实现文档</title>
+    <title>向后移植 - 引擎实现文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Backporting";
+        var mkdocs_page_name = "\u5411\u540e\u79fb\u690d";
         var mkdocs_page_input_path = "optimization/Contributing/Backporting.md";
         var mkdocs_page_url = null;
       </script>
@@ -70,7 +70,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Backporting</li>
+      <li class="breadcrumb-item active">向后移植</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Contributing/Backporting.md"> 编辑页面</a>
     </li>
@@ -80,182 +80,165 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="backporting">Backporting</h1>
-<p><tldr></p>
-<p>
-Vite July Release has currently over 300 backports from UE5.0 to UE 5.8 
-</p>
-<p></tldr></p>
-<p>Vite is a NvRTX 4.27 Plus fork that keeps pace with technology developed for newer engines. That means backporting is
-a routine activity in order to upgrade the source.</p>
-<h2 id="what-has-been-backported">What has been backported</h2>
+                <h1 id="_1">向后移植</h1>
+<p>Vite 七月版本目前有超过 300 个从 UE5.0 到 UE 5.8 的向后移植。</p>
+<p>Vite 是一款 NvRTX 4.27 Plus 分叉，与最新引擎开发的技术保持同步。这意味着向后移植是升级源代码的例行活动。</p>
+<h2 id="_2">已向后移植的内容</h2>
 <table>
 <thead>
 <tr>
-<th>Source</th>
-<th>Examples</th>
+<th>来源</th>
+<th>示例</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>UE5</td>
-<td>Non Trivial Rendering Optimizations, comprehensive CPU Optimizations, Plugins, QoL improvements, Animation features, Third Party Libs</td>
+<td>重要的渲染优化、全面的 CPU 优化、插件、QoL 改进、动画功能、第三方库</td>
 </tr>
 <tr>
 <td>Vendor SDKs</td>
-<td><a href="Upscalers.md">DLSS 4.5, FSR 4, XeSS 3.0.5, Streamline</a>, TressFX 5.0, Blast</td>
+<td><a href="../../Rendering/Upscalers/">DLSS 4.5, FSR 4, XeSS 3.0.5, Streamline</a>, TressFX 5.0, Blast</td>
 </tr>
 <tr>
-<td>Third-party plugins</td>
-<td>ACL, Motion Symphony, <a href="Bundled-Plugins.md">Kawaii Physics</a></td>
+<td>第三方插件</td>
+<td>ACL, Motion Symphony, <a href="../../Plugins/Bundled-Plugins/">Kawaii Physics</a></td>
 </tr>
 </tbody>
 </table>
-<h2 id="before-you-backport">Before you backport</h2>
-<p><procedure title="Backport feasibility check" id="backport-check">
-    <step>
-        <b>Check the licence.</b> UE5 code is under Epic's licence, which permits use in an Unreal
-        Engine fork but not arbitrary redistribution. Third-party code must be permissively licensed
-        &mdash; MIT, Apache 2.0, BSD, Zlib. See
-        <a href="Coding-Guidelines.md">Coding Guidelines</a>.
-    </step>
-    <step>
-        <b>Check the dependency graph.</b> A UE5 feature that depends on Nanite, Lumen, the UE5 RDG API
-        surface or the Chaos physics interface will not backport cleanly. Establish what it actually needs
-        before writing code.
-    </step>
-    <step>
-        <b>Check the ABI implications.</b> If the feature requires changing a shader-visible struct or a
-        packed bitmask, it cannot be backported as-is. See the
-        <a href="Coding-Guidelines.md">ABI rules</a>.
-    </step>
-    <step>
-        <b>Check whether it is worth it.</b> A UE5 feature that exists to solve a UE5 problem may have no
-        value in Vite. Focus on optimizations, Third Party Lib Updates, Plugin updates,SDK updates and fixes. 
-    </step>
-</procedure></p>
-<h2 id="common-obstacles">Common obstacles</h2>
-<p><deflist>
-<def title="RDG API differences">
-UE5's Render Dependency Graph API diverged substantially from 4.27's. Pass declarations, resource
-transitions and uniform buffer creation all differ. This is usually mechanical to translate but touches
-every line of a render pass.
-</def>
-<def title="Chaos versus PhysX">
-Anything in UE5 that touches physics assumes Chaos. Vite is PhysX &mdash; see
-<a href="PhysX.md">PhysX</a>. Physics-adjacent backports need the interface rewritten, not translated.
-</def>
-<def title="Core type changes">
-UE5 changed several core types, most visibly the move from <code>FVector</code> as float to double
-precision. Backporting means reverting those changes throughout, and watching for places where the
-precision was load-bearing.
-</def>
-<def title="Module reorganisation">
-UE5 split and renamed modules. Includes, build dependencies and module names all need remapping to their
-4.27 locations.
-</def>
-<def title="Shading model slots">
-Shading models are a limited enum. Vite already adds <a href="Shading-Models.md">Callisto BRDF, Toon and
-Lit Reactive</a>. Adding another consumes a slot and adds shader permutations across the board &mdash; see
-<a href="Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a>.
-</def>
-</deflist></p>
-<h2 id="doing-the-work">Doing the work</h2>
-<h3 id="keep-the-change-traceable">Keep the change traceable</h3>
-<p>Mark backported regions with the existing inline comment convention so they are identifiable after future
-upstream merges:</p>
+<div class="admonition 笔记">
+<p class="admonition-title">笔记</p>
+<p>UE的QoL（Quality of Life，生活质量）改进，指的就是那些不直接增加新功能，但能显著提升开发者效率、减少重复劳动、优化体验的细节改进。</p>
+</div>
+<h2 id="_3">在向后移植之前</h2>
+<h3 id="_4">向后移植可行性检查</h3>
+<ol>
+<li>
+<p><b>检查许可证。</b> UE5 代码已获得 Epic 的许可证，该许可证允许在虚幻引擎分支中使用，但不允许任意重新分发。第三方代码必须获得许可——MIT、Apache 2.0、BSD、Zlib。请参阅<a href="Coding-Guidelines.md">编码指南</a>。</p>
+</li>
+<li>
+<p><b>检查依赖关系图。</b>依赖于 Nanite、Lumen、UE5 RDG API 表面或 Chaos 物理接口的 UE5 功能将无法完全向后移植。在编写代码之前确定实际需要的内容。</p>
+</li>
+<li>
+<p><b>检查 ABI 影响。</b>如果该功能需要更改着色器可见结构或打包位掩码，则无法按原样向后移植。请参阅<a href="Coding-Guidelines.md">ABI 规则</a>。</p>
+</li>
+<li>
+<p><b>检查是否值得。</b>为了解决UE5问题而存在的UE5功能在Vite中可能没有价值。专注于优化、第三方库更新、插件更新、SDK 更新和修复。</p>
+</li>
+</ol>
+<h2 id="_5">常见障碍</h2>
+<ul>
+<li>
+<p><strong>RDG API 差异</strong></p>
+<p>UE5 的渲染依赖图（Render Dependency Graph, RDG） API 与 4.27 的有很大不同。传递声明、资源转换和统一缓冲区创建都不同。这通常是机械翻译，但涉及渲染通道的每一行。</p>
+</li>
+<li>
+<p><strong>Chaos 与 PhysX</strong></p>
+<p>UE5 中任何涉及物理的内容都假定为 Chaos。 Vite 是 PhysX — 请参阅 <a href="../Physics/PhysX.md">PhysX</a>。物理相邻的向后移植需要重写接口，而不是翻译。</p>
+</li>
+<li>
+<p><strong>核心类型变化</strong></p>
+<p>UE5 更改了多个核心类型，最明显的是从浮点型 FVector 转变为双精度型。向后移植意味着从头到尾恢复这些更改，并观察精度承受负载的地方。</p>
+</li>
+<li>
+<p><strong>模块重组</strong></p>
+<p>UE5 拆分并重命名模块。包含、构建依赖项和模块名称都需要重新映射到其 4.27 位置。</p>
+</li>
+<li>
+<p><strong>着色模型槽</strong></p>
+<p>着色模型是一个有限的枚举。 Vite 已经添加了 <a href="../Rendering/Shading-Models.md">Callisto BRDF、Toon 和 Lit Reactive</a>。添加另一个会消耗一个插槽并全面添加着色器排列 -请参阅<a href="../Performance/Shader-Compilation-And-PSO.md">着色器编译和 PSO</a>。</p>
+</li>
+</ul>
+<h2 id="_6">执行相关工作</h2>
+<h3 id="_7">保持变更可追溯性</h3>
+<p>使用现有的内联注释约定标记向后移植的区域，以便在将来向上游合并后能够识别它们：</p>
 <div class="highlight"><pre><span></span><code><span class="c1">// AKCHANGES START</span>
 <span class="c1">// Backported from UE5.3, CL 12345678</span>
 <span class="p">...</span>
 <span class="c1">// AKCHANGES END</span>
 </code></pre></div>
-<h3 id="guard-what-costs-something">Guard what costs something</h3>
-<p>If the feature has a runtime or compile-time cost that not every project wants, put it behind a
-<a href="Compile-Time-Switches.md">compile-time switch</a> or a console variable, defaulted off. Vite's existing
-switches follow this pattern:</p>
+<h3 id="_8">保护那些会带来成本的功能</h3>
+<p>如果某个功能会带来运行时或编译时的成本，而并非所有项目都需要，那么就将其置于<a href="../../Performance/Compile-Time-Switches/">编译时开关</a>或控制台变量之后，默认值为关闭。Vite 现有的开关遵循这种模式：</p>
 <table>
 <thead>
 <tr>
-<th>Switch</th>
-<th>Default</th>
-<th>Guards</th>
+<th>开关</th>
+<th>默认值</th>
+<th>保护</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>VITE_PHYSX_FIXED_TIMESTEP</code></td>
 <td>0</td>
-<td>Fixed timestep physics</td>
+<td>固定时间步物理</td>
 </tr>
 <tr>
 <td><code>VITE_RT_PSO_DEBLOAT</code></td>
 <td>1</td>
-<td>Compiles out most ray tracing permutations</td>
+<td>编译出大多数光线追踪排列</td>
 </tr>
 <tr>
 <td><code>VITE_O_SSAO</code></td>
 <td>1</td>
-<td>Optimised SSAO path</td>
+<td>优化的SSAO路径</td>
 </tr>
 <tr>
 <td><code>VITE_DLSS_PATCH</code></td>
 <td>0</td>
-<td>DLSS translucency and volumetric fog fixes</td>
+<td>DLSS 半透明度和体积雾修复</td>
 </tr>
 <tr>
 <td><code>VITE_NVRTX_TRANSLUCENCY_DEPTH</code></td>
 <td>0</td>
-<td>NvRTX translucency depth handling</td>
+<td>NvRTX 半透明深度处理</td>
 </tr>
 </tbody>
 </table>
-<p>Note that <code>VITE_RT_PSO_DEBLOAT</code> defaults to the <em>restrictive</em> value. When a feature's cost is
-shader-permutation count, the default that keeps builds fast wins, and the feature is documented as opt-in.</p>
-<h3 id="test-against-the-baseline">Test against the baseline</h3>
-<p>Backported features need measurement against Vite's <a href="Performance-Targets.md">performance targets</a>, not
-against how they performed in UE5. A feature tuned for UE5's frame budget may be unaffordable in a 4.27
-project running on the hardware Vite targets.</p>
-<h2 id="documenting-a-backport">Documenting a backport</h2>
-<p>Every backport needs:</p>
+<div class="admonition 注意">
+<p class="admonition-title">注意</p>
+<p><code>VITE_RT_PSO_DEBLOAT</code>默认为<em>限制性(restrictive)</em>值。当某个功能的成本是着色器排列计数时，保持快速构建的默认值会获胜，并且该功能被记录为选择加入。</p>
+</div>
+<h3 id="_9">与基准进行测试</h3>
+<p>移植到 Vite 的功能需要根据 Vite 的<a href="../../EngineOverview/Performance-Targets/">性能目标</a>进行评估，而不是根据它们在 UE5 中的表现。针对 UE5 帧预算优化的功能，在运行于 Vite 目标硬件上的 4.27 项目中可能无法承受。</p>
+<h2 id="_10">记录向后移植</h2>
+<p>每个向后移植都需要：</p>
 <table>
 <thead>
 <tr>
-<th>Item</th>
-<th>Where</th>
+<th>项</th>
+<th>在哪里</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Source link, upstream commit or tag</td>
-<td>Commit body &mdash; see <a href="../Commit-Conventions/">Commit Conventions</a></td>
+<td>源链接、上游提交或标签</td>
+<td>提交正文——参见<a href="../Commit-Conventions/">提交约定</a></td>
 </tr>
 <tr>
-<td>What was changed during translation</td>
-<td>Commit body</td>
+<td>转变过程中发生了什么变化</td>
+<td>提交正文</td>
 </tr>
 <tr>
-<td>Any new console variable or switch</td>
-<td>A documentation page, and <a href="Compile-Time-Switches.md">Compile-Time Switches</a> if applicable</td>
+<td>任何新的控制台变量或开关</td>
+<td>文档页面和 <a href="Compile-Time-Switches.md">编译时开关</a>（如果适用）</td>
 </tr>
 <tr>
-<td>Availability caveats</td>
-<td>The feature's own page, prominently</td>
+<td>可用性警告</td>
+<td>该功能自己的页面，显着</td>
 </tr>
 </tbody>
 </table>
-<p>That last one matters more than it looks. A backported feature that is compiled out by default, or that
-requires a plugin to be enabled, will otherwise be reported as broken by everyone who tries to use it.</p>
-<h2 id="asset-backporting">Asset backporting</h2>
-<p>Backporting <em>assets</em> from UE5 is a different problem, handled by the Asset Downgrader rather than by code.
-See <a href="Migrating-From-UE5.md">Migrating from UE5</a> and
-<a href="Proposed-Plugins.md">Proposed Plugins</a>.</p>
-<h2 id="see-also">See also</h2>
+<p>最后一项比看起来更重要。默认情况下编译出来的向后移植功能，或者需要启用插件的功能，否则每个尝试使用它的人都会报告为损坏。</p>
+<h2 id="_11">资产向后移植</h2>
+<p>从 UE5 向后移植<em>资产</em>是一个不同的问题，由资产降级器而不是代码处理。请参阅<a href="Migration-From-UE5.md">从 UE5 迁移</a> 和 <a href="Proposed-Plugins.md">建议的插件</a>。</p>
+<h2 id="_12">参见</h2>
 <ul>
-<li><a href="../Contributing/">Contributing</a></li>
-<li><a href="../Coding-Guidelines/">Coding Guidelines</a></li>
-<li><a href="../Commit-Conventions/">Commit Conventions</a></li>
-<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
-<li><a href="Migrating-From-UE5.md">Migrating from UE5</a></li>
+<li><a href="../Contributing/">贡献</a></li>
+<li><a href="../Coding-Guidelines/">编码指南</a></li>
+<li><a href="../Commit-Conventions/">提交约定</a></li>
+<li><a href="Compile-Time-Switches.md">编译时开关</a></li>
+<li><a href="Migrating-From-UE5.md">从 UE5 迁移</a></li>
 </ul>
               
             </div>
