@@ -1,94 +1,68 @@
-# Contributing
+# 贡献
 
-<tldr>
-<p>
-Vite has stricter rules than stock Unreal: no recursion, no new virtuals, no new Blueprint exposure, strict
-Clang compliance and absolute ABI stability. Read the guidelines before writing code, not before opening a
-pull request.
-</p>
-</tldr>
 
-Vite exists because UE 4.27 can be made fast and stable. Contributions that compromise either defeat the
-point. The rules below are unusually restrictive for a game engine fork, and that is deliberate.
+Vite 比普通的 Unreal 有更严格的规则：没有递归、没有新的虚拟、没有新的蓝图暴露、严格的 Clang 合规性和绝对的应用程序二进制接口（Application Binary Interface，ABI） 稳定性。在编写代码之前阅读指南，而不是在打开拉取请求之前。
 
-## In this section
 
-| Topic | Covers |
+Vite的存在是因为UE 4.27可以变得又快又稳定。妥协的贡献要么就失去了意义。下面的规则对于游戏引擎分支来说是非常严格的，这是故意的。
+
+## 在这个部分
+
+| 话题 | 覆盖内容 |
 |---|---|
-| [Coding Guidelines](Coding-Guidelines.md) | Core principles, forbidden constructs, technical and performance rules |
-| [Commit Conventions](Commit-Conventions.md) | Prefixes, attribution, branch hygiene |
-| [Backporting](Backporting.md) | Bringing UE5 and upstream features into 4.27 |
-| [Documentation](Documentation-Contributions.md) | Contributing to these docs |
+| [编码指南](Coding-Guidelines.md) | 核心原则、禁止结构、技术和性能规则 |
+| [提交约定](Commit-Conventions.md) | 前缀、归属、分支卫生 |
+| [向后移植](Backporting.md) | 将 UE5 和上游功能引入 4.27 |
+| [文档](Documentation-Contributions.md) | 为这些文档做出贡献 |
 
-## Before you start
+## 开始之前
 
-<procedure title="Contribution workflow" id="contribution-workflow">
-    <step>
-        Read the <a href="Coding-Guidelines.md">coding guidelines</a>. Several common C++ patterns are
-        banned outright, and finding out after you have written the code is expensive.
-    </step>
-    <step>
-        Check whether the change is already covered. The
-        <a href="Compile-Time-Switches.md">compile-time switches</a> and
-        <a href="Engine-Defaults.md">engine default changes</a> pages document a lot of existing work.
-    </step>
-    <step>
-        Work on a branch. Push work-in-progress to alternative branches with a note on what remains, and
-        make other forkers aware of it.
-    </step>
-    <step>
-        Verify: compiles cleanly under MSVC, Clang compliant, no crashes on startup, shutdown or the
-        Tech Showcase project, no log spam, no ABI changes.
-    </step>
-    <step>
-        Work through the <a href="Coding-Guidelines.md">review checklist</a> before opening the pull
-        request.
-    </step>
-</procedure>
+### 贡献工作流程
 
-## The three rules that reject most pull requests
+1. 阅读<a href="Coding-Guidelines.md">编码指南</a>。几种常见的 C++ 模式被彻底禁止，并且在编写代码后发现的成本很高。
 
-<deflist>
-<def title="ABI stability">
-Do not modify ray tracing payload bitfields, shader-visible enums or flags, packed bitmasks used by RHI or
-RenderCore, reflection system bitmask definitions, or any CPU/GPU shared struct layout. Breaking these
-breaks PSO caching, ray tracing stability, serialization and cross-vendor GPU behaviour. ABI violations
-are rejected immediately, regardless of how good the rest of the change is.
-</def>
-<def title="Performance baseline">
-Changes are evaluated against an ARM-class ~1 GHz CPU baseline. Measuring on your desktop and finding it
-fast does not clear the bar. See <a href="Performance-Targets.md">Performance Targets</a>.
-</def>
-<def title="Copyright cleanliness">
-Contributions must be original work or permissively licensed (MIT, Apache 2.0, BSD, Zlib). Code copied
-from UE5 into a 4.27 fork sits under Epic's licence, which is a different question from a permissive
-licence &mdash; see <a href="Backporting.md">Backporting</a>.
-</def>
-</deflist>
+2. 检查更改是否已被覆盖。 <a href="Compile-Time-Switches.md">编译时开关</a>和<a href="Engine-Defaults.md">引擎默认更改</a>页面记录了大量现有工作。
 
-## What makes a good contribution
+3. 在分支中写代码。将正在进行的工作推送到替代分支，并注明剩余内容，并让其他分叉者意识到这一点。
 
-Contributions that fit Vite well tend to share a shape:
+4. 验证：在 MSVC 下干净地编译，符合 Clang 标准，启动、关闭或技术展示项目时不会崩溃，没有垃圾日志，没有 ABI 更改。
 
-- **Measurable.** A profiling capture before and after, on representative content, beats an argument.
-- **Guarded.** Anything not needed in shipping is behind a
-  [compile-time switch](Compile-Time-Switches.md) or a console variable, and off by default when it costs
-  something.
-- **Narrow.** A change touching one subsystem is reviewable. A change touching the renderer, the physics
-  layer and the build system is not.
-- **Documented.** New console variables, switches and defaults need a documentation page or a section in an
-  existing one.
+5. 在打开拉取请求之前，先完成<a href="Coding-Guidelines.md">审核清单</a>。
 
-## Getting set up
 
-See [Build from Source](Build-From-Source.md) and
-[Toolchain Requirements](Toolchain-Requirements.md). Note that engine development requires a source build
-&mdash; [installed builds](Installed-Builds.md) cannot compile engine C++.
+## 拒绝大多数拉取请求的三个规则
 
-## See also
+* ABI稳定性
 
-- [Coding Guidelines](Coding-Guidelines.md)
-- [Commit Conventions](Commit-Conventions.md)
-- [Backporting](Backporting.md)
-- [Build from Source](Build-From-Source.md)
-- [Performance Targets](Performance-Targets.md)
+    请勿修改光线追踪负载位域、着色器可见的枚举或标志、RHI 或 RenderCore 使用的打包位掩码、反射系统位掩码定义或任何 CPU/GPU 共享结构布局。打破这些会破坏 PSO 缓存、光线追踪稳定性、序列化和跨供应商 GPU 行为。无论其余更改有多好，ABI 违规都会立即被拒绝。
+
+
+* 性能基线
+
+    更改是根据 ARM 级 ~1 GHz CPU 基准进行评估的。在桌面上进行测量并快速找到它并不能清除障碍。请参阅<a href="Performance-Targets.md">性能目标</a>。
+
+* 版权清洁度
+
+    贡献必须是原创作品或获得许可（MIT、Apache 2.0、BSD、Zlib）。从 UE5 复制到 4.27 分支的代码受 Epic 许可，这与宽松许可是不同的问题 -请参阅<a href="Backporting.md">向后移植</a>。
+
+
+## 什么是好的贡献
+
+适合 Vite 的贡献往往有一个共同的特征：
+
+- **可测量。** 对代表性内容的前后分析捕获胜过争论。
+- **被守护。** 交付中不需要的任何内容都位于[编译时开关](Compile-Time-Switches.md) 或控制台变量后面，并且在需要花费一些代价时默认关闭。
+- **范围小。** 涉及一个子系统的变更是可以审查的。涉及渲染器、物理层和构建系统的更改则不然。
+- **记录在案。** 新的控制台变量、开关和默认值需要文档页面或现有页面中的一个部分。
+
+## 准备工作
+
+请参阅[从源代码构建](Build-From-Source.md) 和 [工具链要求](Toolchain-Requirements.md)。请注意，引擎开发需要源构建 -[已安装的构建](Installed-Builds.md) 无法编译引擎 C++。
+
+## 参见
+
+- [编码指南](Coding-Guidelines.md)
+- [提交约定](Commit-Conventions.md)
+- [向后移植](Backporting.md)
+- [从源代码构建](Build-From-Source.md)
+- [性能目标](Performance-Targets.md)
