@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Coding Guidelines - 引擎实现文档</title>
+    <title>编码指南 - 引擎实现文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Coding Guidelines";
+        var mkdocs_page_name = "\u7f16\u7801\u6307\u5357";
         var mkdocs_page_input_path = "optimization/Contributing/Coding-Guidelines.md";
         var mkdocs_page_url = null;
       </script>
@@ -70,7 +70,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Coding Guidelines</li>
+      <li class="breadcrumb-item active">编码指南</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Contributing/Coding-Guidelines.md"> 编辑页面</a>
     </li>
@@ -80,204 +80,183 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="coding-guidelines">Coding Guidelines</h1>
-<p><tldr></p>
-<p>
-Stability first, performance-focused, strict Clang 22 compliance, copyright-clean, ABI-safe. No recursion,
-no new virtuals, no new Blueprint exposure, minimal templates. Gate anything that adds overhead or changes
-behaviour behind a guard in <code>CoreDefines.h</code>.
-</p>
-<p></tldr></p>
-<p>These rules are stricter than stock Unreal's own coding standard. They exist because Vite's value
-proposition is predictable performance on Console Class hardware, and because a fork that breaks binary
-compatibility with its own shaders is unusable.</p>
-<h2 id="core-principles">Core principles</h2>
-<p><deflist>
-<def title="Stability first">
-Code must remain predictable and safe under both MSVC and Clang. Behaviour that happens to work on one
-compiler is not acceptable.
-</def>
-<def title="Performance-focused">
-All changes must consider CPU, GPU and memory impact, with an ARM-class ~1 GHz CPU as the baseline target.
-Performance measured on a local desktop CPU must not be treated as sufficient or representative of
-real-world target hardware.
-</def>
-<def title="Strict Clang 22 compliance">
-No MSVC-specific behaviour, compiler extensions or undefined constructs. Code that only builds because MSVC
-is permissive about it does not meet this bar, even when MSVC is the compiler you personally use.
-</def>
-<def title="Licensing clarity">
-All contributions must be copyright-clean. Code may be included only if it is original work by the
-contributor, or licensed permissively &mdash; MIT, Apache 2.0, BSD, Zlib.
-</def>
-<def title="ABI safety">
-Do not modify engine bitmask layouts, payload structures, serialization formats, or any CPU/GPU-shared
-binary contracts.
-</def>
-</deflist></p>
-<h2 id="forbidden">Forbidden</h2>
-<h3 id="recursion">Recursion</h3>
-<p>Banned. Use iterative patterns. Recursion makes stack usage unbounded and unpredictable, which matters on
-the hardware Vite targets.</p>
-<h3 id="new-virtual-functions">New virtual functions</h3>
-<p>Do not add new virtuals unless strictly required. Where you can, cache existing engine virtuals rather than
-calling through them repeatedly.</p>
-<h3 id="kismet-blueprint-api-additions">Kismet / Blueprint API additions</h3>
-<p>No new <code>BlueprintCallable</code> or <code>BlueprintPure</code> functions without explicit approval. Every Blueprint-exposed
-function adds reflection metadata, binary size and a call path that is slower than native C++. At the same type 
-the Blueprint Nativization system needs to remain stable.</p>
-<h3 id="template-heavy-patterns">Template-heavy patterns</h3>
-<p>Avoid templates unless they provide a clear performance or architectural benefit. Do not introduce patterns
-that increase compile times, binary size or code complexity. See
-<a href="Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a> for why compile times are taken seriously here.</p>
-<h3 id="abi-breaking-modifications">ABI-breaking modifications</h3>
-<p><warning>
-Do not modify any of the following:
-<list></p>
-<li>Ray tracing payload bitfields</li>
-<li>Shader-visible enums or flags</li>
-<li>Packed bitmasks used by RHI or RenderCore</li>
-<li>Reflection system bitmask definitions</li>
-<li>Any CPU/GPU shared struct layouts</li>
-<p></list></p>
-<p>
-Such modifications break PSO caching, ray tracing stability, serialization, and cross-platform and
-cross-vendor GPU behaviour. This is the single most common cause of immediate rejection.
-</p>
-<p></warning></p>
-<h2 id="technical-standards">Technical standards</h2>
-<ol>
-<li>No undefined behaviour or non-standard extensions.</li>
-<li>Avoid implicit type conversions.</li>
-<li>Maintain memory correctness. Avoid large stack allocations; minimise dynamic memory.</li>
-<li>Prefer <code>constexpr</code>, <code>FORCEINLINE</code> and zero-cost abstractions.</li>
-</ol>
-<h2 id="performance-rules">Performance rules</h2>
-<ol>
-<li>Favour contiguous memory and cache-friendly layouts.</li>
-<li>Avoid unpredictable branching in hot paths.</li>
-<li>No <code>FString</code> processing, reflection calls, dynamic allocation or virtual dispatch inside per-frame
-   loops.</li>
-<li>Use SIMD-friendly math (SSE/AVX/NEON) where appropriate.</li>
-</ol>
-<p>Rule 3 is the one most often violated by otherwise reasonable code. An <code>FString</code> format call in a per-actor
-tick is invisible in a test scene and catastrophic at scale &mdash; see the
-<a href="400-Characters-CMC-Bench.md">400-character CMC benchmark</a> for what per-frame cost looks like when
-multiplied out.</p>
-<h2 id="work-in-progress">Work in progress</h2>
-<ol>
-<li>Commit work in progress to alternative branches.</li>
-<li>Give a brief commentary on what is left to do.</li>
-<li>Delete temporary branches once they are no longer needed.</li>
-<li>Make other forkers aware of the work so effort is not duplicated.</li>
-</ol>
-<h2 id="verification-requirements">Verification requirements</h2>
-<h3 id="compilation">Compilation</h3>
-<p>Must compile cleanly under MSVC and be Clang compliant. "Compiles on my machine with warnings" is not
-clean.</p>
-<h3 id="stability">Stability</h3>
+                <h1 id="_1">编码指南</h1>
+<p>稳定性第一、注重性能、严格遵守 Clang 22、版权清洁、ABI 安全。没有递归，没有新的虚拟，没有新的蓝图曝光，最少的模板。在 <code>CoreDefines.h</code> 中控制任何增加开销或改变守卫背后行为的内容。</p>
+<p>这些规则比虚幻自己的编码标准更严格。它们的存在是因为 Vite 的价值主张是在控制台类硬件上的可预测性能，并且因为破坏与其自身着色器的二进制兼容性的分叉是无法使用的。</p>
+<h2 id="_2">核心原则</h2>
 <ul>
-<li>No crashes on startup, shutdown, or on the Tech Showcase project.</li>
-<li>No log spam.</li>
-<li>Guard all code not necessary for shipping.</li>
+<li>
+<p><strong>稳定第一</strong></p>
+<p>在 MSVC 和 Clang 下，代码必须保持可预测性和安全性。碰巧在一个编译器上运行的行为是不可接受的。</p>
+</li>
+<li>
+<p><strong>注重性能</strong></p>
+<p>所有更改都必须考虑 CPU、GPU 和内存影响，并以 ARM 级 ~1 GHz CPU 作为基准目标。在本地桌面 CPU 上测量的性能不得被视为充分或代表现实世界的目标硬件。</p>
+</li>
+<li>
+<p><strong>严格遵守 Clang 22</strong></p>
+<p>没有 MSVC 特定的行为、编译器扩展或未定义的构造。仅因为 MSVC 允许而构建的代码不符合此标准，即使 MSVC 是您个人使用的编译器也是如此。</p>
+</li>
+<li>
+<p><strong>许可清晰</strong></p>
+<p>所有贡献都必须不受版权保护。仅当代码是贡献者的原创作品或获得许可（MIT、Apache 2.0、BSD、Zlib）时，才可以包含代码。</p>
+</li>
+<li>
+<p><strong>ABI安全</strong></p>
+<p>请勿修改引擎位掩码布局、有效负载结构、序列化格式或任何 CPU/GPU 共享的二进制合约。</p>
+</li>
 </ul>
-<h3 id="abi">ABI</h3>
+<h2 id="_3">禁止</h2>
+<h3 id="_4">递归</h3>
+<p>被禁止。使用迭代模式。递归使堆栈使用不受限制且不可预测，这对硬件 Vite 目标很重要。</p>
+<h3 id="_5">新的虚函数</h3>
+<p>除非严格要求，否则不要添加新的虚拟。在可能的情况下，缓存现有的引擎虚拟，而不是重复调用它们。</p>
+<h3 id="kismet-api">Kismet /蓝图 API 添加</h3>
+<p>未经明确批准，不得使用新的“BlueprintCallable”或“BlueprintPure”函数。每个蓝图公开的函数都会添加反射元数据、二进制大小和比本机 C++ 慢的调用路径。在同一类型中，Blueprint Nativization 系统需要保持稳定。</p>
+<h3 id="_6">大量模板模式</h3>
+<p>避免使用模板，除非它们提供明确的性能或架构优势。不要引入会增加编译时间、二进制大小或代码复杂性的模式。请参阅<a href="Shader-Compilation-And-PSO.md">Shader 编译和 PSO</a> 了解为什么这里要认真对待编译时间。</p>
+<h3 id="abi">破坏 ABI 的修改</h3>
+<div class="admonition 警告">
+<p class="admonition-title">警告</p>
+<p>请勿修改以下任何内容：</p>
 <ul>
-<li>All shader-visible structs must remain bit-for-bit identical.</li>
-<li>No changes to payloads, bitmask layouts, uniform buffers or reflection flags.</li>
-<li>ABI violations result in immediate rejection.</li>
+<li>
+<p>光线追踪有效负载位域</p>
+</li>
+<li>
+<p>着色器可见的枚举或标志</p>
+</li>
+<li>
+<p>RHI 或 RenderCore 使用的打包位掩码</p>
+</li>
+<li>
+<p>反射系统位掩码定义</p>
+</li>
+<li>
+<p>任何 CPU/GPU 共享结构布局</p>
+</li>
 </ul>
-<h3 id="code-gating">Code gating</h3>
-<p>Anything that adds overhead or changes existing behaviour must sit behind a guard defined in
-<code>Engine\Source\Runtime\Core\Public\Misc\CoreDefines.h</code>:</p>
+<p>此类修改会破坏 PSO 缓存、光线追踪稳定性、序列化以及跨平台和跨供应商 GPU 行为。这是立即拒绝的最常见原因。</p>
+</div>
+<h2 id="_7">技术标准</h2>
+<ol>
+<li>没有未定义的行为或非标准扩展。</li>
+<li>避免隐式类型转换。</li>
+<li>保持内存的正确性。避免大的堆栈分配；最小化动态内存。</li>
+<li>更喜欢 <code>constexpr</code>、<code>FORCEINLINE</code> 和零成本抽象。</li>
+</ol>
+<h2 id="_8">性能规则</h2>
+<ol>
+<li>尽量使用连续内存和有利于缓存的布局。</li>
+<li>避免热点路径中出现不可预测的分支。</li>
+<li>每帧循环内没有<code>FString</code>处理、反射调用、动态分配或虚拟调度。</li>
+<li>在适当的情况下使用 SIMD 友好的数学（SSE/AVX/NEON）。</li>
+</ol>
+<p>规则 3 是最常被其他合理代码违反的规则。每个参与者节拍中的<code>FString</code>格式调用在测试场景中是不可见的，并且在规模上是灾难性的 -请参阅 <a href="400-Characters-CMC-Bench.md">400 字符 CMC 基准测试</a>，了解相乘后的每帧成本。</p>
+<h2 id="_9">正在进行中的工作</h2>
+<ol>
+<li>将正在进行的工作提交给替代分支。</li>
+<li>对剩下要做的事情做一个简短的评论。</li>
+<li>不再需要临时分支后将其删除。</li>
+<li>让其他分叉者了解这项工作，这样就不会重复工作。</li>
+</ol>
+<h2 id="_10">验证要求</h2>
+<h3 id="_11">编译</h3>
+<p>必须在 MSVC 下干净编译，并符合 Clang 标准。“在我的机器上编译时有警告”不属于干净编译。</p>
+<h3 id="_12">稳定性</h3>
+<ul>
+<li>启动、关闭或运行技术展示项目时不得崩溃。</li>
+<li>不得产生大量日志。</li>
+<li>保护所有非发行必需的代码。</li>
+</ul>
+<h3 id="abi_1">ABI</h3>
+<ul>
+<li>所有着色器可见的结构体必须保持逐位一致。</li>
+<li>不得更改有效载荷、位掩码布局、统一缓冲区或反射标志。</li>
+<li>违反 ABI 将导致立即拒绝。</li>
+</ul>
+<h3 id="_13">门控代码</h3>
+<p>任何增加系统开销或改变现有行为的代码都必须置于 <a href="https://github.com/OpenHUTB/engine/blob/hutb/Engine/Source/Runtime/Core/Public/Misc/CoreDefines.h">Engine\Source\Runtime\Core\Public\Misc\CoreDefines.h</a> 中定义的保护机制之后：</p>
 <div class="highlight"><pre><span></span><code><span class="cp">#ifndef VITE_MY_FEATURE</span>
 <span class="w">    </span><span class="cp">#define VITE_MY_FEATURE 0</span>
 <span class="cp">#endif</span>
 </code></pre></div>
-<p>Two rules follow from that. The default must leave the existing path untouched &mdash; a guard whose
-default value changes behaviour is not a guard. And the guarded code must actually be excluded when the
-switch is off, rather than compiled in and skipped at runtime, or the overhead you were gating is still
-being paid.</p>
-<p>This is what makes optional features free for projects that do not use them, and it is why
-<code>VITE_PHYSX_FIXED_TIMESTEP</code> and the rest of the
-<a href="Compile-Time-Switches.md">compile-time switches</a> exist in the form they do. Document every new switch on
-that page in the same change.</p>
-<h2 id="review-checklist">Review checklist</h2>
-<p>Confirm all of these before opening a pull request:</p>
+<p>由此可得出两条规则。默认值必须保持现有路径不变——默认值会改变行为的保护机制就不能称之为保护机制。此外，当开关关闭时，受保护的代码必须真正被排除，而不是被编译进去并在运行时跳过，否则你原本设置的限制开销仍然会产生。</p>
+<p>这使得可选功能对不使用它们的项目来说是免费的，也正是 <code>VITE_PHYSX_FIXED_TIMESTEP</code> 和其他<a href="Compile-Time-Switches.md">编译时开关</a>以这种形式存在的原因。请在同一页面上记录每个新增的开关。</p>
+<h2 id="_14">审查清单</h2>
+<p>在打开拉取请求之前确认所有这些：</p>
 <table>
 <thead>
 <tr>
-<th>Check</th>
+<th>查看</th>
 <th></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>No recursion</td>
+<td>无递归</td>
 <td>☐</td>
 </tr>
 <tr>
-<td>No added virtual calls, existing engine virtuals cached where possible</td>
+<td>不添加虚拟调用，尽可能缓存现有引擎虚拟</td>
 <td>☐</td>
 </tr>
 <tr>
-<td>No new Kismet exposure</td>
+<td>没有新的 Kismet 曝光</td>
 <td>☐</td>
 </tr>
 <tr>
-<td>Copyright-clean code</td>
+<td>版权干净的代码</td>
 <td>☐</td>
 </tr>
 <tr>
-<td>ABI and bitmask integrity preserved</td>
+<td>保留 ABI 和位掩码完整性</td>
 <td>☐</td>
 </tr>
 <tr>
-<td>Strict Clang compliance</td>
+<td>严格遵守 Clang</td>
 <td>☐</td>
 </tr>
 <tr>
-<td>No undefined behaviour</td>
+<td>没有未定义的行为</td>
 <td>☐</td>
 </tr>
 <tr>
-<td>No performance regressions</td>
+<td>无性能回退</td>
 <td>☐</td>
 </tr>
 <tr>
-<td>No unnecessary binary size increases</td>
+<td>不会增加不必要的二进制大小</td>
 <td>☐</td>
 </tr>
 <tr>
-<td>No shader or RHI ABI mismatches</td>
+<td>没有着色器或 RHI ABI 不匹配</td>
 <td>☐</td>
 </tr>
 <tr>
-<td>Overhead or behaviour changes gated in <code>CoreDefines.h</code>, defaulting off</td>
+<td>开销或行为更改在<a href="https://github.com/OpenHUTB/engine/blob/hutb/Engine/Source/Runtime/Core/Public/Misc/CoreDefines.h">CoreDefines.h</a>中门控，默认关闭</td>
 <td>☐</td>
 </tr>
 <tr>
-<td>New compile-time switches documented</td>
+<td>新的编译时开关记录在文档中</td>
 <td>☐</td>
 </tr>
 </tbody>
 </table>
-<h2 id="marking-your-changes">Marking your changes</h2>
-<p>Vite's engine modifications are marked inline so they survive upstream merges and are findable later. The
-existing convention in the tree uses trailing comments on modified lines:</p>
+<h2 id="_15">标记您的更改</h2>
+<p>Vite 的引擎修改以内联方式标记，以便它们能够保留在上游合并之后，并便于后续查找。代码树中现有的约定是在修改的行尾添加注释：</p>
 <div class="highlight"><pre><span></span><code><span class="k">case</span><span class="w"> </span><span class="no">MP_Anisotropy</span><span class="p">:</span>
 <span class="w">    </span><span class="n">CustomPinNames</span><span class="p">.</span><span class="n">Add</span><span class="p">({</span><span class="w"> </span><span class="n">MSM_CallistoBRDF</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Diffuse Fresnel&quot;</span><span class="w"> </span><span class="p">});</span><span class="w"> </span><span class="c1">// AKCHANGES</span>
 <span class="w">    </span><span class="n">CustomPinNames</span><span class="p">.</span><span class="n">Add</span><span class="p">({</span><span class="w"> </span><span class="n">MSM_Toon</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Softness&quot;</span><span class="w"> </span><span class="p">});</span><span class="w"> </span><span class="c1">//Fletch</span>
 </code></pre></div>
-<p>Follow whatever marker the surrounding code uses. For a new region, a <code>// AKCHANGES START</code> /
-<code>// AKCHANGES END</code> pair makes the extent of the change clear.</p>
-<h2 id="see-also">See also</h2>
+<p>遵循周围代码使用的任何标记。对于新区域，<code>//AKCHANGES START</code>/ <code>//AKCHANGES END</code>对可以明确更改的范围。</p>
+<h2 id="_16">参见</h2>
 <ul>
-<li><a href="../Contributing/">Contributing</a></li>
-<li><a href="../Commit-Conventions/">Commit Conventions</a></li>
-<li><a href="../Backporting/">Backporting</a></li>
-<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
-<li><a href="Performance-Targets.md">Performance Targets</a></li>
+<li><a href="../Contributing/">贡献</a></li>
+<li><a href="../Commit-Conventions/">提交约定</a></li>
+<li><a href="../Backporting/">向后移植</a></li>
+<li><a href="Compile-Time-Switches.md">编译时开关</a></li>
+<li><a href="Performance-Targets.md">性能目标</a></li>
 </ul>
               
             </div>

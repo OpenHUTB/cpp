@@ -114,13 +114,13 @@
 <h3 id="_4">向后移植可行性检查</h3>
 <ol>
 <li>
-<p><b>检查许可证。</b> UE5 代码已获得 Epic 的许可证，该许可证允许在虚幻引擎分支中使用，但不允许任意重新分发。第三方代码必须获得许可——MIT、Apache 2.0、BSD、Zlib。请参阅<a href="Coding-Guidelines.md">编码指南</a>。</p>
+<p><b>检查许可证。</b> UE5 代码已获得 Epic 的许可证，该许可证允许在虚幻引擎分支中使用，但不允许任意重新分发。第三方代码必须获得许可——MIT、Apache 2.0、BSD、Zlib。请参阅<a href="../Coding-Guidelines/">编码指南</a>。</p>
 </li>
 <li>
 <p><b>检查依赖关系图。</b>依赖于 Nanite、Lumen、UE5 RDG API 表面或 Chaos 物理接口的 UE5 功能将无法完全向后移植。在编写代码之前确定实际需要的内容。</p>
 </li>
 <li>
-<p><b>检查 ABI 影响。</b>如果该功能需要更改着色器可见结构或打包位掩码，则无法按原样向后移植。请参阅<a href="Coding-Guidelines.md">ABI 规则</a>。</p>
+<p><b>检查 ABI 影响。</b>如果该功能需要更改着色器可见结构或打包位掩码，则无法按原样向后移植。请参阅<a href="../Coding-Guidelines/">ABI 规则</a>。</p>
 </li>
 <li>
 <p><b>检查是否值得。</b>为了解决UE5问题而存在的UE5功能在Vite中可能没有价值。专注于优化、第三方库更新、插件更新、SDK 更新和修复。</p>
