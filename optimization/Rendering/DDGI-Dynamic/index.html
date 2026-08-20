@@ -131,13 +131,11 @@ comparable scenes.
 <p></tldr></p>
 <p>Dynamic Diffuse Global Illumination is Vite's primary global illumination solution and the feature the fork
 is best known for. This page covers how it works, how to set it up, and how to tune it.</p>
-<p><img src="../../img/optimization/DDGIDirectOnly.png" alt="Attic interior with direct lighting only, everything outside the sunbeams reading black" border-effect="line"/></p>
-<p><em>Direct lighting only. Everything the sun does not reach directly is black, because nothing is carrying
-light around the room.</em></p>
-<p><img src="../../img/optimization/DDGIDirectPlusGI.png" alt="The same attic interior with Dynamic DDGI enabled, indirect bounce filling the room" border-effect="line"/></p>
-<p><em>The same frame with Dynamic DDGI enabled. The ceiling, the boxes on the left and the space under the roof
-line are all lit entirely by bounce &mdash; and there is no noise to denoise, because probe irradiance is
-smooth by construction.</em></p>
+<p><img alt="" src="../../../img/optimization/DDGIDirectOnly.png" /></p>
+<p><em>阁楼内部只有直射光，阳光照射不到的地方一片漆黑。</em></p>
+<p><em>阁楼内部只有直射光，阳光照射不到的地方都是黑色的，因为没有任何东西能将光线传递到房间的各个角落。</em></p>
+<p><img alt="" src="../../../img/optimization/DDGIDirectPlusGI.png" /></p>
+<p><em>同样是阁楼内部，启用动态DDGI后，间接反射光充满整个房间。天花板、左侧的箱子以及屋檐下的空间完全由反射光照明——由于探头辐照度本身就是平滑的，因此无需进行降噪处理。</em></p>
 <h2 id="how-it-works">How it works</h2>
 <p>DDGI places a three-dimensional grid of probes across a volume. Each frame, a budget of rays is traced from
 each probe into the scene; the resulting radiance is accumulated into per-probe irradiance and depth
@@ -152,9 +150,9 @@ does not exist in the representation. This is the reason <a href="../SSGI/">SSGI
 <p>The per-probe depth information is what prevents light leaking through thin geometry &mdash; probes know how
 far away the nearest surface is in each direction and can reject contributions that would have to pass
 through a wall. This is why DDGI leaks less than software Lumen.</p>
-<p><img src="../../img/optimization/DDGIProbeVisualisation.png" alt="Editor viewport with DDGI probe spheres visualised throughout an interior" border-effect="line"/></p>
-<p><em>Probe visualisation in the editor. Each sphere is one probe displaying its stored irradiance, which makes
-probe spacing and any misplaced probes immediately visible.</em></p>
+<p><img alt="" src="../../../img/optimization/DDGIProbeVisualisation.png" /></p>
+<p><em>编辑器视口中，DDGI探测球体在整个内部空间中可视化显示。</em></p>
+<p><em>编辑器中的探针可视化功能。每个球体代表一个探针，显示其存储的辐照度，这使得探针间距和任何错位的探针都能立即显示出来。</em></p>
 <h2 id="vites-integration">Vite's integration</h2>
 <p>Vite's DDGI is not the stock 4.27 launcher plugin. It inherits NvRTX's engine-side integration, which
 reaches into the ray tracing pipeline rather than sitting alongside it. The practical differences:</p>
@@ -200,29 +198,29 @@ members working in a stock launcher 4.27 install alongside a Vite project.</p>
         show you the stability difference against a denoised technique.
     </step>
 </procedure></p>
-<p><img src="../../img/optimization/ProjectSettingsRHI.png" alt="Project Settings showing Default RHI set to DirectX 12 with DirectX 11 and 12 SM5 checked" border-effect="line"/></p>
-<p><em>Step one, and the step people skip. </em><em>Project Settings &rarr; Platforms &rarr; Windows &rarr; Targeted RHIs</em><em>
-must be DirectX 12; ray tracing in 4.27 is DX12-only.</em></p>
-<p><img src="../../img/optimization/DDGIEnablePlugin.png" alt="Plugins dialog with the NVIDIA RTX Global Illumination plugin enabled under Built-In Rendering" border-effect="line"/></p>
-<p><em>The GI plugin path under </em><em>Built-In &rarr; Rendering</em><em>. Vite ships this engine-side, so this is the
-in-engine plugin, not the launcher 4.27 plugin &mdash; do not install that one alongside it.</em></p>
-<p><img src="../../img/optimization/DDGIVolumeEditor.png" alt="A DDGI volume actor placed in a level in the editor viewport" border-effect="line"/></p>
-<p><em>A DDGI volume in the level. Volumes cover space, not surfaces &mdash; size them around where the camera and
-dynamic objects can actually go.</em></p>
+<p><img alt="" src="../../../img/optimization/ProjectSettingsRHI.png" /></p>
+<p><em>项目设置显示默认 RHI 设置为 DirectX 12，并勾选了 DirectX 11 和 12 SM5。</em></p>
+<p><em>第一步，也是很多人会忽略的一步。</em><em>项目设置 → 平台 → Windows → 目标 THI</em><em>必须设置为 DirectX 12；4.27 版本中的光线追踪仅支持 DX12。</em></p>
+<p><img alt="" src="../../../img/optimization/DDGIEnablePlugin.png" /></p>
+<p><em>在内置渲染下启用 NVIDIA RTX 全局光照插件的插件对话框</em></p>
+<p><em>GI 插件路径位于</em><em>内置”→“渲染</em><em>下。Vite 引擎自带此插件，因此这是引擎内置插件，而不是启动器 4.27 插件——请勿将其与后者同时安装。</em></p>
+<p><img alt="" src="../../../img/optimization/DDGIVolumeEditor.png" /></p>
+<p><em>在编辑器视口的关卡中放置一个 DDGI 体积 Actor。体积覆盖空间，而非表面——根据摄像机和动态物体实际可以到达的位置来调整体积大小。</em></p>
 <h3 id="volume-settings">Volume settings</h3>
-<p><img src="../../img/optimization/DDGISettingsVolume.png" alt="DDGI volume settings panel" border-effect="line"/></p>
-<p><img src="../../img/optimization/DDGISettingsProbes.png" alt="DDGI probe settings panel showing counts per axis and probe spacing controls" border-effect="line"/></p>
-<p><img src="../../img/optimization/DDGISettingsLighting.png" alt="DDGI lighting settings panel" border-effect="line"/></p>
-<p><em>Volume, probe and lighting settings on the DDGI volume actor. Probe counts per axis are the control that
-drives both memory and per-frame ray cost.</em></p>
+<p><img alt="" src="../../../img/optimization/DDGISettingsVolume.png" /></p>
+<p><em>DDGI 体积设置面板</em></p>
+<p><img alt="" src="../../../img/optimization/DDGISettingsProbes.png" /></p>
+<p><em>DDGI探头设置面板显示每轴计数和探头间距控制</em></p>
+<p><img alt="" src="../../../img/optimization/DDGISettingsLighting.png" /></p>
+<p><em>DDGI体积Actor的体积、探针和照明光照设置。每个轴的探针数量是影响内存占用和每帧光线消耗的关键参数。</em></p>
 <h2 id="tuning">Tuning</h2>
 <p>The settings that matter most, roughly in order of impact:</p>
 <p><strong>Probe density.</strong> The dominant cost and quality control. Denser grids resolve smaller lighting features and
 cost proportionally more in both rays traced and memory. Interior spaces with lots of small rooms need more
 probes than open exteriors.</p>
-<p><img src="../../img/optimization/DDGIProbeDensity.png" alt="Comparison of probe density showing how lighting detail changes with probe spacing" border-effect="line"/></p>
-<p><em>Probe density against resolved lighting detail. Detail finer than the probe spacing does not exist in the
-representation at any quality setting &mdash; that is what <a href="../SSGI/">SSGI</a> is for.</em></p>
+<p><img alt="" src="../../../img/optimization/DDGIProbeDensity.png" /></p>
+<p><em>探针密度对比图显示了照明细节如何随探针间距变化。</em></p>
+<p><em>探针密度与解析出的照明细节之间的关系。在任何质量设置下，图像中都不存在比探针间距更精细的细节——这就是 <a href="../SSGI/">SSGI</a> 的作用所在。</em></p>
 <p><strong>Volume placement and count.</strong> Several tightly-fitted volumes usually beat one large loose one. A volume
 that spans a whole level at low density wastes probes on solid geometry and starves the spaces that matter.</p>
 <p><strong>Rays per probe.</strong> Trades convergence speed against per-frame cost. Lower counts converge more slowly,

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Ray-Traced Translucency and Caustics - 引擎优化文档</title>
+    <title>光线追踪半透明和焦散 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Ray-Traced Translucency and Caustics";
+        var mkdocs_page_name = "\u5149\u7ebf\u8ffd\u8e2a\u534a\u900f\u660e\u548c\u7126\u6563";
         var mkdocs_page_input_path = "optimization/Rendering/RT-Translucency-And-Caustics.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Ray-Traced Translucency and Caustics</li>
+      <li class="breadcrumb-item active">光线追踪半透明和焦散</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/RT-Translucency-And-Caustics.md"> 编辑页面</a>
     </li>
@@ -120,7 +120,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="ray-traced-translucency-and-caustics">Ray-Traced Translucency and Caustics</h1>
+                <h1 id="_1">光线追踪半透明和焦散</h1>
 <p><tldr></p>
 <p>
 Hybrid translucency lets rasterised and ray-traced translucency coexist. <code>r.RayTracing.Translucency 3</code>
@@ -283,12 +283,12 @@ strongly recommended alongside RT DOF. DLSS is supported automatically.</p>
 <h2 id="mesh-caustics">Mesh caustics</h2>
 <p>Renders interactive caustics for translucent and metallic objects. Supports all four UE4 light types,
 multiple light sources, reflective and refractive caustics, dispersion and soft caustics.</p>
-<p><img src="../../img/optimization/MeshCaustics.jpg" alt="POV-Ray Glasses scene with ray-traced refractive caustics cast onto a tiled surface" border-effect="line"/></p>
-<p><em>The POV-Ray Glasses scene. Every bright pattern on the tile is a refractive caustic, traced rather than
-authored.</em></p>
-<p><img src="../../img/optimization/CausticsDispersion.jpg" alt="Prisms splitting a white beam into a spectrum through ray-traced dispersion" border-effect="line"/></p>
-<p><em>Dispersion. Requires </em><em>Ray Traced Caustics Dispersion Amount</em><em> above 0 in the material root node together
-with <code>r.RayTracing.MeshCaustics.EnableDispersion 1</code>.</em></p>
+<p><img alt="" src="../../../img/optimization/MeshCaustics.jpg" /></p>
+<p><em>POV-Ray 眼镜场景，光线追踪折射焦散投射到瓷砖表面上</em></p>
+<p><em>POV-Ray眼镜场景。瓷砖上的每一个明亮图案都是折射焦散线，是描摹出来的，而不是创作出来的。</em></p>
+<p><img alt="" src="../../../img/optimization/CausticsDispersion.jpg" /></p>
+<p><em>棱镜通过光线追踪色散将白光束分解成光谱。</em></p>
+<p><em>色散。需要材质根节点中</em><em>光线追踪焦散色散量</em><em>大于 0，并且 <code>r.RayTracing.MeshCaustics.EnableDispersion 1</code>。</em></p>
 <p><procedure title="Enable mesh caustics" id="enable-mesh-caustics">
     <step>Enable ray tracing.</step>
     <step>Check <b>Enabled</b> under <b>Ray Tracing Mesh Caustics</b> in the post process volume, or set <code>r.RayTracing.MeshCaustics.Enable 1</code>.</step>
@@ -389,9 +389,9 @@ Count</strong>. Around 100k photons produces decent results in typical cases. If
 <h2 id="water-caustics">Water caustics</h2>
 <p>Renders interactive caustics for water areas from ponds to open sea. Supports all four light types, multiple
 lights, reflective and refractive caustics, dispersion, soft caustics and cascaded caustics maps.</p>
-<p><img src="../../img/optimization/WaterCaustics.jpg" alt="Swimming pool floor lit by ray-traced water caustics with a character disturbing the surface" border-effect="line"/></p>
-<p><em>The Swimming Pool scene under a single directional light. The caustics respond to surface disturbance
-because they are traced against the water mesh each frame.</em></p>
+<p><img alt="" src="../../../img/optimization/WaterCaustics.jpg" /></p>
+<p><em>泳池底部被光线追踪技术营造出水波纹效果，一个角色正在搅动水面。</em></p>
+<p><em>游泳池场景，采用单向光源照射。由于焦散效果是逐帧追踪水面网格生成的，因此会随着水面扰动而变化。</em></p>
 <p><procedure title="Enable water caustics" id="enable-water-caustics">
     <step>Enable ray tracing.</step>
     <step>Select a water caustics type in the post process volume, or set <code>r.RayTracing.WaterCaustics.Type</code> to 1 or 2.</step>
@@ -479,9 +479,9 @@ tune <strong>Dispersion Offset</strong>.</p>
 Swimming Pool scene for water caustics, and the Office scene mixing particles, reflections, refractions,
 mesh caustics and RTGI. See also <a href="Abandone-Apartment.md">Abandoned Apartment</a> and
 <a href="Attic-Scene.md">Attic Scene</a> in this manual.</p>
-<p><img src="../../img/optimization/RTOfficeScene.jpg" alt="Office scene combining volumetric light, translucent spheres, ray-traced reflections and refractions" border-effect="line"/></p>
-<p><em>The Office scene is the one that exercises the whole stack at once: particles, translucent reflection and
-refraction, mesh caustics and ray-traced GI in a single frame.</em></p>
+<p><img alt="" src="../../../img/optimization/RTOfficeScene.jpg" /></p>
+<p><em>结合了体积光、半透明球体、光线追踪反射和折射的办公场景</em></p>
+<p><em>办公室场景一次性运用了所有技术：粒子、半透明反射和折射、网格焦散和光线追踪全局光照都在单个帧中实现。</em></p>
 <h2 id="see-also">See also</h2>
 <ul>
 <li><a href="../Ray-Tracing/">Ray Tracing</a></li>

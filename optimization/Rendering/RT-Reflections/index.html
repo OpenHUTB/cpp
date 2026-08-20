@@ -131,9 +131,9 @@ reflection rays sample probe irradiance for their secondary bounce, which is a l
 <p>Ray-traced reflections replace screen-space reflections with rays traced against the actual scene, which
 resolves the two fundamental SSR failures: reflections of off-screen geometry, and reflections of surfaces
 facing away from the camera.</p>
-<p><img src="../../img/optimization/SSRArtifacts.png" alt="Reflective surfaces showing screen-space reflection dropout where the reflected geometry leaves the frame" border-effect="line"/></p>
-<p><em>The failure mode, circled. The reflection terminates where the reflected geometry leaves the screen,
-because screen-space reflection has nothing left to sample.</em></p>
+<p><img alt="" src="../../../img/optimization/SSRArtifacts.png" /></p>
+<p><em>反射表面显示屏幕空间反射丢失，即反射几何体离开画面的位置。</em></p>
+<p><em>图中圈出的故障模式是：反射在反射几何体离开屏幕处终止，因为屏幕空间反射已经没有可供采样的内容了。</em></p>
 <h2 id="performance">Performance</h2>
 <p>This is one of the areas Vite has invested the most optimisation work in, because reflections are usually
 the second most expensive ray tracing effect after per-pixel GI.</p>

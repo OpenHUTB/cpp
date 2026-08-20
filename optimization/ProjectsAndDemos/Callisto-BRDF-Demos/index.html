@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Callisto BRDF Demos - 引擎优化文档</title>
+    <title>Callisto BRDF 演示 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Callisto BRDF Demos";
+        var mkdocs_page_name = "Callisto BRDF \u6f14\u793a";
         var mkdocs_page_input_path = "optimization/ProjectsAndDemos/Callisto-BRDF-Demos.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Callisto BRDF Demos</li>
+      <li class="breadcrumb-item active">Callisto BRDF 演示</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/ProjectsAndDemos/Callisto-BRDF-Demos.md"> 编辑页面</a>
     </li>
@@ -120,13 +120,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="callisto-brdf-demos">Callisto BRDF Demos</h1>
-<p><tldr></p>
-<p>
-Two character scenes demonstrating Vite's custom Callisto BRDF shading model, which repurposes standard
-material pins for retroreflection, diffuse Fresnel and terminator control.
-</p>
-<p></tldr></p>
+                <h1 id="callisto-brdf">Callisto BRDF 演示</h1>
+<p>两个角色场景演示了 Vite 的自定义 Callisto BRDF （双向反射分布函数）着色模型，该模型重新利用标准材质引脚来实现<a href="https://baike.baidu.com/item/%E9%80%86%E5%8F%8D%E5%B0%84/7584246">逆反射</a>（retroreflection）、漫反射菲涅尔和终止线控制。</p>
 <h2 id="downloads">Downloads</h2>
 <table>
 <thead>
@@ -146,11 +141,14 @@ material pins for retroreflection, diffuse Fresnel and terminator control.
 </tr>
 </tbody>
 </table>
-<p><img src="../../img/optimization/CallistoMale.png" alt="Male character rendered with the Callisto BRDF shading model" border-effect="line"/></p>
-<p><em>Male demo character. Retroreflection and diffuse Fresnel are doing the work at grazing angles.</em></p>
-<p><img src="../../img/optimization/CallistoFemale.png" alt="Female character rendered with the Callisto BRDF shading model" border-effect="line"/></p>
-<p><em>Female demo character. Smooth Terminator softens the shadow line across the curved surfaces of the face
-and arms.</em></p>
+<p><img alt="" src="../../../img/optimization/CallistoMale.png" /></p>
+<p><em>使用 Callisto BRDF 着色模型渲染的男性角色。掠射角下，逆反射和漫反射菲涅尔效应共同作用。</em></p>
+<p><img alt="" src="../../../img/optimization/CallistoFemale.png" /></p>
+<p><em>使用 Callisto BRDF 着色模型渲染的女性角色。“平滑终止线”技术柔化了面部和手臂曲面上的阴影线条。</em></p>
+<div class="admonition 笔记">
+<p class="admonition-title">笔记</p>
+<p><strong>终止线</strong>是指物体表面从“被照亮”区域过渡到“阴影”区域的那条分界线。在现实世界中，这条线往往是柔和、平滑的（因为光线有衍射和散射）。但在实时渲染的3D游戏中，由于计算精度的限制，这条线可能会变得非常生硬、锯齿状，甚至在模型表面断裂。</p>
+</div>
 <h2 id="what-callisto-brdf-does">What Callisto BRDF does</h2>
 <p>Unreal's default lit model is a good general-purpose BRDF and a mediocre skin and character model. Callisto
 BRDF is a Vite addition that gives you direct control over the terms that matter for character rendering,
