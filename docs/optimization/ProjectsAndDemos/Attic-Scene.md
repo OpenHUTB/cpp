@@ -38,7 +38,7 @@ angle or an occluder changes. Moving the directional light makes the distinction
 Then look at the [anti-aliasing](Anti-Aliasing.md) treatment. Fine clutter geometry against a bright
 window is a hard case, and it is where SMAA's behaviour differs most visibly from TAA's.
 
-## 参见
+## 另请参阅
 
 - [全局照明](Global-Illumination.md)
 - [静态 DDGI](DDGI-Static.md)

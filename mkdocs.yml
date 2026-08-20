@@ -1,4 +1,4 @@
-site_name: 引擎实现文档
+site_name: 引擎优化文档
 # 参考链接：https://blog.csdn.net/m0_63203517/article/details/129765689
 
 #repo_url: https://github.com/carla-simulator/carla
@@ -49,19 +49,18 @@ nav:
 - 首页: 'index.md'
 - 引擎 C++ 开发教程: './tutorial/add_actor_subclass.md'
 - 引擎源码解析: './engine/game_mode.md'
-- 引擎优化: './optimization/Default-topic.md'
-#- 主题: '#_2'
-#- 交通: '#_3'
-#- 行人: "#_4"
-#- 高级概念: '#_5'
-#- 自定义地图: '#_6'
-#- 自定义开发: '#_7'
-#- 基准测试: "#_8"
-#- 生态系统: '#_9'
-#- 源代码编译: '#_10'
-#- 贡献: '#_11'
-#- 其他: '#_12'
-#- 参考: '#_13'
+- 引擎优化入门: './optimization/Default-topic.md'
+- 引擎概述: './optimization/EngineOverview/Engine-Overview.md'
+- 渲染: './optimization/Rendering/Rendering.md'
+- 物理: './optimization/Physics/Physics.md'
+- 性能和优化: './optimization/Performance/Performance.md'
+- 平台: './optimization/Platforms/Platforms.md'
+- 插件: './optimization/Plugins/Plugins.md'
+- 工具和自动化: './optimization/Tools/Tools.md'
+- 项目和演示: './optimization/ProjectsAndDemos.md'
+- 贡献: './optimization/Contributing/Contributing.md'
+- 参考: './optimization/Reference/Reference.md'
+
 
 # - mdx_math 用于行内公式显示
 markdown_extensions:

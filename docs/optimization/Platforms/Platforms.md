@@ -97,7 +97,7 @@ for Win64. If you need other configurations or platforms, edit the `RunUAT.bat` 
 
 Each additional platform and configuration lengthens an already long build considerably.
 
-## 参见
+## 另请参阅
 
 - [系统要求](System-Requirements.md)
 - [已安装好的构建](Installed-Builds.md)

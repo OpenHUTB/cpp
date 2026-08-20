@@ -1,54 +1,41 @@
-# Debloat Guide
+# 精简指南
 
-<tldr>
-<p>
-Three scripts in <code>devops\</code>, driven by a single <code>config.txt</code>, remove engine content
-you do not need. Everything defaults to <b>dry run</b> and <b>move rather than delete</b>, so a mistake is
-recoverable.
-</p>
-</tldr>
 
-A full Unreal Engine 4.27 source tree contains support for every platform, every workflow and every
-template Epic ships. A Win64-only project uses a fraction of it. Debloating recovers disk space and reduces
-build time.
+`devops\` 目录下的三个脚本，由一个 `config.txt` 文件驱动，用于移除您不需要的引擎内容。所有操作默认都以**试运行**的方式进行，并**将内容移动到其他位置而非删除**，因此即使出错也可以恢复。
 
-Original Vite debloat scripts by Bikouz.
+完整的虚幻引擎 4.27 源代码树支持 Epic 提供的所有平台、工作流程和模板。一个仅限 Win64 平台的项目仅占用其中一小部分资源。精简代码可以释放磁盘空间并缩短构建时间。
 
-## The suite
+原始 Vite 精简脚本由 Bikouz 编写。
 
-| Script | Purpose |
+## 该套件
+
+| 脚本 | 用途 |
 |---|---|
-| `ueVite-debloat-SetupSlim.bat` | Runs engine dependency setup with a Win64-only focus, so unneeded platform dependencies are never downloaded |
-| `ueVite-debloat-StripExecute.bat` | Removes platform binaries, non-Windows tools, templates, sample content and optionally plugins |
-| `ueVite-debloat-StripDebugSymbols.bat` | Removes debug symbols according to `ExcludedPdbs.txt` |
+| `ueVite-debloat-SetupSlim.bat` | 仅针对 Win64 平台运行引擎依赖项设置，因此不会下载不必要的平台依赖项。 |
+| `ueVite-debloat-StripExecute.bat` | 移除平台二进制文件、非 Windows 工具、模板、示例内容以及（可选）插件。 |
+| `ueVite-debloat-StripDebugSymbols.bat` | 根据 `ExcludedPdbs.txt` 移除调试符号。 |
 
-All three live in `devops\` at the engine root and read `devops\config.txt`. You can pass an alternative
-config path as the first argument.
+这三个脚本都位于引擎根目录下的 `devops\` 目录中，并读取 `devops\config.txt` 文件。您可以将备用配置路径作为第一个参数传递。
 
-## Safety model
+## 安全模型
 
-The scripts are deliberately conservative, and it is worth understanding how before running them.
+这些脚本刻意采用保守策略，因此在运行它们之前，务必了解其工作原理。
 
-**Dry run is the default.** `DRYRUN=1` prints every action without touching a file. Review the output
-before changing it.
+**默认设置为“试运行”。** `DRYRUN=1` 会打印每个操作，但不会实际修改任何文件。请在修改之前查看输出。
 
-**Move is the default, not delete.** `MODE=move` relocates targeted files into `MOVE_DIR`, preserving their
-relative layout so they can be restored by copying back. `MODE=delete` is permanent.
+**默认设置为“移动”，而非“删除”。** `MODE=move` 会将目标文件移动到 `MOVE_DIR` 目录，并保留其相对布局，以便可以通过复制的方式恢复。`MODE=delete` 则为永久性删除。
 
-**The move destination cannot be inside the engine tree.** The script refuses, because a move destination
-inside the tree would be caught by subsequent passes.
+**移动目标不能位于引擎目录树内。** 脚本会拒绝，因为位于目录树内的移动目标会被后续的迭代捕获。
 
-**Drive roots are refused.** Both the engine root and the move destination are checked.
+**脚本拒绝使用根目录。** 它会同时检查引擎目录和移动目标。
 
-**The engine root is validated.** The script confirms `Engine\Binaries\` exists before doing anything.
+**脚本会验证引擎目录。** 在执行任何操作之前，脚本会确认 `Engine\Binaries\` 目录是否存在。
 
-## Configuration
+## 配置
 
-`devops\config.txt` uses `KEY=VALUE` lines. Comment a line out with `#` to **preserve** what it targets;
-uncomment to **enable** an optional target. This inversion is worth internalising: an uncommented `STRIP`
-line means that thing gets removed.
+`devops\config.txt` 使用 `KEY=VALUE` 行。用 `#` 注释掉一行可以**保留**其目标；取消注释可以**启用**可选目标。这种反转值得注意：取消注释 **STRIP** 行意味着要删除该行。  
 
-### Core settings
+### 核心设置
 
 ```
 MODE=move
@@ -56,12 +43,11 @@ MOVE_DIR=..\ViteDebloat_Moved
 DRYRUN=1
 ```
 
-`MOVE_DIR` resolves against the engine root, so the default is a sibling folder of the engine.
+`MOVE_DIR` 指向引擎根目录，因此默认值是引擎的同级文件夹。
 
-### Platforms
+### 平台
 
-Win64 is always kept. Uncomment a platform to also download and keep its dependencies during
-`SetupSlim`:
+Win64 始终保留。取消注释平台以在 `SetupSlim` 期间下载并保留其依赖项：
 
 ```
 #KEEP_PLATFORM=Android
@@ -71,10 +57,9 @@ Win64 is always kept. Uncomment a platform to also download and keep its depende
 #KEEP_PLATFORM=HTML5
 ```
 
-Do this **before** running setup. Not downloading a dependency is cheaper than downloading and then
-deleting it.
+请在运行安装程序**之前**执行此操作。不下载依赖项比下载后再删除它更划算。
 
-### Templates
+### 模板
 
 ```
 STRIP_OTHER_TEMPLATES=1
@@ -83,14 +68,13 @@ KEEP_TEMPLATE=TP_ThirdPersonBP
 KEEP_TEMPLATE=TemplateResources
 ```
 
-Every folder under `Templates\` not named by a `KEEP_TEMPLATE` line is targeted. `TemplateResources` is
-shared by all templates and must be kept if you keep any template.
+模板目录下所有未被 `KEEP_TEMPLATE` 行指定的文件夹都会被移除。`TemplateResources` 文件夹由所有模板共享，如果您保留任何模板，则必须保留该文件夹。
 
-### Strip targets
+### 移除目标
 
-The default target list, grouped by category:
+默认目标列表，按类别分组：
 
-**Platform binaries not needed for Win64**
+**Win64 不需要的平台二进制文件**
 
 ```
 STRIP=Engine\Binaries\Win64\Android
@@ -99,7 +83,7 @@ STRIP=Engine\Binaries\Win64\Lumin
 STRIP=Engine\Binaries\DotNET\IOS
 ```
 
-**Non-Windows deployment and development tools**
+**非 Windows 部署和开发工具**
 
 ```
 STRIP=Engine\Extras\Android
@@ -112,7 +96,7 @@ STRIP=Engine\Extras\Maya_AnimationRiggingTools
 STRIP=Engine\Extras\MayaVelocityGridExporter
 ```
 
-3ds Max scripts are preserved by default, since 3ds Max is a Windows DCC tool.
+由于 3ds Max 是一款 Windows DCC 工具，因此默认情况下会保留 3ds Max 脚本。
 
 **UnrealFileServer**
 
@@ -121,13 +105,11 @@ STRIP=Engine\Binaries\Win64\UnrealFileServer.exe
 #STRIP=Engine\Source\Programs\UnrealFileServer
 ```
 
-UnrealFileServer serves cooked and staged files to remote devices and powers network Cook-on-the-Fly. It is
-safe to remove if you develop and package only for local Win64, do not deploy to remote devices, do not use
-network Cook-on-the-Fly, and do not target consoles or mobile through the file-server workflow.
+UnrealFileServer 为远程设备提供已处理和暂存的文件，并支持网络即时处理 (Cook-on-the-Fly)。如果您仅针对本地 Win64 进行开发和打包，不部署到远程设备，不使用网络即时处理，也不通过文件服务器工作流程面向主机或移动设备，则可以安全地移除它。
 
-The prebuilt binary is targeted by default; the source folder is preserved so the tool can be rebuilt later.
+默认情况下，目标平台为预编译的二进制文件；源文件夹将被保留，以便稍后重新编译该工具。
 
-**Engine content**
+**引擎内容**
 
 ```
 STRIP=Samples\StarterContent
@@ -138,91 +120,72 @@ STRIP=FeaturePacks\StarterContent.upack
 #STRIP=Samples\RTXGI_Test
 ```
 
-Starter Content is removed per the debloat policy. The fork-specific test samples are preserved by default
-&mdash; `RTXGI_Test` in particular is useful when verifying [DDGI](DDGI-Dynamic.md).
+根据精简策略，初始内容已被移除。默认情况下，分支特定的测试样本会被保留——特别是 `RTXGI_Test`，它在验证 [DDGI](DDGI-Dynamic.md) 时非常有用。
 
-Entries that do not exist in the tree are skipped with a notice, which is harmless.
+树中不存在的条目会被跳过并显示一条通知，这不会造成任何影响。
 
-## The plugin pass
+## 插件通过
 
-Disabled by default, because plugin needs vary per project:
+默认情况下禁用，因为每个项目的插件需求各不相同：
 
 ```
 #PLUGIN_LIST=ExcludedPlugins.txt
 ```
 
-`ExcludedPlugins.txt` lists roughly 200 engine plugin paths, covering mobile and XR platforms, source
-control providers other than the one you use, Chaos plugins (unnecessary since Vite uses
-[PhysX](PhysX.md)), enterprise and virtual production tooling, and a large set of experimental plugins.
+`ExcludedPlugins.txt` 文件列出了大约 200 个引擎插件路径，涵盖移动和 XR 平台、除您当前使用的源代码控制提供商之外的其他源代码控制提供商、Chaos 插件（由于 Vite 使用 [PhysX](PhysX.md)，因此无需列出）、企业和虚拟生产工具，以及大量实验性插件。
 
-The file is looked up next to the scripts first, then in the engine root.
 
-<warning>
-Read <code>ExcludedPlugins.txt</code> before enabling this pass. It includes entries your project may need
-&mdash; <code>Engine/Plugins/Runtime/GameplayAbilities/</code>,
-<code>Engine/Plugins/Runtime/ApexDestruction/</code>, <code>Engine/Plugins/Runtime/HairStrands/</code>,
-<code>Engine/Plugins/Runtime/Nvidia/</code> (which contains the
-<a href="Upscalers.md">DLSS and Streamline plugins</a>) and
-<code>Engine/Plugins/Runtime/PhysXVehicles/</code> are all on the list.
-<p>
-Comment out the lines for anything you use before running the pass.
-</p>
-</warning>
+系统首先会在脚本目录下查找该文件，然后在引擎根目录下查找。
 
-## Running it
 
-<procedure title="Debloat an engine installation" id="run-debloat">
-    <step>
-        Open <code>devops\config.txt</code> and review every uncommented <code>STRIP</code> line. Comment
-        out anything you need.
-    </step>
-    <step>Confirm <code>DRYRUN=1</code> and <code>MODE=move</code>.</step>
-    <step>
-        Run <code>ueVite-debloat-StripExecute.bat</code> and read the full output. This is the step people
-        skip and then regret.
-    </step>
-    <step>Set <code>DRYRUN=0</code> and run it again.</step>
-    <step>
-        Build the engine and open the editor. Confirm your projects still load and the plugins you need
-        are present.
-    </step>
-    <step>
-        Once you are confident, delete <code>MOVE_DIR</code> to actually reclaim the space. Until you do,
-        the files are still on disk.
-    </step>
-</procedure>
+!!! 警告
 
-For a fresh clone, run `ueVite-debloat-SetupSlim.bat` instead of `Setup.bat` so unneeded platform
-dependencies are never downloaded in the first place.
+    启用此渲染通道前，请阅读 `ExcludedPlugins.txt` 文件。该文件包含您的项目可能需要的插件条目，例如 `Engine/Plugins/Runtime/GameplayAbilities/`、`Engine/Plugins/Runtime/ApexDestruction/`、`Engine/Plugins/Runtime/HairStrands/`、`Engine/Plugins/Runtime/Nvidia/`（包含 [DLSS 和 Streamline 插件](Upscalers.md)）以及 `Engine/Plugins/Runtime/PhysXVehicles/`。
 
-## Debug symbols
+    运行此渲染通道前，请注释掉您使用的所有插件对应的行。
 
-`ueVite-debloat-StripDebugSymbols.bat` removes PDB files according to `ExcludedPdbs.txt`. Debug symbols are
-a large fraction of a source build's disk footprint.
+    
 
-Keep symbols for anything you might need to debug. Stripping symbols for the engine modules you never step
-into is a large saving; stripping symbols for the ones you do turns a readable callstack into hexadecimal.
+## 运行
 
-## Restoring
+### 精简引擎安装
 
-In `move` mode, `MOVE_DIR` mirrors the engine tree's relative layout. Copy the contents back over the engine
-root to restore.
+1. 打开 `devops\config.txt` 文件，检查所有未注释的 `STRIP` 行。注释掉所有不需要的行。
 
-If you used `delete` mode, restoration means re-cloning or re-running `Setup.bat`.
+2. 确认 `DRYRUN=1` 和 `MODE=move`。
 
-## What this does not do
+3. 运行 `ueVite-debloat-StripExecute.bat` 并阅读完整输出。很多人会跳过这一步，然后后悔。
 
-Debloating reduces disk footprint and, through the plugin pass, build time. It does **not** improve runtime
-performance &mdash; a plugin that is present but disabled costs nothing at runtime.
+4. 设置 `DRYRUN=0` 并再次运行。
 
-For runtime performance, see [Profiling](Profiling.md) and
-[Engine Default Changes](Engine-Defaults.md). For build time specifically, removing the added Vite plugins
-saves roughly three minutes on a full 15-minute build; see
-[Shader Compilation and PSO](Shader-Compilation-And-PSO.md).
+5. 构建引擎并打开编辑器。确认您的项目仍然可以加载，并且所需的插件都已安装。
 
-## See also
+6. 确认无误后，删除 `MOVE_DIR` 以真正回收空间。在此之前，文件仍然保留在磁盘上。
 
-- [Build from Source](Build-From-Source.md)
-- [Engine Default Changes](Engine-Defaults.md)
-- [Bundled Plugins](Bundled-Plugins.md)
-- [Cache Management](Cache-Management.md)
+对于全新克隆，请运行 `ueVite-debloat-SetupSlim.bat` 而不是 `Setup.bat`，这样就不会一开始就下载不需要的平台依赖项。
+
+
+## 调试符号
+
+`ueVite-debloat-StripDebugSymbols.bat` 会根据 `ExcludedPdbs.txt` 文件中的设置移除 PDB 文件。调试符号会占用源代码构建磁盘空间的很大一部分。
+
+保留所有可能需要调试的符号。移除那些你从不单步执行的引擎模块的符号可以节省大量空间；移除那些你执行的模块的符号可以将可读的调用堆栈转换为十六进制格式。
+
+## 恢复
+
+在移动（`move`）模式下，`MOVE_DIR` 会镜像引擎树的相对布局。将内容复制回引擎根目录即可恢复。
+
+如果您使用的是删除（`delete`）模式，则恢复意味着重新克隆或重新运行 `Setup.bat`。
+
+## 此操作不会做什么
+
+精简插件可以减少磁盘占用空间，并通过插件阶段缩短构建时间。但它**不会**提高运行时性能——即使插件存在但已禁用，运行时也不会消耗任何资源。
+
+有关运行时性能，请参阅[性能分析](Profiling.md)和[引擎默认更改](Engine-Defaults.md)。关于构建时间，移除添加的 Vite 插件可以在 15 分钟的完整构建过程中节省大约 3 分钟；请参阅[着色器编译和PSO](Shader-Compilation-And-PSO.md)。
+
+## 另请参阅
+
+- [从源代码构建](Build-From-Source.md)
+- [引擎默认设置更改](Engine-Defaults.md)
+- [捆绑插件](Bundled-Plugins.md)
+- [缓存管理](Cache-Management.md)

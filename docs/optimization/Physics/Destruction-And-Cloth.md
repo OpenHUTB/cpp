@@ -30,82 +30,73 @@ Apex 破损教学视频 [![MeanLemur 制作的教学视频](https://img.youtube.
 
 ## Apex 布料
 
-Apex Cloth 是 PhysX 时代的布料系统，可以通过编辑器内的 Clothing Tool 编写，也可以从外部 DCC 工具生成的 APEX 布料资产导入。
+Apex 布料是 PhysX 时代的布料系统（先模拟，后蒙皮），可以通过编辑器内的 Clothing Tool 编写，也可以从外部 DCC 工具生成的 APEX 布料资产导入。
 
 | 细节 | |
 |---|---|
 | 资产类型 | 骨架网格物体上的 APEX 布料资源或编辑器内服装数据 |
-| UE5中的状态 | 被移除以支持 Chaos Cloth |
+| UE5 中的状态 | 被移除以支持 Chaos 布料 |
 
 编辑器内的工作流程将布料参数直接绘制到骨架网格物体上：最大距离、逆止半径和逆止距离。最大距离是主要控制 -它定义每个顶点可以从其蒙皮位置移动多远，因此将其绘制到零针区域并增加它可以让布料自由摆动。
 
 实用注意事项：
 
 - 布料成本随模拟顶点数变化。绘制低分辨率模拟网格并将渲染网格蒙皮到其上，而不是直接模拟渲染网格。
-- 布料是根据骨架网格物体组件进行模拟的。布料上十个字符的成本是一个字符的十倍。
+- 布料是根据骨架网格物体组件进行模拟的。布料上十个角色的成本是一个角色的十倍。
 - 布料不会与场景的其余部分重叠。快速的角色运动可以产生拉伸，无需调整参数即可解决；答案通常是降低附着点移动的速度。
 
 ## NVIDIA Blast
 
-Blast is NVIDIA's successor to Apex Destruction, and the more capable of the two fracture systems.
+Blast 是 NVIDIA 推出的 Apex Destruction 的继任者，也是两款破碎系统中功能更强大的一款。
 
-[Official Blast Plugin Documentation](https://archive.docs.nvidia.com/gameworks/content/gameworkslibrary/blast/1.1/authoring_docs/BlastUe4_QuickStart.html) 
+[Blast 插件官方文档](https://archive.docs.nvidia.com/gameworks/content/gameworkslibrary/blast/1.1/authoring_docs/BlastUe4_QuickStart.html)，[github 仓库地址](https://github.com/NVIDIAGameWorks/Blast)。
 
 
-| Detail | |
+| 条目 | 细节 |
 |---|---|
-| Plugin | `Engine/Plugins/GameWorks/Blast` (version 1.0) |
-| Platforms | Win64, Linux |
-| Enabled by default | No |
-| Modules | `BlastLoader`, `BlastRuntime`, `BlastEditor`, `BlastMeshEditor`, `BlastLoaderEditor` |
+| 插件 | `Engine/Plugins/GameWorks/Blast` (1.0版) |
+| 平台 | Win64, Linux |
+| 默认启用 | No |
+| 模块 | `BlastLoader`, `BlastRuntime`, `BlastEditor`, `BlastMeshEditor`, `BlastLoaderEditor` |
 
-Blast separates the destruction graph from the physics simulation. A Blast asset describes chunks and the
-bonds between them; damage propagates through the bond graph, and chunks become physics bodies only once
-they actually detach. This is why Blast handles large structures better than Apex Destruction: an intact
-building is a graph, not a thousand sleeping rigid bodies.
+Blast 将破坏图与物理模拟分离。Blast 资源描述了块体及其之间的连接；损伤沿着连接图传播，块体只有在实际脱离后才会成为物理实体。这就是为什么 Blast 比 Apex Destruction 更能处理大型结构：一个完整​​的建筑物是一个图，而不是成千上万个静止的刚体。
 
-Blast also supports runtime fracture, so the fracture pattern can depend on where and how the object was
-hit rather than being fully baked at author time.
+Blast 还支持运行时破碎，因此破碎模式取决于物体被击中的位置和方式，而不是在创建时完全烘焙。
 
-Enable the plugin from **Edit > Plugins > GameWorks**, then use the Blast Mesh Editor to author assets.
+从**Edit > Plugins > GameWorks**启用插件，然后使用 Blast 网格编辑器创建资源。
 
-> Blast is not a drop-in replacement for Apex Destruction. The asset types, authoring workflow and runtime
-> API are all different. Choose one per project rather than mixing them, and prefer Blast for new work.
->
-{style="note"}
+!!! 注意
 
-## Choosing
+    Blast 不能直接替代 Apex Destruction。资源类型、创建工作流程和运行时 API 都不同。建议每个项目选择一个，而不是混合使用，并且在新项目中优先选择 Blast。
 
-| Need | System |
+
+## 选择
+
+| 需求 | 系统 |
 |---|---|
-| Existing 4.27 destructible meshes | Apex Destruction &mdash; they still work, do not port them without reason |
-| New destruction, large structures | Blast |
-| New destruction, small props | Either. Apex Destruction is simpler; Blast scales better. |
-| Runtime-dependent fracture patterns | Blast |
-| Existing APEX clothing assets | Apex Cloth |
-| New clothing | Apex Cloth via the in-editor Clothing Tool |
+| 现有 4.27 可破坏网格 | Apex Destruction — 它们仍然有效，请勿无故移植 |
+| 新增破坏效果，大型结构 | Blast |
+| 新增破坏效果，小型道具 | 两者皆可。Apex Destruction 更简单；Blast 的扩展性更好 |
+| 运行时相关的破碎模式 | Blast |
+| 现有 APEX 布料资产 | Apex 布料 |
+| 新增布料 | 通过编辑器内的布料工具使用 Apex Cloth |
 
-## Performance
+## 表现
 
-Destruction is one of the easiest ways to destroy a frame budget, because the cost is invisible until
-something breaks and then arrives all at once.
+破坏是消耗帧预算最简单的方法之一，因为只有在物体破碎时才会产生成本，而且成本会瞬间显现。
 
-- **Cap simultaneous debris.** Set debris timeouts and maximum separation distances on every destructible.
-- **Budget chunk counts against the worst case,** not the typical one. A grenade in a room full of
-  destructibles is the frame you have to survive.
-- **Consider the [instanced physics subsystem](Instanced-Physics.md)** for debris. Chunks that have settled
-  and no longer need individual actors can be handled far more cheaply as instances.
-- **Profile with `stat physics`** while destroying things, not while standing still.
+- **限制同时出现的碎片数量。** 为每个可破坏物设置碎片超时时间和最大分离距离。
+- **预算块的计算应基于最坏情况，** 而非典型情况。例如，在满是可破坏物的房间里，一颗手榴弹就是你必须存活下来的帧。
+- **考虑使用[实例化的物理子系统](Instanced-Physics.md)** 来处理碎片。已经稳定下来且不再需要单独 Actor 的碎片块可以作为实例进行处理，这样成本会低得多。
+- 在破坏物体时**使用`stat physics`进行性能分析** ，而不是在静止不动时进行分析。
 
-## Licensing
+## 许可
 
-Apex Destruction, Apex Cloth and Blast are NVIDIA GameWorks technologies inherited through the PhysX and
-NvRTX lineage. Their licence terms apply to shipped titles. See the
-[GameWorks source SDK EULA](https://developer.nvidia.com/gameworks-source-sdk-eula).
+Apex Destruction、Apex Cloth 和 Blast 是 NVIDIA GameWorks 技术，源自 PhysX 和 NvRTX 系列。其许可条款适用于已发售的游戏。请参阅 [GameWorks 源代码 SDK 最终用户许可协议 (EULA)](https://developer.nvidia.com/gameworks-source-sdk-eula)。
 
-## See also
+## 另请参阅
 
 - [PhysX](PhysX.md)
-- [Instanced Physics Subsystem](Instanced-Physics.md)
-- [Bundled Plugins](Bundled-Plugins.md)
-- [Profiling](Profiling.md)
+- [实例化物理子系统](Instanced-Physics.md)
+- [已捆绑的插件](Bundled-Plugins.md)
+- [性能分析](Profiling.md)

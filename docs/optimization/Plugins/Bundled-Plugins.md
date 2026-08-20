@@ -8,10 +8,12 @@ not listed &mdash; only Vite's additions and the vendor integrations.
 Versions are as of the July major integration. Check the `.uplugin` file for the authoritative value in
 your tree.
 
-<img src="../../img/optimization/VitePlugins.png" alt="Contents of Engine/Plugins/Runtime/VitePlugins in Explorer" border-effect="line"/>
+![](../../img/optimization/VitePlugins.png)
 
-*Vite's own additions live under `Engine\Plugins\Runtime\VitePlugins`. Vendor integrations from NVIDIA sit
-separately under `Engine\Plugins\Runtime\Nvidia`.*
+*资源管理器中 Engine/Plugins/Runtime/VitePlugins 目录的内容*
+
+*Vite 自身添加的插件位于 `Engine\Plugins\Runtime\VitePlugins` 目录下。NVIDIA 提供的厂商集成插件则位于 `Engine\Plugins\Runtime\Nvidia` 目录下。*
+
 
 ## 放大和帧生成
 

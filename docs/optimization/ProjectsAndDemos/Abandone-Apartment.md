@@ -39,7 +39,7 @@ fills in the detail near contacts and in corners. See
 - **Ray-traced reflections.** Interior surfaces reflect a great deal of off-screen geometry, which is
   exactly the case screen-space reflections cannot handle.
 
-## 参见
+## 另请参阅
 
 - [全局照明](Global-Illumination.md)
 - [动态 DDGI](DDGI-Dynamic.md)

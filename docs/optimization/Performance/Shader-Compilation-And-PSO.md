@@ -1,126 +1,102 @@
-# Shader Compilation and PSO
+# 着色器编译和 PSO
 
-<tldr>
-<p>
-Shader permutation count drives compile time, package size and runtime hitching. Vite's main lever is
-<code>VITE_RT_PSO_DEBLOAT</code>, which removes ray tracing permutations for effects it does not ship.
-Your main levers are shading model discipline and PSO caching.
-</p>
-</tldr>
+着色器排列组合的数量会影响编译时间、打包大小和运行时卡顿。Vite 的主要控制手段是 `VITE_RT_PSO_DEBLOAT`，它会移除未包含的特效的光线追踪排列组合。而您主要的控制手段是着色器模型规范和 PSO 缓存。
 
-A shader permutation is one compiled variant of a shader for one specific combination of features. Unreal
-generates permutations combinatorially, so each independent option roughly doubles the count.
 
-This matters in four places: how long a full build takes, how large the packaged game is, how long the
-first-run shader compile takes on a player's machine, and whether the game hitches when it encounters a
-material for the first time.
+着色器排列组合是指针对特定特性组合编译的着色器变体之一。虚幻引擎以组合方式生成排列组合，因此每个独立选项都会使排列组合的数量大致翻倍。
 
-## Ray tracing permutations
 
-Ray tracing is the worst case, because ray tracing pipeline state objects must include every ray generation
-shader that could be dispatched. A console variable set to `0` does not remove its shaders &mdash; they are
-still compiled, packaged and bound into the pipeline.
+这会影响四个方面：完整构建所需的时间、打包后的游戏大小、玩家机器上首次运行着色器编译所需的时间，以及游戏在首次遇到材质时是否会出现卡顿。
 
-`VITE_RT_PSO_DEBLOAT`, which defaults to `1`, addresses this by returning `false` from
-`ShouldCompilePermutation` for ray tracing effects outside Vite's recommended configuration: per-pixel
-ray-traced GI, RTXDI, path tracing, ray-traced translucency, mesh and water caustics, ray-traced reflection
-captures, and the non-deferred reflection path.
 
-This is a large reduction. It is also the reason those effects do not work in a default build. Full detail
-is in [Compile-Time Switches](Compile-Time-Switches.md).
+## 光线追踪排列
 
-## Material permutations
+光线追踪是最棘手的情况，因为光线追踪管线状态对象必须包含所有可能被调度的光线生成着色器。即使控制台变量设置为 `0`，也不会移除其着色器——它们仍然会被编译、打包并绑定到管线中。
 
-The controls you have over material shader count:
+`VITE_RT_PSO_DEBLOAT`（默认值为 `1`）通过对 Vite 推荐配置之外的光线追踪效果（例如逐像素光线追踪全局光照、RTXDI、路径追踪、光线追踪半透明、网格和水体焦散、光线追踪反射捕获以及非延迟反射路径）从 `ShouldCompilePermutation` 返回 `false` 来解决这个问题。
 
-**Shading models.** Every [shading model](Shading-Models.md) in use adds permutations. A project using
-Default Lit and Callisto BRDF compiles far fewer shaders than one using six models. This is a real budget,
-not a theoretical one.
 
-**Material usage flags.** Each **Used With** flag on a material adds a vertex factory permutation: used
-with skeletal mesh, instanced static meshes, particle sprites, splines and so on. Unreal sets these
-automatically when it encounters a new usage, which means a material can silently accumulate flags it no
-longer needs. Audit them.
+这是一个很大的改进。这也是这些效果在默认版本中无法正常工作的原因。完整详情请参阅[编译时开关](Compile-Time-Switches.md)部分。
 
-**Static switches.** Static switch parameters double the permutation count each. Two switches is four
-variants; ten is 1024. Use dynamic branches or separate materials when the count gets away from you.
 
-**Quality levels and feature levels.** Each shader platform and quality level the project targets
-multiplies everything above.
+## 材质排列组合
 
-**Tessellation.** Enabling [tessellation](Tessellation.md) on a material adds hull and domain shader
-permutations.
+您可以控制材质着色器数量的以下选项：
 
-## Compile times
+**着色模型。** 每个使用的[着色模型](Shading-Models.md)都会增加排列组合。使用默认光照和 Callisto BRDF 的项目编译的着色器数量远少于使用六个模型的项目。这是实际的预算，而非理论预算。
 
-Reference figures from the Vite repository, measured on a Ryzen 9 9950X3D:
+**材质使用标志。** 材质上的每个**Used With**（使用于）标志都会增加一个顶点工厂排列组合：用于骨骼网格、实例化静态网格、粒子精灵、样条线等等。Unreal 会在遇到新的使用情况时自动设置这些标志，这意味着材质可能会悄悄地积累不再需要的标志。请检查这些标志。
 
-| Configuration | Full engine build |
+**静态开关。** 每个静态开关参数都会使排列组合数量翻倍。两个开关对应四个变体；十个开关对应 1024 个变体。当排列组合数量过多时，请使用动态分支或单独的材质。
+
+**质量级别和功能级别。** 项目目标着色器平台和质量级别的每个值都会乘以上述所有值。
+
+**细分曲面。** 启用材质[细分](Tessellation.md)会增加外壳和域着色器排列组合。
+
+## 编译时间
+
+参考数据来自 Vite 代码库，在 Ryzen 9 9950X3D 上测得：
+
+| 配置 | 完整引擎构建 |
 |---|---|
-| Full repository | ~15 minutes |
-| Without Vite plugins | ~12 minutes |
+| 完整代码库 | 约 15 分钟 |
+| 不包含 Vite 插件 | 约 12 分钟 |
 
-Houdini is the single largest contributor among the added plugins. See the
-[Debloat Guide](Debloat-Guide.md) for how to strip plugins you do not need.
 
-To speed up shader compilation specifically:
+Houdini 是新增插件中占用资源最多的。请参阅[精简指南](Debloat-Guide.md)，了解如何移除不需要的插件。
 
-- Increase worker count in `BuildConfiguration.xml`, if you have the cores and RAM. Each worker needs
-  memory, so oversubscribing causes swapping and makes things worse.
-- Use a shared Derived Data Cache across the team. This is the single largest win for a team of more than
-  one person: shaders compiled once by anyone are available to everyone.
-- Avoid touching global shader headers. A change to a widely-included `.ush` file rebuilds everything.
+为了加快着色器编译速度：
 
-## PSO caching
+- 如果 CPU 核心数和内存足够，请在 `BuildConfiguration.xml` 文件中增加 worker 数量。每个 worker 都需要内存，因此过度分配内存会导致交换，反而会降低性能。
+- 团队内部共享派生数据缓存。对于多人团队来说，这是最有效的优化方法：任何人编译一次的着色器都可以供所有人使用。
+- 避免修改全局着色器头文件。对广泛使用的 `.ush` 文件进行更改会导致所有内容重新编译。
 
-A pipeline state object bundles shaders and render state into the object the GPU driver actually needs.
-Creating one at the moment a material is first drawn is what causes shader compilation hitches in shipping
-games.
+## PSO 缓存
 
-PSO caching solves this by recording which PSOs a build actually uses and precompiling them at startup or
-during loading.
+管线状态对象 (Pipeline State Object, PSO) 将着色器和渲染状态打包成 GPU 驱动程序实际需要的对象。在材质首次绘制时创建 PSO 会导致游戏发布时出现着色器编译卡顿。
 
-<procedure title="Set up PSO caching" id="pso-caching">
-    <step>Enable PSO caching in <b>Project Settings &gt; Packaging</b>.</step>
-    <step>
-        Package a build with logging enabled and play through it, covering every level, every material and
-        every effect the shipping game contains. Coverage is the whole point: a PSO not encountered during
-        recording will still hitch.
-    </step>
-    <step>Collect the recorded PSO cache files from the build.</step>
-    <step>Use the shader pipeline cache tools to consolidate them into a single cache.</step>
-    <step>Include the cache in the shipping build and verify the hitches are gone.</step>
-</procedure>
+PSO 缓存通过记录构建实际使用的 PSO，并在启动或加载期间预编译它们来解决这个问题。
 
-This is genuinely tedious work and it is usually left too late. Schedule it before content lock, not after.
+### 设置 PSO 缓存
 
-## Cache problems
+1. 在“项目设置”>“打包”中启用 PSO 缓存。
 
-Stale shader caches produce some of the most confusing failures in Unreal: shaders that do not match the
-source, materials that render incorrectly, editor crashes on load, and changes to compile-time switches that
-appear to have no effect.
+2. 打包一个启用日志记录的版本，并完整运行一遍，确保覆盖到最终发布游戏中包含的每个关卡、每个材质和每个特效。覆盖范围至关重要：录制过程中未遇到的 PSO 仍然会导致卡顿。
 
-If you changed `VITE_RT_PSO_DEBLOAT` or any other switch affecting shader permutations, wipe the cache. See
-[Cache Management](Cache-Management.md) for `WipeShaderCache.bat`, which clears the engine-level derived
-data cache, intermediate shaders and shader debug info.
+3. 从构建版本中收集已录制的 PSO 缓存文件。
 
-## Diagnosing
+4. 使用着色器管线缓存工具将它们合并成一个单独的缓存文件。
 
-| Symptom | Likely cause |
+6. 将缓存文件包含在最终发布版本中，并验证卡顿问题是否已解决。
+
+
+这项工作确实非常繁琐，而且通常会被拖延到最后。务必在内容锁定之前安排好这项工作，而不是之后。
+
+
+## 缓存问题
+
+过时的着色器缓存会导致虚幻引擎中一些最令人困惑的故障：着色器与源文件不匹配、材质渲染错误、编辑器加载时崩溃，以及编译时开关的更改似乎没有任何效果。
+
+
+如果您更改了 `VITE_RT_PSO_DEBLOAT` 或任何其他影响着色器排列的开关，请清除缓存。请参阅[缓存管理](Cache-Management.md)中的 `WipeShaderCache.bat`，该脚本会清除引擎级派生数据缓存、中间着色器和着色器调试信息。
+
+
+## 诊断
+
+| 症状 | 可能原因 |
 |---|---|
-| Hitch the first time an effect or material appears | Missing PSO cache entry |
-| Very long first launch after a build | Global shader recompile, often from a header change |
-| Shaders recompiling every launch | DDC not persisting, or a non-deterministic input to the shader hash |
-| Console variable has no visible effect | Feature compiled out. See [Compile-Time Switches](Compile-Time-Switches.md). |
-| Compile times growing over time | Permutation creep from accumulated material usage flags and static switches |
+| 首次出现特效或材质时出现卡顿 | 缺少 PSO 缓存条目 |
+| 构建后首次启动时间过长 | 全局着色器重新编译，通常是由于头文件更改导致 |
+| 每次启动时着色器都重新编译 | DDC 未持久化，或着色器哈希的输入不确定 |
+| 控制台变量无可见效果 | 功能被编译掉。请参阅[编译时开关](Compile-Time-Switches.md)。 |
+| 编译时间随时间推移而增加 | 由于累积的材质使用标志和静态开关导致排列组合变化 |
 
-`r.ShaderDevelopmentMode 1` and `r.DumpShaderDebugInfo 1` produce diagnostic output when you need to
-understand what is actually being compiled.
+当您需要了解实际编译的内容时，`r.ShaderDevelopmentMode 1` 和 `r.DumpShaderDebugInfo 1` 会生成诊断输出。
 
-## See also
+## 另请参阅
 
-- [Compile-Time Switches](Compile-Time-Switches.md)
-- [Shading Models](Shading-Models.md)
-- [Cache Management](Cache-Management.md)
-- [Build Troubleshooting](Build-Troubleshooting.md)
-- [Debloat Guide](Debloat-Guide.md)
+- [编译时开关](Compile-Time-Switches.md)
+- [着色模型](Shading-Models.md)
+- [缓存管理](Cache-Management.md)
+- [构建故障排除](Build-Troubleshooting.md)
+- [精简指南](Debloat-Guide.md)

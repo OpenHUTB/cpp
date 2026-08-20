@@ -77,7 +77,7 @@ UE Downgrader 插件可将 UE 5.8 及更低版本的资源转换回 4.27 和 4.2
     不要在 Vite 项目中使用启动器 DDGI 插件。 Vite 已经将 DDGI 作为引擎的一部分提供，两者会发生冲突。 Vite 中的 DDGI 比 Launcher 版本的 DDGI 插件处理得更好。 （由于引擎端/DDGI插件端均发生变化）
 
 
-## 参见
+## 另请参阅
 
 - [Vite 简介](Introduction-to-Vite.md)
 - [PhysX 概述](PhysX.md)

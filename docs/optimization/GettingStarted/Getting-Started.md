@@ -54,7 +54,7 @@ Vite 交付有两种形式。它们在功能上是相同的编辑器；区别在
 
 将版本选择器保持在 4.27。 UE5 文档描述了 Vite 故意不具备的系统，对于来自 UE5 的人们来说，遵循它是一个常见的困惑源。
 
-## 参见
+## 另请参阅
 
 - [Vite 简介](Introduction-to-Vite.md)
 - [工具链要求](Toolchain-Requirements.md)

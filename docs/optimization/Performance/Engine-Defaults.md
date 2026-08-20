@@ -32,9 +32,12 @@ event. In a stock project the majority of primitives generate overlap events tha
 explicitly. Trigger volumes, pickup detection and anything driven by `OnComponentBeginOverlap` need the
 flag set. This is the most likely source of "my trigger stopped working" after migrating a project.
 
-<img src="../../img/optimization/OverlapEventsDisabled.png" alt="Commit diff replacing SetGenerateOverlapEvents(true) with bGenerateOverlapEvents = false in PrimitiveComponent.cpp" border-effect="line"/>
+![](../../img/optimization/OverlapEventsDisabled.png)
 
-*One line in `UPrimitiveComponent`, applied to every primitive in every project.*
+*提交差异，将 PrimitiveComponent.cpp 中的 SetGenerateOverlapEvents(true) 替换为 bGenerateOverlapEvents = false。*
+
+*`UPrimitiveComponent` 中的一行代码，应用于每个项目中的每个基本组件。*
+
 
 [Commit](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/02d7c0ad0a7542b382a70dc3e37877d6ec052d76)
 
@@ -48,10 +51,12 @@ Actor runtime defaults are changed to reduce per-actor overhead in `AActor::Init
 | `bRelevantForNetworkReplays` | `true` | `false` | Keeps actors out of demo net recording unless wanted |
 | `bRelevantForLevelBounds` | `true` | `false` | Avoids level-bounds iteration over actors that do not define bounds |
 
-<img src="../../img/optimization/OptimizedActorRuntime.png" alt="Commit diff in Actor.cpp changing SetCanBeDamaged, bRelevantForNetworkReplays and bRelevantForLevelBounds defaults" border-effect="line"/>
+![](../../img/optimization/OptimizedActorRuntime.png)
 
-*Large meshes, blocking volumes and foliage that must define world bounds need `bRelevantForLevelBounds`
-set back to `true`.*
+*提交 Actor.cpp 中的差异，更改 SetCanBeDamaged、bRelevantForNetworkReplays 和 bRelevantForLevelBounds 的默认值*
+
+*大型网格、阻挡体积和必须定义世界边界的植被需要将 `bRelevantForLevelBounds` 设置为 `true`。*
+
 
 [Commit](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/970cbb989c3712f13be1fa370b778e769e5d864c)
 
@@ -70,10 +75,11 @@ path as the default and opting into the expensive options where they are needed 
 | `bDisablePostProcessBlueprint` | `false` | `true` |
 | `bUpdateOverlapsOnAnimationFinalize` | `true` | `false` |
 
-<img src="../../img/optimization/SkeletalMeshesOptimizedConfig.png" alt="Commit diff in SkeletalMeshComponent.cpp showing the five changed defaults against Epic's originals" border-effect="line"/>
+![](../../img/optimization/SkeletalMeshesOptimizedConfig.png)
 
-*Each changed line keeps Epic's original value in a trailing comment, so the stock behaviour is recoverable
-without consulting upstream.*
+*SkeletalMeshComponent.cpp 中的提交差异显示了与 Epic 原版相比的五个已更改的默认值。*
+
+*每行更改的内容都会在末尾的注释中保留 Epic 的原始值，因此无需咨询上游即可恢复库存行为。*
 
 `VisibilityBasedAnimTickOption` is the one to watch. `OnlyTickPoseWhenRendered` means an off-screen
 character stops evaluating its pose entirely; gameplay that reads bone transforms or sockets on unrendered
@@ -83,10 +89,11 @@ the component back to `AlwaysTickPose` or `AlwaysTickPoseAndRefreshBones`.
 `bDisablePostProcessBlueprint = true` is the second: post-process anim Blueprints, commonly used for IK
 and bone corrections, no longer run unless re-enabled per component.
 
-<img src="../../img/optimization/SkeletalMeshDefault.png" alt="SkeletalMeshComponent.cpp constructor showing the surrounding default block" border-effect="line"/>
+![](../../img/optimization/SkeletalMeshDefault.png)
 
-*The surrounding constructor block in `SkeletalMeshComponent.cpp`, for context on where these defaults are
-set.*
+*SkeletalMeshComponent.cpp 构造函数显示了周围的默认块*
+
+*有关这些默认值设置位置的上下文，请参阅 `SkeletalMeshComponent.cpp` 中的构造函数块。*
 
 [Commit](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/33fe7c638829b8120e8a02ecc639acda761df835)
 
@@ -124,9 +131,11 @@ time, module load count and packaged build size.
 The SpeedTree tick in `LevelTick.cpp` is optimised. SpeedTree ticking runs regardless of whether a project
 uses SpeedTree assets, so this is a saving every project gets.
 
-<img src="SpeedTreeTick.png" alt="LevelTick.cpp showing the UpdateSpeedTreeWind call inside the world tick" border-effect="line"/>
+![](../../img/optimization/SpeedTreeTick.png)
 
-*`Scene->UpdateSpeedTreeWind` in the world tick &mdash; unconditional in stock 4.27.*
+*LevelTick.cpp 显示了世界节拍中的 UpdateSpeedTreeWind 调用。*
+
+*`Scene->UpdateSpeedTreeWind` 在世界节拍中 — 无条件地在 stock 4.27 中。*
 
 [Source](https://github.com/GapingPixel/UE5-PhysX-Vite/blob/3e4a16aa89de4f4c37da300c945d6a14dc62edd7/Engine/Source/Runtime/Engine/Private/LevelTick.cpp#L1709)
 

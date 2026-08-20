@@ -80,7 +80,7 @@
 3. 每帧循环内没有`FString`处理、反射调用、动态分配或虚拟调度。
 4. 在适当的情况下使用 SIMD 友好的数学（SSE/AVX/NEON）。
 
-规则 3 是最常被其他合理代码违反的规则。每个参与者节拍中的`FString`格式调用在测试场景中是不可见的，并且在规模上是灾难性的 -请参阅 [400 字符 CMC 基准测试](400-Characters-CMC-Bench.md)，了解相乘后的每帧成本。
+规则 3 是最常被其他合理代码违反的规则。每个参与者节拍中的`FString`格式调用在测试场景中是不可见的，并且在规模上是灾难性的 -请参阅 [400 角色 CMC 基准测试](400-Characters-CMC-Bench.md)，了解相乘后的每帧成本。
 
 ## 正在进行中的工作
 
@@ -154,10 +154,10 @@ case MP_Anisotropy:
 
 遵循周围代码使用的任何标记。对于新区域，`//AKCHANGES START`/ `//AKCHANGES END`对可以明确更改的范围。
 
-## 参见
+## 另请参阅
 
 - [贡献](Contributing.md)
 - [提交约定](Commit-Conventions.md)
 - [向后移植](Backporting.md)
-- [编译时开关](Compile-Time-Switches.md)
-- [性能目标](Performance-Targets.md)
+- [编译时开关](../Performance/Compile-Time-Switches.md)
+- [性能目标](../EngineOverview/Performance-Targets.md)

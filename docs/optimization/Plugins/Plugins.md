@@ -11,7 +11,7 @@ integrated by hand.
 
 | 主题 | 覆盖内容 |
 |---|---|
-| [Bundled 插件](Bundled-Plugins.md) | Everything Vite adds on top of stock 4.27, with versions and enablement state |
+| [已捆绑的插件](Bundled-Plugins.md) | Everything Vite adds on top of stock 4.27, with versions and enablement state |
 | [提议的插件](Proposed-Plugins.md) | 候选集成并推荐的外部插件 |
 
 ## 插件生效的位置
@@ -74,7 +74,7 @@ Project plugins go in `<Project>\Plugins`, as with stock Unreal. Engine plugins 
 
 If you want a plugin bundled with Vite, it must be compatible with 4.21&ndash;4.27. UE5-only plugins are out of scope. See [Proposed Plugins](Proposed-Plugins.md) for the criteria and the current candidate list.
 
-## 参见
+## 另请参阅
 
 - [Bundled 插件](Bundled-Plugins.md)
 - [提议的插件](Proposed-Plugins.md)

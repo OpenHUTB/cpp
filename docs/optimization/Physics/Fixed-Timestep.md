@@ -93,9 +93,9 @@ Vite 的固定时间步长模式将两者解耦。物理总是以相同的增量
 
 **请勿将其用于**没有确定性要求的项目。默认的可变步路径更便宜，因此编译时开关默认为关闭。
 
-## 参见
+## 另请参阅
 
 - [PhysX](PhysX.md)
 - [编译时开关](../Performance/Compile-Time-Switches.md)
 - [实例物理子系统](Instanced-Physics.md)
-- [分析](../Performance/Profiling.md)
+- [性能分析](../Performance/Profiling.md)

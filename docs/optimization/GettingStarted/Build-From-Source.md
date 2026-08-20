@@ -74,20 +74,23 @@ GenerateProjectFiles.bat
 
 This produces `UE4.sln` in the repository root.
 
-<img src="../../img/optimization/UE4SolutionFiles.jpg" alt="Repository root in Explorer after project file generation, showing UE4.sln" border-effect="line"/>
+![](../../img/optimization/UE4SolutionFiles.jpg)
 
-*`UE4.sln` appears alongside the setup scripts once generation succeeds. If it is missing, generation
-failed &mdash; read its output rather than opening Visual Studio.*
+*项目文件生成后，资源管理器中的仓库根目录显示为 UE4.sln*
+
+*`UE4.sln` 文件会在生成成功后出现在安装脚本旁边。如果该文件缺失，则表示生成失败——请阅读其输出，而不是打开 Visual Studio。*
 
 ### 3. Build
 
 Open `UE4.sln` and set **UE4** as the startup project if it is not already. Build the
 **Development Editor** configuration for **Win64**.
 
-<img src="../../img/optimization/VSBuildUE4.jpg" alt="Visual Studio Solution Explorer with the UE4 project selected and the Build command open" border-effect="line"/>
+![](../../img/optimization/VSBuildUE4.jpg)
 
-*Build **UE4** under **Engine**, not the solution. Building the whole solution compiles program targets you
-do not need for an editor build.*
+*在 Visual Studio 解决方案资源管理器中，选中 UE4 项目并打开“生成”命令。*
+
+*请在**Engine**下构建 **UE4**，而不是在解决方案下构建。构建整个解决方案会编译编辑器构建不需要的程序目标。*
+
 
 From the command line, the equivalent is:
 

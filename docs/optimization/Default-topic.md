@@ -1,4 +1,4 @@
-# 虚幻引擎 Vite 手册
+# 引擎优化入门
 
 <tldr>
 <p>
@@ -65,24 +65,24 @@ Vite针对的是活跃生产中的团队。它不是一个研究分支或技术�
 
 * 动态 DDGI
 
-    光线追踪辐照度探测体积。结构上无噪声，完全动态，在类似场景下帧速率约为硬件流明的两倍。参见[动态 DDGI](./Rendering/DDGI-Dynamic.md)。
+    光线追踪辐照度探测体积。结构上无噪声，完全动态，在类似场景下帧速率约为硬件流明的两倍。另请参阅[动态 DDGI](./Rendering/DDGI-Dynamic.md)。
 
 * 静态 DDGI
 
-    采用相同的探针表示方法，烘焙时间近乎瞬时。相比传统烘焙光照，反射保真度更高，对运动物体的覆盖范围更广。即使在完全不支持光线追踪的 GPU 上也能正常运行。参见[静态 DDGI](./Rendering/DDGI-Static.md)。
+    采用相同的探针表示方法，烘焙时间近乎瞬时。相比传统烘焙光照，反射保真度更高，对运动物体的覆盖范围更广。即使在完全不支持光线追踪的 GPU 上也能正常运行。另请参阅[静态 DDGI](./Rendering/DDGI-Static.md)。
 
 * 优化 RT 反射
 
-    在 PS5 级别的 GPU 上，可实现 4K 原生 60 帧。启用 DDGI 后，反射光线会采样探测器辐照度进行二次反射，而不是返回黑色。参见[光线追踪反射](./Rendering/RT-Reflections.md)。
+    在 PS5 级别的 GPU 上，可实现 4K 原生 60 帧。启用 DDGI 后，反射光线会采样探测器辐照度进行二次反射，而不是返回黑色。另请参阅[光线追踪反射](./Rendering/RT-Reflections.md)。
 
 
 * UE4 时代的 SSGI
 
-    当 UE5 将 SSGI 集成到 Lumen 中时，其质量和性能有所下降，并且无法再与独立的全局光照解决方案并行运行。在 Vite 中，它可以与 DDGI 完美兼容。参见 [SSGI](./Rendering/SSGI.md)。
+    当 UE5 将 SSGI 集成到 Lumen 中时，其质量和性能有所下降，并且无法再与独立的全局光照解决方案并行运行。在 Vite 中，它可以与 DDGI 完美兼容。另请参阅[SSGI](./Rendering/SSGI.md)。
 
 * PhysX 3.4
 
-    针对新版 Clang 重建了库，新增了 Blast 支持，并支持跨平台 GPU 加速粒子效果。在相同工作负载下，速度明显优于 Chaos。参见 [PhysX](./Physics/PhysX.md)。
+    针对新版 Clang 重建了库，新增了 Blast 支持，并支持跨平台 GPU 加速粒子效果。在相同工作负载下，速度明显优于 Chaos。另请参阅[PhysX](./Physics/PhysX.md)。
 
 
 * Apex 破损和布料
@@ -96,12 +96,12 @@ Vite针对的是活跃生产中的团队。它不是一个研究分支或技术�
 
 * 细分曲面（Tessellation）
 
-    基于距离和位移的几何细节：更平滑的表面、更清晰的轮廓和运行时高频细节，且无需 Nanite 的额外开销。参见[细分曲面](./Rendering/Tessellation.md)。
+    基于距离和位移的几何细节：更平滑的表面、更清晰的轮廓和运行时高频细节，且无需 Nanite 的额外开销。另请参阅[细分曲面](./Rendering/Tessellation.md)。
 
 
 ## 性能目标
 
-以下所有目标均包含光线追踪。完整详情和测量条件请参见[性能目标](./EngineOverview/Performance-Targets.md)。
+以下所有目标均包含光线追踪。完整详情和测量条件另请参阅[性能目标](./EngineOverview/Performance-Targets.md)。
 
 | PS5 级目标 | 它包括什么 |
 |---|---|
@@ -123,12 +123,12 @@ Vite针对的是活跃生产中的团队。它不是一个研究分支或技术�
 
 * 渲染
 
-    全局光照、光线追踪、着色模型、抗锯齿、放大、曲面细分、环境光遮蔽和色彩管理。这是手册中篇幅最长的部分，也是 Vite 与原版 4.27 版本差异最大的地方。参见[渲染](./Rendering/Rendering.md)部分。
+    全局光照、光线追踪、着色模型、抗锯齿、放大、曲面细分、环境光遮蔽和色彩管理。这是手册中篇幅最长的部分，也是 Vite 与原版 4.27 版本差异最大的地方。另请参阅[渲染](./Rendering/Rendering.md)部分。
 
 
 * 物理
 
-    PhysX 3.4 作为发布版本的物理引擎后端：支持快速路径、固定时间步长、Apex 破损、Apex 布料、爆炸以及大规模实例化刚体。参见[物理](./Physics/Physics.md)部分。
+    PhysX 3.4 作为发布版本的物理引擎后端：支持快速路径、固定时间步长、Apex 破损、Apex 布料、爆炸以及大规模实例化刚体。另请参阅[物理](./Physics/Physics.md)部分。
 
 * 性能与优化
 

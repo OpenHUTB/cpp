@@ -1,108 +1,74 @@
-# Performance Targets
+# 性能目标
 
-<tldr>
-<p>
-Four PS5-class reference configurations, all including ray tracing: <b>4K120</b> stylised,
-<b>4K60</b> performance, <b>4K30</b> fidelity, and <b>1440p30</b> with the full RT effect suite.
-All figures are at native resolution.
-</p>
-</tldr>
+四种 PS5 类参考配置，全部包括光线追踪：<b>4K120</b> 风格化、<b>4K60</b> 性能、<b>4K30</b> 保真度以及带有完整实时光线追踪（Real-Time Ray Tracing, RT）效果套件的 <b>1440p30</b>。所有数字均采用原始分辨率。
 
-Vite's performance targets are not aspirational marketing numbers; they are the configurations the engine is
-tuned against and the ones the demo projects are built to hit. Every one of them includes ray tracing, and
-every one of them is stated at native resolution rather than an upscaled internal one.
 
-## The four targets
+Vite的性能目标不是理想的营销数字；它们是引擎调整的配置，也是演示项目构建的目标配置。其中每一项都包含光线追踪，并且每一项都是以原始分辨率而不是升级的内部分辨率表示的。
 
-| Target | Resolution and frame rate | Feature set | Intended for | Demonstraded in |
+## 四个目标
+
+| 目标 | 分辨率和帧率 | 功能集 | 适用于 | 展示于 |
 |---|---|---|---|---|
-| **Stylised** | 4K, 120 FPS | RT DDGI | Competitive multiplayer titles | Stylized Demo |
-| **Performance, high end** | 4K, 60 FPS | DDGI + RT Reflections + Tessellation | Fidelity-focused titles that still need 60 | Unreal Tournament Vite Scene |
-| **Fidelity, high end** | 4K, 30 FPS | As above, scaled for geometric density | Large open worlds | Demo In Progress |
-| **Fidelity, full RT** | 1440p, 30 FPS | DDGI + RT Reflections + RTAO + RT Shadows | Maximum image quality | NVIDIA Demos |
+| **风格化** | 4K, 120 FPS | RT DDGI | 多人竞技游戏 | 风格化演示 |
+| **性能、高端** | 4K, 60 FPS | DDGI + RT 反射 + 曲面细分 | 仍需要 60 帧保真度的游戏 | 虚幻锦标赛 Vite 场景 |
+| **保真、高端** | 4K, 30 FPS | 如上所述，按几何密度缩放 | 大型开放世界 | 演示正在进行中 |
+| **保真、全 RT** | 1440p, 30 FPS | DDGI + RT 反射 + RTAO + RT 阴影 | 最高图像质量 | NVIDIA 演示 |
 
-The reference hardware for all four is PlayStation 5 class, which on desktop means roughly an RDNA2
-RX 6700/RTX 2080
+这四款设备的参考硬件均为 PlayStation 5 级别，在台式机上大致意味着 RDNA2 RX 6700/RTX 2080
 
-Real-time path tracing is also available in the codebase, using the NVIDIA path tracing technology featured
-in Black Myth: Wukong. &mdash; see [Path Tracing](Path-Tracing.md).
+代码库中还提供实时路径追踪，使用《黑神话：悟空》中的 NVIDIA 路径追踪技术。 — 请参阅[路径跟踪](Path-Tracing.md)。
 
-## The comparison being made
+## 正在进行比较
 
-Epic's UE 5.7 and 5.8 target approximately 60 FPS at dynamic internal resolutions of 720p&ndash;1080p on
-PS5, using Lumen, Nanite, VSM, TSR and Chaos. Vite's headline claim is a base performance improvement of up
-to 2.5x real game frame rate against that intended feature set.
+Epic 的 UE 5.7 和 5.8 的目标是在 PS5 上以 720p–1080p 的动态内部分辨率实现约 60 FPS，使用 Lumen、Nanite、VSM、TSR 和 Chaos。 Vite 的主要宣称是，与预期功能集相比，实际游戏帧速率提高了 2.5 倍。
 
-The clearest single demonstration: a scene running in Vite with ray-traced global illumination, ray-traced
-reflections and tessellation outperforms the *same scene* in UE 5.7 with no ray tracing, no Lumen, no Nanite
-and no tessellation. This holds at 4K native on an RTX 4080 Super, at 4K native on an RDNA2 RX 6700, and at
-native resolution on Steam Deck hardware.
+最清晰的单个演示：在 Vite 中运行的具有光线追踪全局照明、光线追踪反射和曲面细分的场景优于 UE 5.7 中没有光线追踪、没有 Lumen、没有 Nanite 和曲面细分的“相同场景”。这适用于 RTX 4080 Super 上的 4K 原生分辨率、RDNA2 RX 6700 上的 4K 原生分辨率以及 Steam Deck 硬件上的原生分辨率。
 
-[![Vite RT GI and RT Reflections](https://img.youtube.com/vi/2vfG3W-Gy5E/maxresdefault.jpg)](https://youtu.be/2vfG3W-Gy5E)
+[![Vite RT GI 和 RT Reflections](https://img.youtube.com/vi/2vfG3W-Gy5E/maxresdefault.jpg)](https://youtu.be/2vfG3W-Gy5E)
 
-## Measured reference points
+## 测量参考点
 
-These are specific measurements from the benchmark scenes, reproduced here so the targets above have
-something concrete behind them. Each is a like-for-like comparison in the same scene.
+这些是来自基准场景的具体测量结果，在此处复制，因此上面的目标背后有一些具体的东西。每一个都是在同一场景中进行同类比较。
 
-| Measurement | Vite | UE5 | Ratio |
+| 测量 | Vite | UE5 | 比率 |
 |---|---|---|---|
-| DDGI test scene, RTX 4080S, 1440p native | 811 FPS (RTXGI) | 324 FPS (Lumen 5.7) | ~2.5x |
-| DDGI test scene, RX 6600, 1080p native | 245 FPS (RTXGI) | &mdash; | &mdash; |
-| Physics stress scene | 157 FPS (PhysX) | 33.3 FPS (Chaos 5.7.3) | ~4.7x |
-| Physics, native PhysX actor fast path | ~2x regular PhysX | &mdash; | &mdash; |
-| Character movement and collision | 4.27 baseline | 5.6 | 2.2&ndash;2.8x faster on 4.27 |
-| Typical multiplayer map memory | ~1 GB less than 5.7 | &mdash; | &mdash; |
+| DDGI测试场景，RTX 4080S，1440p原生 | 811 FPS (RTXGI) | 324 FPS (Lumen 5.7) | ~2.5x |
+| DDGI 测试场景，RX 6600，1080p 原生 | 245 FPS (RTXGI) | &mdash; | &mdash; |
+| 物理压力场景 | 157 FPS (PhysX) | 33.3 FPS (Chaos 5.7.3) | ~4.7x |
+| 物理，原生 PhysX actor 快速路径 | ~2x 常规 PhysX | &mdash; | &mdash; |
+| 角色移动和碰撞 | 4.27 基线 | 5.6 | 4.27 上速度提高了 2.2–2.8 倍 |
+| 典型的多人游戏地图内存 | ~1 GB 小于 5.7 | &mdash; | &mdash; |
 
-The DDGI comparison is the most representative of the rendering argument; the physics comparison is the most
-representative of the CPU argument. The benchmark scenes themselves are downloadable from
-[Projects and Demos](ProjectsAndDemos.md).
+DDGI对比是最有代表性的渲染争论；物理比较是最有代表性的CPU参数。基准测试场景本身可以从[项目和演示](ProjectsAndDemos.md)下载。
 
-## Why native resolution is the constraint
+## 为什么原生分辨率是制约因素
 
-Temporal reconstruction, denoising and stochastic sampling introduce noise, ghosting, temporal instability
-and blur. A 60 FPS target at a dynamic 720p&ndash;1080p internal resolution reconstructed to 4K is a
-different product than 60 FPS at native 4K, even when the frame rate number matches.
+时间重建、去噪和随机采样会引入噪声、重影、时间不稳定和模糊。即使帧速率数字匹配，重构为 4K 的动态 720p–1080p 内部分辨率下的 60 FPS 目标与原生 4K 下的 60 FPS 目标是不同的产品。
 
-Vite's position is that image clarity and gameplay responsiveness are the things that degrade first and are
-hardest to recover, so the frame-time budget should be spent holding native resolution and using lighting
-techniques that are noise-free by construction. DDGI's use of spherical harmonics to store and filter
-irradiance in probe volumes is precisely why it produces stable results without a denoiser.
+Vite 的立场是，图像清晰度和游戏响应能力是最先降低且最难恢复的因素，因此帧时间预算应用于保持原始分辨率并使用构造上无噪音的照明技术。 DDGI 使用球谐函数来存储和过滤探头体积中的辐照度，这正是它无需降噪器即可产生稳定结果的原因。
 
-Upscalers are fully supported &mdash; DLSS 4.5, FSR 2 and 4, XeSS and NIS all ship with the engine. They are
-positioned as a way to exceed a target on weaker hardware, not as a way to reach it on the reference
-hardware. See [Upscalers and Frame Generation](Upscalers.md).
+升级器得到全面支持 -DLSS 4.5、FSR 2 和 4、XeSS 和 NIS 均随引擎一起提供。它们被定位为在较弱的硬件上超越目标的一种方式，而不是在参考硬件上达到目标的一种方式。请参阅[Upscalers 和帧生成](Upscalers.md)。
 
-## Designing to a target
+## 设定目标
 
-Pick your target before you build content, because it determines your entire art budget.
+在制作内容之前确定目标，因为它决定了你的全部美术预算。
 
-<procedure title="Choose and hold a performance target" id="choose-target">
-    <step>
-        Pick the row from the table above that matches your genre. Competitive multiplayer almost always
-        means the Stylised 4K120 target; a narrative single-player title can usually afford Fidelity.
-    </step>
-    <step>
-        Configure the corresponding feature set and nothing more. Vite enables most ray tracing effects by
-        default, so this usually means turning things <i>off</i>. See <a href="Ray-Tracing.md">Ray Tracing</a>.
-    </step>
-    <step>
-        Establish a frame-time budget per system &mdash; GI, reflections, shadows, geometry, post &mdash; and
-        measure against it with <code>stat gpu</code> from the first playable scene onward.
-    </step>
-    <step>
-        Test on the lowest hardware in your matrix regularly, not at the end. See
-        <a href="System-Requirements.md">System Requirements</a> for the reference hardware list.
-    </step>
-    <step>
-        Use <a href="Engine-Defaults.md">scalability</a> settings to scale down, rather than designing for the
-        weakest machine and scaling up.
-    </step>
-</procedure>
+### 选择并保持性能目标
 
-## See also
+1. 从上表中选择与你的游戏类型相匹配的行。竞技多人游戏几乎总是意味着选择“风格化 4K120”目标；叙事型单人游戏通常可以使用“高保真”目标。
 
-- [UE4 versus UE5 Cost Analysis](UE4-Versus-UE5-Cost-Analysis.md)
-- [Profiling and Benchmarking](Profiling.md)
-- [Scalability](Engine-Defaults.md)
-- [Projects and Demos](ProjectsAndDemos.md)
+2. 配置相应的功能集，无需其他操作。Vite 默认启用大多数光线追踪效果，因此通常需要将其关闭。请参阅[光线追踪](Ray-Tracing.md)部分。
+
+3. 为每个系统（全局光照、反射、阴影、几何体、后期处理）设定帧时间预算，并从第一个可玩场景开始使用 `stat gpu` 命令进行测试。
+
+4. 定期在你的测试矩阵中配置最低的硬件上进行测试，而不是在最后才进行测试。请参阅[系统要求](System-Requirements.md)以获取参考硬件列表。
+
+5. 使用[可扩展性](Engine-Defaults.md)设置来降低配置，而不是先针对配置最低的机器进行设计，然后再进行扩展。
+
+
+## 另请参阅
+
+- [UE4 与 UE5 成本分析](UE4-Versus-UE5-Cost-Analysis.md)
+- [性能分析和基准测试](Profiling.md)
+- [可扩展性](Engine-Defaults.md)
+- [项目和演示](../ProjectsAndDemos.md)

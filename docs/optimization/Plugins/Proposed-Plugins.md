@@ -11,9 +11,12 @@ Not everything useful belongs in the engine repository. A plugin bundled with Vi
 every clone, the length of every build and the surface area of every integration. This page tracks what has
 been proposed and which tier it belongs in.
 
-<img src="../../img/optimization/Plugins1.png" alt="Explorer view of Engine/Plugins/Runtime/VitePlugins showing the integrated plugin folders" border-effect="line"/>
+![](../../img/optimization/Plugins1.png)
 
-*Plugins already integrated live in `Engine\Plugins\Runtime\VitePlugins`.*
+*资源管理器视图显示引擎/插件/运行时/VitePlugins 目录下的集成插件文件夹*
+
+*插件已实时集成到 `Engine\Plugins\Runtime\VitePlugins` 中。*
+
 
 ## Tiers
 

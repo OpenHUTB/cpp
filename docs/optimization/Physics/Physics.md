@@ -121,14 +121,15 @@ solver work, data access, collision and constraint processing, build configurati
 The stock NVIDIA result also separates the base PhysX architecture from the additional improvements in
 Vite's PhysX build.
 
-<img src="../../img/optimization/BoxContainerPile10KChaos.jpg" alt="Unreal Chaos Box Container Pile 10K benchmark report across one to 24 threads" border-effect="line"/>
+![](../../img/optimization/BoxContainerPile10KChaos.jpg)
+*Unreal Chaos Box Container Pile 跨 1 到 24 个线程的 10K 基准测试报告*
 
-*Unreal Chaos report. Median physics milliseconds per frame; lower is better.*
+*Unreal Chaos 报告。每帧平均物理毫秒数；越低越好。*
 
-<img src="../../img/optimization/BoxContainerPile10KVitePhysX.jpg" alt="Vite PhysX and comparison engines Box Container Pile 10K benchmark report" border-effect="line"/>
+![](../../img/optimization/BoxContainerPile10KVitePhysX.jpg)
+*Vite PhysX 与对比引擎 Box Container Pile 10K 基准测试报告*
 
-*Vite PhysX and comparison-engine report. The shared table above uses only thread counts reported for Chaos,
-NVIDIA PhysX 3.4 and Vite PhysX 3.4 in the supplied reports.*
+*Vite PhysX 和对比引擎报告。上表仅使用所提供报告中 Chaos、NVIDIA PhysX 3.4 和 Vite PhysX 3.4 的线程数。*
 
 <note>
 The reports use the same host and high-level workload settings, but not identical executables: Chaos is a Win64 Shipping
@@ -177,9 +178,10 @@ The captured Chaos game time is **4.91×** the Vite PhysX game time, while its f
 Vite PhysX frame time. Game time accounts for almost the complete frame in both captures, so the result is
 CPU-side rather than a GPU-limited comparison.
 
-<img src="../../img/optimization/ChaosVsPhysX3000.png" alt="In-engine comparison of 3,000 simulated cubes in Unreal 5.7 Chaos and Unreal Vite 26 PhysX 3.4" border-effect="line"/>
+![](../../img/optimization/ChaosVsPhysX3000.png)
+*在虚幻引擎 5.7 Chaos 和虚幻引擎 Vite 26 PhysX 3.4 中对 3000 个模拟立方体进行引擎内对比*
 
-*In-engine 3,000-cube capture. Both sides report 3,016 rendered primitives.*
+*引擎内3000立方体捕捉。双方均报告渲染了3016个图元。*
 
 
 ### 1,425 native PhysX actors
@@ -198,10 +200,12 @@ transform-bridge cost depends on the native integration.
 | Frame time |                 2.67 ms |
 | Game time |                 2.11 ms |
 
-<img src="../../img/optimization/NativePhysXActors1425.png" alt="In-engine Vite native PhysX actor test with 1,425 simulated cubes" border-effect="line"/>
 
-*Native PhysX actor capture running in Unreal Engine without a separate UE Actor representation for each
-simulated cube.*
+![](../../img/optimization/NativePhysXActors1425.png)
+*使用 1425 个模拟立方体对引擎内的 Vite 原生 PhysX Actor 进行测试*
+
+*在虚幻引擎中运行原生 PhysX Actor 捕获，无需为每个模拟立方体单独创建一个 UE Actor 表示。*
+
 
 <warning>
 Do not calculate a direct multiplier between the native-path capture and the 3,000-cube comparison. The

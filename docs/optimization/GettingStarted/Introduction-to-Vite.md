@@ -2,14 +2,14 @@
 
 <tldr>
 <p>
-Vite 是 Unreal Engine 4.27 面向生产的分支，基于 NVIDIA 的 NvRTX Caustics 分支。它保留了 PhysX 3.4 和与引擎无关的光线追踪管道，并用在高帧速率下达到本机分辨率的更轻的替代方案取代了 Epic 的 UE5 功能堆栈（Lumen、Nanite、VSM、TSR、Chaos）。
+Vite 是 Unreal Engine 4.27 面向生产的分支，基于 NVIDIA 的 NvRTX Caustics 分支。它保留了 PhysX 3.4 和与引擎无关的光线追踪管线，并用在高帧速率下达到本机分辨率的更轻的替代方案取代了 Epic 的 UE5 功能堆栈（Lumen、Nanite、VSM、TSR、Chaos）。
 </p>
 </tldr>
 
-Unreal Engine Vite 专为专业游戏开发而构建，支持当前正在制作的游戏。其长期目标是不断发展的现代引擎，提供与专有的内部引擎竞争的 CPU 和渲染吞吐量，并针对当代控制台硬件提供持续的性能、稳定性和图形管道工作。
+Unreal Engine Vite 专为专业游戏开发而构建，支持当前正在制作的游戏。其长期目标是不断发展的现代引擎，提供与专有的内部引擎竞争的 CPU 和渲染吞吐量，并针对当代控制台硬件提供持续的性能、稳定性和图形管线工作。
 
 
-目标足够具体，可以证伪：**在每毫秒保真度和模拟规模上击败 Epic 的 UE5**，并在这两个方面与专有 AAA 引擎竞争。每毫秒的保真度是[性能目标](../EngineOverview/Performance-Targets.md)和[UE4 与 UE5 成本分析](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md)衡量的。模拟规模是[物理](../ProjectsAndDemos/Physics-Cube-Bench.md)和[字符](../ProjectsAndDemos/400-Characters-CMC-Bench.md)基准测试所测量的。 Vite 目前没有获胜的地方，本手册是这么说的。
+目标足够具体，可以证伪：**在每毫秒保真度和模拟规模上击败 Epic 的 UE5**，并在这两个方面与专有 AAA 引擎竞争。每毫秒的保真度是[性能目标](../EngineOverview/Performance-Targets.md)和[UE4 与 UE5 成本分析](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md)衡量的。模拟规模是[物理](../ProjectsAndDemos/Physics-Cube-Bench.md)和[角色](../ProjectsAndDemos/400-Characters-CMC-Bench.md)基准测试所测量的。 Vite 目前没有获胜的地方，本手册是这么说的。
 
 ## 设计论证
 
@@ -67,7 +67,7 @@ Vite 最初是 NvRTX 4.27 Caustics 的一个分支，它在 Epic 标准 4.27 分
 
 Vite 的计划是继续升级该代码库：优化核心系统、现代化渲染核心、改进 UI 并更新工具链，而不是将 4.27 视为冻结的工件。请参阅 [为什么选择 NvRTX 4.27](Why-NvRTX-427.md) 了解基本版本选择背后的技术原因。
 
-## 参见
+## 另请参阅
 
 - [性能目标](Performance-Targets.md)
 - [为什么选择 NvRTX 4.27](Why-NvRTX-427.md)

@@ -107,7 +107,7 @@ PhysX Visual Debugger（PVD）可以检查连接的场景，包括参与者、�
 
 视口碰撞可视化对于在完整 PVD ​​捕获之前确认创作的几何体和过滤仍然有用。
 
-## 分析
+## 性能分析
 
 | 命令 | 显示 |
 |---|---|
@@ -120,7 +120,7 @@ PhysX Visual Debugger（PVD）可以检查连接的场景，包括参与者、�
 
 对于高刚体数，请使用相同的形状和求解器设置将基于 Actor 的标准模拟与[实例子系统](Instanced-Physics.md)进行比较。
 
-## 参见
+## 另请参阅
 
 - [物理](Physics.md)
 - [固定时间步长](Fixed-Timestep.md)

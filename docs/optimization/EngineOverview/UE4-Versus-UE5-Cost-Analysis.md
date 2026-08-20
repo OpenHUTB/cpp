@@ -24,7 +24,8 @@ and permutation counts further.
 Unreal Engine 4.27 produces lighter-weight shaders that deliver the same visual result, which translates
 directly into faster GPU time across the board &mdash; not just in scenes that use the new features.
 
-<img src="../../img/optimization/ShaderInstructionCount.png" alt="Shader instruction count for equivalent material work compared across Unreal Engine versions" border-effect="line"/>
+![](../../img/optimization/ShaderInstructionCount.png)
+*不同虚幻引擎版本中，相同材质工作的着色器指令数量比较*
 
 *Shader instruction count for equivalent material work, by engine version. The count rises with each
 release on both the SM5 and SM6 paths, and every one of those instructions is GPU time spent without a
@@ -40,7 +41,8 @@ The gap is not limited to rigid body simulation: it also affects physics queries
 transform propagation, which means projects that make little or no explicit use of physics simulation still
 pay a measurable CPU cost.
 
-<img src="../../img/optimization/ChaosVsPhysX3000.png" alt="3000 simulated cubes, Unreal 5.7 Chaos at 33.26 FPS against Vite PhysX 3.4 at 157.88 FPS" border-effect="line"/>
+![](../../img/optimization/ChaosVsPhysX3000.png)
+*模拟3000个立方体，虚幻引擎5.7 Chaos帧率为33.26 FPS，对比Vite PhysX 3.4帧率为157.88 FPS。*
 
 *3000 simulated cubes. Unreal 5.7 with Chaos (left) 33.26 FPS at a 30.07 ms frame; Vite with PhysX 3.4
 (right) 157.88 FPS at a 6.33 ms frame &mdash; a 4.7x difference in delivered frame rate.*
@@ -117,11 +119,8 @@ There is a large performance regression in the systems and materials handling vo
 in many other default engine shaders. The increased shader complexity compounds on top of the base material
 cost increases described above.
 
-<img src="../../img/optimization/VolumetricFogCost1.png" alt="Shader cost of the default volumetric, fog and sky materials compared across engine versions" border-effect="line"/>
-
-*Shader cost of the default volumetric, fog and sky materials across engine versions.*
-
-<img src="../../img/optimization/VolumetricFogCost2.png" alt="Second measurement of default engine shader cost across engine versions" border-effect="line"/>
+![](../../img/optimization/VolumetricFogCost1.png)
+*比较不同引擎版本中默认体积、雾和天空材质的着色器成本*
 
 *A second measurement over the same systems. Because the regression is in the default engine shaders
 themselves, it applies whether or not a project authors any custom volumetric material.*
@@ -131,7 +130,9 @@ themselves, it applies whether or not a project authors any custom volumetric ma
 Beyond any individual system, the base cost of core engine classes increased in both execution time and
 memory footprint, across both game and render logic.
 
-<img src="../../img/optimization/CoreClassBaseCosts.png" alt="Base cost comparison for core engine classes across engine versions" border-effect="line"/>
+![](../../img/optimization/CoreClassBaseCosts.png)
+*各引擎版本核心引擎类别的基本成本比较*
+
 
 *Base cost of core engine classes by version. This is cost paid before any game code runs, which is why it
 shows up even in projects that use none of the newer features.*

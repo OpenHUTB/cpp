@@ -63,9 +63,9 @@ If this benchmark's shape matches your bottleneck:
 - **考虑 ECS.** For very large entity counts, the bundled [Flecs ECS](Bundled-Plugins.md) integration
   sidesteps actor-per-entity overhead entirely.
 
-## 参见
+## 另请参阅
 
 - [性能目标](Performance-Targets.md)
-- [分析](Profiling.md)
+- [性能分析](Profiling.md)
 - [UE4 和 UE5 的消耗对比分析](UE4-Versus-UE5-Cost-Analysis.md)
 - [引擎默认](Engine-Defaults.md)

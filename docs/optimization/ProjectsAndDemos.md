@@ -1,50 +1,38 @@
-﻿# Projects and Demos
+﻿# 项目和演示
 
-<tldr>
-<p>
-Downloadable projects demonstrating Vite's features and establishing its performance numbers. Several are
-the benchmarks the <a href="./EngineOverview/Performance-Targets.md">performance targets</a> are measured against.
-</p>
-</tldr>
+可下载的项目展示了 Vite 的各项功能并提供了性能数据。其中一些项目是[性能目标](./EngineOverview/Performance-Targets.md)的基准测试。
 
-These fall into two groups: **showcases** that demonstrate what the engine can do visually, and
-**benchmarks** that establish what it costs. The benchmarks are the more useful of the two if you are
-deciding whether Vite fits your project.
+这些项目分为两类：展示引擎视觉效果的**演示项目**，以及评估其成本的**基准测试项目**。如果您正在考虑 Vite 是否适合您的项目，基准测试项目将更有参考价值。
 
-## Showcases
 
-| Project | Demonstrates |
+## 演示项目
+
+| 项目 | 演示 |
 |---|---|
-| [Tech Demo Project](Tech-Demo-Project.md) | DDGI, SSGI, Apex Destruction and Apex Cloth in one package |
-| [Stylized Raytracing Demo](Stylized-Raytracing-Demo.md) | Ray tracing applied to non-photoreal art direction |
-| [Callisto BRDF Demos](Callisto-BRDF-Demos.md) | The custom skin and character shading model |
-| [Abandoned Apartment](Abandone-Apartment.md) | Interior lighting scene |
-| [Attic Scene](Attic-Scene.md) | Interior lighting scene |
-| [Crash Bandicoot: Timetwister](Crash-Bandicoot.md) | A complete gameplay level built on UE4 |
+| [技术演示项目](Tech-Demo-Project.md) | DDGI、SSGI、Apex Destruction 和 Apex Cloth 在一个包中 |
+| [风格化光线追踪演示](Stylized-Raytracing-Demo.md) | 光线追踪应用于非真实感艺术指导 |
+| [Callisto BRDF 演示](Callisto-BRDF-Demos.md) | 自定义皮肤和角色着色模型 |
+| [废弃的公寓](Abandone-Apartment.md) | 室内照明场景 |
+| [阁楼场景](Attic-Scene.md) | 室内照明场景 |
+| [Crash Bandicoot: Timetwister](Crash-Bandicoot.md) | 基于 UE4 构建的完整游戏关卡 |
 
-## Benchmarks
+## 基准测试项目
 
-| Project | Measures |
+| 项目 | 测量 |
 |---|---|
-| [400 Characters CMC Bench](400-Characters-CMC-Bench.md) | Character Movement Component cost at scale |
-| [Physics Cube Bench](Physics-Cube-Bench.md) | PhysX rigid body throughput |
-| [PhysX Test](PhysXTest.md) | General PhysX behaviour and stability |
-| [PhysX Instanced Subsystem](PhysX-Instanced-Subsystem.md) | Instanced rigid bodies at counts individual actors cannot reach |
+| [400 个角色 CMC 工作台](400-Characters-CMC-Bench.md) | 角色移动组件的大规模成本 |
+| [物理立方台](Physics-Cube-Bench.md) | PhysX 刚体吞吐量 |
+| [PhysX 测试](PhysXTest.md) | 一般 PhysX 行为和稳定性 |
+| [PhysX 实例子系统](PhysX-Instanced-Subsystem.md) | 实例刚体的数量是单个参与者无法达到的 |
 
-## Using the benchmarks
+## 使用基准
 
-The benchmarks are more informative than a frame rate number suggests. Run them with `stat unit` visible
-and note which thread is the limit &mdash; that tells you what a similar workload will cost you, and which
-of Vite's optimisations apply. See [Profiling](Profiling.md).
+基准测试比帧速率数字所显示的信息更丰富。在`stat unit`可见的情况下运行它们，并注意哪个线程是限制——这会告诉您类似的工作负载将花费您多少费用，以及适用哪些 Vite 优化。请参阅[性能分析](Profiling.md)。
 
-<note>
-Numbers from these projects reflect the hardware they were captured on. Vite's
-<a href="Coding-Guidelines.md">performance baseline</a> is an ARM-class ~1 GHz CPU, which is far below a
-development desktop. A benchmark that is comfortable on your machine may not be on your target.
-</note>
+这些项目的数据反映了它们所用的硬件配置。Vite 的[性能基准](Coding-Guidelines.md)是 ARM 架构的 1GHz 左右的 CPU，远低于开发桌面电脑的性能。在你机器上运行流畅的基准测试结果，可能并不适合你的目标平台。
 
-## See also
+## 另请参阅
 
-- [Performance Targets](Performance-Targets.md)
-- [Profiling](Profiling.md)
-- [UE4 versus UE5 Cost Analysis](UE4-Versus-UE5-Cost-Analysis.md)
+- [性能目标](Performance-Targets.md)
+- [性能分析](./Performance/Profiling.md) 
+- [UE4 与 UE5 成本分析](UE4-Versus-UE5-Cost-Analysis.md)

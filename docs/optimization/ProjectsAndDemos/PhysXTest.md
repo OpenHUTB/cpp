@@ -32,7 +32,7 @@ Vite 保留 PhysX 而不是迁移到 Chaos，只有当 PhysX 层通过引擎更�
 - 碰撞查询路径，大量使用角色移动组件（Character Movement Component）
 - Apex 或布料整合
 
-在认为完成之前应在此处进行验证。验证要求请参见[编码指南](../Contributing/Coding-Guidelines.md)。
+在认为完成之前应在此处进行验证。验证要求另请参阅[编码指南](../Contributing/Coding-Guidelines.md)。
 
 ## 固定时间步测试
 
@@ -40,7 +40,7 @@ Vite 保留 PhysX 而不是迁移到 Chaos，只有当 PhysX 层通过引擎更�
 
 请记住，固定时间步是编译时功能。如果构建中没有`VITE_PHYSX_FIXED_TIMESTEP=1`，则`p.VitePhysXFixedTimestep.Enabled`不会执行任何操作。
 
-## 参见
+## 另请参阅
 
 - [PhysX](../Physics/PhysX.md)
 - [固定时间步长](../Physics/Fixed-Timestep.md)
