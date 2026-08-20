@@ -43,7 +43,7 @@ Nanite and GPU Scene. See [Why NvRTX 4.27](Why-NvRTX-427.md).
 - [Ray Tracing](Ray-Tracing.md) &mdash; overview and the master switches
 - [Ray-Traced Reflections](RT-Reflections.md)
 - [Ray-Traced Shadows and Ambient Occlusion](RT-Shadows-And-Ambient-Occlusion.md)
-- [Ray-Traced Translucency and Caustics](RT-Translucency-And-Caustics.md)
+- [光线追踪半透明和焦散](RT-Translucency-And-Caustics.md)
 - [RTXDI](RTXDI.md) &mdash; ray-traced direct lighting for many-light scenes
 - [Path Tracing](Path-Tracing.md)
 

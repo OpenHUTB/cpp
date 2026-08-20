@@ -7,10 +7,12 @@ Rigid body throughput test using conventional PhysX actors. The baseline that th
 </p>
 </tldr>
 
-<img src="../../img/optimization/PhysicsCubeBench.png" alt="Side-by-side capture of 1400 simulated cubes, Chaos at 75.45 FPS against PhysX 3.4 at 148.44 FPS" border-effect="line"/>
+![](../../img/optimization/PhysicsCubeBench.png)
 
-*1400 simulated cubes, identical scene. Chaos (left) 75.45 FPS at a 13.25 ms frame; PhysX 3.4 (right)
-148.44 FPS at a 6.74 ms frame.*
+*并排捕捉 1400 个模拟立方体，Chaos 的帧率为 75.45 FPS，而 PhysX 3.4 的帧率为 148.44 FPS。*
+
+*1400 个模拟立方体，相同场景。Chaos（左）帧率为 75.45 FPS，帧率为 13.25 毫秒；PhysX 3.4（右）帧率为 148.44 FPS，帧率为 6.74 毫秒。*
+
 
 ## Download
 

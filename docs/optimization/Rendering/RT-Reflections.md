@@ -12,10 +12,12 @@ Ray-traced reflections replace screen-space reflections with rays traced against
 resolves the two fundamental SSR failures: reflections of off-screen geometry, and reflections of surfaces
 facing away from the camera.
 
-<img src="../../img/optimization/SSRArtifacts.png" alt="Reflective surfaces showing screen-space reflection dropout where the reflected geometry leaves the frame" border-effect="line"/>
+![](../../img/optimization/SSRArtifacts.png)
 
-*The failure mode, circled. The reflection terminates where the reflected geometry leaves the screen,
-because screen-space reflection has nothing left to sample.*
+*反射表面显示屏幕空间反射丢失，即反射几何体离开画面的位置。*
+
+*图中圈出的故障模式是：反射在反射几何体离开屏幕处终止，因为屏幕空间反射已经没有可供采样的内容了。*
+
 
 ## Performance
 

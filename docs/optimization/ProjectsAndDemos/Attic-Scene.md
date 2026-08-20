@@ -2,17 +2,22 @@
 
 Interior lighting scene with strong directional light through a limited opening. A good case for observing how global illumination handles high-contrast interiors.
 
-<img src="../../img/optimization/AtticScene.png" alt="Attic interior with strong directional sunlight entering through a small window" border-effect="line"/>
+![](../../img/optimization/AtticScene.png)
 
-*Direct sun and deep shadow in the same frame, with a large volume of dim indirect light between them.*
+*阁楼内部，强烈的阳光透过一扇小窗户照射进来。*
+
+*同一画面中既有直射的阳光，也有深深的阴影，两者之间还有大量的昏暗散射光。*
 
 ## 下载
 
 [阁楼场景](https://drive.google.com/file/d/12CEdigm95nuu7GhRd_KjYIGeCi9_QvVT/view?usp=sharing)
 
-<img src="../../img/optimization/AtticRTGIV2.jpg" alt="The attic scene rendered with the enhanced ray-traced GI path, volumetric shafts through the window" border-effect="line"/>
+![](../../img/optimization/AtticRTGIV2.jpg)
 
-*The same scene under NVIDIA's enhanced RTGI path, which the NvRTX Caustics branch contributes to Vite.*
+*阁楼场景采用增强型光线追踪全局光照路径渲染，通过窗户形成体积光通道。*
+
+*在 NVIDIA 的增强型 RTGI 路径下，同样的场景也会出现，NvRTX Caustics 分支为 Vite 贡献了这一功能。*
+
 
 ## What it exercises
 

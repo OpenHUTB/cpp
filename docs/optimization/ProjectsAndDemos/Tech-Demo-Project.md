@@ -1,4 +1,4 @@
-﻿# Tech Demo Project
+﻿# 技术演示项目
 
 <tldr>
 <p>
@@ -7,10 +7,11 @@ Cloth. The reference project for verifying that a build works correctly.
 </p>
 </tldr>
 
-<img src="../../img/optimization/TechDemo.png" alt="Tech Demo Project scene rendered in Unreal Engine Vite" border-effect="line"/>
+![](../../img/optimization/TechDemo.png)
 
-*The Tech Demo package is the reference project for verifying that a fresh build renders and simulates
-correctly.*
+*技术演示项目场景在虚幻引擎 Vite 中渲染*
+
+*技术演示包是用于验证新构建版本是否能够正确渲染和模拟的参考项目。*
 
 ## Contents
 

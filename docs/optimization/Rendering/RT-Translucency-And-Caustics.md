@@ -1,4 +1,4 @@
-# Ray-Traced Translucency and Caustics
+# 光线追踪半透明和焦散
 
 <tldr>
 <p>
@@ -138,15 +138,19 @@ strongly recommended alongside RT DOF. DLSS is supported automatically.
 Renders interactive caustics for translucent and metallic objects. Supports all four UE4 light types,
 multiple light sources, reflective and refractive caustics, dispersion and soft caustics.
 
-<img src="../../img/optimization/MeshCaustics.jpg" alt="POV-Ray Glasses scene with ray-traced refractive caustics cast onto a tiled surface" border-effect="line"/>
+![](../../img/optimization/MeshCaustics.jpg)
 
-*The POV-Ray Glasses scene. Every bright pattern on the tile is a refractive caustic, traced rather than
-authored.*
+*POV-Ray 眼镜场景，光线追踪折射焦散投射到瓷砖表面上*
 
-<img src="../../img/optimization/CausticsDispersion.jpg" alt="Prisms splitting a white beam into a spectrum through ray-traced dispersion" border-effect="line"/>
+*POV-Ray眼镜场景。瓷砖上的每一个明亮图案都是折射焦散线，是描摹出来的，而不是创作出来的。*
 
-*Dispersion. Requires **Ray Traced Caustics Dispersion Amount** above 0 in the material root node together
-with `r.RayTracing.MeshCaustics.EnableDispersion 1`.*
+
+![](../../img/optimization/CausticsDispersion.jpg)
+
+*棱镜通过光线追踪色散将白光束分解成光谱。*
+
+*色散。需要材质根节点中**光线追踪焦散色散量**大于 0，并且 `r.RayTracing.MeshCaustics.EnableDispersion 1`。*
+
 
 <procedure title="Enable mesh caustics" id="enable-mesh-caustics">
     <step>Enable ray tracing.</step>
@@ -200,10 +204,12 @@ Count**. Around 100k photons produces decent results in typical cases. If the co
 Renders interactive caustics for water areas from ponds to open sea. Supports all four light types, multiple
 lights, reflective and refractive caustics, dispersion, soft caustics and cascaded caustics maps.
 
-<img src="../../img/optimization/WaterCaustics.jpg" alt="Swimming pool floor lit by ray-traced water caustics with a character disturbing the surface" border-effect="line"/>
+![](../../img/optimization/WaterCaustics.jpg)
 
-*The Swimming Pool scene under a single directional light. The caustics respond to surface disturbance
-because they are traced against the water mesh each frame.*
+*泳池底部被光线追踪技术营造出水波纹效果，一个角色正在搅动水面。*
+
+*游泳池场景，采用单向光源照射。由于焦散效果是逐帧追踪水面网格生成的，因此会随着水面扰动而变化。*
+
 
 <procedure title="Enable water caustics" id="enable-water-caustics">
     <step>Enable ray tracing.</step>
@@ -261,10 +267,13 @@ Swimming Pool scene for water caustics, and the Office scene mixing particles, r
 mesh caustics and RTGI. See also [Abandoned Apartment](Abandone-Apartment.md) and
 [Attic Scene](Attic-Scene.md) in this manual.
 
-<img src="../../img/optimization/RTOfficeScene.jpg" alt="Office scene combining volumetric light, translucent spheres, ray-traced reflections and refractions" border-effect="line"/>
 
-*The Office scene is the one that exercises the whole stack at once: particles, translucent reflection and
-refraction, mesh caustics and ray-traced GI in a single frame.*
+![](../../img/optimization/RTOfficeScene.jpg)
+
+*结合了体积光、半透明球体、光线追踪反射和折射的办公场景*
+
+*办公室场景一次性运用了所有技术：粒子、半透明反射和折射、网格焦散和光线追踪全局光照都在单个帧中实现。*
+
 
 ## See also
 

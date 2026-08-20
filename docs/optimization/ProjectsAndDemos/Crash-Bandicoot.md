@@ -1,16 +1,11 @@
-﻿# Crash Bandicoot: Timetwister
+﻿# 古惑狼：时空扭曲
 
-<tldr>
-<p>
-A community remake of the Tomb Wader level from Crash Bandicoot 3: Warped, built on Unreal Engine 4.26.
-A complete gameplay level rather than a lighting scene.
-</p>
-</tldr>
+这是基于虚幻引擎 4.26 制作的《古惑狼3：时空穿梭》中“古墓探险者”关卡的社区重制版。这是一个完整的游戏关卡，而不是一个灯光场景。
 
-<img src="../../img/optimization/CrashBandicootRemake.png" alt="Tomb Wader level remake running in the engine" border-effect="line"/>
+![](../../img/optimization/CrashBandicootRemake.png)
 
-*A complete playable level rather than a lighting scene, which gives it a frame cost profile closer to a
-real project.*
+*古墓丽影关卡重制版正在引擎中运行。这是一个完整的可玩关卡，而不是一个光照场景，这使得它的帧成本曲线更接近于一个真实的项目。*
+
 
 ## Source
 

@@ -2,9 +2,9 @@
 
 Interior lighting scene. Interiors are the hardest case for global illumination, which makes them the most useful place to evaluate it.
 
-<img src="../../img/optimization/AbandonedAppartment.png" alt="Abandoned apartment interior lit entirely by indirect bounce light" border-effect="line"/>
+![](../../img/optimization/AbandonedAppartment.png)
 
-*Almost every surface visible here is lit by bounce rather than by the sun directly. That is what makes interiors the honest test of a GI solution.*
+*废弃公寓内部几乎所有可见的表面都是通过反射光而非阳光直射照明的。正因如此，室内环境才是检验整体照明解决方案是否真正有效的试金石。*
 
 ## 下载
 

@@ -7,10 +7,12 @@ cost that dominates crowd-heavy scenes.
 </p>
 </tldr>
 
-<img src="../../img/optimization/400CharCMCBench.png" alt="Side-by-side stat capture, Vite at 73.4 FPS against Unreal Engine 5.6 at 22.7 FPS with 400 characters" border-effect="line"/>
+![](../../img/optimization/400CharCMCBench.png)
 
-*The same 400-character scene on the same hardware. Vite (left) 73.4 FPS, Unreal Engine 5.6 (right)
-22.7 FPS. World Tick 11.56 ms against 40.45 ms; Char Movement Total 5.73 ms against 12.49 ms.*
+*并排统计数据对比，Vite 帧率为 73.4 FPS，而虚幻引擎 5.6 在 400 个角色的情况下帧率为 22.7 FPS。*
+
+*同一硬件上运行相同的 400 角色场景。Vite（左）帧率为 73.4 FPS，虚幻引擎 5.6（右）帧率为 22.7 FPS。世界帧延迟分别为 11.56 毫秒和 40.45 毫秒；角色移动总延迟分别为 5.73 毫秒和 12.49 毫秒。*
+
 
 ## 下载
 

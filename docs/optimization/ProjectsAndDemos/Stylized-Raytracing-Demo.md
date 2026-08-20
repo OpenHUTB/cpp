@@ -1,4 +1,4 @@
-﻿# Stylized Raytracing Demo
+﻿# 风格化光线追踪演示
 
 <tldr>
 <p>
@@ -7,9 +7,9 @@ tracing only serves photorealism.
 </p>
 </tldr>
 
-<img src="../../img/optimization/StylizedRTDemo.png" alt="Stylized outdoor scene lit by dynamic DDGI, frame counter reading 811 FPS" border-effect="line"/>
+![](../../img/optimization/StylizedRTDemo.png)
 
-*Dynamic DDGI, no baked lighting. The counter reads 811 FPS at 1440p native on an RTX 4080 Super.*
+*风格化的户外场景，采用动态DDGI照明，动态 DDGI，无烘焙光照。在 RTX 4080 Super 显卡上，1440p 原生分辨率下，帧率显示为 811 FPS。*
 
 ## Download
 

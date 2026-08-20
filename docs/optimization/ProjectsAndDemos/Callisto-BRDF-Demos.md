@@ -1,11 +1,7 @@
-﻿# Callisto BRDF Demos
+﻿# Callisto BRDF 演示
 
-<tldr>
-<p>
-Two character scenes demonstrating Vite's custom Callisto BRDF shading model, which repurposes standard
-material pins for retroreflection, diffuse Fresnel and terminator control.
-</p>
-</tldr>
+两个角色场景演示了 Vite 的自定义 Callisto BRDF （双向反射分布函数）着色模型，该模型重新利用标准材质引脚来实现[逆反射](https://baike.baidu.com/item/%E9%80%86%E5%8F%8D%E5%B0%84/7584246)（retroreflection）、漫反射菲涅尔和终止线控制。
+
 
 ## Downloads
 
@@ -14,14 +10,18 @@ material pins for retroreflection, diffuse Fresnel and terminator control.
 | Male character | [Download](https://drive.google.com/file/d/133RwxvHT9jELgXWn338hieiAJUUeIoVq/view?usp=sharing) |
 | Female character | [Download](https://mega.nz/file/5I1STApA#zmKqFu_8X1bYZPakb2VvAbCF-GPQhmR98Iot3QVJtRM) |
 
-<img src="../../img/optimization/CallistoMale.png" alt="Male character rendered with the Callisto BRDF shading model" border-effect="line"/>
+![](../../img/optimization/CallistoMale.png)
 
-*Male demo character. Retroreflection and diffuse Fresnel are doing the work at grazing angles.*
+*使用 Callisto BRDF 着色模型渲染的男性角色。掠射角下，逆反射和漫反射菲涅尔效应共同作用。*
 
-<img src="../../img/optimization/CallistoFemale.png" alt="Female character rendered with the Callisto BRDF shading model" border-effect="line"/>
 
-*Female demo character. Smooth Terminator softens the shadow line across the curved surfaces of the face
-and arms.*
+![](../../img/optimization/CallistoFemale.png)
+
+*使用 Callisto BRDF 着色模型渲染的女性角色。“平滑终止线”技术柔化了面部和手臂曲面上的阴影线条。*
+
+!!! 笔记
+    **终止线**是指物体表面从“被照亮”区域过渡到“阴影”区域的那条分界线。在现实世界中，这条线往往是柔和、平滑的（因为光线有衍射和散射）。但在实时渲染的3D游戏中，由于计算精度的限制，这条线可能会变得非常生硬、锯齿状，甚至在模型表面断裂。
+
 
 ## What Callisto BRDF does
 
