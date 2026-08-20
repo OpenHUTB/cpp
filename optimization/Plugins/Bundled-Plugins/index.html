@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>已捆绑的插件 - 引擎实现文档</title>
+    <title>已捆绑的插件 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -31,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="../../.." class="icon icon-home"> 引擎实现文档
+          <a href="../../.." class="icon icon-home"> 引擎优化文档
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
       <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
@@ -53,7 +53,47 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../../Default-topic/">引擎优化</a>
+                <li class="toctree-l1"><a class="reference internal" href="../../Default-topic/">引擎优化入门</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../EngineOverview/Engine-Overview/">引擎概述</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Rendering/Rendering/">渲染</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Physics/Physics/">物理</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Performance/Performance/">性能和优化</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Platforms/Platforms/">平台</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Plugins/">插件</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Tools/Tools/">工具和自动化</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ProjectsAndDemos/">项目和演示</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Contributing/Contributing/">贡献</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Reference/Reference/">参考</a>
                 </li>
               </ul>
       </div>
@@ -63,7 +103,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../..">引擎实现文档</a>
+          <a href="../../..">引擎优化文档</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -85,9 +125,9 @@
 not listed &mdash; only Vite's additions and the vendor integrations.</p>
 <p>Versions are as of the July major integration. Check the <code>.uplugin</code> file for the authoritative value in
 your tree.</p>
-<p><img src="../../img/optimization/VitePlugins.png" alt="Contents of Engine/Plugins/Runtime/VitePlugins in Explorer" border-effect="line"/></p>
-<p><em>Vite's own additions live under <code>Engine\Plugins\Runtime\VitePlugins</code>. Vendor integrations from NVIDIA sit
-separately under <code>Engine\Plugins\Runtime\Nvidia</code>.</em></p>
+<p><img alt="" src="../../../img/optimization/VitePlugins.png" /></p>
+<p><em>资源管理器中 Engine/Plugins/Runtime/VitePlugins 目录的内容</em></p>
+<p><em>Vite 自身添加的插件位于 <code>Engine\Plugins\Runtime\VitePlugins</code> 目录下。NVIDIA 提供的厂商集成插件则位于 <code>Engine\Plugins\Runtime\Nvidia</code> 目录下。</em></p>
 <h2 id="_2">放大和帧生成</h2>
 <table>
 <thead>

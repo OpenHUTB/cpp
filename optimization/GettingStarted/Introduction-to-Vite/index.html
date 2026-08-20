@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Vite 简介 - 引擎实现文档</title>
+    <title>Vite 简介 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -31,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="../../.." class="icon icon-home"> 引擎实现文档
+          <a href="../../.." class="icon icon-home"> 引擎优化文档
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
       <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
@@ -53,7 +53,47 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../../Default-topic/">引擎优化</a>
+                <li class="toctree-l1"><a class="reference internal" href="../../Default-topic/">引擎优化入门</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../EngineOverview/Engine-Overview/">引擎概述</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Rendering/Rendering/">渲染</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Physics/Physics/">物理</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Performance/Performance/">性能和优化</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Platforms/Platforms/">平台</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Plugins/Plugins/">插件</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Tools/Tools/">工具和自动化</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ProjectsAndDemos/">项目和演示</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Contributing/Contributing/">贡献</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Reference/Reference/">参考</a>
                 </li>
               </ul>
       </div>
@@ -63,7 +103,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../..">引擎实现文档</a>
+          <a href="../../..">引擎优化文档</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -83,11 +123,11 @@
                 <h1 id="vite">Vite 简介</h1>
 <p><tldr></p>
 <p>
-Vite 是 Unreal Engine 4.27 面向生产的分支，基于 NVIDIA 的 NvRTX Caustics 分支。它保留了 PhysX 3.4 和与引擎无关的光线追踪管道，并用在高帧速率下达到本机分辨率的更轻的替代方案取代了 Epic 的 UE5 功能堆栈（Lumen、Nanite、VSM、TSR、Chaos）。
+Vite 是 Unreal Engine 4.27 面向生产的分支，基于 NVIDIA 的 NvRTX Caustics 分支。它保留了 PhysX 3.4 和与引擎无关的光线追踪管线，并用在高帧速率下达到本机分辨率的更轻的替代方案取代了 Epic 的 UE5 功能堆栈（Lumen、Nanite、VSM、TSR、Chaos）。
 </p>
 <p></tldr></p>
-<p>Unreal Engine Vite 专为专业游戏开发而构建，支持当前正在制作的游戏。其长期目标是不断发展的现代引擎，提供与专有的内部引擎竞争的 CPU 和渲染吞吐量，并针对当代控制台硬件提供持续的性能、稳定性和图形管道工作。</p>
-<p>目标足够具体，可以证伪：<strong>在每毫秒保真度和模拟规模上击败 Epic 的 UE5</strong>，并在这两个方面与专有 AAA 引擎竞争。每毫秒的保真度是<a href="../../EngineOverview/Performance-Targets/">性能目标</a>和<a href="../../EngineOverview/UE4-Versus-UE5-Cost-Analysis/">UE4 与 UE5 成本分析</a>衡量的。模拟规模是<a href="../../ProjectsAndDemos/Physics-Cube-Bench/">物理</a>和<a href="../../ProjectsAndDemos/400-Characters-CMC-Bench/">字符</a>基准测试所测量的。 Vite 目前没有获胜的地方，本手册是这么说的。</p>
+<p>Unreal Engine Vite 专为专业游戏开发而构建，支持当前正在制作的游戏。其长期目标是不断发展的现代引擎，提供与专有的内部引擎竞争的 CPU 和渲染吞吐量，并针对当代控制台硬件提供持续的性能、稳定性和图形管线工作。</p>
+<p>目标足够具体，可以证伪：<strong>在每毫秒保真度和模拟规模上击败 Epic 的 UE5</strong>，并在这两个方面与专有 AAA 引擎竞争。每毫秒的保真度是<a href="../../EngineOverview/Performance-Targets/">性能目标</a>和<a href="../../EngineOverview/UE4-Versus-UE5-Cost-Analysis/">UE4 与 UE5 成本分析</a>衡量的。模拟规模是<a href="../../ProjectsAndDemos/Physics-Cube-Bench/">物理</a>和<a href="../../ProjectsAndDemos/400-Characters-CMC-Bench/">角色</a>基准测试所测量的。 Vite 目前没有获胜的地方，本手册是这么说的。</p>
 <h2 id="_1">设计论证</h2>
 <p>Epic 的虚幻引擎 5.7 和 5.8 使用 Lumen、Nanite、虚拟阴影贴图、时间超分辨率和 Chaos，在 PlayStation 5 上以 720p–1080p 的动态内部分辨率实现大约 60 FPS。这就是引擎上发布的游戏在实践中所展示的内容。</p>
 <p>虚拟化方法——虚拟几何、阴影和纹理，加上重建分辨率——增加了处理、流媒体和内存开销。时间重建、去噪和随机采样会引入噪声、重影、不稳定性和模糊。相对于 UE4，Substrate、GPU 场景、RDG、较重的着色器模型和一般功能扩展会增加基本渲染器开销、着色器排列计数、字节码大小、PSO 计数、编译时间和缓存大小。除了混沌之外，CPU 成本还通过更繁重的场景维护、GPU 场景上传、流明更新、Nanite 流、VSM 失效、世界分区以及渲染线程和 RHI 工作负载而增加。</p>
@@ -120,7 +160,7 @@ Vite 是 Unreal Engine 4.27 面向生产的分支，基于 NVIDIA 的 NvRTX Caus
 <p>这是一个公平的问题，答案是虚幻引擎 4 继续为最近的 AAA 版本提供支持：《最终幻想 VII 重生》（2024 年 4.26 版）、《星辰之刃》（2024 年 4.26 版）、《往日不再重制版》（2025 年 4.11 版）、《三角洲特种部队》（2026 年 4.22 版）、《真人快打 1》（2023 年 4.27 版）、《马里奥与路易吉：兄弟情谊 (4.26, 2024)、桃子公主：演出时间！ （2024 年 4.26 日）、《皮克敏 4》（2023 年 4.26 日）、Square Enix 的《勇者斗恶龙 VII 重制版》（2026 年 4.27 日）以及即将推出的《最终幻想 VII：启示录》（2027 年 4.27 日）。它们都搭载了 PhysX。</p>
 <p>这些作品保留在 UE4 上，以保留特定功能并满足保真度和性能目标。 UE4 还继续通过 4.27 Plus 分支接收来自主要工作室的更新，并且仍然是任天堂平台的优先事项。</p>
 <p>Vite 的计划是继续升级该代码库：优化核心系统、现代化渲染核心、改进 UI 并更新工具链，而不是将 4.27 视为冻结的工件。请参阅 <a href="Why-NvRTX-427.md">为什么选择 NvRTX 4.27</a> 了解基本版本选择背后的技术原因。</p>
-<h2 id="_2">参见</h2>
+<h2 id="_2">另请参阅</h2>
 <ul>
 <li><a href="Performance-Targets.md">性能目标</a></li>
 <li><a href="Why-NvRTX-427.md">为什么选择 NvRTX 4.27</a></li>

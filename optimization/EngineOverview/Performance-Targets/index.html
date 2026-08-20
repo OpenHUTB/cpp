@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Performance Targets - 引擎实现文档</title>
+    <title>性能目标 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Performance Targets";
+        var mkdocs_page_name = "\u6027\u80fd\u76ee\u6807";
         var mkdocs_page_input_path = "optimization/EngineOverview/Performance-Targets.md";
         var mkdocs_page_url = null;
       </script>
@@ -31,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="../../.." class="icon icon-home"> 引擎实现文档
+          <a href="../../.." class="icon icon-home"> 引擎优化文档
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
       <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
@@ -53,7 +53,47 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../../Default-topic/">引擎优化</a>
+                <li class="toctree-l1"><a class="reference internal" href="../../Default-topic/">引擎优化入门</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Engine-Overview/">引擎概述</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Rendering/Rendering/">渲染</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Physics/Physics/">物理</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Performance/Performance/">性能和优化</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Platforms/Platforms/">平台</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Plugins/Plugins/">插件</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Tools/Tools/">工具和自动化</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ProjectsAndDemos/">项目和演示</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Contributing/Contributing/">贡献</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Reference/Reference/">参考</a>
                 </li>
               </ul>
       </div>
@@ -63,14 +103,14 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../..">引擎实现文档</a>
+          <a href="../../..">引擎优化文档</a>
         
       </nav>
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Performance Targets</li>
+      <li class="breadcrumb-item active">性能目标</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/EngineOverview/Performance-Targets.md"> 编辑页面</a>
     </li>
@@ -80,167 +120,138 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="performance-targets">Performance Targets</h1>
-<p><tldr></p>
-<p>
-Four PS5-class reference configurations, all including ray tracing: <b>4K120</b> stylised,
-<b>4K60</b> performance, <b>4K30</b> fidelity, and <b>1440p30</b> with the full RT effect suite.
-All figures are at native resolution.
-</p>
-<p></tldr></p>
-<p>Vite's performance targets are not aspirational marketing numbers; they are the configurations the engine is
-tuned against and the ones the demo projects are built to hit. Every one of them includes ray tracing, and
-every one of them is stated at native resolution rather than an upscaled internal one.</p>
-<h2 id="the-four-targets">The four targets</h2>
+                <h1 id="_1">性能目标</h1>
+<p>四种 PS5 类参考配置，全部包括光线追踪：<b>4K120</b> 风格化、<b>4K60</b> 性能、<b>4K30</b> 保真度以及带有完整实时光线追踪（Real-Time Ray Tracing, RT）效果套件的 <b>1440p30</b>。所有数字均采用原始分辨率。</p>
+<p>Vite的性能目标不是理想的营销数字；它们是引擎调整的配置，也是演示项目构建的目标配置。其中每一项都包含光线追踪，并且每一项都是以原始分辨率而不是升级的内部分辨率表示的。</p>
+<h2 id="_2">四个目标</h2>
 <table>
 <thead>
 <tr>
-<th>Target</th>
-<th>Resolution and frame rate</th>
-<th>Feature set</th>
-<th>Intended for</th>
-<th>Demonstraded in</th>
+<th>目标</th>
+<th>分辨率和帧率</th>
+<th>功能集</th>
+<th>适用于</th>
+<th>展示于</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><strong>Stylised</strong></td>
+<td><strong>风格化</strong></td>
 <td>4K, 120 FPS</td>
 <td>RT DDGI</td>
-<td>Competitive multiplayer titles</td>
-<td>Stylized Demo</td>
+<td>多人竞技游戏</td>
+<td>风格化演示</td>
 </tr>
 <tr>
-<td><strong>Performance, high end</strong></td>
+<td><strong>性能、高端</strong></td>
 <td>4K, 60 FPS</td>
-<td>DDGI + RT Reflections + Tessellation</td>
-<td>Fidelity-focused titles that still need 60</td>
-<td>Unreal Tournament Vite Scene</td>
+<td>DDGI + RT 反射 + 曲面细分</td>
+<td>仍需要 60 帧保真度的游戏</td>
+<td>虚幻锦标赛 Vite 场景</td>
 </tr>
 <tr>
-<td><strong>Fidelity, high end</strong></td>
+<td><strong>保真、高端</strong></td>
 <td>4K, 30 FPS</td>
-<td>As above, scaled for geometric density</td>
-<td>Large open worlds</td>
-<td>Demo In Progress</td>
+<td>如上所述，按几何密度缩放</td>
+<td>大型开放世界</td>
+<td>演示正在进行中</td>
 </tr>
 <tr>
-<td><strong>Fidelity, full RT</strong></td>
+<td><strong>保真、全 RT</strong></td>
 <td>1440p, 30 FPS</td>
-<td>DDGI + RT Reflections + RTAO + RT Shadows</td>
-<td>Maximum image quality</td>
-<td>NVIDIA Demos</td>
+<td>DDGI + RT 反射 + RTAO + RT 阴影</td>
+<td>最高图像质量</td>
+<td>NVIDIA 演示</td>
 </tr>
 </tbody>
 </table>
-<p>The reference hardware for all four is PlayStation 5 class, which on desktop means roughly an RDNA2
-RX 6700/RTX 2080</p>
-<p>Real-time path tracing is also available in the codebase, using the NVIDIA path tracing technology featured
-in Black Myth: Wukong. &mdash; see <a href="Path-Tracing.md">Path Tracing</a>.</p>
-<h2 id="the-comparison-being-made">The comparison being made</h2>
-<p>Epic's UE 5.7 and 5.8 target approximately 60 FPS at dynamic internal resolutions of 720p&ndash;1080p on
-PS5, using Lumen, Nanite, VSM, TSR and Chaos. Vite's headline claim is a base performance improvement of up
-to 2.5x real game frame rate against that intended feature set.</p>
-<p>The clearest single demonstration: a scene running in Vite with ray-traced global illumination, ray-traced
-reflections and tessellation outperforms the <em>same scene</em> in UE 5.7 with no ray tracing, no Lumen, no Nanite
-and no tessellation. This holds at 4K native on an RTX 4080 Super, at 4K native on an RDNA2 RX 6700, and at
-native resolution on Steam Deck hardware.</p>
-<p><a href="https://youtu.be/2vfG3W-Gy5E"><img alt="Vite RT GI and RT Reflections" src="https://img.youtube.com/vi/2vfG3W-Gy5E/maxresdefault.jpg" /></a></p>
-<h2 id="measured-reference-points">Measured reference points</h2>
-<p>These are specific measurements from the benchmark scenes, reproduced here so the targets above have
-something concrete behind them. Each is a like-for-like comparison in the same scene.</p>
+<p>这四款设备的参考硬件均为 PlayStation 5 级别，在台式机上大致意味着 RDNA2 RX 6700/RTX 2080</p>
+<p>代码库中还提供实时路径追踪，使用《黑神话：悟空》中的 NVIDIA 路径追踪技术。 — 请参阅<a href="Path-Tracing.md">路径跟踪</a>。</p>
+<h2 id="_3">正在进行比较</h2>
+<p>Epic 的 UE 5.7 和 5.8 的目标是在 PS5 上以 720p–1080p 的动态内部分辨率实现约 60 FPS，使用 Lumen、Nanite、VSM、TSR 和 Chaos。 Vite 的主要宣称是，与预期功能集相比，实际游戏帧速率提高了 2.5 倍。</p>
+<p>最清晰的单个演示：在 Vite 中运行的具有光线追踪全局照明、光线追踪反射和曲面细分的场景优于 UE 5.7 中没有光线追踪、没有 Lumen、没有 Nanite 和曲面细分的“相同场景”。这适用于 RTX 4080 Super 上的 4K 原生分辨率、RDNA2 RX 6700 上的 4K 原生分辨率以及 Steam Deck 硬件上的原生分辨率。</p>
+<p><a href="https://youtu.be/2vfG3W-Gy5E"><img alt="Vite RT GI 和 RT Reflections" src="https://img.youtube.com/vi/2vfG3W-Gy5E/maxresdefault.jpg" /></a></p>
+<h2 id="_4">测量参考点</h2>
+<p>这些是来自基准场景的具体测量结果，在此处复制，因此上面的目标背后有一些具体的东西。每一个都是在同一场景中进行同类比较。</p>
 <table>
 <thead>
 <tr>
-<th>Measurement</th>
+<th>测量</th>
 <th>Vite</th>
 <th>UE5</th>
-<th>Ratio</th>
+<th>比率</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>DDGI test scene, RTX 4080S, 1440p native</td>
+<td>DDGI测试场景，RTX 4080S，1440p原生</td>
 <td>811 FPS (RTXGI)</td>
 <td>324 FPS (Lumen 5.7)</td>
 <td>~2.5x</td>
 </tr>
 <tr>
-<td>DDGI test scene, RX 6600, 1080p native</td>
+<td>DDGI 测试场景，RX 6600，1080p 原生</td>
 <td>245 FPS (RTXGI)</td>
 <td>&mdash;</td>
 <td>&mdash;</td>
 </tr>
 <tr>
-<td>Physics stress scene</td>
+<td>物理压力场景</td>
 <td>157 FPS (PhysX)</td>
 <td>33.3 FPS (Chaos 5.7.3)</td>
 <td>~4.7x</td>
 </tr>
 <tr>
-<td>Physics, native PhysX actor fast path</td>
-<td>~2x regular PhysX</td>
+<td>物理，原生 PhysX actor 快速路径</td>
+<td>~2x 常规 PhysX</td>
 <td>&mdash;</td>
 <td>&mdash;</td>
 </tr>
 <tr>
-<td>Character movement and collision</td>
-<td>4.27 baseline</td>
+<td>角色移动和碰撞</td>
+<td>4.27 基线</td>
 <td>5.6</td>
-<td>2.2&ndash;2.8x faster on 4.27</td>
+<td>4.27 上速度提高了 2.2–2.8 倍</td>
 </tr>
 <tr>
-<td>Typical multiplayer map memory</td>
-<td>~1 GB less than 5.7</td>
+<td>典型的多人游戏地图内存</td>
+<td>~1 GB 小于 5.7</td>
 <td>&mdash;</td>
 <td>&mdash;</td>
 </tr>
 </tbody>
 </table>
-<p>The DDGI comparison is the most representative of the rendering argument; the physics comparison is the most
-representative of the CPU argument. The benchmark scenes themselves are downloadable from
-<a href="ProjectsAndDemos.md">Projects and Demos</a>.</p>
-<h2 id="why-native-resolution-is-the-constraint">Why native resolution is the constraint</h2>
-<p>Temporal reconstruction, denoising and stochastic sampling introduce noise, ghosting, temporal instability
-and blur. A 60 FPS target at a dynamic 720p&ndash;1080p internal resolution reconstructed to 4K is a
-different product than 60 FPS at native 4K, even when the frame rate number matches.</p>
-<p>Vite's position is that image clarity and gameplay responsiveness are the things that degrade first and are
-hardest to recover, so the frame-time budget should be spent holding native resolution and using lighting
-techniques that are noise-free by construction. DDGI's use of spherical harmonics to store and filter
-irradiance in probe volumes is precisely why it produces stable results without a denoiser.</p>
-<p>Upscalers are fully supported &mdash; DLSS 4.5, FSR 2 and 4, XeSS and NIS all ship with the engine. They are
-positioned as a way to exceed a target on weaker hardware, not as a way to reach it on the reference
-hardware. See <a href="Upscalers.md">Upscalers and Frame Generation</a>.</p>
-<h2 id="designing-to-a-target">Designing to a target</h2>
-<p>Pick your target before you build content, because it determines your entire art budget.</p>
-<p><procedure title="Choose and hold a performance target" id="choose-target">
-    <step>
-        Pick the row from the table above that matches your genre. Competitive multiplayer almost always
-        means the Stylised 4K120 target; a narrative single-player title can usually afford Fidelity.
-    </step>
-    <step>
-        Configure the corresponding feature set and nothing more. Vite enables most ray tracing effects by
-        default, so this usually means turning things <i>off</i>. See <a href="Ray-Tracing.md">Ray Tracing</a>.
-    </step>
-    <step>
-        Establish a frame-time budget per system &mdash; GI, reflections, shadows, geometry, post &mdash; and
-        measure against it with <code>stat gpu</code> from the first playable scene onward.
-    </step>
-    <step>
-        Test on the lowest hardware in your matrix regularly, not at the end. See
-        <a href="System-Requirements.md">System Requirements</a> for the reference hardware list.
-    </step>
-    <step>
-        Use <a href="Engine-Defaults.md">scalability</a> settings to scale down, rather than designing for the
-        weakest machine and scaling up.
-    </step>
-</procedure></p>
-<h2 id="see-also">See also</h2>
+<p>DDGI对比是最有代表性的渲染争论；物理比较是最有代表性的CPU参数。基准测试场景本身可以从<a href="ProjectsAndDemos.md">项目和演示</a>下载。</p>
+<h2 id="_5">为什么原生分辨率是制约因素</h2>
+<p>时间重建、去噪和随机采样会引入噪声、重影、时间不稳定和模糊。即使帧速率数字匹配，重构为 4K 的动态 720p–1080p 内部分辨率下的 60 FPS 目标与原生 4K 下的 60 FPS 目标是不同的产品。</p>
+<p>Vite 的立场是，图像清晰度和游戏响应能力是最先降低且最难恢复的因素，因此帧时间预算应用于保持原始分辨率并使用构造上无噪音的照明技术。 DDGI 使用球谐函数来存储和过滤探头体积中的辐照度，这正是它无需降噪器即可产生稳定结果的原因。</p>
+<p>升级器得到全面支持 -DLSS 4.5、FSR 2 和 4、XeSS 和 NIS 均随引擎一起提供。它们被定位为在较弱的硬件上超越目标的一种方式，而不是在参考硬件上达到目标的一种方式。请参阅<a href="Upscalers.md">Upscalers 和帧生成</a>。</p>
+<h2 id="_6">设定目标</h2>
+<p>在制作内容之前确定目标，因为它决定了你的全部美术预算。</p>
+<h3 id="_7">选择并保持性能目标</h3>
+<ol>
+<li>
+<p>从上表中选择与你的游戏类型相匹配的行。竞技多人游戏几乎总是意味着选择“风格化 4K120”目标；叙事型单人游戏通常可以使用“高保真”目标。</p>
+</li>
+<li>
+<p>配置相应的功能集，无需其他操作。Vite 默认启用大多数光线追踪效果，因此通常需要将其关闭。请参阅<a href="Ray-Tracing.md">光线追踪</a>部分。</p>
+</li>
+<li>
+<p>为每个系统（全局光照、反射、阴影、几何体、后期处理）设定帧时间预算，并从第一个可玩场景开始使用 <code>stat gpu</code> 命令进行测试。</p>
+</li>
+<li>
+<p>定期在你的测试矩阵中配置最低的硬件上进行测试，而不是在最后才进行测试。请参阅<a href="System-Requirements.md">系统要求</a>以获取参考硬件列表。</p>
+</li>
+<li>
+<p>使用<a href="Engine-Defaults.md">可扩展性</a>设置来降低配置，而不是先针对配置最低的机器进行设计，然后再进行扩展。</p>
+</li>
+</ol>
+<h2 id="_8">另请参阅</h2>
 <ul>
-<li><a href="../UE4-Versus-UE5-Cost-Analysis/">UE4 versus UE5 Cost Analysis</a></li>
-<li><a href="Profiling.md">Profiling and Benchmarking</a></li>
-<li><a href="Engine-Defaults.md">Scalability</a></li>
-<li><a href="ProjectsAndDemos.md">Projects and Demos</a></li>
+<li><a href="../UE4-Versus-UE5-Cost-Analysis/">UE4 与 UE5 成本分析</a></li>
+<li><a href="Profiling.md">性能分析和基准测试</a></li>
+<li><a href="Engine-Defaults.md">可扩展性</a></li>
+<li><a href="../../ProjectsAndDemos/">项目和演示</a></li>
 </ul>
               
             </div>

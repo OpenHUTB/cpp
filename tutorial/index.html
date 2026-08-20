@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>热重载 - 引擎优化文档</title>
+    <title>教程 - 引擎优化文档</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,8 +13,8 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "\u70ed\u91cd\u8f7d";
-        var mkdocs_page_input_path = "hot_reload.md";
+        var mkdocs_page_name = "\u6559\u7a0b";
+        var mkdocs_page_input_path = "tutorial.md";
         var mkdocs_page_url = null;
       </script>
     
@@ -45,7 +45,7 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../tutorial/add_actor_subclass/">引擎 C++ 开发教程</a>
+                <li class="toctree-l1"><a class="reference internal" href="add_actor_subclass/">引擎 C++ 开发教程</a>
                 </li>
               </ul>
               <ul>
@@ -110,9 +110,9 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">热重载</li>
+      <li class="breadcrumb-item active">教程</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/hot_reload.md"> 编辑页面</a>
+          <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/tutorial.md"> 编辑页面</a>
     </li>
   </ul>
   <hr/>
@@ -120,16 +120,38 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="_1">热重载</h1>
-<ol>
-<li>
-<p>直接点击编辑器主工具栏中的 编译（Compile）按钮</p>
-<p><img alt="" src="../img/hot_realod.jpg" /></p>
-</li>
-<li>
-<p>然后在编辑器中重新加入修改的模块（比如拖入修改的Actor模块）进行测试。</p>
-</li>
-</ol>
+                <h1 id="_1">教程</h1>
+<p><a href="add_actor_subclass/"><strong>1. 添加一个 Actor 子类</strong></a></p>
+<p><a href="create_static_mesh/"><strong>2.创建静态网格</strong></a></p>
+<p><a href="add_mesh_from_file/"><strong>3.添加静态网格文件</strong></a></p>
+<p><a href="add_billboard/"><strong>4.添加一个广告牌组件</strong></a></p>
+<p><a href="print_debug/"><strong>5. 打印调式信息</strong></a> — 向命令行、屏幕打印开发过程中的调式信息</p>
+<p><a href="draw_debug_helpers/"><strong>6.绘制辅助调试的形状</strong></a></p>
+<p><a href="find_player_position/"><strong>7.寻找玩家的当前位置</strong></a></p>
+<p><a href="hiden_actor/"><strong>8.隐藏并禁用的 Actor</strong></a></p>
+<p><a href="get_number_of_pawns/"><strong>9.获取场景中棋子的个数</strong></a></p>
+<p><a href="set_actor_location_and_rotation/"><strong>10.设置 Actor 的位置和朝向</strong></a></p>
+<p><a href="rotating_actor/"><strong>11.实时旋转 Actor</strong></a></p>
+<p><a href="set_view_target/"><strong>12.立即切换玩家的相机（视图目标）到 Actor 位置</strong></a></p>
+<p><a href="set_view_target_blend/"><strong>13.平滑切换玩家的相机（视图目标）到 Actor 位置</strong></a></p>
+<p><a href="timer_manager/"><strong>14.定时执行（定时器）的 Actor</strong></a></p>
+<p><a href="on_hit_component/"><strong>15.注册组件的 hit 事件</strong></a></p>
+<p><a href="sweep_multi_by_channel/"><strong>16.扫描多线轨迹</strong></a></p>
+<p><a href="actor_line_trace/"><strong>17.Actor 线轨迹</strong></a></p>
+<p><a href="add_radial_force/"><strong>18.给 Actor 添加径向推力</strong></a></p>
+<p><a href="on_overlap/"><strong>19.为 Charactor 添加重叠事件</strong></a></p>
+<p><a href="trigger_box/"><strong>20.触发框</strong></a></p>
+<p><a href="trigger_box_specific_actor/"><strong>21.指定 Actor 的触发器框</strong></a></p>
+<p><a href="trigger_volumn/"><strong>22.触发器体</strong></a></p>
+<p><a href="light_switch_trigger/"><strong>23.触发区域的灯光切换</strong></a></p>
+<p><a href="character_bind_button/"><strong>24.为玩家绑定键盘事件</strong></a></p>
+<p><a href="light_switch_push_button/"><strong>25.触发区域内的键盘响应开关灯</strong></a></p>
+<p><a href="rotate_angle_axis/"><strong>26.绕轴旋转</strong></a></p>
+<p><a href="floating_actor/"><strong>27.漂浮的 Actor</strong></a></p>
+<p><a href="camera_director/"><strong>28.两个相机视图的切换</strong></a></p>
+<p><a href="collding/"><strong>29.带碰撞和粒子特效的角色操控</strong></a></p>
+<p><a href="change_material_mesh/"><strong>30.触发改变网格的材质</strong></a></p>
+<p><a href="open_door_with_lerp/"><strong>31.通过插值和重叠事件实现开门效果</strong></a> - 开车门</p>
               
             </div>
           </div><footer>

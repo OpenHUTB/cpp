@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="None" />
       <link rel="shortcut icon" href="img/favicon.ico" />
-    <title>引擎实现文档</title>
+    <title>引擎优化文档</title>
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -31,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="." class="icon icon-home"> 引擎实现文档
+          <a href="." class="icon icon-home"> 引擎优化文档
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
       <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
@@ -69,7 +69,47 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="optimization/Default-topic/">引擎优化</a>
+                <li class="toctree-l1"><a class="reference internal" href="optimization/Default-topic/">引擎优化入门</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="optimization/EngineOverview/Engine-Overview/">引擎概述</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="optimization/Rendering/Rendering/">渲染</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="optimization/Physics/Physics/">物理</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="optimization/Performance/Performance/">性能和优化</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="optimization/Platforms/Platforms/">平台</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="optimization/Plugins/Plugins/">插件</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="optimization/Tools/Tools/">工具和自动化</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="optimization/ProjectsAndDemos/">项目和演示</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="optimization/Contributing/Contributing/">贡献</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="optimization/Reference/Reference/">参考</a>
                 </li>
               </ul>
       </div>
@@ -79,7 +119,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href=".">引擎实现文档</a>
+          <a href=".">引擎优化文档</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -99,47 +139,16 @@
                 <h1 id="_1"><a href="https://github.com/OpenHUTB/cpp">引擎实现文档</a></h1>
 <p>欢迎引擎的 C++ 实现文档，沟通<a href="https://openhutb.github.io/engine_doc">引擎使用文档</a>和<a href="https://github.com/OpenHUTB/engine">源代码实现</a>。目标是让模拟的帧率达到稳定的 30 FPS（稳定流畅的底线）、60 FPS（游戏响应迅速）、90 FPS（VR 应用低帧率会导致眩晕）。</p>
 <ul>
-<li><a href="#dev"><strong>引擎 C++ 开发教程</strong></a>  <ul>
-<li><a href="#plugin">UE 4 C++ 教程</a></li>
-</ul>
-</li>
+<li><a href="#dev"><strong>引擎 C++ 开发教程</strong></a></li>
 <li><a href="#src"><strong>引擎源码解析</strong></a></li>
 <li><a href="#optimization"><strong>引擎优化</strong></a></li>
 </ul>
 <hr />
 <h2 id="c">引擎 C++ 开发教程 <span id="dev"></span></h2>
 <h3 id="c_1">引擎 C++ 教程 <span id="engine_cpp"></span></h3>
-<p><a href="tutorial/add_actor_subclass/"><strong>1. 添加一个 Actor 子类</strong></a></p>
-<p><a href="tutorial/create_static_mesh/"><strong>2.创建静态网格</strong></a></p>
-<p><a href="tutorial/add_mesh_from_file/"><strong>3.添加静态网格文件</strong></a></p>
-<p><a href="tutorial/add_billboard/"><strong>4.添加一个广告牌组件</strong></a></p>
-<p><a href="tutorial/print_debug/"><strong>5. 打印调式信息</strong></a> — 向命令行、屏幕打印开发过程中的调式信息</p>
-<p><a href="tutorial/draw_debug_helpers/"><strong>6.绘制辅助调试的形状</strong></a></p>
-<p><a href="tutorial/find_player_position/"><strong>7.寻找玩家的当前位置</strong></a></p>
-<p><a href="tutorial/hiden_actor/"><strong>8.隐藏并禁用的 Actor</strong></a></p>
-<p><a href="tutorial/get_number_of_pawns/"><strong>9.获取场景中棋子的个数</strong></a></p>
-<p><a href="tutorial/set_actor_location_and_rotation/"><strong>10.设置 Actor 的位置和朝向</strong></a></p>
-<p><a href="tutorial/rotating_actor/"><strong>11.实时旋转 Actor</strong></a></p>
-<p><a href="tutorial/set_view_target/"><strong>12.立即切换玩家的相机（视图目标）到 Actor 位置</strong></a></p>
-<p><a href="tutorial/set_view_target_blend/"><strong>13.平滑切换玩家的相机（视图目标）到 Actor 位置</strong></a></p>
-<p><a href="tutorial/timer_manager/"><strong>14.定时执行（定时器）的 Actor</strong></a></p>
-<p><a href="tutorial/on_hit_component/"><strong>15.注册组件的 hit 事件</strong></a></p>
-<p><a href="tutorial/sweep_multi_by_channel/"><strong>16.扫描多线轨迹</strong></a></p>
-<p><a href="tutorial/actor_line_trace/"><strong>17.Actor 线轨迹</strong></a></p>
-<p><a href="tutorial/add_radial_force/"><strong>18.给 Actor 添加径向推力</strong></a></p>
-<p><a href="tutorial/on_overlap/"><strong>19.为 Charactor 添加重叠事件</strong></a></p>
-<p><a href="tutorial/trigger_box/"><strong>20.触发框</strong></a></p>
-<p><a href="tutorial/trigger_box_specific_actor/"><strong>21.指定 Actor 的触发器框</strong></a></p>
-<p><a href="tutorial/trigger_volumn/"><strong>22.触发器体</strong></a></p>
-<p><a href="tutorial/light_switch_trigger/"><strong>23.触发区域的灯光切换</strong></a></p>
-<p><a href="tutorial/character_bind_button/"><strong>24.为玩家绑定键盘事件</strong></a></p>
-<p><a href="tutorial/light_switch_push_button/"><strong>25.触发区域内的键盘响应开关灯</strong></a></p>
-<p><a href="tutorial/rotate_angle_axis/"><strong>26.绕轴旋转</strong></a></p>
-<p><a href="tutorial/floating_actor/"><strong>27.漂浮的 Actor</strong></a></p>
-<p><a href="tutorial/camera_director/"><strong>28.两个相机视图的切换</strong></a></p>
-<p><a href="tutorial/collding/"><strong>29.带碰撞和粒子特效的角色操控</strong></a></p>
-<p><a href="tutorial/change_material_mesh/"><strong>30.触发改变网格的材质</strong></a></p>
-<p><a href="tutorial/open_door_with_lerp/"><strong>31.通过插值和重叠事件实现开门效果</strong></a> - 开车门</p>
+<ul>
+<li><a href="tutorial/"><strong>教程</strong></a></li>
+</ul>
 <h3 id="_2">技巧</h3>
 <p><a href="hot_reload/"><strong>热重载</strong></a> - 不必关闭编辑器就可以编译 C++ </p>
 <h2 id="_3">源代码解析</h2>
@@ -148,11 +157,21 @@
 </ul>
 <h2 id="_4">引擎优化 <span id='optimization'></span></h2>
 <ul>
-<li><a href="optimization/Default-topic/">Vite</a></li>
+<li><a href="optimization/Default-topic/">引擎优化入门</a></li>
+<li><a href="optimization/EngineOverview/Engine-Overview/">引擎概述</a></li>
+<li><a href="optimization/Rendering/Rendering/">渲染</a></li>
+<li><a href="optimization/Physics/Physics/">物理</a></li>
+<li><a href="optimization/Performance/Performance/">性能和优化</a></li>
+<li><a href="optimization/Platforms/Platforms/">平台</a></li>
+<li><a href="optimization/Plugins/Plugins/">插件</a></li>
+<li><a href="optimization/Tools/Tools/">工具和自动化</a></li>
+<li><a href="optimization/ProjectsAndDemos/">项目和演示</a></li>
+<li><a href="optimization/Contributing/Contributing/">贡献</a></li>
+<li><a href="optimization/Reference/Reference/">参考</a></li>
 </ul>
 <h2 id="_5">参考</h2>
 <ul>
-<li><a href="https://github.com/GapingPixel/UnrealEngineVite-PhysX">UnrealEngineVite-PhysX</a></li>
+<li><a href="https://github.com/GapingPixel/UnrealEngineVite-PhysX">引擎优化仓库 UnrealEngineVite-PhysX</a></li>
 <li><a href="https://vitestudio-tech.github.io/UnrealEngineVite-Docs">UnrealEngineVite 文档</a></li>
 </ul>
 <hr />
@@ -216,5 +235,5 @@
 
 <!--
 MkDocs version : 1.5.9
-Build Date UTC : 2026-08-19 13:33:39.911001+00:00
+Build Date UTC : 2026-08-20 11:07:30.669321+00:00
 -->

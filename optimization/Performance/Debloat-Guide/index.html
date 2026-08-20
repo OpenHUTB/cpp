@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Debloat Guide - 引擎实现文档</title>
+    <title>精简指南 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Debloat Guide";
+        var mkdocs_page_name = "\u7cbe\u7b80\u6307\u5357";
         var mkdocs_page_input_path = "optimization/Performance/Debloat-Guide.md";
         var mkdocs_page_url = null;
       </script>
@@ -31,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="../../.." class="icon icon-home"> 引擎实现文档
+          <a href="../../.." class="icon icon-home"> 引擎优化文档
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
       <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
@@ -53,7 +53,47 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../../Default-topic/">引擎优化</a>
+                <li class="toctree-l1"><a class="reference internal" href="../../Default-topic/">引擎优化入门</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../EngineOverview/Engine-Overview/">引擎概述</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Rendering/Rendering/">渲染</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Physics/Physics/">物理</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Performance/">性能和优化</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Platforms/Platforms/">平台</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Plugins/Plugins/">插件</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Tools/Tools/">工具和自动化</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ProjectsAndDemos/">项目和演示</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Contributing/Contributing/">贡献</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Reference/Reference/">参考</a>
                 </li>
               </ul>
       </div>
@@ -63,14 +103,14 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../..">引擎实现文档</a>
+          <a href="../../..">引擎优化文档</a>
         
       </nav>
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Debloat Guide</li>
+      <li class="breadcrumb-item active">精简指南</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Performance/Debloat-Guide.md"> 编辑页面</a>
     </li>
@@ -80,91 +120,74 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="debloat-guide">Debloat Guide</h1>
-<p><tldr></p>
-<p>
-Three scripts in <code>devops\</code>, driven by a single <code>config.txt</code>, remove engine content
-you do not need. Everything defaults to <b>dry run</b> and <b>move rather than delete</b>, so a mistake is
-recoverable.
-</p>
-<p></tldr></p>
-<p>A full Unreal Engine 4.27 source tree contains support for every platform, every workflow and every
-template Epic ships. A Win64-only project uses a fraction of it. Debloating recovers disk space and reduces
-build time.</p>
-<p>Original Vite debloat scripts by Bikouz.</p>
-<h2 id="the-suite">The suite</h2>
+                <h1 id="_1">精简指南</h1>
+<p><code>devops\</code> 目录下的三个脚本，由一个 <code>config.txt</code> 文件驱动，用于移除您不需要的引擎内容。所有操作默认都以<strong>试运行</strong>的方式进行，并<strong>将内容移动到其他位置而非删除</strong>，因此即使出错也可以恢复。</p>
+<p>完整的虚幻引擎 4.27 源代码树支持 Epic 提供的所有平台、工作流程和模板。一个仅限 Win64 平台的项目仅占用其中一小部分资源。精简代码可以释放磁盘空间并缩短构建时间。</p>
+<p>原始 Vite 精简脚本由 Bikouz 编写。</p>
+<h2 id="_2">该套件</h2>
 <table>
 <thead>
 <tr>
-<th>Script</th>
-<th>Purpose</th>
+<th>脚本</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>ueVite-debloat-SetupSlim.bat</code></td>
-<td>Runs engine dependency setup with a Win64-only focus, so unneeded platform dependencies are never downloaded</td>
+<td>仅针对 Win64 平台运行引擎依赖项设置，因此不会下载不必要的平台依赖项。</td>
 </tr>
 <tr>
 <td><code>ueVite-debloat-StripExecute.bat</code></td>
-<td>Removes platform binaries, non-Windows tools, templates, sample content and optionally plugins</td>
+<td>移除平台二进制文件、非 Windows 工具、模板、示例内容以及（可选）插件。</td>
 </tr>
 <tr>
 <td><code>ueVite-debloat-StripDebugSymbols.bat</code></td>
-<td>Removes debug symbols according to <code>ExcludedPdbs.txt</code></td>
+<td>根据 <code>ExcludedPdbs.txt</code> 移除调试符号。</td>
 </tr>
 </tbody>
 </table>
-<p>All three live in <code>devops\</code> at the engine root and read <code>devops\config.txt</code>. You can pass an alternative
-config path as the first argument.</p>
-<h2 id="safety-model">Safety model</h2>
-<p>The scripts are deliberately conservative, and it is worth understanding how before running them.</p>
-<p><strong>Dry run is the default.</strong> <code>DRYRUN=1</code> prints every action without touching a file. Review the output
-before changing it.</p>
-<p><strong>Move is the default, not delete.</strong> <code>MODE=move</code> relocates targeted files into <code>MOVE_DIR</code>, preserving their
-relative layout so they can be restored by copying back. <code>MODE=delete</code> is permanent.</p>
-<p><strong>The move destination cannot be inside the engine tree.</strong> The script refuses, because a move destination
-inside the tree would be caught by subsequent passes.</p>
-<p><strong>Drive roots are refused.</strong> Both the engine root and the move destination are checked.</p>
-<p><strong>The engine root is validated.</strong> The script confirms <code>Engine\Binaries\</code> exists before doing anything.</p>
-<h2 id="configuration">Configuration</h2>
-<p><code>devops\config.txt</code> uses <code>KEY=VALUE</code> lines. Comment a line out with <code>#</code> to <strong>preserve</strong> what it targets;
-uncomment to <strong>enable</strong> an optional target. This inversion is worth internalising: an uncommented <code>STRIP</code>
-line means that thing gets removed.</p>
-<h3 id="core-settings">Core settings</h3>
+<p>这三个脚本都位于引擎根目录下的 <code>devops\</code> 目录中，并读取 <code>devops\config.txt</code> 文件。您可以将备用配置路径作为第一个参数传递。</p>
+<h2 id="_3">安全模型</h2>
+<p>这些脚本刻意采用保守策略，因此在运行它们之前，务必了解其工作原理。</p>
+<p><strong>默认设置为“试运行”。</strong> <code>DRYRUN=1</code> 会打印每个操作，但不会实际修改任何文件。请在修改之前查看输出。</p>
+<p><strong>默认设置为“移动”，而非“删除”。</strong> <code>MODE=move</code> 会将目标文件移动到 <code>MOVE_DIR</code> 目录，并保留其相对布局，以便可以通过复制的方式恢复。<code>MODE=delete</code> 则为永久性删除。</p>
+<p><strong>移动目标不能位于引擎目录树内。</strong> 脚本会拒绝，因为位于目录树内的移动目标会被后续的迭代捕获。</p>
+<p><strong>脚本拒绝使用根目录。</strong> 它会同时检查引擎目录和移动目标。</p>
+<p><strong>脚本会验证引擎目录。</strong> 在执行任何操作之前，脚本会确认 <code>Engine\Binaries\</code> 目录是否存在。</p>
+<h2 id="_4">配置</h2>
+<p><code>devops\config.txt</code> 使用 <code>KEY=VALUE</code> 行。用 <code>#</code> 注释掉一行可以<strong>保留</strong>其目标；取消注释可以<strong>启用</strong>可选目标。这种反转值得注意：取消注释 <strong>STRIP</strong> 行意味着要删除该行。  </p>
+<h3 id="_5">核心设置</h3>
 <div class="highlight"><pre><span></span><code>MODE=move
 MOVE_DIR=..\ViteDebloat_Moved
 DRYRUN=1
 </code></pre></div>
-<p><code>MOVE_DIR</code> resolves against the engine root, so the default is a sibling folder of the engine.</p>
-<h3 id="platforms">Platforms</h3>
-<p>Win64 is always kept. Uncomment a platform to also download and keep its dependencies during
-<code>SetupSlim</code>:</p>
+<p><code>MOVE_DIR</code> 指向引擎根目录，因此默认值是引擎的同级文件夹。</p>
+<h3 id="_6">平台</h3>
+<p>Win64 始终保留。取消注释平台以在 <code>SetupSlim</code> 期间下载并保留其依赖项：</p>
 <div class="highlight"><pre><span></span><code>#KEEP_PLATFORM=Android
 #KEEP_PLATFORM=IOS
 #KEEP_PLATFORM=Linux
 #KEEP_PLATFORM=Mac
 #KEEP_PLATFORM=HTML5
 </code></pre></div>
-<p>Do this <strong>before</strong> running setup. Not downloading a dependency is cheaper than downloading and then
-deleting it.</p>
-<h3 id="templates">Templates</h3>
+<p>请在运行安装程序<strong>之前</strong>执行此操作。不下载依赖项比下载后再删除它更划算。</p>
+<h3 id="_7">模板</h3>
 <div class="highlight"><pre><span></span><code>STRIP_OTHER_TEMPLATES=1
 KEEP_TEMPLATE=TP_ThirdPerson
 KEEP_TEMPLATE=TP_ThirdPersonBP
 KEEP_TEMPLATE=TemplateResources
 </code></pre></div>
-<p>Every folder under <code>Templates\</code> not named by a <code>KEEP_TEMPLATE</code> line is targeted. <code>TemplateResources</code> is
-shared by all templates and must be kept if you keep any template.</p>
-<h3 id="strip-targets">Strip targets</h3>
-<p>The default target list, grouped by category:</p>
-<p><strong>Platform binaries not needed for Win64</strong></p>
+<p>模板目录下所有未被 <code>KEEP_TEMPLATE</code> 行指定的文件夹都会被移除。<code>TemplateResources</code> 文件夹由所有模板共享，如果您保留任何模板，则必须保留该文件夹。</p>
+<h3 id="_8">移除目标</h3>
+<p>默认目标列表，按类别分组：</p>
+<p><strong>Win64 不需要的平台二进制文件</strong></p>
 <div class="highlight"><pre><span></span><code>STRIP=Engine\Binaries\Win64\Android
 STRIP=Engine\Binaries\Win64\IOS
 STRIP=Engine\Binaries\Win64\Lumin
 STRIP=Engine\Binaries\DotNET\IOS
 </code></pre></div>
-<p><strong>Non-Windows deployment and development tools</strong></p>
+<p><strong>非 Windows 部署和开发工具</strong></p>
 <div class="highlight"><pre><span></span><code>STRIP=Engine\Extras\Android
 STRIP=Engine\Extras\iTunes
 STRIP=Engine\Extras\Xcode
@@ -174,16 +197,14 @@ STRIP=Engine\Extras\LLDBDataFormatters
 STRIP=Engine\Extras\Maya_AnimationRiggingTools
 STRIP=Engine\Extras\MayaVelocityGridExporter
 </code></pre></div>
-<p>3ds Max scripts are preserved by default, since 3ds Max is a Windows DCC tool.</p>
+<p>由于 3ds Max 是一款 Windows DCC 工具，因此默认情况下会保留 3ds Max 脚本。</p>
 <p><strong>UnrealFileServer</strong></p>
 <div class="highlight"><pre><span></span><code>STRIP=Engine\Binaries\Win64\UnrealFileServer.exe
 #STRIP=Engine\Source\Programs\UnrealFileServer
 </code></pre></div>
-<p>UnrealFileServer serves cooked and staged files to remote devices and powers network Cook-on-the-Fly. It is
-safe to remove if you develop and package only for local Win64, do not deploy to remote devices, do not use
-network Cook-on-the-Fly, and do not target consoles or mobile through the file-server workflow.</p>
-<p>The prebuilt binary is targeted by default; the source folder is preserved so the tool can be rebuilt later.</p>
-<p><strong>Engine content</strong></p>
+<p>UnrealFileServer 为远程设备提供已处理和暂存的文件，并支持网络即时处理 (Cook-on-the-Fly)。如果您仅针对本地 Win64 进行开发和打包，不部署到远程设备，不使用网络即时处理，也不通过文件服务器工作流程面向主机或移动设备，则可以安全地移除它。</p>
+<p>默认情况下，目标平台为预编译的二进制文件；源文件夹将被保留，以便稍后重新编译该工具。</p>
+<p><strong>引擎内容</strong></p>
 <div class="highlight"><pre><span></span><code>STRIP=Samples\StarterContent
 STRIP=Samples\MobileStarterContent
 STRIP=FeaturePacks\StarterContent.upack
@@ -191,73 +212,57 @@ STRIP=FeaturePacks\StarterContent.upack
 #STRIP=Samples\PixelStreaming
 #STRIP=Samples\RTXGI_Test
 </code></pre></div>
-<p>Starter Content is removed per the debloat policy. The fork-specific test samples are preserved by default
-&mdash; <code>RTXGI_Test</code> in particular is useful when verifying <a href="DDGI-Dynamic.md">DDGI</a>.</p>
-<p>Entries that do not exist in the tree are skipped with a notice, which is harmless.</p>
-<h2 id="the-plugin-pass">The plugin pass</h2>
-<p>Disabled by default, because plugin needs vary per project:</p>
+<p>根据精简策略，初始内容已被移除。默认情况下，分支特定的测试样本会被保留——特别是 <code>RTXGI_Test</code>，它在验证 <a href="DDGI-Dynamic.md">DDGI</a> 时非常有用。</p>
+<p>树中不存在的条目会被跳过并显示一条通知，这不会造成任何影响。</p>
+<h2 id="_9">插件通过</h2>
+<p>默认情况下禁用，因为每个项目的插件需求各不相同：</p>
 <div class="highlight"><pre><span></span><code>#PLUGIN_LIST=ExcludedPlugins.txt
 </code></pre></div>
-<p><code>ExcludedPlugins.txt</code> lists roughly 200 engine plugin paths, covering mobile and XR platforms, source
-control providers other than the one you use, Chaos plugins (unnecessary since Vite uses
-<a href="PhysX.md">PhysX</a>), enterprise and virtual production tooling, and a large set of experimental plugins.</p>
-<p>The file is looked up next to the scripts first, then in the engine root.</p>
-<p><warning>
-Read <code>ExcludedPlugins.txt</code> before enabling this pass. It includes entries your project may need
-&mdash; <code>Engine/Plugins/Runtime/GameplayAbilities/</code>,
-<code>Engine/Plugins/Runtime/ApexDestruction/</code>, <code>Engine/Plugins/Runtime/HairStrands/</code>,
-<code>Engine/Plugins/Runtime/Nvidia/</code> (which contains the
-<a href="Upscalers.md">DLSS and Streamline plugins</a>) and
-<code>Engine/Plugins/Runtime/PhysXVehicles/</code> are all on the list.</p>
-<p>
-Comment out the lines for anything you use before running the pass.
-</p>
-<p></warning></p>
-<h2 id="running-it">Running it</h2>
-<p><procedure title="Debloat an engine installation" id="run-debloat">
-    <step>
-        Open <code>devops\config.txt</code> and review every uncommented <code>STRIP</code> line. Comment
-        out anything you need.
-    </step>
-    <step>Confirm <code>DRYRUN=1</code> and <code>MODE=move</code>.</step>
-    <step>
-        Run <code>ueVite-debloat-StripExecute.bat</code> and read the full output. This is the step people
-        skip and then regret.
-    </step>
-    <step>Set <code>DRYRUN=0</code> and run it again.</step>
-    <step>
-        Build the engine and open the editor. Confirm your projects still load and the plugins you need
-        are present.
-    </step>
-    <step>
-        Once you are confident, delete <code>MOVE_DIR</code> to actually reclaim the space. Until you do,
-        the files are still on disk.
-    </step>
-</procedure></p>
-<p>For a fresh clone, run <code>ueVite-debloat-SetupSlim.bat</code> instead of <code>Setup.bat</code> so unneeded platform
-dependencies are never downloaded in the first place.</p>
-<h2 id="debug-symbols">Debug symbols</h2>
-<p><code>ueVite-debloat-StripDebugSymbols.bat</code> removes PDB files according to <code>ExcludedPdbs.txt</code>. Debug symbols are
-a large fraction of a source build's disk footprint.</p>
-<p>Keep symbols for anything you might need to debug. Stripping symbols for the engine modules you never step
-into is a large saving; stripping symbols for the ones you do turns a readable callstack into hexadecimal.</p>
-<h2 id="restoring">Restoring</h2>
-<p>In <code>move</code> mode, <code>MOVE_DIR</code> mirrors the engine tree's relative layout. Copy the contents back over the engine
-root to restore.</p>
-<p>If you used <code>delete</code> mode, restoration means re-cloning or re-running <code>Setup.bat</code>.</p>
-<h2 id="what-this-does-not-do">What this does not do</h2>
-<p>Debloating reduces disk footprint and, through the plugin pass, build time. It does <strong>not</strong> improve runtime
-performance &mdash; a plugin that is present but disabled costs nothing at runtime.</p>
-<p>For runtime performance, see <a href="../Profiling/">Profiling</a> and
-<a href="../Engine-Defaults/">Engine Default Changes</a>. For build time specifically, removing the added Vite plugins
-saves roughly three minutes on a full 15-minute build; see
-<a href="../Shader-Compilation-And-PSO/">Shader Compilation and PSO</a>.</p>
-<h2 id="see-also">See also</h2>
+<p><code>ExcludedPlugins.txt</code> 文件列出了大约 200 个引擎插件路径，涵盖移动和 XR 平台、除您当前使用的源代码控制提供商之外的其他源代码控制提供商、Chaos 插件（由于 Vite 使用 <a href="PhysX.md">PhysX</a>，因此无需列出）、企业和虚拟生产工具，以及大量实验性插件。</p>
+<p>系统首先会在脚本目录下查找该文件，然后在引擎根目录下查找。</p>
+<div class="admonition 警告">
+<p class="admonition-title">警告</p>
+<p>启用此渲染通道前，请阅读 <code>ExcludedPlugins.txt</code> 文件。该文件包含您的项目可能需要的插件条目，例如 <code>Engine/Plugins/Runtime/GameplayAbilities/</code>、<code>Engine/Plugins/Runtime/ApexDestruction/</code>、<code>Engine/Plugins/Runtime/HairStrands/</code>、<code>Engine/Plugins/Runtime/Nvidia/</code>（包含 <a href="Upscalers.md">DLSS 和 Streamline 插件</a>）以及 <code>Engine/Plugins/Runtime/PhysXVehicles/</code>。</p>
+<p>运行此渲染通道前，请注释掉您使用的所有插件对应的行。</p>
+</div>
+<h2 id="_10">运行</h2>
+<h3 id="_11">精简引擎安装</h3>
+<ol>
+<li>
+<p>打开 <code>devops\config.txt</code> 文件，检查所有未注释的 <code>STRIP</code> 行。注释掉所有不需要的行。</p>
+</li>
+<li>
+<p>确认 <code>DRYRUN=1</code> 和 <code>MODE=move</code>。</p>
+</li>
+<li>
+<p>运行 <code>ueVite-debloat-StripExecute.bat</code> 并阅读完整输出。很多人会跳过这一步，然后后悔。</p>
+</li>
+<li>
+<p>设置 <code>DRYRUN=0</code> 并再次运行。</p>
+</li>
+<li>
+<p>构建引擎并打开编辑器。确认您的项目仍然可以加载，并且所需的插件都已安装。</p>
+</li>
+<li>
+<p>确认无误后，删除 <code>MOVE_DIR</code> 以真正回收空间。在此之前，文件仍然保留在磁盘上。</p>
+</li>
+</ol>
+<p>对于全新克隆，请运行 <code>ueVite-debloat-SetupSlim.bat</code> 而不是 <code>Setup.bat</code>，这样就不会一开始就下载不需要的平台依赖项。</p>
+<h2 id="_12">调试符号</h2>
+<p><code>ueVite-debloat-StripDebugSymbols.bat</code> 会根据 <code>ExcludedPdbs.txt</code> 文件中的设置移除 PDB 文件。调试符号会占用源代码构建磁盘空间的很大一部分。</p>
+<p>保留所有可能需要调试的符号。移除那些你从不单步执行的引擎模块的符号可以节省大量空间；移除那些你执行的模块的符号可以将可读的调用堆栈转换为十六进制格式。</p>
+<h2 id="_13">恢复</h2>
+<p>在移动（<code>move</code>）模式下，<code>MOVE_DIR</code> 会镜像引擎树的相对布局。将内容复制回引擎根目录即可恢复。</p>
+<p>如果您使用的是删除（<code>delete</code>）模式，则恢复意味着重新克隆或重新运行 <code>Setup.bat</code>。</p>
+<h2 id="_14">此操作不会做什么</h2>
+<p>精简插件可以减少磁盘占用空间，并通过插件阶段缩短构建时间。但它<strong>不会</strong>提高运行时性能——即使插件存在但已禁用，运行时也不会消耗任何资源。</p>
+<p>有关运行时性能，请参阅<a href="../Profiling/">性能分析</a>和<a href="../Engine-Defaults/">引擎默认更改</a>。关于构建时间，移除添加的 Vite 插件可以在 15 分钟的完整构建过程中节省大约 3 分钟；请参阅<a href="../Shader-Compilation-And-PSO/">着色器编译和PSO</a>。</p>
+<h2 id="_15">另请参阅</h2>
 <ul>
-<li><a href="Build-From-Source.md">Build from Source</a></li>
-<li><a href="../Engine-Defaults/">Engine Default Changes</a></li>
-<li><a href="Bundled-Plugins.md">Bundled Plugins</a></li>
-<li><a href="Cache-Management.md">Cache Management</a></li>
+<li><a href="Build-From-Source.md">从源代码构建</a></li>
+<li><a href="../Engine-Defaults/">引擎默认设置更改</a></li>
+<li><a href="Bundled-Plugins.md">捆绑插件</a></li>
+<li><a href="Cache-Management.md">缓存管理</a></li>
 </ul>
               
             </div>

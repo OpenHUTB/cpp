@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../img/favicon.ico" />
-    <title>Projects and Demos - 引擎实现文档</title>
+    <title>项目和演示 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../css/theme.css" />
     <link rel="stylesheet" href="../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Projects and Demos";
+        var mkdocs_page_name = "\u9879\u76ee\u548c\u6f14\u793a";
         var mkdocs_page_input_path = "optimization/ProjectsAndDemos.md";
         var mkdocs_page_url = null;
       </script>
@@ -31,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="../.." class="icon icon-home"> 引擎实现文档
+          <a href="../.." class="icon icon-home"> 引擎优化文档
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
       <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
@@ -53,7 +53,57 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../Default-topic/">引擎优化</a>
+                <li class="toctree-l1"><a class="reference internal" href="../Default-topic/">引擎优化入门</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../EngineOverview/Engine-Overview/">引擎概述</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Rendering/Rendering/">渲染</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Physics/Physics/">物理</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Performance/Performance/">性能和优化</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Platforms/Platforms/">平台</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Plugins/Plugins/">插件</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Tools/Tools/">工具和自动化</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">项目和演示</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#_2">演示项目</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_3">基准测试项目</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_4">使用基准</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_5">另请参阅</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Contributing/Contributing/">贡献</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Reference/Reference/">参考</a>
                 </li>
               </ul>
       </div>
@@ -63,14 +113,14 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../..">引擎实现文档</a>
+          <a href="../..">引擎优化文档</a>
         
       </nav>
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Projects and Demos</li>
+      <li class="breadcrumb-item active">项目和演示</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/ProjectsAndDemos.md"> 编辑页面</a>
     </li>
@@ -80,96 +130,87 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="projects-and-demos">Projects and Demos</h1>
-<p><tldr></p>
-<p>
-Downloadable projects demonstrating Vite's features and establishing its performance numbers. Several are
-the benchmarks the <a href="./EngineOverview/Performance-Targets.md">performance targets</a> are measured against.
-</p>
-<p></tldr></p>
-<p>These fall into two groups: <strong>showcases</strong> that demonstrate what the engine can do visually, and
-<strong>benchmarks</strong> that establish what it costs. The benchmarks are the more useful of the two if you are
-deciding whether Vite fits your project.</p>
-<h2 id="showcases">Showcases</h2>
+                <h1 id="_1">项目和演示</h1>
+<p>可下载的项目展示了 Vite 的各项功能并提供了性能数据。其中一些项目是<a href="../EngineOverview/Performance-Targets/">性能目标</a>的基准测试。</p>
+<p>这些项目分为两类：展示引擎视觉效果的<strong>演示项目</strong>，以及评估其成本的<strong>基准测试项目</strong>。如果您正在考虑 Vite 是否适合您的项目，基准测试项目将更有参考价值。</p>
+<h2 id="_2">演示项目</h2>
 <table>
 <thead>
 <tr>
-<th>Project</th>
-<th>Demonstrates</th>
+<th>项目</th>
+<th>演示</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><a href="Tech-Demo-Project.md">Tech Demo Project</a></td>
-<td>DDGI, SSGI, Apex Destruction and Apex Cloth in one package</td>
+<td><a href="Tech-Demo-Project.md">技术演示项目</a></td>
+<td>DDGI、SSGI、Apex Destruction 和 Apex Cloth 在一个包中</td>
 </tr>
 <tr>
-<td><a href="Stylized-Raytracing-Demo.md">Stylized Raytracing Demo</a></td>
-<td>Ray tracing applied to non-photoreal art direction</td>
+<td><a href="Stylized-Raytracing-Demo.md">风格化光线追踪演示</a></td>
+<td>光线追踪应用于非真实感艺术指导</td>
 </tr>
 <tr>
-<td><a href="Callisto-BRDF-Demos.md">Callisto BRDF Demos</a></td>
-<td>The custom skin and character shading model</td>
+<td><a href="Callisto-BRDF-Demos.md">Callisto BRDF 演示</a></td>
+<td>自定义皮肤和角色着色模型</td>
 </tr>
 <tr>
-<td><a href="Abandone-Apartment.md">Abandoned Apartment</a></td>
-<td>Interior lighting scene</td>
+<td><a href="Abandone-Apartment.md">废弃的公寓</a></td>
+<td>室内照明场景</td>
 </tr>
 <tr>
-<td><a href="Attic-Scene.md">Attic Scene</a></td>
-<td>Interior lighting scene</td>
+<td><a href="Attic-Scene.md">阁楼场景</a></td>
+<td>室内照明场景</td>
 </tr>
 <tr>
 <td><a href="Crash-Bandicoot.md">Crash Bandicoot: Timetwister</a></td>
-<td>A complete gameplay level built on UE4</td>
+<td>基于 UE4 构建的完整游戏关卡</td>
 </tr>
 </tbody>
 </table>
-<h2 id="benchmarks">Benchmarks</h2>
+<h2 id="_3">基准测试项目</h2>
 <table>
 <thead>
 <tr>
-<th>Project</th>
-<th>Measures</th>
+<th>项目</th>
+<th>测量</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><a href="400-Characters-CMC-Bench.md">400 Characters CMC Bench</a></td>
-<td>Character Movement Component cost at scale</td>
+<td><a href="400-Characters-CMC-Bench.md">400 个角色 CMC 工作台</a></td>
+<td>角色移动组件的大规模成本</td>
 </tr>
 <tr>
-<td><a href="Physics-Cube-Bench.md">Physics Cube Bench</a></td>
-<td>PhysX rigid body throughput</td>
+<td><a href="Physics-Cube-Bench.md">物理立方台</a></td>
+<td>PhysX 刚体吞吐量</td>
 </tr>
 <tr>
-<td><a href="PhysXTest.md">PhysX Test</a></td>
-<td>General PhysX behaviour and stability</td>
+<td><a href="PhysXTest.md">PhysX 测试</a></td>
+<td>一般 PhysX 行为和稳定性</td>
 </tr>
 <tr>
-<td><a href="PhysX-Instanced-Subsystem.md">PhysX Instanced Subsystem</a></td>
-<td>Instanced rigid bodies at counts individual actors cannot reach</td>
+<td><a href="PhysX-Instanced-Subsystem.md">PhysX 实例子系统</a></td>
+<td>实例刚体的数量是单个参与者无法达到的</td>
 </tr>
 </tbody>
 </table>
-<h2 id="using-the-benchmarks">Using the benchmarks</h2>
-<p>The benchmarks are more informative than a frame rate number suggests. Run them with <code>stat unit</code> visible
-and note which thread is the limit &mdash; that tells you what a similar workload will cost you, and which
-of Vite's optimisations apply. See <a href="Profiling.md">Profiling</a>.</p>
-<p><note>
-Numbers from these projects reflect the hardware they were captured on. Vite's
-<a href="Coding-Guidelines.md">performance baseline</a> is an ARM-class ~1 GHz CPU, which is far below a
-development desktop. A benchmark that is comfortable on your machine may not be on your target.
-</note></p>
-<h2 id="see-also">See also</h2>
+<h2 id="_4">使用基准</h2>
+<p>基准测试比帧速率数字所显示的信息更丰富。在<code>stat unit</code>可见的情况下运行它们，并注意哪个线程是限制——这会告诉您类似的工作负载将花费您多少费用，以及适用哪些 Vite 优化。请参阅<a href="Profiling.md">性能分析</a>。</p>
+<p>这些项目的数据反映了它们所用的硬件配置。Vite 的<a href="Coding-Guidelines.md">性能基准</a>是 ARM 架构的 1GHz 左右的 CPU，远低于开发桌面电脑的性能。在你机器上运行流畅的基准测试结果，可能并不适合你的目标平台。</p>
+<h2 id="_5">另请参阅</h2>
 <ul>
-<li><a href="Performance-Targets.md">Performance Targets</a></li>
-<li><a href="Profiling.md">Profiling</a></li>
-<li><a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 versus UE5 Cost Analysis</a></li>
+<li><a href="Performance-Targets.md">性能目标</a></li>
+<li><a href="../Performance/Profiling/">性能分析</a> </li>
+<li><a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 与 UE5 成本分析</a></li>
 </ul>
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../Tools/Tools/" class="btn btn-neutral float-left" title="工具和自动化"><span class="icon icon-circle-arrow-left"></span> 前一页</a>
+        <a href="../Contributing/Contributing/" class="btn btn-neutral float-right" title="贡献">后一页 <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
   <hr/>
 
@@ -195,6 +236,10 @@ development desktop. A benchmark that is comfortable on your machine may not be 
         </span>
     
     
+      <span><a href="../Tools/Tools/" style="color: #fcfcfc">&laquo; 前一页</a></span>
+    
+    
+      <span><a href="../Contributing/Contributing/" style="color: #fcfcfc">后一页 &raquo;</a></span>
     
   </span>
 </div>

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>破损与布料 - 引擎实现文档</title>
+    <title>破损与布料 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -31,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="../../.." class="icon icon-home"> 引擎实现文档
+          <a href="../../.." class="icon icon-home"> 引擎优化文档
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
       <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
@@ -53,7 +53,47 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../../Default-topic/">引擎优化</a>
+                <li class="toctree-l1"><a class="reference internal" href="../../Default-topic/">引擎优化入门</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../EngineOverview/Engine-Overview/">引擎概述</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Rendering/Rendering/">渲染</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Physics/">物理</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Performance/Performance/">性能和优化</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Platforms/Platforms/">平台</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Plugins/Plugins/">插件</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Tools/Tools/">工具和自动化</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ProjectsAndDemos/">项目和演示</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Contributing/Contributing/">贡献</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Reference/Reference/">参考</a>
                 </li>
               </ul>
       </div>
@@ -63,7 +103,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../..">引擎实现文档</a>
+          <a href="../../..">引擎优化文档</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -121,7 +161,7 @@
 </ul>
 <p>Apex 破损教学视频 <a href="https://youtu.be/Stn7eL1TFBg"><img alt="MeanLemur 制作的教学视频" src="https://img.youtube.com/vi/Stn7eL1TFBg/hqdefault.jpg" /></a></p>
 <h2 id="apex_1">Apex 布料</h2>
-<p>Apex Cloth 是 PhysX 时代的布料系统，可以通过编辑器内的 Clothing Tool 编写，也可以从外部 DCC 工具生成的 APEX 布料资产导入。</p>
+<p>Apex 布料是 PhysX 时代的布料系统（先模拟，后蒙皮），可以通过编辑器内的 Clothing Tool 编写，也可以从外部 DCC 工具生成的 APEX 布料资产导入。</p>
 <table>
 <thead>
 <tr>
@@ -135,8 +175,8 @@
 <td>骨架网格物体上的 APEX 布料资源或编辑器内服装数据</td>
 </tr>
 <tr>
-<td>UE5中的状态</td>
-<td>被移除以支持 Chaos Cloth</td>
+<td>UE5 中的状态</td>
+<td>被移除以支持 Chaos 布料</td>
 </tr>
 </tbody>
 </table>
@@ -144,106 +184,96 @@
 <p>实用注意事项：</p>
 <ul>
 <li>布料成本随模拟顶点数变化。绘制低分辨率模拟网格并将渲染网格蒙皮到其上，而不是直接模拟渲染网格。</li>
-<li>布料是根据骨架网格物体组件进行模拟的。布料上十个字符的成本是一个字符的十倍。</li>
+<li>布料是根据骨架网格物体组件进行模拟的。布料上十个角色的成本是一个角色的十倍。</li>
 <li>布料不会与场景的其余部分重叠。快速的角色运动可以产生拉伸，无需调整参数即可解决；答案通常是降低附着点移动的速度。</li>
 </ul>
 <h2 id="nvidia-blast">NVIDIA Blast</h2>
-<p>Blast is NVIDIA's successor to Apex Destruction, and the more capable of the two fracture systems.</p>
-<p><a href="https://archive.docs.nvidia.com/gameworks/content/gameworkslibrary/blast/1.1/authoring_docs/BlastUe4_QuickStart.html">Official Blast Plugin Documentation</a> </p>
+<p>Blast 是 NVIDIA 推出的 Apex Destruction 的继任者，也是两款破碎系统中功能更强大的一款。</p>
+<p><a href="https://archive.docs.nvidia.com/gameworks/content/gameworkslibrary/blast/1.1/authoring_docs/BlastUe4_QuickStart.html">Blast 插件官方文档</a>，<a href="https://github.com/NVIDIAGameWorks/Blast">github 仓库地址</a>。</p>
 <table>
 <thead>
 <tr>
-<th>Detail</th>
-<th></th>
+<th>条目</th>
+<th>细节</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Plugin</td>
-<td><code>Engine/Plugins/GameWorks/Blast</code> (version 1.0)</td>
+<td>插件</td>
+<td><code>Engine/Plugins/GameWorks/Blast</code> (1.0版)</td>
 </tr>
 <tr>
-<td>Platforms</td>
+<td>平台</td>
 <td>Win64, Linux</td>
 </tr>
 <tr>
-<td>Enabled by default</td>
+<td>默认启用</td>
 <td>No</td>
 </tr>
 <tr>
-<td>Modules</td>
+<td>模块</td>
 <td><code>BlastLoader</code>, <code>BlastRuntime</code>, <code>BlastEditor</code>, <code>BlastMeshEditor</code>, <code>BlastLoaderEditor</code></td>
 </tr>
 </tbody>
 </table>
-<p>Blast separates the destruction graph from the physics simulation. A Blast asset describes chunks and the
-bonds between them; damage propagates through the bond graph, and chunks become physics bodies only once
-they actually detach. This is why Blast handles large structures better than Apex Destruction: an intact
-building is a graph, not a thousand sleeping rigid bodies.</p>
-<p>Blast also supports runtime fracture, so the fracture pattern can depend on where and how the object was
-hit rather than being fully baked at author time.</p>
-<p>Enable the plugin from <strong>Edit &gt; Plugins &gt; GameWorks</strong>, then use the Blast Mesh Editor to author assets.</p>
-<blockquote>
-<p>Blast is not a drop-in replacement for Apex Destruction. The asset types, authoring workflow and runtime
-API are all different. Choose one per project rather than mixing them, and prefer Blast for new work.</p>
-<p>{style="note"}</p>
-</blockquote>
-<h2 id="choosing">Choosing</h2>
+<p>Blast 将破坏图与物理模拟分离。Blast 资源描述了块体及其之间的连接；损伤沿着连接图传播，块体只有在实际脱离后才会成为物理实体。这就是为什么 Blast 比 Apex Destruction 更能处理大型结构：一个完整​​的建筑物是一个图，而不是成千上万个静止的刚体。</p>
+<p>Blast 还支持运行时破碎，因此破碎模式取决于物体被击中的位置和方式，而不是在创建时完全烘焙。</p>
+<p>从<strong>Edit &gt; Plugins &gt; GameWorks</strong>启用插件，然后使用 Blast 网格编辑器创建资源。</p>
+<div class="admonition 注意">
+<p class="admonition-title">注意</p>
+<p>Blast 不能直接替代 Apex Destruction。资源类型、创建工作流程和运行时 API 都不同。建议每个项目选择一个，而不是混合使用，并且在新项目中优先选择 Blast。</p>
+</div>
+<h2 id="_2">选择</h2>
 <table>
 <thead>
 <tr>
-<th>Need</th>
-<th>System</th>
+<th>需求</th>
+<th>系统</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Existing 4.27 destructible meshes</td>
-<td>Apex Destruction &mdash; they still work, do not port them without reason</td>
+<td>现有 4.27 可破坏网格</td>
+<td>Apex Destruction — 它们仍然有效，请勿无故移植</td>
 </tr>
 <tr>
-<td>New destruction, large structures</td>
+<td>新增破坏效果，大型结构</td>
 <td>Blast</td>
 </tr>
 <tr>
-<td>New destruction, small props</td>
-<td>Either. Apex Destruction is simpler; Blast scales better.</td>
+<td>新增破坏效果，小型道具</td>
+<td>两者皆可。Apex Destruction 更简单；Blast 的扩展性更好</td>
 </tr>
 <tr>
-<td>Runtime-dependent fracture patterns</td>
+<td>运行时相关的破碎模式</td>
 <td>Blast</td>
 </tr>
 <tr>
-<td>Existing APEX clothing assets</td>
-<td>Apex Cloth</td>
+<td>现有 APEX 布料资产</td>
+<td>Apex 布料</td>
 </tr>
 <tr>
-<td>New clothing</td>
-<td>Apex Cloth via the in-editor Clothing Tool</td>
+<td>新增布料</td>
+<td>通过编辑器内的布料工具使用 Apex Cloth</td>
 </tr>
 </tbody>
 </table>
-<h2 id="performance">Performance</h2>
-<p>Destruction is one of the easiest ways to destroy a frame budget, because the cost is invisible until
-something breaks and then arrives all at once.</p>
+<h2 id="_3">表现</h2>
+<p>破坏是消耗帧预算最简单的方法之一，因为只有在物体破碎时才会产生成本，而且成本会瞬间显现。</p>
 <ul>
-<li><strong>Cap simultaneous debris.</strong> Set debris timeouts and maximum separation distances on every destructible.</li>
-<li><strong>Budget chunk counts against the worst case,</strong> not the typical one. A grenade in a room full of
-  destructibles is the frame you have to survive.</li>
-<li><strong>Consider the <a href="../Instanced-Physics/">instanced physics subsystem</a></strong> for debris. Chunks that have settled
-  and no longer need individual actors can be handled far more cheaply as instances.</li>
-<li><strong>Profile with <code>stat physics</code></strong> while destroying things, not while standing still.</li>
+<li><strong>限制同时出现的碎片数量。</strong> 为每个可破坏物设置碎片超时时间和最大分离距离。</li>
+<li><strong>预算块的计算应基于最坏情况，</strong> 而非典型情况。例如，在满是可破坏物的房间里，一颗手榴弹就是你必须存活下来的帧。</li>
+<li><strong>考虑使用<a href="../Instanced-Physics/">实例化的物理子系统</a></strong> 来处理碎片。已经稳定下来且不再需要单独 Actor 的碎片块可以作为实例进行处理，这样成本会低得多。</li>
+<li>在破坏物体时<strong>使用<code>stat physics</code>进行性能分析</strong> ，而不是在静止不动时进行分析。</li>
 </ul>
-<h2 id="licensing">Licensing</h2>
-<p>Apex Destruction, Apex Cloth and Blast are NVIDIA GameWorks technologies inherited through the PhysX and
-NvRTX lineage. Their licence terms apply to shipped titles. See the
-<a href="https://developer.nvidia.com/gameworks-source-sdk-eula">GameWorks source SDK EULA</a>.</p>
-<h2 id="see-also">See also</h2>
+<h2 id="_4">许可</h2>
+<p>Apex Destruction、Apex Cloth 和 Blast 是 NVIDIA GameWorks 技术，源自 PhysX 和 NvRTX 系列。其许可条款适用于已发售的游戏。请参阅 <a href="https://developer.nvidia.com/gameworks-source-sdk-eula">GameWorks 源代码 SDK 最终用户许可协议 (EULA)</a>。</p>
+<h2 id="_5">另请参阅</h2>
 <ul>
 <li><a href="../PhysX/">PhysX</a></li>
-<li><a href="../Instanced-Physics/">Instanced Physics Subsystem</a></li>
-<li><a href="Bundled-Plugins.md">Bundled Plugins</a></li>
-<li><a href="Profiling.md">Profiling</a></li>
+<li><a href="../Instanced-Physics/">实例化物理子系统</a></li>
+<li><a href="Bundled-Plugins.md">已捆绑的插件</a></li>
+<li><a href="Profiling.md">性能分析</a></li>
 </ul>
               
             </div>

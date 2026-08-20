@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Engine Default Changes - 引擎实现文档</title>
+    <title>Engine Default Changes - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -31,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="../../.." class="icon icon-home"> 引擎实现文档
+          <a href="../../.." class="icon icon-home"> 引擎优化文档
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
       <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
@@ -53,7 +53,47 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../../Default-topic/">引擎优化</a>
+                <li class="toctree-l1"><a class="reference internal" href="../../Default-topic/">引擎优化入门</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../EngineOverview/Engine-Overview/">引擎概述</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Rendering/Rendering/">渲染</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Physics/Physics/">物理</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Performance/">性能和优化</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Platforms/Platforms/">平台</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Plugins/Plugins/">插件</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Tools/Tools/">工具和自动化</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ProjectsAndDemos/">项目和演示</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Contributing/Contributing/">贡献</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Reference/Reference/">参考</a>
                 </li>
               </ul>
       </div>
@@ -63,7 +103,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../..">引擎实现文档</a>
+          <a href="../../..">引擎优化文档</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -104,8 +144,9 @@ event. In a stock project the majority of primitives generate overlap events tha
 <p><strong>What this means for you:</strong> components that need overlap events must set <strong>Generate Overlap Events</strong>
 explicitly. Trigger volumes, pickup detection and anything driven by <code>OnComponentBeginOverlap</code> need the
 flag set. This is the most likely source of "my trigger stopped working" after migrating a project.</p>
-<p><img src="../../img/optimization/OverlapEventsDisabled.png" alt="Commit diff replacing SetGenerateOverlapEvents(true) with bGenerateOverlapEvents = false in PrimitiveComponent.cpp" border-effect="line"/></p>
-<p><em>One line in <code>UPrimitiveComponent</code>, applied to every primitive in every project.</em></p>
+<p><img alt="" src="../../../img/optimization/OverlapEventsDisabled.png" /></p>
+<p><em>提交差异，将 PrimitiveComponent.cpp 中的 SetGenerateOverlapEvents(true) 替换为 bGenerateOverlapEvents = false。</em></p>
+<p><em><code>UPrimitiveComponent</code> 中的一行代码，应用于每个项目中的每个基本组件。</em></p>
 <p><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/02d7c0ad0a7542b382a70dc3e37877d6ec052d76">Commit</a></p>
 <h3 id="optimised-actor-runtime">Optimised actor runtime</h3>
 <p>Actor runtime defaults are changed to reduce per-actor overhead in <code>AActor::InitializeDefaults</code>:</p>
@@ -139,9 +180,9 @@ flag set. This is the most likely source of "my trigger stopped working" after m
 </tr>
 </tbody>
 </table>
-<p><img src="../../img/optimization/OptimizedActorRuntime.png" alt="Commit diff in Actor.cpp changing SetCanBeDamaged, bRelevantForNetworkReplays and bRelevantForLevelBounds defaults" border-effect="line"/></p>
-<p><em>Large meshes, blocking volumes and foliage that must define world bounds need <code>bRelevantForLevelBounds</code>
-set back to <code>true</code>.</em></p>
+<p><img alt="" src="../../../img/optimization/OptimizedActorRuntime.png" /></p>
+<p><em>提交 Actor.cpp 中的差异，更改 SetCanBeDamaged、bRelevantForNetworkReplays 和 bRelevantForLevelBounds 的默认值</em></p>
+<p><em>大型网格、阻挡体积和必须定义世界边界的植被需要将 <code>bRelevantForLevelBounds</code> 设置为 <code>true</code>。</em></p>
 <p><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/970cbb989c3712f13be1fa370b778e769e5d864c">Commit</a></p>
 <h3 id="skeletal-mesh-optimised-configuration">Skeletal mesh optimised configuration</h3>
 <p>Skeletal meshes are among the top CPU offenders in most projects, so <code>USkeletalMeshComponent</code> ships with
@@ -184,18 +225,18 @@ path as the default and opting into the expensive options where they are needed 
 </tr>
 </tbody>
 </table>
-<p><img src="../../img/optimization/SkeletalMeshesOptimizedConfig.png" alt="Commit diff in SkeletalMeshComponent.cpp showing the five changed defaults against Epic's originals" border-effect="line"/></p>
-<p><em>Each changed line keeps Epic's original value in a trailing comment, so the stock behaviour is recoverable
-without consulting upstream.</em></p>
+<p><img alt="" src="../../../img/optimization/SkeletalMeshesOptimizedConfig.png" /></p>
+<p><em>SkeletalMeshComponent.cpp 中的提交差异显示了与 Epic 原版相比的五个已更改的默认值。</em></p>
+<p><em>每行更改的内容都会在末尾的注释中保留 Epic 的原始值，因此无需咨询上游即可恢复库存行为。</em></p>
 <p><code>VisibilityBasedAnimTickOption</code> is the one to watch. <code>OnlyTickPoseWhenRendered</code> means an off-screen
 character stops evaluating its pose entirely; gameplay that reads bone transforms or sockets on unrendered
 characters &mdash; weapon muzzle positions, IK targets, attach points on a distant actor &mdash; must set
 the component back to <code>AlwaysTickPose</code> or <code>AlwaysTickPoseAndRefreshBones</code>.</p>
 <p><code>bDisablePostProcessBlueprint = true</code> is the second: post-process anim Blueprints, commonly used for IK
 and bone corrections, no longer run unless re-enabled per component.</p>
-<p><img src="../../img/optimization/SkeletalMeshDefault.png" alt="SkeletalMeshComponent.cpp constructor showing the surrounding default block" border-effect="line"/></p>
-<p><em>The surrounding constructor block in <code>SkeletalMeshComponent.cpp</code>, for context on where these defaults are
-set.</em></p>
+<p><img alt="" src="../../../img/optimization/SkeletalMeshDefault.png" /></p>
+<p><em>SkeletalMeshComponent.cpp 构造函数显示了周围的默认块</em></p>
+<p><em>有关这些默认值设置位置的上下文，请参阅 <code>SkeletalMeshComponent.cpp</code> 中的构造函数块。</em></p>
 <p><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/33fe7c638829b8120e8a02ecc639acda761df835">Commit</a></p>
 <h3 id="generate-lightmap-uvs-disabled">Generate Lightmap UVs disabled</h3>
 <p>Static mesh import no longer generates lightmap UVs by default.</p>
@@ -217,8 +258,9 @@ time, module load count and packaged build size.</p>
 <h3 id="speedtree-tick">SpeedTree tick</h3>
 <p>The SpeedTree tick in <code>LevelTick.cpp</code> is optimised. SpeedTree ticking runs regardless of whether a project
 uses SpeedTree assets, so this is a saving every project gets.</p>
-<p><img src="SpeedTreeTick.png" alt="LevelTick.cpp showing the UpdateSpeedTreeWind call inside the world tick" border-effect="line"/></p>
-<p><em><code>Scene-&gt;UpdateSpeedTreeWind</code> in the world tick &mdash; unconditional in stock 4.27.</em></p>
+<p><img alt="" src="../../../img/optimization/SpeedTreeTick.png" /></p>
+<p><em>LevelTick.cpp 显示了世界节拍中的 UpdateSpeedTreeWind 调用。</em></p>
+<p><em><code>Scene-&gt;UpdateSpeedTreeWind</code> 在世界节拍中 — 无条件地在 stock 4.27 中。</em></p>
 <p><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/blob/3e4a16aa89de4f4c37da300c945d6a14dc62edd7/Engine/Source/Runtime/Engine/Private/LevelTick.cpp#L1709">Source</a></p>
 <h3 id="niagara-tick">Niagara tick</h3>
 <p>Niagara ticks whenever the plugin is enabled. Disable the Niagara plugin at project level if you do not use

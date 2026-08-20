@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>插件 - 引擎实现文档</title>
+    <title>插件 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -31,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="../../.." class="icon icon-home"> 引擎实现文档
+          <a href="../../.." class="icon icon-home"> 引擎优化文档
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
       <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
@@ -53,7 +53,61 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../../Default-topic/">引擎优化</a>
+                <li class="toctree-l1"><a class="reference internal" href="../../Default-topic/">引擎优化入门</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../EngineOverview/Engine-Overview/">引擎概述</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Rendering/Rendering/">渲染</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Physics/Physics/">物理</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Performance/Performance/">性能和优化</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Platforms/Platforms/">平台</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">插件</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#_2">在这部分</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_3">插件生效的位置</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_4">启用一个插件</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#debloating">插件和 debloating</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_5">添加自己的插件</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#_6">另请参阅</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Tools/Tools/">工具和自动化</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ProjectsAndDemos/">项目和演示</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Contributing/Contributing/">贡献</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Reference/Reference/">参考</a>
                 </li>
               </ul>
       </div>
@@ -63,7 +117,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../..">引擎实现文档</a>
+          <a href="../../..">引擎优化文档</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -96,7 +150,7 @@ integrated by hand.</p>
 </thead>
 <tbody>
 <tr>
-<td><a href="../Bundled-Plugins/">Bundled 插件</a></td>
+<td><a href="../Bundled-Plugins/">已捆绑的插件</a></td>
 <td>Everything Vite adds on top of stock 4.27, with versions and enablement state</td>
 </tr>
 <tr>
@@ -175,7 +229,7 @@ which is a non-destructive alternative. See <a href="Installed-Builds.md">Instal
 <h2 id="_5">添加自己的插件</h2>
 <p>Project plugins go in <code>&lt;Project&gt;\Plugins</code>, as with stock Unreal. Engine plugins that the whole team should have go in <code>Engine\Plugins\Runtime\VitePlugins</code> and require an engine rebuild and redistribution.</p>
 <p>If you want a plugin bundled with Vite, it must be compatible with 4.21&ndash;4.27. UE5-only plugins are out of scope. See <a href="../Proposed-Plugins/">Proposed Plugins</a> for the criteria and the current candidate list.</p>
-<h2 id="_6">参见</h2>
+<h2 id="_6">另请参阅</h2>
 <ul>
 <li><a href="../Bundled-Plugins/">Bundled 插件</a></li>
 <li><a href="../Proposed-Plugins/">提议的插件</a></li>
@@ -185,6 +239,10 @@ which is a non-destructive alternative. See <a href="Installed-Builds.md">Instal
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../../Platforms/Platforms/" class="btn btn-neutral float-left" title="平台"><span class="icon icon-circle-arrow-left"></span> 前一页</a>
+        <a href="../../Tools/Tools/" class="btn btn-neutral float-right" title="工具和自动化">后一页 <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
   <hr/>
 
@@ -210,6 +268,10 @@ which is a non-destructive alternative. See <a href="Installed-Builds.md">Instal
         </span>
     
     
+      <span><a href="../../Platforms/Platforms/" style="color: #fcfcfc">&laquo; 前一页</a></span>
+    
+    
+      <span><a href="../../Tools/Tools/" style="color: #fcfcfc">后一页 &raquo;</a></span>
     
   </span>
 </div>

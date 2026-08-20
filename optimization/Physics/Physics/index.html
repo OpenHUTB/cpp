@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>物理 - 引擎实现文档</title>
+    <title>物理 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -31,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="../../.." class="icon icon-home"> 引擎实现文档
+          <a href="../../.." class="icon icon-home"> 引擎优化文档
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
       <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
@@ -53,7 +53,83 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../../Default-topic/">引擎优化</a>
+                <li class="toctree-l1"><a class="reference internal" href="../../Default-topic/">引擎优化入门</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../EngineOverview/Engine-Overview/">引擎概述</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Rendering/Rendering/">渲染</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">物理</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#_2">本节内容</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#physics-cpu-architecture">Physics CPU architecture</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#threading-and-the-critical-path">Threading and the critical path</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#simd-coverage">SIMD coverage</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#numeric-precision">Numeric precision</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#box-container-pile-10k-benchmark">Box Container Pile 10K benchmark</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#matching-thread-count-results">Matching thread-count results</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#reproducing-the-comparison">Reproducing the comparison</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#in-engine-cube-workload">In-engine cube workload</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#3000-engine-managed-cubes">3,000 engine-managed cubes</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#1425-native-physx-actors">1,425 native PhysX actors</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#practical-starting-points">Practical starting points</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#reference-workloads">Reference workloads</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#see-also">See also</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Performance/Performance/">性能和优化</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Platforms/Platforms/">平台</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Plugins/Plugins/">插件</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Tools/Tools/">工具和自动化</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ProjectsAndDemos/">项目和演示</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Contributing/Contributing/">贡献</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Reference/Reference/">参考</a>
                 </li>
               </ul>
       </div>
@@ -63,7 +139,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../..">引擎实现文档</a>
+          <a href="../../..">引擎优化文档</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -277,11 +353,12 @@ additional worker scaling. The multi-thread results show that scaling widens a d
 solver work, data access, collision and constraint processing, build configuration and engine integration.
 The stock NVIDIA result also separates the base PhysX architecture from the additional improvements in
 Vite's PhysX build.</p>
-<p><img src="../../img/optimization/BoxContainerPile10KChaos.jpg" alt="Unreal Chaos Box Container Pile 10K benchmark report across one to 24 threads" border-effect="line"/></p>
-<p><em>Unreal Chaos report. Median physics milliseconds per frame; lower is better.</em></p>
-<p><img src="../../img/optimization/BoxContainerPile10KVitePhysX.jpg" alt="Vite PhysX and comparison engines Box Container Pile 10K benchmark report" border-effect="line"/></p>
-<p><em>Vite PhysX and comparison-engine report. The shared table above uses only thread counts reported for Chaos,
-NVIDIA PhysX 3.4 and Vite PhysX 3.4 in the supplied reports.</em></p>
+<p><img alt="" src="../../../img/optimization/BoxContainerPile10KChaos.jpg" />
+<em>Unreal Chaos Box Container Pile 跨 1 到 24 个线程的 10K 基准测试报告</em></p>
+<p><em>Unreal Chaos 报告。每帧平均物理毫秒数；越低越好。</em></p>
+<p><img alt="" src="../../../img/optimization/BoxContainerPile10KVitePhysX.jpg" />
+<em>Vite PhysX 与对比引擎 Box Container Pile 10K 基准测试报告</em></p>
+<p><em>Vite PhysX 和对比引擎报告。上表仅使用所提供报告中 Chaos、NVIDIA PhysX 3.4 和 Vite PhysX 3.4 的线程数。</em></p>
 <p><note>
 The reports use the same host and high-level workload settings, but not identical executables: Chaos is a Win64 Shipping
 Chaos Program target, NVIDIA PhysX is a Visual Studio 2026 MSBuild Release SDK runner, and Vite PhysX is a
@@ -355,8 +432,9 @@ not physics-solver milliseconds in isolation.</p>
 <p>The captured Chaos game time is <strong>4.91×</strong> the Vite PhysX game time, while its frame time is <strong>4.75×</strong> the
 Vite PhysX frame time. Game time accounts for almost the complete frame in both captures, so the result is
 CPU-side rather than a GPU-limited comparison.</p>
-<p><img src="../../img/optimization/ChaosVsPhysX3000.png" alt="In-engine comparison of 3,000 simulated cubes in Unreal 5.7 Chaos and Unreal Vite 26 PhysX 3.4" border-effect="line"/></p>
-<p><em>In-engine 3,000-cube capture. Both sides report 3,016 rendered primitives.</em></p>
+<p><img alt="" src="../../../img/optimization/ChaosVsPhysX3000.png" />
+<em>在虚幻引擎 5.7 Chaos 和虚幻引擎 Vite 26 PhysX 3.4 中对 3000 个模拟立方体进行引擎内对比</em></p>
+<p><em>引擎内3000立方体捕捉。双方均报告渲染了3016个图元。</em></p>
 <h3 id="1425-native-physx-actors">1,425 native PhysX actors</h3>
 <p>The native-path capture represents simulated cubes directly as PhysX actors instead of giving every body a
 separate Unreal <code>AActor</code>. This removes the per-body Unreal Actor lifecycle from the simulation representation
@@ -396,9 +474,9 @@ transform-bridge cost depends on the native integration.</p>
 </tr>
 </tbody>
 </table>
-<p><img src="../../img/optimization/NativePhysXActors1425.png" alt="In-engine Vite native PhysX actor test with 1,425 simulated cubes" border-effect="line"/></p>
-<p><em>Native PhysX actor capture running in Unreal Engine without a separate UE Actor representation for each
-simulated cube.</em></p>
+<p><img alt="" src="../../../img/optimization/NativePhysXActors1425.png" />
+<em>使用 1425 个模拟立方体对引擎内的 Vite 原生 PhysX Actor 进行测试</em></p>
+<p><em>在虚幻引擎中运行原生 PhysX Actor 捕获，无需为每个模拟立方体单独创建一个 UE Actor 表示。</em></p>
 <p><warning>
 Do not calculate a direct multiplier between the native-path capture and the 3,000-cube comparison. The
 native result uses 1,425 cubes, a different engine label and a different object representation. It documents
@@ -443,6 +521,10 @@ the lower-overhead native integration path; it is not a matched Chaos-versus-Phy
               
             </div>
           </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../../Rendering/Rendering/" class="btn btn-neutral float-left" title="渲染"><span class="icon icon-circle-arrow-left"></span> 前一页</a>
+        <a href="../../Performance/Performance/" class="btn btn-neutral float-right" title="性能和优化">后一页 <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
 
   <hr/>
 
@@ -468,6 +550,10 @@ the lower-overhead native integration path; it is not a matched Chaos-versus-Phy
         </span>
     
     
+      <span><a href="../../Rendering/Rendering/" style="color: #fcfcfc">&laquo; 前一页</a></span>
+    
+    
+      <span><a href="../../Performance/Performance/" style="color: #fcfcfc">后一页 &raquo;</a></span>
     
   </span>
 </div>

@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>编码指南 - 引擎实现文档</title>
+    <title>编码指南 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -31,7 +31,7 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
     <div class="wy-side-scroll">
       <div class="wy-side-nav-search">
-          <a href="../../.." class="icon icon-home"> 引擎实现文档
+          <a href="../../.." class="icon icon-home"> 引擎优化文档
         </a><div role="search">
   <form id ="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
       <input type="text" name="q" placeholder="搜索文档" aria-label="Search docs" title="Type search term here" />
@@ -53,7 +53,47 @@
                 </li>
               </ul>
               <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../../Default-topic/">引擎优化</a>
+                <li class="toctree-l1"><a class="reference internal" href="../../Default-topic/">引擎优化入门</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../EngineOverview/Engine-Overview/">引擎概述</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Rendering/Rendering/">渲染</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Physics/Physics/">物理</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Performance/Performance/">性能和优化</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Platforms/Platforms/">平台</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Plugins/Plugins/">插件</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Tools/Tools/">工具和自动化</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../ProjectsAndDemos/">项目和演示</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../Contributing/">贡献</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../Reference/Reference/">参考</a>
                 </li>
               </ul>
       </div>
@@ -63,7 +103,7 @@
     <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
       <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../../..">引擎实现文档</a>
+          <a href="../../..">引擎优化文档</a>
         
       </nav>
       <div class="wy-nav-content">
@@ -152,7 +192,7 @@
 <li>每帧循环内没有<code>FString</code>处理、反射调用、动态分配或虚拟调度。</li>
 <li>在适当的情况下使用 SIMD 友好的数学（SSE/AVX/NEON）。</li>
 </ol>
-<p>规则 3 是最常被其他合理代码违反的规则。每个参与者节拍中的<code>FString</code>格式调用在测试场景中是不可见的，并且在规模上是灾难性的 -请参阅 <a href="400-Characters-CMC-Bench.md">400 字符 CMC 基准测试</a>，了解相乘后的每帧成本。</p>
+<p>规则 3 是最常被其他合理代码违反的规则。每个参与者节拍中的<code>FString</code>格式调用在测试场景中是不可见的，并且在规模上是灾难性的 -请参阅 <a href="400-Characters-CMC-Bench.md">400 角色 CMC 基准测试</a>，了解相乘后的每帧成本。</p>
 <h2 id="_9">正在进行中的工作</h2>
 <ol>
 <li>将正在进行的工作提交给替代分支。</li>
@@ -250,13 +290,13 @@
 <span class="w">    </span><span class="n">CustomPinNames</span><span class="p">.</span><span class="n">Add</span><span class="p">({</span><span class="w"> </span><span class="n">MSM_Toon</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Softness&quot;</span><span class="w"> </span><span class="p">});</span><span class="w"> </span><span class="c1">//Fletch</span>
 </code></pre></div>
 <p>遵循周围代码使用的任何标记。对于新区域，<code>//AKCHANGES START</code>/ <code>//AKCHANGES END</code>对可以明确更改的范围。</p>
-<h2 id="_16">参见</h2>
+<h2 id="_16">另请参阅</h2>
 <ul>
 <li><a href="../Contributing/">贡献</a></li>
 <li><a href="../Commit-Conventions/">提交约定</a></li>
 <li><a href="../Backporting/">向后移植</a></li>
-<li><a href="Compile-Time-Switches.md">编译时开关</a></li>
-<li><a href="Performance-Targets.md">性能目标</a></li>
+<li><a href="../../Performance/Compile-Time-Switches/">编译时开关</a></li>
+<li><a href="../../EngineOverview/Performance-Targets/">性能目标</a></li>
 </ul>
               
             </div>
