@@ -1,10 +1,8 @@
 # 从虚幻引擎 5 迁移
 
-<tldr>
-<p>
-使用 <a href="Propose-Plugins.md">UE Downgrader</a> 插件将资源向下移动，该插件支持 UE 5.8 及更低版本，直至回到 4.27。代码移动比原生 4.27 更容易，因为 Vite 向后移植了许多 UE5 容器、游戏框架和 GAS API。 4.27 中不存在的功能（Nanite、Lumen、VSM、World Partition）没有等效项，需要设计决策，而不是转换。
-</p>
-</tldr>
+
+使用[UE Downgrader](../Plugins/Proposed-Plugins.md)插件将资源向下移动，该插件支持 UE 5.8 及更低版本，直至回到 4.27。代码移动比原生 4.27 更容易，因为 Vite 向后移植了许多 UE5 容器、游戏框架和 GAS API。 4.27 中不存在的功能（Nanite、Lumen、VSM、World Partition）没有等效项，需要设计决策，而不是转换。
+
 
 将项目从虚幻引擎 5 迁移到 Vite 是真正的迁移，而不是版本升级。本页列出了哪些内容可以干净地迁移，哪些内容需要替换，以及按什么顺序进行。
 
@@ -16,18 +14,18 @@
 | 蓝图 | 迁移      | 降级；逐个节点重新测试，某些仅 UE5 的节点没有目标 |
 | C++ 游戏代码 | 迁移      | Vite 向后移植了许多 UE5 API；见下文 |
 | 游戏能力系统 | 迁移      | Vite 包括从 UE5 反向移植的 GAS 更新 |
-| Nanite | 没有等同的  | 编写常规 LOD；使用 [Tessellation](Tessellation.md) 获取表面细节 |
-| 流明 | 替换       | 使用 [DDGI](DDGI-Dynamic.md)，可选择与 [SSGI](SSGI.md) 一起使用 |
-| 虚拟阴影贴图 | 没有等同的  | 级联阴影贴图，或[光线追踪阴影](RT-Shadows-And-Ambient-Occlusion.md) |
-| TSR | 替换       | [DLSS, FSR, XeSS](Upscalers.md), or native with [SMAA](Anti-Aliasing.md) |
-| MegaLights | 替换       | [RTXDI](RTXDI.md) |
-| Chaos physics | 替换       | [PhysX](PhysX.md) |
-| Chaos Destruction | 替换       | [Apex Destruction](Destruction-And-Cloth.md) 和 [Blast](Destruction-And-Cloth.md) |
-| Chaos Cloth | 替换       | [Apex Cloth](Destruction-And-Cloth.md) |
-| Substrate | 没有等同的  | 标准材质模型，加上 [Callisto BRDF](Shading-Models.md) |
+| Nanite | 没有等同的  | 编写常规 LOD；使用[细分曲面](../Rendering/Tessellation.md)获取表面细节 |
+| 流明 | 替换       | 使用 [DDGI](../Reference/DDGI-Dynamic.md)，可选择与 [SSGI](../Rendering/SSGI.md) 一起使用 |
+| 虚拟阴影贴图 | 没有等同的  | 级联阴影贴图，或[光线追踪阴影](../Rendering/RT-Shadows-And-Ambient-Occlusion.md) |
+| TSR | 替换       | [DLSS, FSR, XeSS](../Rendering/Upscalers.md), or native with [SMAA](../Rendering/Anti-Aliasing.md) |
+| MegaLights | 替换       | [RTXDI](../Rendering/RTXDI.md) |
+| Chaos physics | 替换       | [PhysX](../Physics/PhysX.md) |
+| Chaos Destruction | 替换       | [Apex Destruction](Destruction-And-Cloth.md) 和 [Blast](../Physics/Destruction-And-Cloth.md) |
+| Chaos Cloth | 替换       | [Apex Cloth](../Physics/Destruction-And-Cloth.md) |
+| Substrate | 没有等同的  | 标准材质模型，加上 [Callisto BRDF](../Rendering/Shading-Models.md) |
 | 世界分区 | 替换       | 世界构成和关卡流 |
-| Niagara | 迁移      | 可用的; [PopcornFX](Propose-Plugins.md) 是更快的替代方案 |
-| MetaSounds | 没有等同的  | 声音提示，或 [Wwise](Proproped-Plugins.md) |
+| Niagara | 迁移      | 可用的; [PopcornFX](../Plugins/Proposed-Plugins.md) 是更快的替代方案 |
+| MetaSounds | 没有等同的  | 声音提示，或 [Wwise](../Plugins/Proproped-Plugins.md) |
 
 ## 资产降级
 
@@ -43,8 +41,8 @@ UE Downgrader 插件可将 UE 5.8 及更低版本的资源转换回 4.27 和 4.2
 
 你仍然会遇到分歧。按以下顺序完成它们：
 
-1. **物理.** 任何涉及“Chaos”命名空间、“FCaosScene”、几何集合或 Chaos 载具的内容都需要转移到 PhysX 等效项。这通常是最大的单个工作块。请参阅 [PhysX 概述](PhysX.md)。
-2. **渲染.** 查询或驱动 Lumen、Nanite 或 VSM 控制台变量的代码没有目标。替换为 [Rendering](Rendering.md) 中的 Vite 等效项。
+1. **物理.** 任何涉及“Chaos”命名空间、“FCaosScene”、几何集合或 Chaos 载具的内容都需要转移到 PhysX 等效项。这通常是最大的单个工作块。请参阅 [PhysX 概述](../Physics/PhysX.md)。
+2. **渲染.** 查询或驱动 Lumen、Nanite 或 VSM 控制台变量的代码没有目标。替换为 [Rendering](../Rendering/Rendering.md) 中的 Vite 等效项。
 3. **核心 API 漂移.** `FVector` 在 UE5 (`FVector3d`) 中是双精度，在 4.27 中是单精度。大世界坐标假设不成立。需要审核在大世界偏移量下执行精度敏感数学的任何代码。
 4. **模块和构建规则.** 引用仅限 UE5 的模块的 .build.cs 文件需要删除或替换这些依赖项。
 
@@ -80,7 +78,7 @@ UE Downgrader 插件可将 UE 5.8 及更低版本的资源转换回 4.27 和 4.2
 ## 另请参阅
 
 - [Vite 简介](Introduction-to-Vite.md)
-- [PhysX 概述](PhysX.md)
-- [全局照明](Global-Illumination.md)
-- [建议的插件](Proposed-Plugins.md)
-- [UE4 与 UE5 成本分析](UE4-Versus-UE5-Cost-Analysis.md)
+- [PhysX 概述](../Physics/PhysX.md)
+- [全局照明](../Rendering/Global-Illumination.md)
+- [建议的插件](../Plugins/Proposed-Plugins.md)
+- [UE4 与 UE5 成本分析](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md)

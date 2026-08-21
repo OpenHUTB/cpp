@@ -13,7 +13,7 @@ Epic Games Launcher installation: you can open and cook projects, but you cannot
 engine source. This is the right choice for artists, designers and anyone evaluating the fork.
 
 Installed builds are produced from a source build by the team. If you need to make one yourself, see
-[Installed Builds](Installed-Builds.md).
+[Installed Builds](../Tools/Installed-Builds.md).
 
 ## Contents of a build archive
 
@@ -103,6 +103,6 @@ Unreal directories, so editor layout and some settings will be common between th
 ## See also
 
 - [Getting Started](Getting-Started.md)
-- [Installed Builds](Installed-Builds.md)
-- [Packaging and Distribution](Installed-Builds.md)
+- [Installed Builds](../Tools/Installed-Builds.md)
+- [Packaging and Distribution](../Tools/Installed-Builds.md)
 - [Creating Your First Project](First-Project.md)
