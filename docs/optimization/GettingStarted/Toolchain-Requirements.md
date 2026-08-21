@@ -34,44 +34,49 @@ Vite 已针对以下工具链组合进行验证。第一行是当前推荐的工
 
 要跳过手动组件选择，请通过 Visual Studio 26 安装程序的 **导入配置**选项下载并导入 [Vite VSConfig](https://drive.google.com/file/d/1NwpPUiM_7yVI_kjhW94kYxvVP42ViV3Q/view?usp=sharing) 文件。
 
-### Removing conflicting toolsets
+### 移除冲突的工具集
 
-<procedure title="Remove conflicting MSVC versions" id="remove-conflicting-msvc">
-    <step>Open the Visual Studio Installer.</step>
-    <step>Find your Visual Studio installation and click <b>Modify</b>.</step>
-    <step>Switch to the <b>Individual components</b> tab.</step>
-    <step>Uncheck every MSVC v14.x x64/x86 build tools entry except the one your chosen toolchain requires.</step>
-    <step>Uncheck every Windows SDK except the one your chosen toolchain requires.</step>
-    <step>Click <b>Modify</b> and let the installer finish before generating project files again.</step>
-</procedure>
+**移除冲突的 MSVC 版本**
 
-Having more than one Windows SDK installed is not fatal, but it is a frequent source of link-time surprises.
-If you can get to exactly one, do.
+1. 打开 Visual Studio 安装程序。
 
-### The .NET Framework 4.5 targeting pack
+2. 找到您的 Visual Studio 安装目录，然后单击“修改(Modify)”。
 
-The Visual Studio 2022 and 2026 installers no longer ship the 4.5 targeting pack, but the engine's C# tools
-still need it. A folder at
-`C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5` that contains only XML
-files is a stub left behind by the .NET runtime, not a real targeting pack. Check for
-`v4.5\RedistList\FrameworkList.xml` to tell the difference.
+3. 切换到“单个组件(Individual components)”选项卡。
 
-`ViteSetup.bat` offers to install it automatically from the official Microsoft NuGet package. To do it
-by hand:
+4. 取消选中除您选择的工具链所需的 MSVC v14.x x64/x86 生成工具条目之外的所有条目。
 
-<procedure title="Install the .NET Framework 4.5 targeting pack manually" id="install-net45">
-    <step>Download <a href="https://www.nuget.org/api/v2/package/Microsoft.NETFramework.ReferenceAssemblies.net45/1.0.3">Microsoft.NETFramework.ReferenceAssemblies.net45 1.0.3</a>.</step>
-    <step>Open the <code>.nupkg</code> file as a ZIP archive.</step>
-    <step>Copy <code>build\.NETFramework\v4.5</code> into <code>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5</code>. This needs administrator rights.</step>
-    <step>Confirm that <code>v4.5\RedistList\FrameworkList.xml</code> now exists.</step>
-</procedure>
+5. 取消选中除您选择的工具链所需的 Windows SDK 条目之外的所有条目。
 
-## Pinning the SDK through BuildConfiguration.xml
+6. 单击“修改(Modify)”，等待安装程序完成安装后再重新生成项目文件。
 
-Unreal Build Tool reads a per-user configuration file that overrides its toolchain autodetection. This is
-the reliable way to force a specific Compiler and Windows SDK when several are present.
+安装多个 Windows SDK 并非致命问题，但经常会导致链接时出现意外情况。如果可以，请尽量只安装一个。
 
-Edit (VS26):
+
+### .NET Framework 4.5 目标包
+
+Visual Studio 2022 和 2026 安装程序不再包含 4.5 目标包，但引擎的 C# 工具仍然需要它。位于 `C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5` 的文件夹仅包含 XML 文件，它是 .NET 运行时留下的存根，并非真正的目标包。检查 `v4.5\RedistList\FrameworkList.xml` 文件即可区分。
+
+`ViteSetup.bat` 提供从官方 Microsoft NuGet 包自动安装目标包的功能。要手动安装：
+
+**手动安装 .NET Framework 4.5 目标包**
+
+1. 下载 Microsoft.NETFramework.ReferenceAssemblies.net45 1.0.3。
+
+2. 将 `.nupkg` 文件以 ZIP 压缩包的形式打开。
+
+3. 将 `build\.NETFramework\v4.5` 复制到 `C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5`。此操作需要管理员权限。
+
+4. 确认 v4.5\RedistList\FrameworkList.xml 文件存在。
+
+
+
+
+## 通过 BuildConfiguration.xml 固定 SDK
+
+虚幻引擎构建工具会读取一个用户配置文件，该文件会覆盖其工具链自动检测。当存在多个编译器和 Windows SDK 时，这是强制使用特定编译器和 SDK 的可靠方法。
+
+编辑（VS26）：
 
 ```
 %APPDATA%\Unreal Engine\UnrealBuildTool\BuildConfiguration.xml
@@ -92,27 +97,24 @@ Edit (VS26):
 </Configuration>
 ```
 
+!!! 警告
+    对 `BuildConfiguration.xml` 的更改将在下次构建时生效，但编辑后应重新生成项目文件，以便 IDE 和 UBT 保持一致。
 
-> Changes to `BuildConfiguration.xml` take effect on the next build, but you should regenerate project
-> files after editing it so that the IDE and UBT agree.
->
-{style="note"}
 
-## Verifying your toolchain
+## 验证您的工具链
 
-Before you start a long build, confirm what is actually installed. `ViteSetup.bat` performs this check for
-you and prints an `[OK]` or `[FAIL]` line for each requirement. To check by hand, look for:
+在开始长时间构建之前，请确认实际安装的组件。`ViteSetup.bat` 会自动执行此检查，并针对每个要求打印 `[OK]` 或 `[FAIL]` 行。要手动检查，请查找：
 
-- `C:\Program Files\Microsoft Visual Studio\<year>\<edition>\VC\Tools\MSVC\<version>\bin\Hostx64\x64\cl.exe`
-  &mdash; the MSVC toolsets you have installed are the folder names under `VC\Tools\MSVC`.
-- `C:\Program Files (x86)\Windows Kits\10\Include\<version>` &mdash; the Windows SDKs you have installed.
+- `C:\Program Files\Microsoft Visual Studio\<year>\<edition>\VC\Tools\MSVC\<version>\bin\Hostx64\x64\cl.exe` — 您已安装的 MSVC 工具集位于 `VC\Tools\MSVC` 下的文件夹名称中。
 
-A second useful checkpoint: watch the build output just before the linking phase begins and confirm which
-toolchain UBT reports using. Catching a mismatch there is much cheaper than catching it at link time.
+- `C:\Program Files (x86)\Windows Kits\10\Include\<version>` — 您已安装的 Windows SDK。
 
-## See also
+- 另一个有用的检查点：在链接阶段开始之前查看构建输出，并确认 UBT 报告使用的工具链。在此阶段发现不匹配比在链接时发现要高效得多。
 
-- [Building from Source](Build-From-Source.md)
-- [Build Troubleshooting](Build-Troubleshooting.md)
-- [ViteSetup Assistant](../Tools/ViteSetup.md)
-- [System Requirements](System-Requirements.md)
+
+## 另请参阅
+
+- [从源代码构建](Build-From-Source.md)
+- [构建故障排除](Build-Troubleshooting.md)
+- [ViteSetup 助手](../Tools/ViteSetup.md)
+- [系统要求](System-Requirements.md)
