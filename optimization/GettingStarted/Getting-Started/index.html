@@ -164,7 +164,7 @@
 </tr>
 </tbody>
 </table>
-<p>大多数团队都运行混合设置：工程师负责源构建，其他人则负责从同一提交生成的已安装构建。请参阅 <a href="Installed-Builds.md">Installed Builds</a> 了解如何生成一个。</p>
+<p>大多数团队都运行混合设置：工程师负责源构建，其他人则负责从同一提交生成的已安装构建。请参阅<a href="../../Tools/Installed-Builds/">已安装的构建</a>了解如何生成一个。</p>
 <h2 id="_3">步骤按顺序</h2>
 <ol>
 <li>检查<a href="../System-Requirements/">系统要求</a>，以便了解您需要什么硬件和磁盘空间。</li>
@@ -177,8 +177,8 @@
 <h2 id="427">与原版虚幻引擎 4.27 有何不同</h2>
 <p>如果您以前从源代码构建过虚幻引擎，那么三件事会让您感到惊讶。</p>
 <p><strong>GitDeps 已修补</strong>。Stock 4.27 无法下载依赖项，因为 CDN 端点已移动。 Vite 提供了修复程序，因此“Setup.bat”无需手动编辑即可工作。当“Setup.bat”询问是否覆盖本地更改时，回答“N”。</p>
-<p><strong>默认情况下，光线追踪处于开启状态</strong>。新项目支持开箱即用的光线追踪阴影、反射、半透明和环境光遮挡。这是故意的，以便可以发现这些功能，但这意味着新的空项目比库存 4.27 项目重。请参阅<a href="Ray-Tracing.md">光线追踪</a>了解如何关闭个别效果。</p>
-<p><strong>为了提高性能，更改了多个引擎默认值</strong>。重叠事件、骨架网格物体设置、光照贴图 UV 生成和许多插件与库存不同。这些更改会影响游戏行为，而不仅仅是帧时间，因此请在发布之前阅读<a href="Engine-Defaults.md">引擎默认更改</a>。</p>
+<p><strong>默认情况下，光线追踪处于开启状态</strong>。新项目支持开箱即用的光线追踪阴影、反射、半透明和环境光遮挡。这是故意的，以便可以发现这些功能，但这意味着新的空项目比库存 4.27 项目重。请参阅<a href="../../Rendering/Ray-Tracing/">光线追踪</a>了解如何关闭个别效果。</p>
+<p><strong>为了提高性能，更改了多个引擎默认值</strong>。重叠事件、骨架网格物体设置、光照贴图 UV 生成和许多插件与库存不同。这些更改会影响游戏行为，而不仅仅是帧时间，因此请在发布之前阅读<a href="../../Performance/Engine-Defaults/">引擎默认更改</a>。</p>
 <h2 id="_4">虚幻引擎基础知识</h2>
 <p>本手册记录了分支，而不是其下方的引擎。 Vite 不会改变的所有内容都按照虚幻引擎 4.27 的工作方式工作，Epic 自己的 4.27 文档是它的正确参考：</p>
 <table>
@@ -208,8 +208,8 @@
 <ul>
 <li><a href="../Introduction-to-Vite/">Vite 简介</a></li>
 <li><a href="../Toolchain-Requirements/">工具链要求</a></li>
-<li><a href="ViteSetup.md">Vite 设置助手</a></li>
-<li><a href="Engine-Defaults.md">引擎默认更改</a></li>
+<li><a href="../../Tools/ViteSetup/">Vite 设置助手</a></li>
+<li><a href="../../Performance/Engine-Defaults/">引擎默认更改</a></li>
 </ul>
               
             </div>

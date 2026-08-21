@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Release Notes - 引擎优化文档</title>
+    <title>发布说明 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Release Notes";
+        var mkdocs_page_name = "\u53d1\u5e03\u8bf4\u660e";
         var mkdocs_page_input_path = "optimization/EngineOverview/Release-Notes.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Release Notes</li>
+      <li class="breadcrumb-item active">发布说明</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/EngineOverview/Release-Notes.md"> 编辑页面</a>
     </li>
@@ -120,157 +120,153 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="release-notes">Release Notes</h1>
-<p><tldr></p>
-<p>
-Current release branch: <code>ueVite26-JulyMajor-release</code>. Staging work lands in
-<code>ueVite26-JulyStaging</code> before promotion. Feature branches such as
-<code>ueVite26-HairWorks</code> and <code>ueVite26-JulyRtSettings</code> are merged when stable.
-</p>
-<p></tldr></p>
-<p>This page tracks what is in the current major release, what is actively in progress, and what is planned.
-Feature lists are cumulative &mdash; everything under "Shipped" is present in the current release branch.</p>
-<h2 id="branch-layout">Branch layout</h2>
+                <h1 id="_1">发布说明</h1>
+<p>当前发布分支：<a href="https://github.com/GapingPixel/UnrealEngineVite-PhysX">ueVite26-JulyMajor-release</a>。测试工作会在正式发布前合并到 ueVite26-JulyStaging 分支。诸如 ueVite26-HairWorks 和 ueVite26-JulyRtSettings 等功能分支会在稳定后合并。</p>
+<p>此页面记录了当前主要版本包含的内容、正在开发中的功能以及计划中的功能。功能列表是累积的——“已发布（Shipped）”下的所有内容都已包含在当前发布分支中。</p>
+<h2 id="_2">分支布局</h2>
 <table>
 <thead>
 <tr>
-<th>Branch</th>
-<th>Purpose</th>
+<th>分支</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>ueVite26-JulyMajor-release</code></td>
-<td>Current major release. This is what you should build against.</td>
+<td><a href="https://github.com/GapingPixel/UnrealEngineVite-PhysX">ueVite26-JulyMajor-release</a></td>
+<td>当前主要版本。您应该基于此版本进行构建。</td>
 </tr>
 <tr>
 <td><code>ueVite26-JulyStaging</code></td>
-<td>Integration branch. Backports and features land here first.</td>
+<td>集成分支。向后移植和新增功能会首先发布到这里。</td>
 </tr>
 <tr>
 <td><code>ueVite26-JuneMajorRelease</code></td>
-<td>Previous major release, kept for projects mid-milestone.</td>
+<td>之前的主要版本，保留用于项目的中期里程碑。</td>
 </tr>
 <tr>
-<td>Feature branches</td>
-<td>Work in progress on a single system, merged when stable.</td>
+<td>特性分支</td>
+<td>目前仅对单个系统进行开发，稳定后将合并。</td>
 </tr>
 </tbody>
 </table>
-<p>Work-in-progress changes belong on a branch, not on release. See
-<a href="Commit-Conventions.md">Commit and PR Conventions</a>.</p>
-<h2 id="shipped">Shipped</h2>
-<h3 id="physics">Physics</h3>
+<p>正在进行中的更改应该放在某个分支上，而不是发布版本中。请参阅<a href="../../Contributing/Commit-Conventions/">提交和 PR 规范</a>。</p>
+<h2 id="_3">已发布</h2>
+<h3 id="_4">物理引擎</h3>
 <ul>
-<li><strong>Vite PhysX 3.4</strong> as the shipping physics backend.</li>
-<li><strong>Library upgrade</strong> for compatibility with newer Clang versions and the latest Android NDK Clang,
-  producing a meaningful performance increase &mdash; up to 2x in stress tests, typically around 1.4x
-  faster in the Box Container Pile 10 test.</li>
-<li><strong>PhysX Blast</strong> working alongside Apex Destruction.</li>
-<li><strong>PhysX Fixed Timestep</strong> as an opt-in feature, fully guarded for zero overhead on the regular path.</li>
+<li><strong>Vite PhysX 3.4</strong> 作为发布版本的物理引擎后端。</li>
+<li><strong>库已升级</strong>，以兼容更新的 Clang 版本和最新的 Android NDK Clang，从而显著提升性能——压力测试中最高可达 2 倍，在 Box Container Pile 10 测试中通常可提升约 1.4 倍。</li>
+<li><strong>PhysX Blast</strong> 与 Apex Destruction 协同工作。</li>
+<li><strong>PhysX Fixed Timestep</strong> 作为可选功能，完全保护，确保常规路径零开销。</li>
 </ul>
-<h3 id="rendering">Rendering</h3>
+<h3 id="_5">渲染</h3>
 <ul>
-<li><strong>Callisto BRDF</strong> shading model: single- and dual-lobe GGX specular with specular Fresnel falloff.</li>
-<li><strong>Toon</strong> shading model, inspired by Guilty Gear.</li>
-<li><strong>HBAO+</strong> ambient occlusion.</li>
-<li><strong>Compute-based SMAA</strong>.</li>
-<li>Improved <strong>FXAA</strong> with a higher image quality option.</li>
-<li>Updated <strong>TAA</strong> for better temporal resolve.</li>
-<li><strong>DLSS 4.5</strong>, <strong>FSR 2</strong>, <strong>FSR 4</strong>, <strong>XeSS</strong>, <strong>NIS</strong> and <strong>AMD Anti-Lag 2</strong> ported and integrated.</li>
-<li>Engine-side DLSS rendering support improvements.</li>
-<li>Improved <strong>DDGI</strong>, including performance work on RT reflections.</li>
-<li><strong>SSAO fast path</strong> and a significantly cheaper SSAO.</li>
-<li><strong>TressFX</strong> hair integration.</li>
-<li>Localized IBL.</li>
-<li>Improved <strong>ACES</strong> colour reproduction.</li>
-<li>Rendering optimisations across RHI, RT direct lighting, RT shadows, geometry collections, drawing,
-  eye adaptation and shadow/light draw distance, plus AMD optimisations targeted at consoles.</li>
-<li><strong>Software occlusion</strong>, which was removed after 4.27 upstream.</li>
-<li>Nintendo Switch specialised renderer base, which UE 5.0+ removed.</li>
+<li><strong>Callisto BRDF</strong> 着色模型：单瓣和双瓣 GGX 高光，带有高光菲涅尔衰减。</li>
+<li><strong>Toon</strong> 着色模型，灵感来自《罪恶装备》。</li>
+<li><strong>HBAO+</strong> 环境光遮蔽。</li>
+<li><strong>基于计算的 SMAA</strong>.</li>
+<li>改进的 <strong>FXAA</strong>，提供更高图像质量选项。</li>
+<li>更新的 <strong>TAA</strong> ，以获得更好的时间分辨率。</li>
+<li>移植并集成了 <strong>DLSS 4.5</strong>, <strong>FSR 2</strong>, <strong>FSR 4</strong>, <strong>XeSS</strong>, <strong>NIS</strong> 和 <strong>AMD Anti-Lag 2</strong>。</li>
+<li>引擎端 DLSS 渲染支持改进。</li>
+<li>改进的 <strong>DDGI</strong>，包括对 RT 反射的性能优化。</li>
+<li><strong>SSAO 快速路径</strong>和更经济的 SSAO。</li>
+<li>集成<strong>TressFX</strong> 毛发。</li>
+<li>局部化 IBL.</li>
+<li>改进的 <strong>ACES</strong> 色彩还原。</li>
+<li>对 RHI、RT 直接光照、RT 阴影、几何体集合、绘制、人眼自适应和阴影/光照绘制距离进行了渲染优化，并针对主机进行了 AMD 优化。</li>
+<li><strong>软件遮挡</strong>功能已在 4.27 上游版本后移除。</li>
+<li>Nintendo Switch 专用渲染器基础已在 UE 5.0 及更高版本中移除。</li>
 </ul>
-<h3 id="cpu-and-core">CPU and core</h3>
+<h3 id="cpu">CPU 和核心</h3>
 <ul>
-<li>CPU optimisations for containers, friends usage, hash maps, NavMesh, volumetric clouds, the game thread,
-  the task graph, SIMD, animation systems, texture handling, streaming and audio systems.</li>
-<li>Optimised runtimes for skeletal meshes and actors.</li>
-<li>Updated classes for easier backporting of UE5 codebases (game framework and containers).</li>
-<li>Gameplay Ability System updates.</li>
-<li>Oodle updates.</li>
-<li>Modernised console systems.</li>
+<li>针对容器、好友使用、哈希映射、导航网格、体积云、游戏线程、任务图、SIMD、动画系统、纹理处理、流媒体和音频系统进行了 CPU 优化。</li>
+<li>针对骨骼网格和 Actor 进行了运行时优化。</li>
+<li>更新了类，以便更轻松地向后移植 UE5 代码库（游戏框架和容器）。</li>
+<li>游戏玩法（Gameplay）能力系统更新。</li>
+<li>Oodle 更新。</li>
+<li>现代化控制台系统。</li>
 </ul>
-<h3 id="build-tooling-and-content">Build, tooling and content</h3>
+<h3 id="_6">构建、工具和内容</h3>
 <ul>
-<li>Full merge of UE 4.27 Plus, NvRTX 4.27, NvRTX 5.0, DLSS, TressFX, FSR and AMD patches.</li>
-<li>Over <strong>300 backports</strong> from UE 5.0 through the 5.8 era.</li>
-<li>MSVC toolchain compliance up to <strong>14.50 &amp; SDK 10.0.26100 (Visual Studio 2026)</strong>.</li>
-<li>Shader compilation improvements.</li>
-<li>Debloated <strong>runtime PSOs</strong> in Shipping configuration.</li>
-<li>Editor loading improvements and editor quality-of-life backports.</li>
-<li>Project default plugin debloat.</li>
-<li>Batch tooling to produce installed engine builds and debloat the tree.</li>
-<li>Bundled plugins: FSR, Motion Symphony, Houdini, ACL, Kawaii Physics, PhysX Instanced Subsystem,
-  Splash Damage Ability System, ImGui and ImGui Tools, and others. See
-  <a href="Bundled-Plugins.md">Bundled Plugins</a>.</li>
-<li><strong>ImGui</strong> integration with benchmarking tools.</li>
-<li>Large volume of toolchain updates, C++ modernisation, faster cooking, engine fixes, resolved memory leaks
-  and stall fixes.</li>
-<li>Mobile improvements and fixes.</li>
+<li>完全合并 <a href="https://github.com/EpicGames/UnrealEngine/tree/4.27-plus">UE 4.27 Plus</a>、<a href="https://github.com/NvRTX/UnrealEngine/tree/NvRTX_Caustics-4.27">NvRTX 4.27</a>、<a href="https://github.com/NvRTX/UnrealEngine/tree/nvrtx-5.0">NvRTX 5.0</a>、<a href="https://github.com/NvRTX/UnrealEngine/tree/dlss3/sl2-4.27-dlss-plugin">DLSS</a>、<a href="https://github.com/GPUOpen-Effects/TressFX">TressFX</a>、<a href="https://github.com/GPUOpen-Effects/FidelityFX-FSR">FSR</a> 和 <a href="https://github.com/GPUOpenSoftware/UnrealEngine/tree/EngineOpt-4.24">AMD</a> 补丁。</li>
+<li>从 UE 5.0 到 5.8 时代<strong>向后移植了 300 多个</strong>功能。
+-兼容 MSVC 工具链至 <strong>14.50 和 SDK 10.0.26100（Visual Studio 2026）</strong>。</li>
+<li>改进了着色器编译。</li>
+<li>精简了发布配置中的<strong>运行时 PSO</strong>。</li>
+<li>改进了编辑器加载并移植了编辑器使用体验优化功能。</li>
+<li>精简了项目默认插件。</li>
+<li>提供批量工具来生成已安装的引擎构建并精简代码树。</li>
+<li>捆绑插件：FSR, Motion Symphony, Houdini, ACL, Kawaii Physics, PhysX Instanced Subsystem,
+  Splash Damage Ability System, ImGui 和 ImGui Tools 等。请参阅<a href="../../Plugins/Bundled-Plugins/">已捆绑的插件</a>部分。</li>
+<li><a href="https://github.com/segross/UnrealImGui">ImGui</a> 与基准测试工具集成。</li>
+<li>大量工具链更新、C++ 现代化、更快的渲染速度、引擎修复、已解决的内存泄漏和卡顿问题。</li>
+<li>移动端改进和修复。</li>
 </ul>
-<h2 id="in-progress">In progress</h2>
+<div class="admonition 笔记">
+<p class="admonition-title">笔记</p>
 <ul>
-<li>Flat UI redesign, closer to UE5's visual language.</li>
-<li>Integration of Multi-Threaded FLECS ECS library with Unreal Actors interaction.</li>
-<li>Full C++20 support.</li>
-<li>Further UE5 backport integration &mdash; roughly 1,000 backports pending promotion to release.</li>
-<li>Rendering features: improved mesh handling, GI, shading models, ambient occlusion and specular aliasing
-  handling.</li>
-<li>Further ACES upgrades, colour space, HDR handling and tonemappers.</li>
-<li>Large level optimisations.</li>
-<li>Further shader compilation improvements.</li>
-<li>CACAO ambient occlusion.</li>
-<li>PhysX Flex and Flow: GPU-accelerated particles across vendors, with AMD compute and NVIDIA CUDA paths.</li>
-<li>Tessellated water for ocean rendering, integrated into the RT scene for reflections.</li>
-<li>Improved performance for RTAO and RT shadows.</li>
-<li>Engine-level multi-threaded tick aggregation for improved instruction coherency.</li>
-<li>Core C++ library upgrades and a core engine math upgrade.</li>
-<li>Larger ray tracing rendering changes.</li>
+<li>
+<p><a href="https://github.com/NvRTX/UnrealEngine/tree/dlss3/sl2-4.27-dlss-plugin">DLSS</a>（深度学习超级采样，Deep Learning Super Sampling）是NVIDIA开发的一套AI驱动的图形渲染技术。它的核心作用简单来说就是：在游戏里，用更低的硬件性能消耗，换取接近甚至超越原生分辨率的高画质和高帧率体验。</p>
+</li>
+<li>
+<p>“运行时 PSO”指的是在游戏运行过程中，由引擎动态地生成和编译管线状态对象（Pipeline State Object，即PSO）的过程或现象</p>
+</li>
 </ul>
-<h2 id="planned">Planned</h2>
+</div>
+<h2 id="_7">进行中</h2>
 <ul>
-<li><a href="https://github.com/GPUOpenSoftware/UnrealEngine/tree/FidelityFXSPD-4.26/UnrealEngine">AMD Single Pass Downsampler</a>.</li>
-<li>Improved SSGI.</li>
-<li>Bespoke Level Editor</li>
+<li>扁平化 UI 重新设计，更贴近 UE5 的视觉语言。</li>
+<li>集成多线程 FLECS ECS 库与虚幻 Actors 交互。</li>
+<li>完全支持 C++20。</li>
+<li>进一步整合 UE5 向后移植功能——约有 1000 个向后移植功能等待发布。</li>
+<li>渲染特性：改进了网格处理、全局光照、着色模型、环境光遮蔽和镜面反射锯齿处理。</li>
+<li>进一步升级 ACES，包括色彩空间、HDR 处理和色调映射器。</li>
+<li>大规模关卡优化。</li>
+<li>进一步改进了着色器编译。</li>
+<li>CACAO 环境光遮蔽。</li>
+<li>PhysX Flex 和 Flow：跨厂商 GPU 加速粒子，支持 AMD 计算和 NVIDIA CUDA 路径。</li>
+<li>用于海洋渲染的细分曲面水体，集成到 RT 场景中以实现反射效果。</li>
+<li>提升了“光线追踪环境光遮蔽（Ray-Traced Ambient Occlusion, RTAO）” 和 RT 阴影的性能。</li>
+<li>引擎级多线程时钟聚合，提升指令一致性。</li>
+<li>核心 C++ 库升级和核心引擎数学运算升级。</li>
+<li>光线追踪渲染方面进行了重大改进。</li>
 </ul>
-<h2 id="tracking">Tracking</h2>
+<h2 id="_8">计划中</h2>
+<ul>
+<li><a href="https://github.com/GPUOpenSoftware/UnrealEngine/tree/FidelityFXSPD-4.26/UnrealEngine">AMD 单次降采样器</a>.</li>
+<li>改进的 SSGI</li>
+<li>自定义关卡编辑器</li>
+</ul>
+<h2 id="_9">跟踪</h2>
 <table>
 <thead>
 <tr>
-<th>Resource</th>
-<th>Link</th>
+<th>资源</th>
+<th>链接</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Work plan</td>
-<td><a href="https://trello.com/b/JKyBFS5X/ue-vite-physx-vite-studio-fork">Trello board</a></td>
+<td>工作计划</td>
+<td><a href="https://trello.com/b/JKyBFS5X/ue-vite-physx-vite-studio-fork">Trello 看板</a></td>
 </tr>
 <tr>
-<td>Backport tracker</td>
-<td><a href="https://github.com/users/GapingPixel/projects/1/views/1">GitHub project</a></td>
+<td>反向移植跟踪器</td>
+<td><a href="https://github.com/users/GapingPixel/projects/1/views/1">GitHub 项目</a></td>
 </tr>
 <tr>
-<td>Sample projects</td>
+<td>示例项目</td>
 <td><a href="https://github.com/ViteStudio-Tech">ViteStudio-Tech</a></td>
 </tr>
 </tbody>
 </table>
-<h2 id="see-also">See also</h2>
+<h2 id="_10">另请参阅</h2>
 <ul>
-<li><a href="../Engine-Overview/">Engine Overview</a></li>
-<li><a href="Backporting.md">Backporting Workflow</a></li>
-<li><a href="Bundled-Plugins.md">Bundled Plugins</a></li>
-<li><a href="Proposed-Plugins.md">Proposed Plugins</a></li>
+<li><a href="../Engine-Overview/">引擎概述</a></li>
+<li><a href="../../Contributing/Backporting/">反向移植工作流</a></li>
+<li><a href="../../Plugins/Bundled-Plugins/">已捆绑的插件</a></li>
+<li><a href="../../Plugins/Proposed-Plugins/">提议的插件</a></li>
 </ul>
               
             </div>

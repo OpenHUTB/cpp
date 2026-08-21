@@ -124,7 +124,7 @@
 <p><tldr></p>
 <p>
 Create a project as you normally would, then decide which ray tracing effects you actually want &mdash;
-Vite enables most of them by default. Enable <a href="DDGI-Dynamic.md">DDGI</a> with
+Vite enables most of them by default. Enable <a href="../Rendering/DDGI-Dynamic.md">DDGI</a> with
 <code>r.GlobalIllumination.ExperimentalPlugin 1</code> and pair it with
 <code>r.SSGI.Enable 1</code>.
 </p>
@@ -156,9 +156,9 @@ means an empty project costs more than a stock 4.27 one.</p>
 <p>Decide early which effects your project actually needs, because the answer shapes your entire art and
 performance budget. A stylised competitive title targeting 4K120 will typically run DDGI alone. A fidelity
 title targeting 4K60 might add ray-traced reflections and tessellation. See
-<a href="Performance-Targets.md">Performance Targets</a> for the four reference configurations Vite is tuned around.</p>
+<a href="../../EngineOverview/Performance-Targets/">Performance Targets</a> for the four reference configurations Vite is tuned around.</p>
 <p>The other set of defaults worth reading before you build much content is
-<a href="Engine-Defaults.md">Engine Default Changes</a>. Several of them change behaviour rather than just cost &mdash;
+<a href="../../Performance/Engine-Defaults/">Engine Default Changes</a>. Several of them change behaviour rather than just cost &mdash;
 most notably, overlap events are disabled by default on primitive components, and lightmap UV generation is
 off by default on import.</p>
 <h2 id="turning-features-on-from-code">Turning features on from code</h2>
@@ -178,7 +178,7 @@ off by default on import.</p>
 </code></pre></div>
 <p><code>r.GlobalIllumination.ExperimentalPlugin 1</code> enables DDGI. Running SSGI alongside it is recommended rather
 than optional: DDGI resolves world-scale bounce, SSGI fills in high-frequency contact detail that probe
-volumes are too coarse to capture. See <a href="SSGI.md">DDGI and SSGI Together</a>.</p>
+volumes are too coarse to capture. See <a href="../../Rendering/SSGI/">DDGI and SSGI Together</a>.</p>
 <p>For production, prefer setting these in configuration files rather than code, so they participate in
 scalability and can be overridden per platform:</p>
 <div class="highlight"><pre><span></span><code><span class="c1">; Config/DefaultEngine.ini</span>
@@ -199,24 +199,24 @@ what the engine can do, and a poor idea in a shipping configuration.</p>
 <li><code>r.RayTracing.Reflections 0</code> &mdash; toggle an effect at runtime and watch the delta.</li>
 </ul>
 <p>Vite also bundles ImGui-based benchmarking tools for in-editor and in-game profiling. See
-<a href="Profiling.md">Profiling and Benchmarking</a>.</p>
+<a href="../../Performance/Profiling/">Profiling and Benchmarking</a>.</p>
 <h2 id="sample-projects-worth-opening">Sample projects worth opening</h2>
 <p>Rather than building a test scene from scratch, start from one that already demonstrates the features:</p>
 <ul>
-<li><a href="Tech-Demo-Project.md">Tech Demo Project</a> &mdash; DDGI Cornell Box, Apex Destruction test bed, Apex Cloth
+<li><a href="../../ProjectsAndDemos/Tech-Demo-Project/">Tech Demo Project</a> &mdash; DDGI Cornell Box, Apex Destruction test bed, Apex Cloth
   sample and a high-end DDGI plus SSGI cave scene.</li>
-<li><a href="Abandone-Apartment.md">Abandoned Apartment</a> and <a href="Attic-Scene.md">Attic Scene</a> &mdash; NVIDIA's original
+<li><a href="../../ProjectsAndDemos/Abandone-Apartment/">Abandoned Apartment</a> and <a href="../../ProjectsAndDemos/Attic-Scene/">Attic Scene</a> &mdash; NVIDIA's original
   RTGI showcase scenes.</li>
-<li><a href="Physics-Cube-Bench.md">Physics Cube Bench</a> and <a href="400-Characters-CMC-Bench.md">400 Characters CMC Bench</a>
+<li><a href="../../ProjectsAndDemos/Physics-Cube-Bench/">Physics Cube Bench</a> and <a href="../../ProjectsAndDemos/400-Characters-CMC-Bench/">400 Characters CMC Bench</a>
   &mdash; the benchmark scenes behind the numbers quoted in this manual.</li>
 </ul>
-<p>The full list is in <a href="ProjectsAndDemos.md">Projects and Demos</a>.</p>
+<p>The full list is in <a href="../../ProjectsAndDemos/">Projects and Demos</a>.</p>
 <h2 id="see-also">See also</h2>
 <ul>
-<li><a href="Global-Illumination.md">Global Illumination</a></li>
-<li><a href="Ray-Tracing.md">Ray Tracing</a></li>
-<li><a href="Engine-Defaults.md">Engine Default Changes</a></li>
-<li><a href="Console-Variables.md">Console Variable Reference</a></li>
+<li><a href="../../Rendering/Global-Illumination/">Global Illumination</a></li>
+<li><a href="../../Rendering/Ray-Tracing/">Ray Tracing</a></li>
+<li><a href="../../Performance/Engine-Defaults/">Engine Default Changes</a></li>
+<li><a href="../../Reference/Console-Variables/">Console Variable Reference</a></li>
 <li><a href="../Migrating-From-UE5/">Migrating from Unreal Engine 5</a></li>
 </ul>
               

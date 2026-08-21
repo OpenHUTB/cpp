@@ -175,7 +175,7 @@
 <p>阅读<a href="Coding-Guidelines.md">编码指南</a>。几种常见的 C++ 模式被彻底禁止，并且在编写代码后发现的成本很高。</p>
 </li>
 <li>
-<p>检查更改是否已被覆盖。 <a href="Compile-Time-Switches.md">编译时开关</a>和<a href="Engine-Defaults.md">引擎默认更改</a>页面记录了大量现有工作。</p>
+<p>检查更改是否已被覆盖。 <a href="../Performance/Compile-Time-Switches.md">编译时开关</a>和<a href="../Performance/Engine-Defaults.md">引擎默认更改</a>页面记录了大量现有工作。</p>
 </li>
 <li>
 <p>在分支中写代码。将正在进行的工作推送到替代分支，并注明剩余内容，并让其他分叉者意识到这一点。</p>
@@ -195,7 +195,7 @@
 </li>
 <li>
 <p>性能基线</p>
-<p>更改是根据 ARM 级 ~1 GHz CPU 基准进行评估的。在桌面上进行测量并快速找到它并不能清除障碍。请参阅<a href="Performance-Targets.md">性能目标</a>。</p>
+<p>更改是根据 ARM 级 ~1 GHz CPU 基准进行评估的。在桌面上进行测量并快速找到它并不能清除障碍。请参阅<a href="../EngineOverview/Performance-Targets.md">性能目标</a>。</p>
 </li>
 <li>
 <p>版权清洁度</p>
@@ -206,19 +206,19 @@
 <p>适合 Vite 的贡献往往有一个共同的特征：</p>
 <ul>
 <li><strong>可测量。</strong> 对代表性内容的前后分析捕获胜过争论。</li>
-<li><strong>被守护。</strong> 交付中不需要的任何内容都位于<a href="Compile-Time-Switches.md">编译时开关</a> 或控制台变量后面，并且在需要花费一些代价时默认关闭。</li>
+<li><strong>被守护。</strong> 交付中不需要的任何内容都位于<a href="../../Performance/Compile-Time-Switches/">编译时开关</a> 或控制台变量后面，并且在需要花费一些代价时默认关闭。</li>
 <li><strong>范围小。</strong> 涉及一个子系统的变更是可以审查的。涉及渲染器、物理层和构建系统的更改则不然。</li>
 <li><strong>记录在案。</strong> 新的控制台变量、开关和默认值需要文档页面或现有页面中的一个部分。</li>
 </ul>
 <h2 id="_7">准备工作</h2>
-<p>请参阅<a href="Build-From-Source.md">从源代码构建</a> 和 <a href="Toolchain-Requirements.md">工具链要求</a>。请注意，引擎开发需要源构建 -<a href="Installed-Builds.md">已安装的构建</a> 无法编译引擎 C++。</p>
+<p>请参阅<a href="../../GettingStarted/Build-From-Source/">从源代码构建</a> 和 <a href="../../GettingStarted/Toolchain-Requirements/">工具链要求</a>。请注意，引擎开发需要源构建 -<a href="../../Tools/Installed-Builds/">已安装的构建</a> 无法编译引擎 C++。</p>
 <h2 id="_8">另请参阅</h2>
 <ul>
 <li><a href="../Coding-Guidelines/">编码指南</a></li>
 <li><a href="../Commit-Conventions/">提交约定</a></li>
 <li><a href="../Backporting/">向后移植</a></li>
-<li><a href="Build-From-Source.md">从源代码构建</a></li>
-<li><a href="Performance-Targets.md">性能目标</a></li>
+<li><a href="../../GettingStarted/Build-From-Source/">从源代码构建</a></li>
+<li><a href="../../EngineOverview/Performance-Targets/">性能目标</a></li>
 </ul>
               
             </div>

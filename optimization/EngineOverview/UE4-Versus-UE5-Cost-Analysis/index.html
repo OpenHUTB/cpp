@@ -152,17 +152,17 @@ The gap is not limited to rigid body simulation: it also affects physics queries
 transform propagation, which means projects that make little or no explicit use of physics simulation still
 pay a measurable CPU cost.</p>
 <p><img alt="" src="../../../img/optimization/ChaosVsPhysX3000.png" />
-<em>模拟3000个立方体，虚幻引擎5.7 Chaos帧率为33.26 FPS，对比Vite PhysX 3.4帧率为157.88 FPS。</em></p>
+<em>模拟 3000 个立方体，虚幻引擎 5.7 Chaos 帧率为 33.26 FPS，对比 PhysX 3.4帧率为157.88 FPS。</em></p>
 <p><em>3000 simulated cubes. Unreal 5.7 with Chaos (left) 33.26 FPS at a 30.07 ms frame; Vite with PhysX 3.4
 (right) 157.88 FPS at a 6.33 ms frame &mdash; a 4.7x difference in delivered frame rate.</em></p>
 <p>The practical consequence is scale. The same CPU budget buys substantially more complex cloth simulation and
-destruction under PhysX. See <a href="PhysX.md">PhysX Overview</a>.</p>
+destruction under PhysX. See <a href="../../Physics/PhysX/">PhysX Overview</a>.</p>
 <h2 id="character-movement-component">Character Movement Component</h2>
 <p>CMC has become progressively more expensive. Against Unreal Engine 5.6, version 4.27 performs 2.2&ndash;2.8x
 faster in movement and collision calculations, and that figure does not even account for PhysX's faster
 sweeps.</p>
 <p>This dominates scenes with many players or AI characters, and directly limits the feasible scale of
-simulation. The <a href="400-Characters-CMC-Bench.md">400 Characters CMC Bench</a> scene exists to measure exactly
+simulation. The <a href="../../ProjectsAndDemos/400-Characters-CMC-Bench/">400 Characters CMC Bench</a> scene exists to measure exactly
 this.</p>
 <h2 id="memory">Memory</h2>
 <p>Overall memory usage has increased with each engine iteration. In a typical multiplayer map scene, Vite uses
@@ -180,7 +180,7 @@ a persistent per-frame cost that never goes away.</p>
 far lighter.</p>
 <p>This matters disproportionately because skeletal meshes are frequently the worst CPU offenders in a shipped
 game. Vite additionally ships an optimised skeletal mesh configuration as the default &mdash; see
-<a href="Engine-Defaults.md">Engine Default Changes</a>.</p>
+<a href="../../Performance/Engine-Defaults/">Engine Default Changes</a>.</p>
 <h2 id="world-tick-and-game-thread">World tick and game thread</h2>
 <p>Newer UE5 iterations increased the general cost of the ticking systems, and made physics, Niagara and
 controller ticks heavier to run. This is a flat tax on every frame, independent of what your game does.</p>
@@ -222,8 +222,8 @@ and class sizes per version are broken out in the
 <ul>
 <li><a href="../Why-NvRTX-427/">Why NvRTX 4.27</a></li>
 <li><a href="../Performance-Targets/">Performance Targets</a></li>
-<li><a href="Engine-Defaults.md">Engine Default Changes</a></li>
-<li><a href="Profiling.md">Profiling and Benchmarking</a></li>
+<li><a href="../../Performance/Engine-Defaults/">Engine Default Changes</a></li>
+<li><a href="../../Performance/Profiling/">Profiling and Benchmarking</a></li>
 </ul>
               
             </div>

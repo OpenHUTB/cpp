@@ -197,17 +197,17 @@ visual corruption after a pull, wipe the engine-level caches:</p>
 <p>This removes <code>Engine\DerivedDataCache</code>, <code>Engine\Intermediate\Shaders</code> and <code>Engine\Saved\ShaderDebugInfo</code>.
 The engine rebuilds them on the next launch, which will take a while. Close the editor and any
 <code>ShaderCompileWorker</code> processes first, or the deletion will fail. See
-<a href="Cache-Management.md">Cache Management</a>.</p>
+<a href="../../Tools/Cache-Management/">Cache Management</a>.</p>
 <h2 id="runtime-issues-after-a-successful-build">Runtime issues after a successful build</h2>
 <h3 id="a-new-project-runs-much-slower-than-expected">A new project runs much slower than expected</h3>
 <p>Ray tracing is enabled by default in Vite, including shadows, reflections, translucency and ambient
 occlusion. This is intentional so that the features are discoverable, but it means an empty project is
 heavier than a stock 4.27 one.</p>
-<p><strong>Fix.</strong> Disable the effects you do not need. See <a href="Ray-Tracing.md">Ray Tracing</a> for the console variables.</p>
+<p><strong>Fix.</strong> Disable the effects you do not need. See <a href="../../Rendering/Ray-Tracing/">Ray Tracing</a> for the console variables.</p>
 <h3 id="gameplay-behaves-differently-from-stock-427">Gameplay behaves differently from stock 4.27</h3>
 <p>Vite changes several engine defaults for performance, and some of them affect behaviour rather than just
 frame time &mdash; overlap events are disabled by default on primitive components, for instance.</p>
-<p><strong>Fix.</strong> Read <a href="Engine-Defaults.md">Engine Default Changes</a> in full. Every changed default is listed there
+<p><strong>Fix.</strong> Read <a href="../../Performance/Engine-Defaults/">Engine Default Changes</a> in full. Every changed default is listed there
 with a link to the commit that changed it.</p>
 <h2 id="getting-help">Getting help</h2>
 <p>If none of the above applies, the <code>#support</code> channels on the
@@ -219,8 +219,8 @@ one.</p>
 <ul>
 <li><a href="../Toolchain-Requirements/">Toolchain Requirements</a></li>
 <li><a href="../Build-From-Source/">Building from Source</a></li>
-<li><a href="Cache-Management.md">Cache Management</a></li>
-<li><a href="Engine-Defaults.md">Engine Default Changes</a></li>
+<li><a href="../../Tools/Cache-Management/">Cache Management</a></li>
+<li><a href="../../Performance/Engine-Defaults/">Engine Default Changes</a></li>
 </ul>
               
             </div>
