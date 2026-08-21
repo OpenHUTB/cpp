@@ -99,7 +99,7 @@ The subject line says what changed. The body should say why, and what a reviewer
 - Anything deliberately left undone
 
 Measured impact matters. A commit prefixed `[Optimization]` with no numbers is an assertion, not a result.
-See [Profiling](Profiling.md) for how to produce a credible before-and-after.
+See [Profiling](../Performance/Profiling.md) for how to produce a credible before-and-after.
 
 ## Branches
 
@@ -130,7 +130,7 @@ Compile-time switches use the `VITE_` prefix and must be defined with a default 
 #endif
 ```
 
-Document any new switch in [Compile-Time Switches](Compile-Time-Switches.md) in the same change. A switch
+Document any new switch in [Compile-Time Switches](../Performance/Compile-Time-Switches.md) in the same change. A switch
 that is not documented will be discovered by someone debugging a console variable that silently does
 nothing &mdash; which is exactly the failure mode `VITE_RT_PSO_DEBLOAT` caused before it was written up.
 
@@ -139,4 +139,4 @@ nothing &mdash; which is exactly the failure mode `VITE_RT_PSO_DEBLOAT` caused b
 - [Contributing](Contributing.md)
 - [Coding Guidelines](Coding-Guidelines.md)
 - [Backporting](Backporting.md)
-- [Compile-Time Switches](Compile-Time-Switches.md)
+- [Compile-Time Switches](../Performance/Compile-Time-Switches.md)

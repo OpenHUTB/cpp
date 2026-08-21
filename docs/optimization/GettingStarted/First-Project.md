@@ -3,7 +3,7 @@
 <tldr>
 <p>
 Create a project as you normally would, then decide which ray tracing effects you actually want &mdash;
-Vite enables most of them by default. Enable <a href="DDGI-Dynamic.md">DDGI</a> with
+Vite enables most of them by default. Enable <a href="../Rendering/DDGI-Dynamic.md">DDGI</a> with
 <code>r.GlobalIllumination.ExperimentalPlugin 1</code> and pair it with
 <code>r.SSGI.Enable 1</code>.
 </p>
@@ -42,10 +42,10 @@ If you are opening an existing project instead, right-click the `.uproject`, cho
 Decide early which effects your project actually needs, because the answer shapes your entire art and
 performance budget. A stylised competitive title targeting 4K120 will typically run DDGI alone. A fidelity
 title targeting 4K60 might add ray-traced reflections and tessellation. See
-[Performance Targets](Performance-Targets.md) for the four reference configurations Vite is tuned around.
+[Performance Targets](../EngineOverview/Performance-Targets.md) for the four reference configurations Vite is tuned around.
 
 The other set of defaults worth reading before you build much content is
-[Engine Default Changes](Engine-Defaults.md). Several of them change behaviour rather than just cost &mdash;
+[Engine Default Changes](../Performance/Engine-Defaults.md). Several of them change behaviour rather than just cost &mdash;
 most notably, overlap events are disabled by default on primitive components, and lightmap UV generation is
 off by default on import.
 
@@ -70,7 +70,7 @@ IConsoleManager::Get().FindConsoleVariable(TEXT("r.RayTracing.MeshCaustics.Enabl
 
 `r.GlobalIllumination.ExperimentalPlugin 1` enables DDGI. Running SSGI alongside it is recommended rather
 than optional: DDGI resolves world-scale bounce, SSGI fills in high-frequency contact detail that probe
-volumes are too coarse to capture. See [DDGI and SSGI Together](SSGI.md).
+volumes are too coarse to capture. See [DDGI and SSGI Together](../Rendering/SSGI.md).
 
 For production, prefer setting these in configuration files rather than code, so they participate in
 scalability and can be overridden per platform:
@@ -97,25 +97,25 @@ Open the console with the tilde key and check a few things:
 - `r.RayTracing.Reflections 0` &mdash; toggle an effect at runtime and watch the delta.
 
 Vite also bundles ImGui-based benchmarking tools for in-editor and in-game profiling. See
-[Profiling and Benchmarking](Profiling.md).
+[Profiling and Benchmarking](../Performance/Profiling.md).
 
 ## Sample projects worth opening
 
 Rather than building a test scene from scratch, start from one that already demonstrates the features:
 
-- [Tech Demo Project](Tech-Demo-Project.md) &mdash; DDGI Cornell Box, Apex Destruction test bed, Apex Cloth
+- [Tech Demo Project](../ProjectsAndDemos/Tech-Demo-Project.md) &mdash; DDGI Cornell Box, Apex Destruction test bed, Apex Cloth
   sample and a high-end DDGI plus SSGI cave scene.
-- [Abandoned Apartment](Abandone-Apartment.md) and [Attic Scene](Attic-Scene.md) &mdash; NVIDIA's original
+- [Abandoned Apartment](../ProjectsAndDemos/Abandone-Apartment.md) and [Attic Scene](../ProjectsAndDemos/Attic-Scene.md) &mdash; NVIDIA's original
   RTGI showcase scenes.
-- [Physics Cube Bench](Physics-Cube-Bench.md) and [400 Characters CMC Bench](400-Characters-CMC-Bench.md)
+- [Physics Cube Bench](../ProjectsAndDemos/Physics-Cube-Bench.md) and [400 Characters CMC Bench](../ProjectsAndDemos/400-Characters-CMC-Bench.md)
   &mdash; the benchmark scenes behind the numbers quoted in this manual.
 
-The full list is in [Projects and Demos](ProjectsAndDemos.md).
+The full list is in [Projects and Demos](../ProjectsAndDemos.md).
 
 ## See also
 
-- [Global Illumination](Global-Illumination.md)
-- [Ray Tracing](Ray-Tracing.md)
-- [Engine Default Changes](Engine-Defaults.md)
-- [Console Variable Reference](Console-Variables.md)
+- [Global Illumination](../Rendering/Global-Illumination.md)
+- [Ray Tracing](../Rendering/Ray-Tracing.md)
+- [Engine Default Changes](../Performance/Engine-Defaults.md)
+- [Console Variable Reference](../Reference/Console-Variables.md)
 - [Migrating from Unreal Engine 5](Migrating-From-UE5.md)

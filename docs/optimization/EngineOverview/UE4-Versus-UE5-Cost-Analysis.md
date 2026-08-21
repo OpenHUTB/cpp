@@ -42,13 +42,13 @@ transform propagation, which means projects that make little or no explicit use 
 pay a measurable CPU cost.
 
 ![](../../img/optimization/ChaosVsPhysX3000.png)
-*模拟3000个立方体，虚幻引擎5.7 Chaos帧率为33.26 FPS，对比Vite PhysX 3.4帧率为157.88 FPS。*
+*模拟 3000 个立方体，虚幻引擎 5.7 Chaos 帧率为 33.26 FPS，对比 PhysX 3.4帧率为157.88 FPS。*
 
 *3000 simulated cubes. Unreal 5.7 with Chaos (left) 33.26 FPS at a 30.07 ms frame; Vite with PhysX 3.4
 (right) 157.88 FPS at a 6.33 ms frame &mdash; a 4.7x difference in delivered frame rate.*
 
 The practical consequence is scale. The same CPU budget buys substantially more complex cloth simulation and
-destruction under PhysX. See [PhysX Overview](PhysX.md).
+destruction under PhysX. See [PhysX Overview](../Physics/PhysX.md).
 
 ## Character Movement Component
 
@@ -57,7 +57,7 @@ faster in movement and collision calculations, and that figure does not even acc
 sweeps.
 
 This dominates scenes with many players or AI characters, and directly limits the feasible scale of
-simulation. The [400 Characters CMC Bench](400-Characters-CMC-Bench.md) scene exists to measure exactly
+simulation. The [400 Characters CMC Bench](../ProjectsAndDemos/400-Characters-CMC-Bench.md) scene exists to measure exactly
 this.
 
 ## Memory
@@ -84,7 +84,7 @@ far lighter.
 
 This matters disproportionately because skeletal meshes are frequently the worst CPU offenders in a shipped
 game. Vite additionally ships an optimised skeletal mesh configuration as the default &mdash; see
-[Engine Default Changes](Engine-Defaults.md).
+[Engine Default Changes](../Performance/Engine-Defaults.md).
 
 ## World tick and game thread
 
@@ -146,5 +146,5 @@ and class sizes per version are broken out in the
 
 - [Why NvRTX 4.27](Why-NvRTX-427.md)
 - [Performance Targets](Performance-Targets.md)
-- [Engine Default Changes](Engine-Defaults.md)
-- [Profiling and Benchmarking](Profiling.md)
+- [Engine Default Changes](../Performance/Engine-Defaults.md)
+- [Profiling and Benchmarking](../Performance/Profiling.md)

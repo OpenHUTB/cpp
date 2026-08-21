@@ -57,7 +57,7 @@ NvRTX 4.27 Caustics is NVIDIA's ray tracing branch of Unreal Engine 4.27.1. On t
 
 That last item matters more than it sounds. The stock 4.27 launcher DDGI plugin is a plugin; the NvRTX
 integration reaches into the ray tracing pipeline, which is what makes probe-based ray-traced reflections
-possible. See [DDGI Dynamic](DDGI-Dynamic.md).
+possible. See [DDGI Dynamic](../Rendering/DDGI-Dynamic.md).
 
 Starting from a branch that already had this work done saved the fork a very large amount of integration
 effort, and meant the ray tracing features were already validated against shipped NVIDIA sample content.
@@ -75,7 +75,7 @@ Vite is not frozen at its base. The following are fully merged:
 
 Backports are generally not straight cherry-picks. They are adapted properly to Vite codebase, 
 by engineers with several years of experience with Unreal Engine private forks. 
-[Backporting Workflow](Backporting.md) page documents the process.
+[Backporting Workflow](../Contributing/Backporting.md) page documents the process.
 
 ## The counter-argument, and the answer
 
@@ -98,6 +98,6 @@ and toolchain updates &mdash; see [Release Notes](Release-Notes.md) for what tha
 
 - [UE4 versus UE5 Cost Analysis](UE4-Versus-UE5-Cost-Analysis.md)
 - [Performance Targets](Performance-Targets.md)
-- [Ray Tracing](Ray-Tracing.md)
-- [PhysX Overview](PhysX.md)
-- [Backporting Workflow](Backporting.md)
+- [Ray Tracing](../Rendering/Ray-Tracing.md)
+- [PhysX Overview](../Physics/PhysX.md)
+- [Backporting Workflow](../Contributing/Backporting.md)

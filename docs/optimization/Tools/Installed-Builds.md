@@ -1,4 +1,4 @@
-# Installed Builds
+# 已安装的构建
 
 <tldr>
 <p>

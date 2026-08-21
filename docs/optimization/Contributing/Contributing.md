@@ -21,7 +21,7 @@ Vite的存在是因为UE 4.27可以变得又快又稳定。妥协的贡献要么
 
 1. 阅读<a href="Coding-Guidelines.md">编码指南</a>。几种常见的 C++ 模式被彻底禁止，并且在编写代码后发现的成本很高。
 
-2. 检查更改是否已被覆盖。 <a href="Compile-Time-Switches.md">编译时开关</a>和<a href="Engine-Defaults.md">引擎默认更改</a>页面记录了大量现有工作。
+2. 检查更改是否已被覆盖。 <a href="../Performance/Compile-Time-Switches.md">编译时开关</a>和<a href="../Performance/Engine-Defaults.md">引擎默认更改</a>页面记录了大量现有工作。
 
 3. 在分支中写代码。将正在进行的工作推送到替代分支，并注明剩余内容，并让其他分叉者意识到这一点。
 
@@ -39,7 +39,7 @@ Vite的存在是因为UE 4.27可以变得又快又稳定。妥协的贡献要么
 
 * 性能基线
 
-    更改是根据 ARM 级 ~1 GHz CPU 基准进行评估的。在桌面上进行测量并快速找到它并不能清除障碍。请参阅<a href="Performance-Targets.md">性能目标</a>。
+    更改是根据 ARM 级 ~1 GHz CPU 基准进行评估的。在桌面上进行测量并快速找到它并不能清除障碍。请参阅<a href="../EngineOverview/Performance-Targets.md">性能目标</a>。
 
 * 版权清洁度
 
@@ -51,18 +51,18 @@ Vite的存在是因为UE 4.27可以变得又快又稳定。妥协的贡献要么
 适合 Vite 的贡献往往有一个共同的特征：
 
 - **可测量。** 对代表性内容的前后分析捕获胜过争论。
-- **被守护。** 交付中不需要的任何内容都位于[编译时开关](Compile-Time-Switches.md) 或控制台变量后面，并且在需要花费一些代价时默认关闭。
+- **被守护。** 交付中不需要的任何内容都位于[编译时开关](../Performance/Compile-Time-Switches.md) 或控制台变量后面，并且在需要花费一些代价时默认关闭。
 - **范围小。** 涉及一个子系统的变更是可以审查的。涉及渲染器、物理层和构建系统的更改则不然。
 - **记录在案。** 新的控制台变量、开关和默认值需要文档页面或现有页面中的一个部分。
 
 ## 准备工作
 
-请参阅[从源代码构建](Build-From-Source.md) 和 [工具链要求](Toolchain-Requirements.md)。请注意，引擎开发需要源构建 -[已安装的构建](Installed-Builds.md) 无法编译引擎 C++。
+请参阅[从源代码构建](../GettingStarted/Build-From-Source.md) 和 [工具链要求](../GettingStarted/Toolchain-Requirements.md)。请注意，引擎开发需要源构建 -[已安装的构建](../Tools/Installed-Builds.md) 无法编译引擎 C++。
 
 ## 另请参阅
 
 - [编码指南](Coding-Guidelines.md)
 - [提交约定](Commit-Conventions.md)
 - [向后移植](Backporting.md)
-- [从源代码构建](Build-From-Source.md)
-- [性能目标](Performance-Targets.md)
+- [从源代码构建](../GettingStarted/Build-From-Source.md)
+- [性能目标](../EngineOverview/Performance-Targets.md)

@@ -114,7 +114,7 @@ WipeShaderCache.bat
 This removes `Engine\DerivedDataCache`, `Engine\Intermediate\Shaders` and `Engine\Saved\ShaderDebugInfo`.
 The engine rebuilds them on the next launch, which will take a while. Close the editor and any
 `ShaderCompileWorker` processes first, or the deletion will fail. See
-[Cache Management](Cache-Management.md).
+[Cache Management](../Tools/Cache-Management.md).
 
 ## Runtime issues after a successful build
 
@@ -124,14 +124,14 @@ Ray tracing is enabled by default in Vite, including shadows, reflections, trans
 occlusion. This is intentional so that the features are discoverable, but it means an empty project is
 heavier than a stock 4.27 one.
 
-**Fix.** Disable the effects you do not need. See [Ray Tracing](Ray-Tracing.md) for the console variables.
+**Fix.** Disable the effects you do not need. See [Ray Tracing](../Rendering/Ray-Tracing.md) for the console variables.
 
 ### Gameplay behaves differently from stock 4.27
 
 Vite changes several engine defaults for performance, and some of them affect behaviour rather than just
 frame time &mdash; overlap events are disabled by default on primitive components, for instance.
 
-**Fix.** Read [Engine Default Changes](Engine-Defaults.md) in full. Every changed default is listed there
+**Fix.** Read [Engine Default Changes](../Performance/Engine-Defaults.md) in full. Every changed default is listed there
 with a link to the commit that changed it.
 
 ## Getting help
@@ -146,5 +146,5 @@ one.
 
 - [Toolchain Requirements](Toolchain-Requirements.md)
 - [Building from Source](Build-From-Source.md)
-- [Cache Management](Cache-Management.md)
-- [Engine Default Changes](Engine-Defaults.md)
+- [Cache Management](../Tools/Cache-Management.md)
+- [Engine Default Changes](../Performance/Engine-Defaults.md)

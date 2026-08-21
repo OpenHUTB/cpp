@@ -43,12 +43,11 @@ title: 主页
 * [参考](./optimization/Reference/Reference.md)
 
 
-
-
 ## 参考
 
-* [引擎优化仓库 UnrealEngineVite-PhysX](https://github.com/GapingPixel/UnrealEngineVite-PhysX)
-* [UnrealEngineVite 文档](https://vitestudio-tech.github.io/UnrealEngineVite-Docs)
+* [引擎优化仓库 UnrealEngineVite-PhysX](https://github.com/GapingPixel/UnrealEngineVite-PhysX)：[UnrealEngineVite 文档](https://vitestudio-tech.github.io/UnrealEngineVite-Docs)
+* [AMD GPUOpen 引擎分支](https://github.com/GPUOpenSoftware/UnrealEngine/tree/EngineOpt-4.24)：[Unreal Engine 性能指南 - GPUOpen](https://gpuopen.com/unreal-engine/)
+* [NvRTX 4.27](https://github.com/NvRTX/UnrealEngine/tree/NvRTX_Caustics-4.27)
 
 
 

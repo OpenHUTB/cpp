@@ -101,12 +101,12 @@ Vite 是一款 NvRTX 4.27 Plus 分叉，与最新引擎开发的技术保持同�
 
 ## 资产向后移植
 
-从 UE5 向后移植*资产*是一个不同的问题，由资产降级器而不是代码处理。请参阅[从 UE5 迁移](Migration-From-UE5.md) 和 [建议的插件](Proposed-Plugins.md)。
+从 UE5 向后移植*资产*是一个不同的问题，由资产降级器而不是代码处理。请参阅[从 UE5 迁移](../GettingStarted/Migrating-From-UE5.md) 和 [建议的插件](../Plugins/Proposed-Plugins.md)。
 
 ## 另请参阅
 
 - [贡献](Contributing.md)
 - [编码指南](Coding-Guidelines.md)
 - [提交约定](Commit-Conventions.md)
-- [编译时开关](Compile-Time-Switches.md)
-- [从 UE5 迁移](Migrating-From-UE5.md)
+- [编译时开关](../Performance/Compile-Time-Switches.md)
+- [从 UE5 迁移](../GettingStarted/Migrating-From-UE5.md)

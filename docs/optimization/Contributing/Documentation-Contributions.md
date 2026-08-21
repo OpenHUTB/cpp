@@ -81,7 +81,7 @@ Inside `<tldr>`, `<note>`, `<warning>` and `<def>`, use HTML rather than Markdow
 - State the answer, then the reasoning. Not the reverse.
 - Say what something costs, not only what it does.
 - Where a feature is unavailable by default, say so at the top of the page, not in a footnote. The
-  [RTXDI](RTXDI.md) and [path tracing](Path-Tracing.md) pages are the pattern to follow.
+  [RTXDI](../Rendering/RTXDI.md) and [path tracing](../Rendering/Path-Tracing.md) pages are the pattern to follow.
 - Tables for enumerable facts, prose for explanation. Do not put explanations in table cells.
 
 ### Accuracy
@@ -124,11 +124,11 @@ If your engine change affects any of the following, update the documentation in 
 | Change | Page to update |
 |---|---|
 | New or changed console variable | The relevant feature page |
-| New `VITE_*` switch | [Compile-Time Switches](Compile-Time-Switches.md) |
-| Changed engine default | [Engine Defaults](Engine-Defaults.md) |
-| New or updated plugin | [Bundled Plugins](Bundled-Plugins.md) |
-| New tool or script | The [Tools](Tools.md) section |
-| A feature becoming unavailable in default builds | The feature's page, and [Ray Tracing](Ray-Tracing.md) if applicable |
+| New `VITE_*` switch | [Compile-Time Switches](../Performance/Compile-Time-Switches.md) |
+| Changed engine default | [Engine Defaults](../Performance/Engine-Defaults.md) |
+| New or updated plugin | [Bundled Plugins](../Plugins/Bundled-Plugins.md) |
+| New tool or script | The [Tools](../Tools/Tools.md) section |
+| A feature becoming unavailable in default builds | The feature's page, and [Ray Tracing](../Rendering/Ray-Tracing.md) if applicable |
 
 ## See also
 
