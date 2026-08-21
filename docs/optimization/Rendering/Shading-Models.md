@@ -24,7 +24,7 @@ remain available.
 
 Callisto BRDF provides single- and dual-lobe GGX specular with specular Fresnel falloff, aimed at
 characters and skin where the default lit model's single specular lobe is too crude. The
-[Callisto BRDF demo projects](Callisto-BRDF-Demos.md) show it applied to male and female character
+[Callisto BRDF demo projects](../ProjectsAndDemos/Callisto-BRDF-Demos.md) show it applied to male and female character
 surfaces.
 
 ### Pin mapping
@@ -100,7 +100,7 @@ which means it avoids the masked and translucent-only attribute compilation that
 Every shading model in use adds shader permutations, which cost compile time, PSO count and disk space.
 This is a real budget rather than a theoretical concern &mdash; permutation growth was one of the specific
 regressions Vite exists to avoid, as described in
-[UE4 versus UE5 Cost Analysis](UE4-Versus-UE5-Cost-Analysis.md).
+[UE4 versus UE5 Cost Analysis](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md).
 
 > Use the smallest set of shading models your art direction needs. A project that ships Default Lit,
 > Callisto BRDF for characters and nothing else will compile faster, have fewer PSOs and load faster than
@@ -108,13 +108,13 @@ regressions Vite exists to avoid, as described in
 >
 {style="note"}
 
-See [Shader Compilation and PSO](Shader-Compilation-And-PSO.md) for how Vite manages permutations, and note
+See [Shader Compilation and PSO](../Performance/Shader-Compilation-And-PSO.md) for how Vite manages permutations, and note
 that runtime PSOs are debloated in Shipping configuration.
 
 ## See also
 
-- [Rendering](Rendering.md)
-- [Callisto BRDF Demos](Callisto-BRDF-Demos.md)
-- [Hair Rendering](Hair-Rendering.md)
-- [Shader Compilation and PSO](Shader-Compilation-And-PSO.md)
-- [Colour Management](Color-Management.md)
+- [Rendering](./Rendering.md)
+- [Callisto BRDF Demos](../ProjectsAndDemos/Callisto-BRDF-Demos.md)
+- [Hair Rendering](./Hair-Rendering.md)
+- [Shader Compilation and PSO](../Performance/Shader-Compilation-And-PSO.md)
+- [Colour Management](./Color-Management.md)

@@ -1,4 +1,4 @@
-# Performance and Optimisation
+# 性能和优化
 
 <tldr>
 <p>
@@ -27,7 +27,7 @@ are the specification, and everything in this section exists to help you stay in
 the wrong thread. A game that is game-thread bound will not get faster if you reduce shader complexity, and
 one that is GPU bound will not get faster if you reduce actor count.
 
-**Know which target you are building for.** The [four performance targets](Performance-Targets.md) have
+**Know which target you are building for.** The [four performance targets](../EngineOverview/Performance-Targets.md) have
 different rendering configurations, and a scene that fits the 4K30 fidelity target will not fit 4K120
 stylised. Decide first.
 
@@ -41,11 +41,11 @@ render thread, GPU and specific systems in advance turns "is this too slow?" int
 ## Where Vite's performance comes from
 
 It is worth being clear that Vite's advantage over UE5 is not one optimisation. It is the absence of
-several regressions, documented in [UE4 versus UE5 Cost Analysis](UE4-Versus-UE5-Cost-Analysis.md):
-cheaper materials, [PhysX rather than Chaos](PhysX.md), lower character movement cost, smaller memory
+several regressions, documented in [UE4 versus UE5 Cost Analysis](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md):
+cheaper materials, [PhysX rather than Chaos](../Physics/PhysX.md), lower character movement cost, smaller memory
 footprint, cheaper Slate and UI, and a lighter render thread.
 
-On top of that baseline, Vite adds targeted work: the [optimised SSAO path](Ambient-Occlusion.md),
+On top of that baseline, Vite adds targeted work: the [optimised SSAO path](../Rendering/Ambient-Occlusion.md),
 [ray tracing PSO debloat](Compile-Time-Switches.md), engine tick reductions, and
 [changed defaults](Engine-Defaults.md).
 
@@ -54,7 +54,7 @@ mostly not to spend it.
 
 ## See also
 
-- [Performance Targets](Performance-Targets.md)
-- [UE4 versus UE5 Cost Analysis](UE4-Versus-UE5-Cost-Analysis.md)
-- [Rendering](Rendering.md)
-- [Physics](Physics.md)
+- [Performance Targets](../EngineOverview/Performance-Targets.md)
+- [UE4 versus UE5 Cost Analysis](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md)
+- [Rendering](../Rendering/Rendering.md)
+- [Physics](../Physics/Physics.md)

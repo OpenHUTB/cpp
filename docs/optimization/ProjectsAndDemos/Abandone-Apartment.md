@@ -19,14 +19,14 @@ options:
 
 | 方法 | 在室内的行为 |
 |---|---|
-| [静态 DDGI](DDGI-Static.md) | Baked probe data. Cheapest, and correct if nothing moves. |
-| [动态 DDGI](DDGI-Dynamic.md) | Probes update at runtime. Handles time of day and moving occluders. |
-| [SSGI](SSGI.md) | Adds contact-scale detail the probe grid cannot resolve |
+| [静态 DDGI](../Rendering/DDGI-Static.md) | Baked probe data. Cheapest, and correct if nothing moves. |
+| [动态 DDGI](../Rendering/DDGI-Dynamic.md) | Probes update at runtime. Handles time of day and moving occluders. |
+| [SSGI](../Rendering/SSGI.md) | Adds contact-scale detail the probe grid cannot resolve |
 | Per-pixel ray-traced GI | Reference quality, unaffordable at frame rate, and compiled out by default |
 
 The realistic answer for most interiors is DDGI plus SSGI. DDGI supplies the low-frequency bounce and SSGI
 fills in the detail near contacts and in corners. See
-[Global Illumination](Global-Illumination.md).
+[Global Illumination](../Rendering/Global-Illumination.md).
 
 ## What to look at
 
@@ -34,15 +34,15 @@ fills in the detail near contacts and in corners. See
   to wall thickness. Interiors are full of thin walls, so this is where to tune probe density.
 - **Corner darkening.** Compare DDGI alone against DDGI with SSGI enabled. The difference concentrates in
   corners and at contacts.
-- **Ambient occlusion choice.** [HBAO+ versus the optimised SSAO path](Ambient-Occlusion.md) is most
+- **Ambient occlusion choice.** [HBAO+ versus the optimised SSAO path](../Rendering/Ambient-Occlusion.md) is most
   visible in cluttered interiors.
 - **Ray-traced reflections.** Interior surfaces reflect a great deal of off-screen geometry, which is
   exactly the case screen-space reflections cannot handle.
 
 ## 另请参阅
 
-- [全局照明](Global-Illumination.md)
-- [动态 DDGI](DDGI-Dynamic.md)
-- [SSGI](SSGI.md)
-- [环境遮蔽](Ambient-Occlusion.md)
-- [阁楼场景](Attic-Scene.md)
+- [全局照明](../Rendering/Global-Illumination.md)
+- [动态 DDGI](../Rendering/DDGI-Dynamic.md)
+- [SSGI](../Rendering/SSGI.md)
+- [环境遮蔽](../Rendering/Ambient-Occlusion.md)
+- [阁楼场景](./Attic-Scene.md)

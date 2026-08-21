@@ -40,17 +40,17 @@ Then narrow it down:
 | `stat anim` | Animation evaluation cost, usually the second contributor |
 | `stat physics` | Collision query cost from movement sweeps |
 
-See [Profiling](Profiling.md).
+See [Profiling](../Performance/Profiling.md).
 
 ## 这对 Vite 为什么重要
 
 Game thread cost is where UE 4.27 has a structural advantage over UE5, and it is central to
-[Vite's rationale](Why-NvRTX-427.md). The base cost of core classes, the tick pipeline and the movement
+[Vite's rationale](../EngineOverview/Why-NvRTX-427.md). The base cost of core classes, the tick pipeline and the movement
 component are all lighter in 4.27, and Vite trims them further &mdash; see
-[Engine Defaults](Engine-Defaults.md) for the specific changes.
+[Engine Defaults](../Performance/Engine-Defaults.md) for the specific changes.
 
 The relevant comparison numbers are in
-[UE4 versus UE5 Cost Analysis](UE4-Versus-UE5-Cost-Analysis.md).
+[UE4 versus UE5 Cost Analysis](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md).
 
 ## 在自己的项目中减少 CMC 消耗
 
@@ -62,12 +62,12 @@ If this benchmark's shape matches your bottleneck:
 - **Budget 动画。** The Animation Budget Allocator plugin is stock 4.27 and directly targets this.
 - **考虑不使用 CMC.** For crowds that do not need networked prediction, a simpler custom movement
   path avoids most of the cost.
-- **考虑 ECS.** For very large entity counts, the bundled [Flecs ECS](Bundled-Plugins.md) integration
+- **考虑 ECS.** For very large entity counts, the bundled [Flecs ECS](../Plugins/Bundled-Plugins.md) integration
   sidesteps actor-per-entity overhead entirely.
 
 ## 另请参阅
 
-- [性能目标](Performance-Targets.md)
-- [性能分析](Profiling.md)
-- [UE4 和 UE5 的消耗对比分析](UE4-Versus-UE5-Cost-Analysis.md)
-- [引擎默认](Engine-Defaults.md)
+- [性能目标](../EngineOverview/Performance-Targets.md)
+- [性能分析](../Performance/Profiling.md)
+- [UE4 和 UE5 的消耗对比分析](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md)
+- [引擎默认](../Performance/Engine-Defaults.md)

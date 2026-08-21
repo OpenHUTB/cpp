@@ -15,7 +15,7 @@
 | C++ 游戏代码 | 迁移      | Vite 向后移植了许多 UE5 API；见下文 |
 | 游戏能力系统 | 迁移      | Vite 包括从 UE5 反向移植的 GAS 更新 |
 | Nanite | 没有等同的  | 编写常规 LOD；使用[细分曲面](../Rendering/Tessellation.md)获取表面细节 |
-| 流明 | 替换       | 使用 [DDGI](../Reference/DDGI-Dynamic.md)，可选择与 [SSGI](../Rendering/SSGI.md) 一起使用 |
+| 流明 | 替换       | 使用 [DDGI](../Rendering/DDGI-Dynamic.md)，可选择与 [SSGI](../Rendering/SSGI.md) 一起使用 |
 | 虚拟阴影贴图 | 没有等同的  | 级联阴影贴图，或[光线追踪阴影](../Rendering/RT-Shadows-And-Ambient-Occlusion.md) |
 | TSR | 替换       | [DLSS, FSR, XeSS](../Rendering/Upscalers.md), or native with [SMAA](../Rendering/Anti-Aliasing.md) |
 | MegaLights | 替换       | [RTXDI](../Rendering/RTXDI.md) |

@@ -3,7 +3,7 @@
 <tldr>
 <p>
 Vite bundles DLSS 4.5, DLSS Frame Generation, FSR2, FSR 4, XeSS 3, NIS &mdash;. They are <b>optional headroom</b>, not the rendering plan. Vite's
-<a href="Performance-Targets.md">performance targets</a> are met at native resolution without any of them.
+<a href="../EngineOverview/Performance-Targets.md">performance targets</a> are met at native resolution without any of them.
 </p>
 </tldr>
 
@@ -44,7 +44,7 @@ entry that has to be tested.
 |---|---|
 | PC release, broad hardware support | DLSS + FSR 4. Covers NVIDIA and AMD; XeSS if Intel Arc matters to you. |
 | NVIDIA-focused, ray tracing heavy | DLSS with Ray Reconstruction |
-| Anti-aliasing quality at native resolution | DLAA (part of the DLSS plugin), or Vite's [SMAA](Anti-Aliasing.md) |
+| Anti-aliasing quality at native resolution | DLAA (part of the DLSS plugin), or Vite's [SMAA](./Anti-Aliasing.md) |
 | No upscaling, native only | Ship nothing from this page. This is a valid and supported configuration. |
 
 DLAA is worth calling out separately. It is DLSS's neural network applied at native resolution rather than
@@ -55,11 +55,11 @@ both and let the player choose.
 ## Ray Reconstruction
 
 Ray Reconstruction replaces the hand-tuned denoisers for ray-traced effects with a neural denoiser. In a
-Vite project this interacts directly with the [ray tracing](Ray-Tracing.md) configuration:
+Vite project this interacts directly with the [ray tracing](./Ray-Tracing.md) configuration:
 
-- It can substantially improve [RT reflection](RT-Reflections.md) and [RTXDI](RTXDI.md) quality under
+- It can substantially improve [RT reflection](./RT-Reflections.md) and [RTXDI](./RTXDI.md) quality under
   motion, where hand-tuned denoisers struggle.
-- It has no benefit for [DDGI](DDGI-Dynamic.md), which is noise-free by construction and has nothing to
+- It has no benefit for [DDGI](./DDGI-Dynamic.md), which is noise-free by construction and has nothing to
   denoise.
 
 If your ray tracing configuration is DDGI-led, Ray Reconstruction buys you less than it would in a
@@ -105,7 +105,7 @@ It also adds:
 
 The switch is defined in `Engine/Source/Runtime/Core/Public/Misc/CoreDefines.h` and defaults to off, since
 it costs frame time and only matters for projects that ship with upscaling enabled. See
-[Compile-Time Switches](Compile-Time-Switches.md) for how to change it.
+[Compile-Time Switches](../Performance/Compile-Time-Switches.md) for how to change it.
 
 ## Enabling an upscaler
 
@@ -119,15 +119,15 @@ it costs frame time and only matters for projects that ship with upscaling enabl
     </step>
     <step>Expose quality mode as a player setting rather than forcing one. Include an off state.</step>
     <step>
-        Test the interaction with your <a href="Anti-Aliasing.md">anti-aliasing</a> setting. DLSS replaces
+        Test the interaction with your <a href="./Anti-Aliasing.md">anti-aliasing</a> setting. DLSS replaces
         the anti-aliasing pass; leaving SMAA enabled alongside it wastes frame time.
     </step>
 </procedure>
 
 ## See also
 
-- [Anti-Aliasing](Anti-Aliasing.md)
-- [Performance Targets](Performance-Targets.md)
-- [Ray Tracing](Ray-Tracing.md)
-- [Bundled Plugins](Bundled-Plugins.md)
-- [Compile-Time Switches](Compile-Time-Switches.md)
+- [Anti-Aliasing](./Anti-Aliasing.md)
+- [Performance Targets](../EngineOverview/Performance-Targets.md)
+- [Ray Tracing](./Ray-Tracing.md)
+- [Bundled Plugins](../Plugins/Bundled-Plugins.md)
+- [Compile-Time Switches](../Performance/Compile-Time-Switches.md)

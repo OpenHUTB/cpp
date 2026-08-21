@@ -11,8 +11,8 @@ integrated by hand.
 
 | 主题 | 覆盖内容 |
 |---|---|
-| [已捆绑的插件](Bundled-Plugins.md) | Everything Vite adds on top of stock 4.27, with versions and enablement state |
-| [提议的插件](Proposed-Plugins.md) | 候选集成并推荐的外部插件 |
+| [已捆绑的插件](./Bundled-Plugins.md) | Everything Vite adds on top of stock 4.27, with versions and enablement state |
+| [提议的插件](./Proposed-Plugins.md) | 候选集成并推荐的外部插件 |
 
 ## 插件生效的位置
 
@@ -51,12 +51,12 @@ Or add it to your `.uproject` directly:
 
 <note>
 Enabling a plugin adds its shader permutations, modules and startup cost to every build. Enable what you
-use; leave the rest off. See <a href="Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a>.
+use; leave the rest off. See <a href="../Performance/Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a>.
 </note>
 
 ## 插件和 debloating
 
-The [debloat suite](Debloat-Guide.md) can strip plugins from the engine tree using
+The [debloat suite](../Performance/Debloat-Guide.md) can strip plugins from the engine tree using
 `ExcludedPlugins.txt`. That list is aggressive and includes plugins many projects genuinely need &mdash;
 `GameplayAbilities`, `ApexDestruction`, `HairStrands` and the NVIDIA plugins among them.
 
@@ -66,17 +66,17 @@ will not fail cleanly &mdash; assets referencing it fail to load.
 </warning>
 
 The same list is used by `LocalBuilds\CompressBuildSeparate.bat` to split plugins into their own archive,
-which is a non-destructive alternative. See [Installed Builds](Installed-Builds.md).
+which is a non-destructive alternative. See [Installed Builds](../Tools/Installed-Builds.md).
 
 ## 添加自己的插件
 
 Project plugins go in `<Project>\Plugins`, as with stock Unreal. Engine plugins that the whole team should have go in `Engine\Plugins\Runtime\VitePlugins` and require an engine rebuild and redistribution.
 
-If you want a plugin bundled with Vite, it must be compatible with 4.21&ndash;4.27. UE5-only plugins are out of scope. See [Proposed Plugins](Proposed-Plugins.md) for the criteria and the current candidate list.
+If you want a plugin bundled with Vite, it must be compatible with 4.21&ndash;4.27. UE5-only plugins are out of scope. See [Proposed Plugins](./Proposed-Plugins.md) for the criteria and the current candidate list.
 
 ## 另请参阅
 
-- [Bundled 插件](Bundled-Plugins.md)
-- [提议的插件](Proposed-Plugins.md)
-- [Debloat 指南](Debloat-Guide.md)
-- [Upscalers](Upscalers.md)
+- [Bundled 插件](./Bundled-Plugins.md)
+- [提议的插件](./Proposed-Plugins.md)
+- [Debloat 指南](../Performance/Debloat-Guide.md)
+- [Upscalers](../Rendering/Upscalers.md)

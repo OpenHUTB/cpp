@@ -25,7 +25,7 @@ actors and no per-object components.
 | Component | `UPhysXInstancedStaticMeshComponent` |
 | Author | NordVader Inc. |
 
-See the [PhysX Instanced Subsystem demo](PhysX-Instanced-Subsystem.md) for a working project.
+See the [PhysX Instanced Subsystem demo](../ProjectsAndDemos/PhysX-Instanced-Subsystem.md) for a working project.
 
 ## Core concepts
 
@@ -238,7 +238,7 @@ handles.
 ## See also
 
 - [PhysX](PhysX.md)
-- [PhysX Instanced Subsystem demo](PhysX-Instanced-Subsystem.md)
-- [Destruction and Cloth](Destruction-And-Cloth.md)
-- [Physics Cube Bench](Physics-Cube-Bench.md)
-- [Profiling](Profiling.md)
+- [PhysX Instanced Subsystem demo](../ProjectsAndDemos/PhysX-Instanced-Subsystem.md)
+- [Destruction and Cloth](./Destruction-And-Cloth.md)
+- [Physics Cube Bench](../ProjectsAndDemos/Physics-Cube-Bench.md)
+- [Profiling](../Performance/Profiling.md)

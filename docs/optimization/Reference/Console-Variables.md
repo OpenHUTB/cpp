@@ -11,7 +11,7 @@ full set.
 <warning>
 Several ray tracing variables in this list are <b>compiled out</b> in a default build. They will set
 successfully and render nothing. Availability is noted per variable; see
-<a href="Compile-Time-Switches.md">Compile-Time Switches</a>.
+<a href="../Performance/Compile-Time-Switches.md">Compile-Time Switches</a>.
 </warning>
 
 Set variables at runtime in the console, or persistently in `Config\DefaultEngine.ini`:
@@ -28,8 +28,8 @@ These do not exist in stock UE 4.27.
 
 | Variable | Default | Purpose |
 |---|---|---|
-| `r.Vite.SMAA.Mode` | 1 | SMAA quality. 0 = Low, 1 = High. See [Anti-Aliasing](Anti-Aliasing.md). |
-| `r.Vite.SSAO` | &mdash; | Vite's optimised SSAO path. See [Ambient Occlusion](Ambient-Occlusion.md). |
+| `r.Vite.SMAA.Mode` | 1 | SMAA quality. 0 = Low, 1 = High. See [Anti-Aliasing](../Rendering/Anti-Aliasing.md). |
+| `r.Vite.SSAO` | &mdash; | Vite's optimised SSAO path. See [Ambient Occlusion](../Rendering/Ambient-Occlusion.md). |
 | `r.AntiAliasing.SMAA.Debug` | &mdash; | SMAA debug visualisation |
 | `p.VitePhysXFixedTimestep.Enabled` | 0 | Enable fixed timestep physics |
 | `p.VitePhysXFixedTimestep.DeltaTime` | 1/60 | Fixed step duration in seconds |
@@ -40,20 +40,20 @@ These do not exist in stock UE 4.27.
 
 <note>
 The <code>p.VitePhysXFixedTimestep.*</code> variables require a build with
-<code>VITE_PHYSX_FIXED_TIMESTEP=1</code>. See <a href="Fixed-Timestep.md">Fixed Timestep</a>.
+<code>VITE_PHYSX_FIXED_TIMESTEP=1</code>. See <a href="../Physics/Fixed-Timestep.md">Fixed Timestep</a>.
 </note>
 
 ## Ray tracing
 
 | Variable | Default | Availability | Page |
 |---|---|---|---|
-| `r.RayTracing.Reflections` | 0 | Available | [RT Reflections](RT-Reflections.md) |
-| `r.RayTracing.Shadows` | 0 | Available | [RT Shadows and AO](RT-Shadows-And-Ambient-Occlusion.md) |
-| `r.RayTracing.AmbientOcclusion` | 0 | Available | [Ambient Occlusion](Ambient-Occlusion.md) |
-| `r.RayTracing.SkyLight` | &mdash; | Available | [Ray Tracing](Ray-Tracing.md) |
-| `r.RayTracing.GlobalIllumination` | -1 | **Compiled out** | [Global Illumination](Global-Illumination.md) |
-| `r.RayTracing.Translucency` | 0 | **Compiled out** | [RT Translucency and Caustics](RT-Translucency-And-Caustics.md) |
-| `r.RayTracing.SampledDirectLighting` | 0 | **Compiled out** | [RTXDI](RTXDI.md) |
+| `r.RayTracing.Reflections` | 0 | Available | [RT Reflections](../Rendering/RT-Reflections.md) |
+| `r.RayTracing.Shadows` | 0 | Available | [RT Shadows and AO](../Rendering/RT-Shadows-And-Ambient-Occlusion.md) |
+| `r.RayTracing.AmbientOcclusion` | 0 | Available | [Ambient Occlusion](../Rendering/Ambient-Occlusion.md) |
+| `r.RayTracing.SkyLight` | &mdash; | Available | [Ray Tracing](../Rendering/Ray-Tracing.md) |
+| `r.RayTracing.GlobalIllumination` | -1 | **Compiled out** | [Global Illumination](../Rendering/Global-Illumination.md) |
+| `r.RayTracing.Translucency` | 0 | **Compiled out** | [RT Translucency and Caustics](../Rendering/RT-Translucency-And-Caustics.md) |
+| `r.RayTracing.SampledDirectLighting` | 0 | **Compiled out** | [RTXDI](../Rendering/RTXDI.md) |
 
 A value of `-1` means the setting is driven by the post-process volume rather than the console variable.
 
@@ -68,7 +68,7 @@ A value of `-1` means the setting is driven by the post-process volume rather th
 | `r.RayTracing.PreGather` | Pre-gather pass control |
 
 Culling settings are among the most effective ray tracing performance levers, and Vite changes some of
-their defaults &mdash; see [Engine Defaults](Engine-Defaults.md).
+their defaults &mdash; see [Engine Defaults](../Performance/Engine-Defaults.md).
 
 ### Sky light
 
@@ -112,7 +112,7 @@ The ones worth knowing first:
 | `r.RayTracing.SampledLighting.Denoiser` | &mdash; | Denoiser selection |
 | `r.RayTracing.SampledLighting.DebugMode` | &mdash; | Debug visualisation |
 
-See [RTXDI](RTXDI.md).
+See [RTXDI](../Rendering/RTXDI.md).
 
 ### Caustics
 
@@ -125,7 +125,7 @@ and both are compiled out by default. Related variables:
 | `r.ParallelCausticsMap` | Parallel caustics map rendering |
 | `r.PathTracing.ApproximateCaustics` | Approximate caustics in the path tracer |
 
-See [RT Translucency and Caustics](RT-Translucency-And-Caustics.md).
+See [RT Translucency and Caustics](../Rendering/RT-Translucency-And-Caustics.md).
 
 ## Global illumination
 
@@ -140,8 +140,8 @@ See [RT Translucency and Caustics](RT-Translucency-And-Caustics.md).
 | `r.RTXGI.DDGI.StatVolume` | Per-volume statistics |
 | `r.RTXGI.MemoryUsed` | Report DDGI memory usage |
 
-The RTXGI plugin is enabled by default. See [Dynamic DDGI](DDGI-Dynamic.md) and
-[Global Illumination](Global-Illumination.md).
+The RTXGI plugin is enabled by default. See [Dynamic DDGI](../Rendering/DDGI-Dynamic.md) and
+[Global Illumination](../Rendering/Global-Illumination.md).
 
 ## Ambient occlusion
 
@@ -157,7 +157,7 @@ HBAO+ has additional per-volume settings in the post-process volume: power expon
 
 <note>
 The <code>r.HBAO.Enable</code> help text describes HBAO+ as DX11-only. This is out of date; there is a
-working D3D12 implementation. See <a href="Ambient-Occlusion.md">Ambient Occlusion</a>.
+working D3D12 implementation. See <a href="../Rendering/Ambient-Occlusion.md">Ambient Occlusion</a>.
 </note>
 
 ## Tessellation
@@ -166,7 +166,7 @@ working D3D12 implementation. See <a href="Ambient-Occlusion.md">Ambient Occlusi
 |---|---|---|
 | `r.TessellationAdaptivePixelsPerTriangle` | 48.0 | Global tessellation factor multiplier. Lower means more triangles. |
 
-See [Tessellation](Tessellation.md).
+See [Tessellation](../Rendering/Tessellation.md).
 
 ## Hair
 
@@ -176,7 +176,7 @@ See [Tessellation](Tessellation.md).
 | `r.TressFX.Interoplation.FrustumCulling` | Frustum culling for interpolation. Default 1. |
 | `r.TressFX.MorphTargetMeshVisualization` | Morph target mesh visualisation |
 
-See [Hair Rendering](Hair-Rendering.md).
+See [Hair Rendering](../Rendering/Hair-Rendering.md).
 
 ## Volumetric fog
 
@@ -188,7 +188,7 @@ See [Hair Rendering](Hair-Rendering.md).
 <note>
 <code>r.VolumetricFog.UseUpScaledSizeVolumetricFog</code> only exists in builds with
 <code>VITE_DLSS_PATCH=1</code>. It exists to fix volumetric fog resolution when upscaling. See
-<a href="Upscalers.md">Upscalers</a>.
+<a href="../Rendering/Upscalers.md">Upscalers</a>.
 </note>
 
 ## Profiling
@@ -209,7 +209,7 @@ Standard Unreal, but worth having in one place:
 | `recompileshaders changed` | Recompile modified shaders |
 | `recompileshaders global` | Recompile global shaders |
 
-See [Profiling](Profiling.md).
+See [Profiling](../Performance/Profiling.md).
 
 ## Finding variables yourself
 
@@ -227,7 +227,7 @@ behaviour and help text disagree, the source is authoritative.
 
 ## See also
 
-- [Compile-Time Switches](Compile-Time-Switches.md)
-- [Engine Defaults](Engine-Defaults.md)
-- [Profiling](Profiling.md)
-- [Glossary](Glossary.md)
+- [Compile-Time Switches](../Performance/Compile-Time-Switches.md)
+- [Engine Defaults](../Performance/Engine-Defaults.md)
+- [Profiling](../Performance/Profiling.md)
+- [Glossary](../Reference/Glossary.md)

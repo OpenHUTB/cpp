@@ -46,14 +46,14 @@ The enforced toolchain is not the same as the toolchain Vite is currently develo
 Visual Studio 2026 with MSVC 14.50 and Windows SDK 10.0.26100. The assistant's check has not been updated.
 <p>
 If you are on the newer toolchain, the check will fail. Build through
-<a href="Build-From-Source.md">the manual path</a> or use the individual menu options rather than the
-guided flow. See <a href="Toolchain-Requirements.md">Toolchain Requirements</a>.
+<a href="../GettingStarted/Build-From-Source.md">the manual path</a> or use the individual menu options rather than the
+guided flow. See <a href="../GettingStarted/Toolchain-Requirements.md">Toolchain Requirements</a>.
 </p>
 </warning>
 
 The .NET Framework 4.5 reference assemblies are the component people most often lack, since recent Visual
 Studio installers no longer offer them by default. See
-[Build Troubleshooting](Build-Troubleshooting.md).
+[Build Troubleshooting](../GettingStarted/Build-Troubleshooting.md).
 
 ## Step 2 &mdash; dependency setup
 
@@ -83,8 +83,8 @@ costs bandwidth, disk space and setup time. If you later need a platform, re-run
 | Binary Installed Build | Incremental BuildGraph run producing `LocalBuilds\Engine\Windows` plus `UE_ViteFork.7z` |
 
 Choose source if you are working on the engine or want to modify
-[compile-time switches](Compile-Time-Switches.md). Choose binary if you want a redistributable engine to
-hand to people who do not need to compile it. See [Installed Builds](Installed-Builds.md).
+[compile-time switches](../Performance/Compile-Time-Switches.md). Choose binary if you want a redistributable engine to
+hand to people who do not need to compile it. See [Installed Builds](./Installed-Builds.md).
 
 ## Steps 6 and 7 &mdash; registration and shortcut
 
@@ -105,7 +105,7 @@ Optionally runs the debloat assistant, offering:
 | Move to a recovery folder | Restorable later. Destination is `ViteDebloat_Moved` next to the engine folder. Recommended. |
 | Delete permanently | Smallest footprint, not reversible |
 
-Full detail in the [Debloat Guide](Debloat-Guide.md).
+Full detail in the [Debloat Guide](../Performance/Debloat-Guide.md).
 
 ## Menu mode
 
@@ -139,8 +139,8 @@ rebuilding after a pull, does not need the whole nine-step flow.
 
 ## See also
 
-- [Build from Source](Build-From-Source.md)
-- [Toolchain Requirements](Toolchain-Requirements.md)
-- [Installed Builds](Installed-Builds.md)
-- [Build Troubleshooting](Build-Troubleshooting.md)
-- [Debloat Guide](Debloat-Guide.md)
+- [Build from Source](../GettingStarted/Build-From-Source.md)
+- [Toolchain Requirements](../GettingStarted/Toolchain-Requirements.md)
+- [Installed Builds](./Installed-Builds.md)
+- [Build Troubleshooting](../GettingStarted/Build-Troubleshooting.md)
+- [Debloat Guide](../Performance/Debloat-Guide.md)

@@ -33,10 +33,10 @@ Engine\Build\BatchFiles\RunUAT.bat BuildGraph
 ```
 
 The configuration is Win64-only with Development and Shipping game configurations, matching Vite's
-[platform focus](Platforms.md). `WithDDC=false` skips derived data cache generation, which shortens the
+[platform focus](../Platforms/Platforms.md). `WithDDC=false` skips derived data cache generation, which shortens the
 build considerably at the cost of first-launch shader compilation for the end user.
 
-You can also reach this through [ViteSetup](ViteSetup.md) &mdash; step 4, binary option, or menu option 8.
+You can also reach this through [ViteSetup](./ViteSetup.md) &mdash; step 4, binary option, or menu option 8.
 The ViteSetup path is incremental; `RunUAT.bat` as shipped passes `-clean`.
 
 <note>
@@ -80,7 +80,7 @@ Outputs:
 `ExcludedPdbs.txt` lists roughly 1,100 PDB paths covering the engine modules and plugins. Debug symbols are
 a very large fraction of a source build's size, so excluding them is the single biggest packaging saving.
 
-`ExcludedPlugins.txt` is the same list used by the [debloat suite](Debloat-Guide.md). In the `Separate`
+`ExcludedPlugins.txt` is the same list used by the [debloat suite](../Performance/Debloat-Guide.md). In the `Separate`
 variants it splits plugins into their own archive rather than removing them &mdash; users extract the base
 engine and add the plugin archive only if they need it.
 
@@ -135,14 +135,14 @@ Installed builds cannot compile engine C++. Projects using them can still have t
 compile against the installed engine's headers and libraries, but engine source changes require a source
 build.
 
-This includes [compile-time switches](Compile-Time-Switches.md). If your project needs
+This includes [compile-time switches](../Performance/Compile-Time-Switches.md). If your project needs
 `VITE_RT_PSO_DEBLOAT=0` for path tracing or RTXDI, that has to be baked into the installed build at the
 time it is produced.
 
 ## See also
 
-- [ViteSetup Assistant](ViteSetup.md)
-- [Install a Binary Build](Install-Binary-Build.md)
-- [Build from Source](Build-From-Source.md)
-- [Debloat Guide](Debloat-Guide.md)
-- [Compile-Time Switches](Compile-Time-Switches.md)
+- [ViteSetup Assistant](./ViteSetup.md)
+- [Install a Binary Build](../GettingStarted/Install-Binary-Build.md)
+- [Build from Source](../GettingStarted/Build-From-Source.md)
+- [Debloat Guide](../Performance/Debloat-Guide.md)
+- [Compile-Time Switches](../Performance/Compile-Time-Switches.md)

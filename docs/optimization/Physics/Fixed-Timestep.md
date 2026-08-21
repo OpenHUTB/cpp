@@ -95,7 +95,7 @@ Vite 的固定时间步长模式将两者解耦。物理总是以相同的增量
 
 ## 另请参阅
 
-- [PhysX](PhysX.md)
+- [PhysX](./PhysX.md)
 - [编译时开关](../Performance/Compile-Time-Switches.md)
-- [实例物理子系统](Instanced-Physics.md)
+- [实例物理子系统](./Instanced-Physics.md)
 - [性能分析](../Performance/Profiling.md)

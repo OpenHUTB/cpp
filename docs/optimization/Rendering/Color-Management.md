@@ -9,14 +9,14 @@ problems.
 </tldr>
 
 Colour management is the last stage of the frame and the one that determines whether all the work done by
-the [lighting](Global-Illumination.md) and [ray tracing](Ray-Tracing.md) systems actually reaches the
+the [lighting](./Global-Illumination.md) and [ray tracing](./Ray-Tracing.md) systems actually reaches the
 display looking correct.
 
 ## The pipeline
 
 The renderer works in linear HDR throughout. At the end of the frame:
 
-1. **[SMAA](Anti-Aliasing.md)** resolves edges, in linear space, before tonemapping.
+1. **[SMAA](./Anti-Aliasing.md)** resolves edges, in linear space, before tonemapping.
 2. **Colour grading** applies the post process volume's exposure, white balance, saturation, contrast,
    gain, gamma and offset controls, plus any colour grading LUT.
 3. **Tonemapping** maps the HDR range into the display range using the ACES filmic curve.
@@ -39,7 +39,7 @@ shader, producing a cheaper permutation. If your project does not use vignette, 
 dropping the quality level costs nothing visually and saves both frame time and shader permutations.
 
 `r.Tonemapper.Sharpen` deserves care. A small amount of tonemapper sharpening can compensate for perceived
-softness, but it operates after [anti-aliasing](Anti-Aliasing.md) and will re-introduce aliasing on edges
+softness, but it operates after [anti-aliasing](./Anti-Aliasing.md) and will re-introduce aliasing on edges
 SMAA just resolved. If the image looks soft, first confirm that you are actually rendering at native
 resolution and that no upscaler is active.
 
@@ -70,7 +70,7 @@ against a neutral capture of your scene rather than against an already-graded on
 r.AllowHDR=1
 ```
 
-HDR output interacts with SMAA correctly because [SMAA runs before tonemapping](Anti-Aliasing.md) in Vite.
+HDR output interacts with SMAA correctly because [SMAA runs before tonemapping](./Anti-Aliasing.md) in Vite.
 Anti-aliasing implementations that run after the tonemapper generally have to be reworked for HDR output;
 this one does not.
 
@@ -83,9 +83,9 @@ than assuming it transfers.
 <deflist>
 <def title="The scene looks washed out or milky">
 Usually excessive ambient or fog rather than a grading problem. Check whether
-<a href="Ambient-Occlusion.md">AO</a> is being applied and whether your
-<a href="Global-Illumination.md">GI</a> intensity is too high. Compare against a
-<a href="Path-Tracing.md">path-traced</a> reference before reaching for contrast in the grade.
+<a href="./Ambient-Occlusion.md">AO</a> is being applied and whether your
+<a href="./Global-Illumination.md">GI</a> intensity is too high. Compare against a
+<a href="./Path-Tracing.md">path-traced</a> reference before reaching for contrast in the grade.
 </def>
 <def title="Colours shift between the editor viewport and packaged builds">
 Almost always a different output device or a post process volume that is not unbound. Confirm
@@ -96,14 +96,14 @@ Check <code>r.Tonemapper.GrainQuantization</code> is <code>1</code>. If banding 
 the source gradient itself may be quantised &mdash; check the sky texture or gradient material precision.
 </def>
 <def title="The image is sharp in the editor and soft in game">
-Confirm no upscaler is active. See <a href="Upscalers.md">Upscalers and Frame Generation</a>. Vite renders
+Confirm no upscaler is active. See <a href="./Upscalers.md">Upscalers and Frame Generation</a>. Vite renders
 at native resolution by default; an upscaler enabled in a game settings menu is the usual cause.
 </def>
 </deflist>
 
 ## See also
 
-- [Anti-Aliasing](Anti-Aliasing.md)
-- [Path Tracing](Path-Tracing.md)
-- [Upscalers and Frame Generation](Upscalers.md)
-- [Rendering](Rendering.md)
+- [Anti-Aliasing](./Anti-Aliasing.md)
+- [Path Tracing](./Path-Tracing.md)
+- [Upscalers and Frame Generation](./Upscalers.md)
+- [Rendering](./Rendering.md)

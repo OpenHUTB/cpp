@@ -34,7 +34,7 @@ This matters and is easy to miss.
 UE 5.1 and later NvRTX branches integrate RTXDI *into Lumen*. Vite ships the standalone implementation,
 which operates on the scene's direct lighting independently of any global illumination solution.
 
-The consequence is composability. RTXDI handles direct lighting; [DDGI](DDGI-Dynamic.md) handles indirect
+The consequence is composability. RTXDI handles direct lighting; [DDGI](./DDGI-Dynamic.md) handles indirect
 bounce; they do not need to know about each other. Enabling both still results in better performance than
 standalone hardware Lumen, while producing a less noisy image than MegaLights.
 
@@ -49,7 +49,7 @@ is the default. In such a build <code>ShouldRenderRayTracingSampledLighting()</c
 <procedure title="Enable RTXDI" id="enable-rtxdi">
     <step>
         Add <code>GlobalDefinitions.Add("VITE_RT_PSO_DEBLOAT=0");</code> to your target file and rebuild
-        the engine. See <a href="Compile-Time-Switches.md">Compile-Time Switches</a>.
+        the engine. See <a href="../Performance/Compile-Time-Switches.md">Compile-Time Switches</a>.
     </step>
     <step>
         Set the console variable:
@@ -92,13 +92,13 @@ DDGI resolves what bounced light reaches it.
 automatically the right answer.
 
 **Denoising.** RTXDI output is denoised. It is described as less noisy than MegaLights rather than noise-free
-&mdash; unlike [DDGI](DDGI-Dynamic.md), which is noise-free by construction. Under fast motion in a scene
+&mdash; unlike [DDGI](./DDGI-Dynamic.md), which is noise-free by construction. Under fast motion in a scene
 with many small bright lights, expect to spend some time on denoiser settings.
 
 ## See also
 
-- [Ray Tracing](Ray-Tracing.md)
-- [RT Shadows and Ambient Occlusion](RT-Shadows-And-Ambient-Occlusion.md)
-- [Dynamic DDGI](DDGI-Dynamic.md)
-- [Compile-Time Switches](Compile-Time-Switches.md)
-- [Performance Targets](Performance-Targets.md)
+- [Ray Tracing](./Ray-Tracing.md)
+- [RT Shadows and Ambient Occlusion](./RT-Shadows-And-Ambient-Occlusion.md)
+- [Dynamic DDGI](./DDGI-Dynamic.md)
+- [Compile-Time Switches](../Performance/Compile-Time-Switches.md)
+- [Performance Targets](../EngineOverview/Performance-Targets.md)

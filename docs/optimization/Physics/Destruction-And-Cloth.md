@@ -98,5 +98,5 @@ Apex Destruction、Apex Cloth 和 Blast 是 NVIDIA GameWorks 技术，源自 Phy
 
 - [PhysX](PhysX.md)
 - [实例化物理子系统](Instanced-Physics.md)
-- [已捆绑的插件](Bundled-Plugins.md)
-- [性能分析](Profiling.md)
+- [已捆绑的插件](../Plugins/Bundled-Plugins.md)
+- [性能分析](../Performance/Profiling.md)

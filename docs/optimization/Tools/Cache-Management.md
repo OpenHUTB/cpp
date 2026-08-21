@@ -41,7 +41,7 @@ Try <code>recompileshaders global</code> or <code>recompileshaders changed</code
 &mdash; it is far faster than a full wipe.
 </def>
 <def title="You changed a compile-time switch">
-Changing <a href="Compile-Time-Switches.md">VITE_RT_PSO_DEBLOAT</a>, <code>VITE_O_SSAO</code> or any other
+Changing <a href="../Performance/Compile-Time-Switches.md">VITE_RT_PSO_DEBLOAT</a>, <code>VITE_O_SSAO</code> or any other
 <code>VITE_*</code> switch changes which shader permutations exist. The engine rebuild handles the C++,
 but cached shaders from the old configuration can linger. Wipe after switching.
 </def>
@@ -65,10 +65,10 @@ Wiping the DDC is a heavy hammer and is frequently applied to problems it cannot
   not touch them.
 - **Runtime rendering bugs.** If an effect renders wrongly but consistently, that is a code or
   configuration problem, not a cache problem. Check the
-  [compile-time switch availability table](Ray-Tracing.md) first &mdash; many ray tracing features are
+  [compile-time switch availability table](../Rendering/Ray-Tracing.md) first &mdash; many ray tracing features are
   compiled out by default and their console variables silently do nothing.
 - **Long shader compile times.** Wiping makes this worse, not better. See
-  [Shader Compilation and PSO](Shader-Compilation-And-PSO.md).
+  [Shader Compilation and PSO](../Performance/Shader-Compilation-And-PSO.md).
 
 ## Lighter-weight alternatives
 
@@ -110,12 +110,12 @@ The engine DDC grows without bound during development. On a project that exercis
 ray-tracing permutations it can reach tens of gigabytes. Periodically wiping it is a legitimate way to
 reclaim disk space, accepting the recompile cost.
 
-If disk space is the actual concern, the [Debloat Guide](Debloat-Guide.md) covers larger and more permanent
+If disk space is the actual concern, the [Debloat Guide](../Performance/Debloat-Guide.md) covers larger and more permanent
 savings.
 
 ## See also
 
-- [Shader Compilation and PSO](Shader-Compilation-And-PSO.md)
-- [Compile-Time Switches](Compile-Time-Switches.md)
-- [Build Troubleshooting](Build-Troubleshooting.md)
-- [Debloat Guide](Debloat-Guide.md)
+- [Shader Compilation and PSO](../Performance/Shader-Compilation-And-PSO.md)
+- [Compile-Time Switches](../Performance/Compile-Time-Switches.md)
+- [Build Troubleshooting](../GettingStarted/Build-Troubleshooting.md)
+- [Debloat Guide](../Performance/Debloat-Guide.md)

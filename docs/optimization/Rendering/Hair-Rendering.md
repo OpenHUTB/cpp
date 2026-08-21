@@ -53,14 +53,14 @@ reasonable or whether large regions of render strands are being driven by too fe
 Strand hair is expensive in a way that is easy to underestimate, because the cost is split across
 simulation (compute), rendering (heavy overdraw with transparency) and shadowing. A single character with
 full TressFX hair can consume a meaningful fraction of a
-[4K60 frame budget](Performance-Targets.md).
+[4K60 frame budget](../EngineOverview/Performance-Targets.md).
 
 Practical guidance:
 
 - Budget strand hair for hero characters only. Crowd and background characters should use cards.
 - Use LODs aggressively. Strand count should drop hard with distance, and switching to cards at mid-range
   is normal.
-- Test with your actual [anti-aliasing](Anti-Aliasing.md) configuration. Thin geometry is exactly the case
+- Test with your actual [anti-aliasing](./Anti-Aliasing.md) configuration. Thin geometry is exactly the case
   where AA method matters most, and hair that looks acceptable with TAA may shimmer with SMAA.
 
 ## Groom
@@ -76,8 +76,8 @@ simulation behaviour.
 ## Interaction with ray tracing
 
 Hair and ray tracing interact poorly by default. Strand geometry generates enormous numbers of tiny
-primitives in the acceleration structure, and ray-traced [shadows](RT-Shadows-And-Ambient-Occlusion.md) and
-[reflections](RT-Reflections.md) against hair are both expensive and noisy.
+primitives in the acceleration structure, and ray-traced [shadows](./RT-Shadows-And-Ambient-Occlusion.md) and
+[reflections](./RT-Reflections.md) against hair are both expensive and noisy.
 
 Consider excluding hair from ray tracing (via the primitive's **Visible in Ray Tracing** flag) and letting
 it receive raster shadows instead. The visual difference is usually small; the performance difference is
@@ -85,7 +85,7 @@ not.
 
 ## See also
 
-- [Shading Models](Shading-Models.md)
-- [Anti-Aliasing](Anti-Aliasing.md)
-- [Bundled Plugins](Bundled-Plugins.md)
-- [Performance Targets](Performance-Targets.md)
+- [Shading Models](./Shading-Models.md)
+- [Anti-Aliasing](./Anti-Aliasing.md)
+- [Bundled Plugins](../Plugins/Bundled-Plugins.md)
+- [Performance Targets](../EngineOverview/Performance-Targets.md)

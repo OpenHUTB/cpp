@@ -38,7 +38,7 @@ why DDGI does not exhibit the boiling, ghosting and temporal instability associa
 ray-traced GI.
 
 **It is coarse.** Spatial resolution is bounded by probe spacing. Lighting detail finer than the probe grid
-does not exist in the representation. This is the reason [SSGI](SSGI.md) is recommended alongside it.
+does not exist in the representation. This is the reason [SSGI](./SSGI.md) is recommended alongside it.
 
 The per-probe depth information is what prevents light leaking through thin geometry &mdash; probes know how
 far away the nearest surface is in each direction and can reject contributions that would have to pass
@@ -59,7 +59,7 @@ reaches into the ray tracing pipeline rather than sitting alongside it. The prac
 - **Probe-based ray-traced reflections.** Reflection rays can sample probe irradiance for their secondary
   bounce instead of returning black or falling back to a cubemap. This substantially improves RT reflection
   quality and is one of the larger visual wins in the fork. See
-  [Ray-Traced Reflections](RT-Reflections.md).
+  [Ray-Traced Reflections](./RT-Reflections.md).
 - Continued optimisation work on the DDGI update path as part of each release.
 - Composition with the rest of the RT effect suite, so DDGI, RTXDI and RT reflections can all be active.
 
@@ -90,7 +90,7 @@ reaches into the ray tracing pipeline rather than sitting alongside it. The prac
         count drives both memory and per-frame ray cost.
     </step>
     <step>
-        Enable <a href="SSGI.md">SSGI</a> with <code>r.SSGI.Enable 1</code> to recover the contact detail
+        Enable <a href="./SSGI.md">SSGI</a> with <code>r.SSGI.Enable 1</code> to recover the contact detail
         the probe grid cannot represent.
     </step>
     <step>
@@ -148,7 +148,7 @@ probes than open exteriors.
 
 *探针密度对比图显示了照明细节如何随探针间距变化。*
 
-*探针密度与解析出的照明细节之间的关系。在任何质量设置下，图像中都不存在比探针间距更精细的细节——这就是 [SSGI](SSGI.md) 的作用所在。*
+*探针密度与解析出的照明细节之间的关系。在任何质量设置下，图像中都不存在比探针间距更精细的细节——这就是 [SSGI](./SSGI.md) 的作用所在。*
 
 
 **Volume placement and count.** Several tightly-fitted volumes usually beat one large loose one. A volume
@@ -193,16 +193,16 @@ maintained by the team.
 
 ## Sample scenes
 
-- [Tech Demo Project](Tech-Demo-Project.md) &mdash; includes NVIDIA's official DDGI Cornell Box sample and a
+- [Tech Demo Project](../ProjectsAndDemos/Tech-Demo-Project.md) &mdash; includes NVIDIA's official DDGI Cornell Box sample and a
   high-end DDGI plus SSGI cave scene.
-- [Stylized Raytracing Demo](Stylized-Raytracing-Demo.md) &mdash; the 4K120 stylised target.
-- [Abandoned Apartment](Abandone-Apartment.md) and [Attic Scene](Attic-Scene.md) &mdash; NVIDIA's RTGI
+- [Stylized Raytracing Demo](../ProjectsAndDemos/Stylized-Raytracing-Demo.md) &mdash; the 4K120 stylised target.
+- [Abandoned Apartment](../ProjectsAndDemos/Abandone-Apartment.md) and [Attic Scene](../ProjectsAndDemos/Attic-Scene.md) &mdash; NVIDIA's RTGI
   showcase scenes.
 
 ## See also
 
-- [Global Illumination](Global-Illumination.md)
-- [Static DDGI](DDGI-Static.md)
-- [SSGI](SSGI.md)
-- [Ray-Traced Reflections](RT-Reflections.md)
-- [Performance Targets](Performance-Targets.md)
+- [Global Illumination](./Global-Illumination.md)
+- [Static DDGI](./DDGI-Static.md)
+- [SSGI](./SSGI.md)
+- [Ray-Traced Reflections](./RT-Reflections.md)
+- [Performance Targets](../EngineOverview/Performance-Targets.md)

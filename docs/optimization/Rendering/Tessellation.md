@@ -86,8 +86,8 @@ to zero at boundaries.
 
 Displaced geometry participates in ray tracing correctly, which is a meaningful advantage over the
 parallax-mapping alternatives. A parallax-occlusion-mapped brick wall looks displaced from the primary view
-but is flat to every ray-traced [reflection](RT-Reflections.md), [shadow](RT-Shadows-And-Ambient-Occlusion.md)
-and [DDGI](DDGI-Dynamic.md) probe ray. A tessellated and displaced one is genuinely displaced to all of
+but is flat to every ray-traced [reflection](./RT-Reflections.md), [shadow](./RT-Shadows-And-Ambient-Occlusion.md)
+and [DDGI](./DDGI-Dynamic.md) probe ray. A tessellated and displaced one is genuinely displaced to all of
 them.
 
 The cost is that ray tracing acceleration structures must be built for the displaced geometry, which
@@ -108,7 +108,7 @@ Tessellation is the right tool when you need real geometry. When you do not:
 
 ## See also
 
-- [Rendering](Rendering.md)
-- [Ray Tracing](Ray-Tracing.md)
-- [UE4 versus UE5 Cost Analysis](UE4-Versus-UE5-Cost-Analysis.md)
-- [Shading Models](Shading-Models.md)
+- [Rendering](./Rendering.md)
+- [Ray Tracing](./Ray-Tracing.md)
+- [UE4 versus UE5 Cost Analysis](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md)
+- [Shading Models](./Shading-Models.md)

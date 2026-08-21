@@ -3,7 +3,7 @@
 <tldr>
 <p>
 Rigid body throughput test using conventional PhysX actors. The baseline that the
-<a href="Instanced-Physics.md">instanced subsystem</a> is measured against.
+<a href="../Physics/Instanced-Physics.md">instanced subsystem</a> is measured against.
 </p>
 </tldr>
 
@@ -32,7 +32,7 @@ count and they grow differently:
 | PhysX solver | Bodies actually in contact and awake |
 | Actor and component overhead | Total body count, whether or not anything is moving |
 
-The second one is what the [PhysX Instanced Subsystem](Instanced-Physics.md) eliminates. Comparing this
+The second one is what the [PhysX Instanced Subsystem](../Physics/Instanced-Physics.md) eliminates. Comparing this
 benchmark against the [instanced subsystem demo](PhysX-Instanced-Subsystem.md) shows the difference
 directly.
 
@@ -52,15 +52,15 @@ and the instanced path is the answer.
 ## PhysX versus Chaos
 
 Vite retains PhysX rather than migrating to Chaos. On this class of workload PhysX is the faster and more
-predictable solver, which is part of why. See [PhysX](PhysX.md).
+predictable solver, which is part of why. See [PhysX](../Physics/PhysX.md).
 
 If you need frame-rate-independent determinism from this kind of simulation, Vite's optional
-[fixed timestep](Fixed-Timestep.md) applies &mdash; it requires rebuilding with
+[fixed timestep](../Physics/Fixed-Timestep.md) applies &mdash; it requires rebuilding with
 `VITE_PHYSX_FIXED_TIMESTEP=1`.
 
 ## See also
 
-- [PhysX](PhysX.md)
-- [Instanced Physics](Instanced-Physics.md)
-- [Fixed Timestep](Fixed-Timestep.md)
-- [Profiling](Profiling.md)
+- [PhysX](../Physics/PhysX.md)
+- [Instanced Physics](../Physics/Instanced-Physics.md)
+- [Fixed Timestep](../Physics/Fixed-Timestep.md)
+- [Profiling](../Performance/Profiling.md)

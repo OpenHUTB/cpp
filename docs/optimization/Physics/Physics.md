@@ -242,13 +242,13 @@ the lower-overhead native integration path; it is not a matched Chaos-versus-Phy
 
 ## Reference workloads
 
-- [Physics Cube Bench](Physics-Cube-Bench.md) — in-engine rigid-body throughput
-- [PhysX Instanced Subsystem demo](PhysX-Instanced-Subsystem.md) — instanced simulation at scale
-- [400 Characters CMC Bench](400-Characters-CMC-Bench.md) — character movement and physics-query cost
+- [Physics Cube Bench](../ProjectsAndDemos/Physics-Cube-Bench.md) — in-engine rigid-body throughput
+- [PhysX Instanced Subsystem demo](../ProjectsAndDemos/PhysX-Instanced-Subsystem.md) — instanced simulation at scale
+- [400 Characters CMC Bench](../ProjectsAndDemos/400-Characters-CMC-Bench.md) — character movement and physics-query cost
 
 ## See also
 
-- [PhysX](PhysX.md)
-- [UE4 versus UE5 Cost Analysis](UE4-Versus-UE5-Cost-Analysis.md)
-- [Performance Targets](Performance-Targets.md)
-- [Profiling](Profiling.md)
+- [PhysX](./PhysX.md)
+- [UE4 versus UE5 Cost Analysis](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md)
+- [Performance Targets](../EngineOverview/Performance-Targets.md)
+- [Profiling](../Performance/Profiling.md)

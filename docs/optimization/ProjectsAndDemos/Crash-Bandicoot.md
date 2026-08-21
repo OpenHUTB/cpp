@@ -21,10 +21,10 @@ It is useful for two things:
 
 - **Gameplay-shaped profiling.** A real level has a frame cost profile that a lighting scene does not:
   actor ticks, animation, collision queries and gameplay logic competing with rendering. That is the shape
-  most projects actually have. See [Profiling](Profiling.md).
+  most projects actually have. See [Profiling](../Performance/Profiling.md).
 - **Demonstrating 4.x sufficiency.** Stylized platformers are precisely the genre where UE5's headline
   features add cost without adding much, and where 4.27's lower base cost is the better trade. See
-  [Why NvRTX 4.27](Why-NvRTX-427.md).
+  [Why NvRTX 4.27](../EngineOverview/Why-NvRTX-427.md).
 
 ## Version note
 
@@ -34,7 +34,7 @@ conversion. Expect to resolve some asset and API differences; the 4.26 to 4.27 g
 </note>
 
 This is a much easier conversion than coming from UE5, which requires the Asset Downgrader &mdash; see
-[Migrating from UE5](Migrating-From-UE5.md).
+[Migrating from UE5](../GettingStarted/Migrating-From-UE5.md).
 
 ## Licensing
 
@@ -44,6 +44,6 @@ its own terms.
 
 ## See also
 
-- [Profiling](Profiling.md)
-- [Why NvRTX 4.27](Why-NvRTX-427.md)
-- [First Project](First-Project.md)
+- [Profiling](../Performance/Profiling.md)
+- [Why NvRTX 4.27](../EngineOverview/Why-NvRTX-427.md)
+- [First Project](../GettingStarted/First-Project.md)

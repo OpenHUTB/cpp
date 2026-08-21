@@ -29,7 +29,7 @@ your tree.
 | Movie Render Queue DLSS/DLAA support | 2.3.3 | &mdash; | `Runtime\Nvidia\DLSSMoviePipelineSupport` |
 
 FSR 4 uses the native ffx-api and is DX12-only. It was backported to 4.27 specifically for Vite. Full
-detail in [Upscalers](Upscalers.md).
+detail in [Upscalers](../Rendering/Upscalers.md).
 
 ## 光线追踪和渲染
 
@@ -41,8 +41,8 @@ detail in [Upscalers](Upscalers.md).
 | NVIDIA Ansel | &mdash; | &mdash; | `Runtime\Nvidia\Ansel` |
 | Graphics Card Info Utilities | 1.0 | Off | `Runtime\Nvidia\GraphicsCardInfoUtils` |
 
-RTXGI provides the DDGI implementation that is Vite's recommended dynamic GI solution. NRD/ReLAX denoises ray-traced output. Both being on by default is deliberate: they are the basis of Vite's recommended lighting setup. See [Global Illumination](Global-Illumination.md) and
-[Dynamic DDGI](DDGI-Dynamic.md).
+RTXGI provides the DDGI implementation that is Vite's recommended dynamic GI solution. NRD/ReLAX denoises ray-traced output. Both being on by default is deliberate: they are the basis of Vite's recommended lighting setup. See [Global Illumination](../Rendering/Global-Illumination.md) and
+[Dynamic DDGI](../Rendering/DDGI-Dynamic.md).
 
 ## 头发
 
@@ -52,7 +52,7 @@ RTXGI provides the DDGI implementation that is Vite's recommended dynamic GI sol
 | Groom (HairStrands) | 1.0 | Off | `Runtime\HairStrands` |
 
 Two independent hair systems with different authoring pipelines. See
-[Hair Rendering](Hair-Rendering.md).
+[Hair Rendering](../Rendering/Hair-Rendering.md).
 
 ## 物理和破坏
 
@@ -64,7 +64,7 @@ Two independent hair systems with different authoring pipelines. See
 | Kawaii Physics | 1.18.0 | &mdash; | `Runtime\VitePlugins\KawaiiPhysics` |
 
 Apex Destruction, Apex Cloth and PhysX Vehicles are stock 4.27 plugins that Vite retains &mdash; they were
-removed in UE5 when Chaos replaced PhysX. See [Destruction and Cloth](Destruction-And-Cloth.md).
+removed in UE5 when Chaos replaced PhysX. See [Destruction and Cloth](../Physics/Destruction-And-Cloth.md).
 
 Kawaii Physics is a UE5 secondary-motion bone solver backported to Vite. It gives hair, cloth and
 accessories physical follow-through from a single animation node, far more cheaply than a full cloth
@@ -72,7 +72,7 @@ simulation.
 
 The PhysX Instanced Subsystem manages large numbers of PhysX-backed instanced bodies through a world
 subsystem, writing poses back into ISM/HISM instance transforms rather than spawning individual actors.
-See [Instanced Physics](Instanced-Physics.md).
+See [Instanced Physics](../Physics/Instanced-Physics.md).
 
 ## Animation
 
@@ -83,7 +83,7 @@ See [Instanced Physics](Instanced-Physics.md).
 
 ACL replaces Unreal's built-in animation compression with a substantially better size/quality curve. On a
 project with a large animation set the memory saving is significant, and it is one of the cheapest wins
-available &mdash; see [Performance Targets](Performance-Targets.md).
+available &mdash; see [Performance Targets](../EngineOverview/Performance-Targets.md).
 
 Motion Symphony provides motion matching and pose matching, the Ubisoft-style approach to animation
 synthesis. It is the closest 4.27 equivalent to UE5's Motion Matching.
@@ -103,7 +103,7 @@ GAS's complexity and replication model.
 Flecs ECS is an engine-level integration of the Flecs entity component system, providing a world subsystem,
 Blueprint entity handles, an ISM-based rendering demo and optional Flecs Explorer support. It is off by
 default. Useful when actor-per-entity overhead is the bottleneck &mdash; see the
-[UE4 vs UE5 cost analysis](UE4-Versus-UE5-Cost-Analysis.md) on core class base costs.
+[UE4 vs UE5 cost analysis](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md) on core class base costs.
 
 ## Debug and profiling
 
@@ -118,7 +118,7 @@ ImGui gives you immediate-mode debug UI that works in the viewport and in standa
 debug widgets are awkward. ImGui Tools builds functional development tools on top of it.
 
 The GPA plugin integrates Intel Graphics Performance Analyzers into the editor. Automatron improves
-automated testing for C++ and Blueprints. See [Profiling](Profiling.md).
+automated testing for C++ and Blueprints. See [Profiling](../Performance/Profiling.md).
 
 ## Content and utilities
 
@@ -147,13 +147,13 @@ Only three bundled plugins are on by default:
 
 Everything else is opt-in. If a feature appears not to work, check that its plugin is enabled before
 debugging further &mdash; and for ray tracing features, check the
-[compile-time switch availability table](Ray-Tracing.md) as well.
+[compile-time switch availability table](../Rendering/Ray-Tracing.md) as well.
 
 ## See also
 
-- [Plugins](Plugins.md)
-- [Proposed Plugins](Proposed-Plugins.md)
-- [Upscalers](Upscalers.md)
-- [Hair Rendering](Hair-Rendering.md)
-- [Instanced Physics](Instanced-Physics.md)
-- [Debloat Guide](Debloat-Guide.md)
+- [Plugins](./Plugins.md)
+- [Proposed Plugins](./Proposed-Plugins.md)
+- [Upscalers](../Rendering/Upscalers.md)
+- [Hair Rendering](../Rendering/Hair-Rendering.md)
+- [Instanced Physics](../Physics/Instanced-Physics.md)
+- [Debloat Guide](../Performance/Debloat-Guide.md)

@@ -3,7 +3,7 @@
 <tldr>
 <p>
 Enabled with <code>r.RayTracing.Reflections 1</code>. Vite's reflections are heavily optimised and can
-run at 4K native 60 FPS on PS5-class hardware. When <a href="DDGI-Dynamic.md">DDGI</a> is active,
+run at 4K native 60 FPS on PS5-class hardware. When <a href="./DDGI-Dynamic.md">DDGI</a> is active,
 reflection rays sample probe irradiance for their secondary bounce, which is a large quality win.
 </p>
 </tldr>
@@ -26,7 +26,7 @@ the second most expensive ray tracing effect after per-pixel GI.
 
 Vite's reflections are capable of running at 4K native 60 FPS on a PS5-class GPU, as demonstrated by the
 Unreal Tournament Vite demo, which combines them with DDGI and tessellation. That configuration is the
-"Performance, high end" row in [Performance Targets](Performance-Targets.md).
+"Performance, high end" row in [Performance Targets](../EngineOverview/Performance-Targets.md).
 
 Further RT reflection performance work is ongoing, with the stated goal of reaching performance
 characteristics comparable to RE Engine's implementation as seen in Devil May Cry 5 Special Edition on PS5.
@@ -74,7 +74,7 @@ Vite has two ray-traced reflection implementations inherited from 4.27 and NvRTX
 newer sorted deferred path.
 
 In a default build, `VITE_RT_PSO_DEBLOAT` forces the **sorted deferred** path and compiles out the older
-one. This is the faster of the two and the one Vite's [performance targets](Performance-Targets.md) are
+one. This is the faster of the two and the one Vite's [performance targets](../EngineOverview/Performance-Targets.md) are
 measured against.
 
 Consequences worth knowing:
@@ -86,7 +86,7 @@ Consequences worth knowing:
   (`r.RayTracing.Reflections.RayTraceEnvironmentCaptures`) are compiled out.
 - Single layer water ray-traced reflections (`r.Water.SingleLayer.RTR`) are compiled out.
 
-See [Compile-Time Switches](Compile-Time-Switches.md) to restore the full set.
+See [Compile-Time Switches](../Performance/Compile-Time-Switches.md) to restore the full set.
 
 ## Reflected translucency
 
@@ -119,8 +119,8 @@ and vehicle paint &mdash; anywhere a large, smooth surface reflects something th
 
 ## See also
 
-- [Ray Tracing](Ray-Tracing.md)
-- [Dynamic DDGI](DDGI-Dynamic.md)
-- [RT Translucency and Caustics](RT-Translucency-And-Caustics.md)
-- [Compile-Time Switches](Compile-Time-Switches.md)
-- [Performance Targets](Performance-Targets.md)
+- [Ray Tracing](./Ray-Tracing.md)
+- [Dynamic DDGI](./DDGI-Dynamic.md)
+- [RT Translucency and Caustics](./RT-Translucency-And-Caustics.md)
+- [Compile-Time Switches](../Performance/Compile-Time-Switches.md)
+- [Performance Targets](../EngineOverview/Performance-Targets.md)

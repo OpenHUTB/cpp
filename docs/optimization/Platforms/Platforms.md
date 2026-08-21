@@ -26,7 +26,7 @@ test it and the fork's rendering features are unavailable or unvalidated there.
 
 Platform dependencies are opt-in at setup time.
 
-Through [ViteSetup](ViteSetup.md), choose the **Win64 + Android** or **Win64 + Linux** profile, or use the
+Through [ViteSetup](../Tools/ViteSetup.md), choose the **Win64 + Android** or **Win64 + Linux** profile, or use the
 step-by-step assistant to toggle platforms individually. **Full setup** passes no `-exclude` argument to
 `Setup.bat` and downloads everything.
 
@@ -61,33 +61,33 @@ first build if you can.
 
 Everything ray-traced needs DXR, which in Vite means DirectX 12:
 
-- [Ray-traced reflections](RT-Reflections.md), shadows, ambient occlusion and sky light
-- [动态 DDGI](DDGI-Dynamic.md) and per-pixel ray-traced GI
-- [RTXDI](RTXDI.md) and [path tracing](Path-Tracing.md), if you rebuild with `VITE_RT_PSO_DEBLOAT=0`
-- [Translucency and caustics](RT-Translucency-And-Caustics.md), same condition
+- [Ray-traced reflections](../Rendering/RT-Reflections.md), shadows, ambient occlusion and sky light
+- [动态 DDGI](../Rendering/DDGI-Dynamic.md) and per-pixel ray-traced GI
+- [RTXDI](../Rendering/RTXDI.md) and [path tracing](../Rendering/Path-Tracing.md), if you rebuild with `VITE_RT_PSO_DEBLOAT=0`
+- [Translucency and caustics](../Rendering/RT-Translucency-And-Caustics.md), same condition
 
-[FSR 4](Upscalers.md) is also DX12-only, independently of ray tracing.
+[FSR 4](../Rendering/Upscalers.md) is also DX12-only, independently of ray tracing.
 
 ### What works on DX11
 
-- [HBAO4+](Ambient-Occlusion.md) &mdash; despite the console variable help text claiming DX11-only, it has a
+- [HBAO4+](../Rendering/Ambient-Occlusion.md) &mdash; despite the console variable help text claiming DX11-only, it has a
   D3D12 implementation too
-- [SMAA](Anti-Aliasing.md)
+- [SMAA](../Rendering/Anti-Aliasing.md)
 - [SSGI](SSGI.md)
-- [Hardware tessellation](Tessellation.md)
-- The [Callisto BRDF and Toon shading models](Shading-Models.md)
+- [Hardware tessellation](../Rendering/Tessellation.md)
+- The [Callisto BRDF and Toon shading models](../Rendering/Shading-Models.md)
 
 A DX11 target is viable if you are willing to give up ray tracing. It is the right choice for a project
-whose [performance targets](Performance-Targets.md) do not leave budget for DXR.
+whose [performance targets](../EngineOverview/Performance-Targets.md) do not leave budget for DXR.
 
 ## 硬件
 
-See [System Requirements](System-Requirements.md) for development and runtime hardware.
+See [System Requirements](../GettingStarted/System-Requirements.md) for development and runtime hardware.
 
 
 ## 打包
 
-The [installed build](Installed-Builds.md) is produced with Development and Shipping game configurations
+The [installed build](../Tools/Installed-Builds.md) is produced with Development and Shipping game configurations
 for Win64. If you need other configurations or platforms, edit the `RunUAT.bat` BuildGraph arguments:
 
 ```
@@ -99,8 +99,8 @@ Each additional platform and configuration lengthens an already long build consi
 
 ## 另请参阅
 
-- [系统要求](System-Requirements.md)
-- [已安装好的构建](Installed-Builds.md)
-- [ViteSetup 助手](ViteSetup.md)
-- [光线追踪](Ray-Tracing.md)
-- [Debloat 指南](Debloat-Guide.md)
+- [系统要求](../GettingStarted/System-Requirements.md)
+- [已安装好的构建](../Tools/Installed-Builds.md)
+- [ViteSetup 助手](../Tools/ViteSetup.md)
+- [光线追踪](../Rendering/Ray-Tracing.md)
+- [精简指南](../Performance/Debloat-Guide.md)

@@ -57,9 +57,9 @@ stat slate       // UI 成本
 
 ![](../../img/optimization/400CharCMCBench.png)
 
-**物理引擎。** 另请参阅[PhysX](PhysX.md)。注意物理引擎的运行时间占游戏线程运行时间的比例。大量的模拟物体应该移动到[实例化的子系统](Instanced-Physics.md)中。
+**物理引擎。** 另请参阅[PhysX](../Physics/PhysX.md)。注意物理引擎的运行时间占游戏线程运行时间的比例。大量的模拟物体应该移动到[实例化的子系统](../Physics/Instanced-Physics.md)中。
 
-**重叠事件。** 模拟引擎默认禁用图元组件的重叠事件，正是因为它们是常见的隐藏开销。另请参阅[引擎默认设置更改](Engine-Defaults.md)。
+**重叠事件。** 模拟引擎默认禁用图元组件的重叠事件，正是因为它们是常见的隐藏开销。另请参阅[引擎默认设置更改](../Performance/Engine-Defaults.md)。
 
 **蓝图。** 蓝图虚拟机的执行速度比原生 C++ 慢。每帧的热点逻辑应该用 C++ 编写。
 

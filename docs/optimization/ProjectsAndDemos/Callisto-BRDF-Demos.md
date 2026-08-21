@@ -41,7 +41,7 @@ Smooth Terminator is the one to look at first. The hard shadow terminator on cur
 most obvious tells of a real-time character, and controlling it directly is cheaper and more predictable
 than working around it with normal map or lighting tricks.
 
-Full pin reference and authoring notes in [Shading Models](Shading-Models.md).
+Full pin reference and authoring notes in [Shading Models](../Rendering/Shading-Models.md).
 
 ## Using the demos
 
@@ -60,11 +60,11 @@ enable and no compile-time switch involved.
 <note>
 Each additional shading model in use adds shader permutations. If you only need Callisto on characters,
 use it only on characters. See
-<a href="Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a>.
+<a href="../Performance/Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a>.
 </note>
 
 ## See also
 
-- [Shading Models](Shading-Models.md)
-- [Color Management](Color-Management.md)
-- [Hair Rendering](Hair-Rendering.md)
+- [Shading Models](../Rendering/Shading-Models.md)
+- [Color Management](../Rendering/Color-Management.md)
+- [Hair Rendering](../Rendering/Hair-Rendering.md)

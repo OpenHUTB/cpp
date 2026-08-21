@@ -35,7 +35,7 @@ on shadow maps. This is by far the most effective optimisation available and it 
 **Maximum distance.** Bounding shadow ray distance limits cost in large scenes.
 
 Vite includes rendering optimisations specifically targeting RT shadows and RT direct lighting, and further
-performance work on RTAO and RT shadows is in progress. See [Release Notes](Release-Notes.md).
+performance work on RTAO and RT shadows is in progress. See [Release Notes](../EngineOverview/Release-Notes.md).
 
 ## Ray-traced ambient occlusion
 
@@ -62,13 +62,13 @@ Before committing frame time to either effect, know what you are buying relative
 |---|---|---|
 | RT shadows | Cascaded shadow maps | Much cheaper. Resolution artefacts, no correct contact hardening, cascade transitions. |
 | RT shadows | Distance field shadows | Cheap soft shadows. Approximate, needs mesh distance fields. |
-| RTAO | [SSAO fast path](Ambient-Occlusion.md) | Dramatically cheaper. Screen-space artefacts. Vite's implementation is significantly optimised. |
-| RTAO | [HBAO+](Ambient-Occlusion.md) | Higher quality than SSAO at moderate cost. DirectX 11 only. |
+| RTAO | [SSAO fast path](./Ambient-Occlusion.md) | Dramatically cheaper. Screen-space artefacts. Vite's implementation is significantly optimised. |
+| RTAO | [HBAO+](./Ambient-Occlusion.md) | Higher quality than SSAO at moderate cost. DirectX 11 only. |
 
 In practice, most Vite projects targeting 60 FPS or above run cascaded shadow maps and either the SSAO fast
-path or HBAO+, and spend the ray tracing budget on [DDGI](DDGI-Dynamic.md) and
-[reflections](RT-Reflections.md) instead. Only the 1440p30 "Fidelity, full RT" target in
-[Performance Targets](Performance-Targets.md) enables both RT shadows and RTAO.
+path or HBAO+, and spend the ray tracing budget on [DDGI](./DDGI-Dynamic.md) and
+[reflections](./RT-Reflections.md) instead. Only the 1440p30 "Fidelity, full RT" target in
+[Performance Targets](../EngineOverview/Performance-Targets.md) enables both RT shadows and RTAO.
 
 Note that Vite's SSAO has both a fast path and a memory-access optimisation. It is much cheaper than the
 stock 4.27 implementation, which shifts the calculus further away from RTAO than you might expect from
@@ -88,7 +88,7 @@ frequently the single largest ray tracing cost in the frame, ahead of reflection
 
 ## See also
 
-- [Ray Tracing](Ray-Tracing.md)
-- [Ambient Occlusion](Ambient-Occlusion.md)
-- [RTXDI](RTXDI.md)
-- [Performance Targets](Performance-Targets.md)
+- [Ray Tracing](./Ray-Tracing.md)
+- [Ambient Occlusion](./Ambient-Occlusion.md)
+- [RTXDI](./RTXDI.md)
+- [Performance Targets](../EngineOverview/Performance-Targets.md)

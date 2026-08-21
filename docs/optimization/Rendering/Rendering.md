@@ -3,9 +3,9 @@
 <tldr>
 <p>
 Vite's renderer is a deferred SM5 renderer with an engine-agnostic DXR ray tracing pipeline. Global
-illumination is <a href="DDGI-Dynamic.md">DDGI</a> rather than Lumen, geometric detail is
-<a href="Tessellation.md">tessellation</a> rather than Nanite, and anti-aliasing defaults to native
-resolution with <a href="Anti-Aliasing.md">SMAA</a> rather than temporal reconstruction.
+illumination is <a href="./DDGI-Dynamic.md">DDGI</a> rather than Lumen, geometric detail is
+<a href="./Tessellation.md">tessellation</a> rather than Nanite, and anti-aliasing defaults to native
+resolution with <a href="./Anti-Aliasing.md">SMAA</a> rather than temporal reconstruction.
 </p>
 </tldr>
 
@@ -21,11 +21,11 @@ particular lighting solution, which is what allows DDGI, RTXDI and the various R
 enabled independently.
 
 That is the opposite of the UE 5.1+ arrangement, where ray tracing scene construction is coupled to Lumen,
-Nanite and GPU Scene. See [Why NvRTX 4.27](Why-NvRTX-427.md).
+Nanite and GPU Scene. See [Why NvRTX 4.27](../EngineOverview/Why-NvRTX-427.md).
 
 > Vite enables Ray Tracing effects by default in new projects. This is intentional for
 > discoverability but means you should consciously decide what to turn off. See
-> [Ray Tracing](Ray-Tracing.md).
+> [Ray Tracing](./Ray-Tracing.md).
 >
 {style="warning"}
 
@@ -33,37 +33,37 @@ Nanite and GPU Scene. See [Why NvRTX 4.27](Why-NvRTX-427.md).
 
 ### Global illumination
 
-- [Global Illumination](Global-Illumination.md) &mdash; choosing between the available GI solutions
-- [Dynamic DDGI](DDGI-Dynamic.md) &mdash; real-time ray-traced irradiance probe volumes
-- [Static DDGI](DDGI-Static.md) &mdash; baked probe volumes with near-instant bake times
-- [SSGI](SSGI.md) &mdash; screen-space GI, and why it belongs alongside DDGI
+- [Global Illumination](./Global-Illumination.md) &mdash; choosing between the available GI solutions
+- [Dynamic DDGI](./DDGI-Dynamic.md) &mdash; real-time ray-traced irradiance probe volumes
+- [Static DDGI](./DDGI-Static.md) &mdash; baked probe volumes with near-instant bake times
+- [SSGI](./SSGI.md) &mdash; screen-space GI, and why it belongs alongside DDGI
 
 ### Ray tracing
 
-- [Ray Tracing](Ray-Tracing.md) &mdash; overview and the master switches
-- [Ray-Traced Reflections](RT-Reflections.md)
-- [Ray-Traced Shadows and Ambient Occlusion](RT-Shadows-And-Ambient-Occlusion.md)
-- [光线追踪半透明和焦散](RT-Translucency-And-Caustics.md)
-- [RTXDI](RTXDI.md) &mdash; ray-traced direct lighting for many-light scenes
-- [Path Tracing](Path-Tracing.md)
+- [Ray Tracing](./Ray-Tracing.md) &mdash; overview and the master switches
+- [Ray-Traced Reflections](./RT-Reflections.md)
+- [Ray-Traced Shadows and Ambient Occlusion](./RT-Shadows-And-Ambient-Occlusion.md)
+- [光线追踪半透明和焦散](./RT-Translucency-And-Caustics.md)
+- [RTXDI](./RTXDI.md) &mdash; ray-traced direct lighting for many-light scenes
+- [Path Tracing](./Path-Tracing.md)
 
 ### Surface and geometry
 
-- [Shading Models](Shading-Models.md) &mdash; including Callisto BRDF and Toon
-- [Tessellation](Tessellation.md)
-- [Hair Rendering](Hair-Rendering.md) &mdash; TressFX
+- [Shading Models](./Shading-Models.md) &mdash; including Callisto BRDF and Toon
+- [Tessellation](./Tessellation.md)
+- [Hair Rendering](./Hair-Rendering.md) &mdash; TressFX
 
 ### Image quality
 
-- [Anti-Aliasing](Anti-Aliasing.md) &mdash; SMAA, FXAA, TAA and MSAA
-- [Upscalers and Frame Generation](Upscalers.md) &mdash; DLSS, FSR, XeSS, NIS
-- [Ambient Occlusion](Ambient-Occlusion.md) &mdash; SSAO fast path and HBAO+
-- [Colour Management](Color-Management.md) &mdash; ACES, tonemapping and HDR output
+- [Anti-Aliasing](./Anti-Aliasing.md) &mdash; SMAA, FXAA, TAA and MSAA
+- [Upscalers and Frame Generation](./Upscalers.md) &mdash; DLSS, FSR, XeSS, NIS
+- [Ambient Occlusion](./Ambient-Occlusion.md) &mdash; SSAO fast path and HBAO+
+- [Colour Management](./Color-Management.md) &mdash; ACES, tonemapping and HDR output
 
 ## Choosing a rendering configuration
 
 The right starting point depends on your performance target. These are the configurations behind the four
-targets in [Performance Targets](Performance-Targets.md).
+targets in [Performance Targets](../EngineOverview/Performance-Targets.md).
 
 | Target | GI | Reflections | Shadows | AO             | Geometry | AA          |
 |---|---|---|---|----------------|---|-------------|
@@ -75,11 +75,11 @@ targets in [Performance Targets](Performance-Targets.md).
 
 Every one of these is a starting point, not a prescription. The console variables for each are documented
 on the corresponding pages and collected in the
-[Console Variable Reference](Console-Variables.md).
+[Console Variable Reference](../Reference/Console-Variables.md).
 
 ## See also
 
-- [Performance Targets](Performance-Targets.md)
-- [Profiling and Benchmarking](Profiling.md)
-- [Shader Compilation and PSO](Shader-Compilation-And-PSO.md)
-- [Console Variable Reference](Console-Variables.md)
+- [Performance Targets](../EngineOverview/Performance-Targets.md)
+- [Profiling and Benchmarking](../Performance/Profiling.md)
+- [Shader Compilation and PSO](../Performance/Shader-Compilation-And-PSO.md)
+- [Console Variable Reference](../Reference/Console-Variables.md)

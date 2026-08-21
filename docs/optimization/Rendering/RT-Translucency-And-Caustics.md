@@ -17,12 +17,12 @@ and water caustics all have their shader permutations removed when <code>VITE_RT
 <code>1</code>, which is the default. Their console variables will set successfully and render nothing.
 <p>
 Rebuild with <code>VITE_RT_PSO_DEBLOAT=0</code> to use them. See
-<a href="Compile-Time-Switches.md">Compile-Time Switches</a>.
+<a href="../Performance/Compile-Time-Switches.md">Compile-Time Switches</a>.
 </p>
 </warning>
 
 These are the most expensive effects in the ray tracing suite, and none of them fit inside Vite's
-[performance targets](Performance-Targets.md) at 4K. They are documented here because the NvRTX lineage
+[performance targets](../EngineOverview/Performance-Targets.md) at 4K. They are documented here because the NvRTX lineage
 provides them and some projects will want them for cinematics, marketing captures or specific set pieces.
 
 > All code and art assets of the RTX features inherited from the NvRTX Caustics branch are covered by the
@@ -264,8 +264,8 @@ NVIDIA provides project files and packaged demos for these features:
 
 Specific scenes: the POV-Ray Glasses scene for heavy refraction, a prism dispersion demonstration, the
 Swimming Pool scene for water caustics, and the Office scene mixing particles, reflections, refractions,
-mesh caustics and RTGI. See also [Abandoned Apartment](Abandone-Apartment.md) and
-[Attic Scene](Attic-Scene.md) in this manual.
+mesh caustics and RTGI. See also [Abandoned Apartment](../ProjectsAndDemos/Abandone-Apartment.md) and
+[Attic Scene](../ProjectsAndDemos/Attic-Scene.md) in this manual.
 
 
 ![](../../img/optimization/RTOfficeScene.jpg)
@@ -277,7 +277,7 @@ mesh caustics and RTGI. See also [Abandoned Apartment](Abandone-Apartment.md) an
 
 ## See also
 
-- [Ray Tracing](Ray-Tracing.md)
-- [RT Reflections](RT-Reflections.md)
-- [Upscalers and Frame Generation](Upscalers.md)
-- [Console Variable Reference](Console-Variables.md)
+- [Ray Tracing](./Ray-Tracing.md)
+- [RT Reflections](./RT-Reflections.md)
+- [Upscalers and Frame Generation](./Upscalers.md)
+- [Console Variable Reference](../Reference/Console-Variables.md)

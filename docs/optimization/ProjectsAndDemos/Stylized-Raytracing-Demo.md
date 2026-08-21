@@ -26,12 +26,12 @@ Specifically:
 
 | Ray-traced feature | What it gives stylized work |
 |---|---|
-| [Reflections](RT-Reflections.md) | Reflections of off-screen geometry, which screen-space reflections cannot produce |
-| [Shadows](RT-Shadows-And-Ambient-Occlusion.md) | Contact-accurate shadows without shadow map resolution and bias tuning |
-| [DDGI](DDGI-Dynamic.md) | Colour bleed that reinforces a limited palette rather than fighting it |
-| [Ambient occlusion](Ambient-Occlusion.md) | Grounded contact without the halos screen-space AO produces |
+| [Reflections](../Rendering/RT-Reflections.md) | Reflections of off-screen geometry, which screen-space reflections cannot produce |
+| [Shadows](../Rendering/RT-Shadows-And-Ambient-Occlusion.md) | Contact-accurate shadows without shadow map resolution and bias tuning |
+| [DDGI](../Rendering/DDGI-Dynamic.md) | Colour bleed that reinforces a limited palette rather than fighting it |
+| [Ambient occlusion](../Rendering/Ambient-Occlusion.md) | Grounded contact without the halos screen-space AO produces |
 
-Combining ray-traced lighting with the [Toon shading model](Shading-Models.md) is well supported in Vite
+Combining ray-traced lighting with the [Toon shading model](../Rendering/Shading-Models.md) is well supported in Vite
 &mdash; Toon is one of the custom shading models the fork adds.
 
 ## What to look at
@@ -51,14 +51,14 @@ caustics, RTXDI, path tracing and per-pixel ray-traced GI are <b>compiled out</b
 <code>VITE_RT_PSO_DEBLOAT</code>, which defaults to <code>1</code>.
 <p>
 If a console variable from that second group appears to do nothing, this is why. See
-<a href="Ray-Tracing.md">Ray Tracing</a> and
-<a href="Compile-Time-Switches.md">Compile-Time Switches</a>.
+<a href="../Rendering/Ray-Tracing.md">Ray Tracing</a> and
+<a href="../Performance/Compile-Time-Switches.md">Compile-Time Switches</a>.
 </p>
 </warning>
 
 ## See also
 
-- [Ray Tracing](Ray-Tracing.md)
-- [Shading Models](Shading-Models.md)
-- [Dynamic DDGI](DDGI-Dynamic.md)
-- [Compile-Time Switches](Compile-Time-Switches.md)
+- [Ray Tracing](../Rendering/Ray-Tracing.md)
+- [Shading Models](../Rendering/Shading-Models.md)
+- [Dynamic DDGI](../Rendering/DDGI-Dynamic.md)
+- [Compile-Time Switches](../Performance/Compile-Time-Switches.md)

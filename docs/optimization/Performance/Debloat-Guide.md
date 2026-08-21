@@ -120,7 +120,7 @@ STRIP=FeaturePacks\StarterContent.upack
 #STRIP=Samples\RTXGI_Test
 ```
 
-根据精简策略，初始内容已被移除。默认情况下，分支特定的测试样本会被保留——特别是 `RTXGI_Test`，它在验证 [DDGI](DDGI-Dynamic.md) 时非常有用。
+根据精简策略，初始内容已被移除。默认情况下，分支特定的测试样本会被保留——特别是 `RTXGI_Test`，它在验证 [DDGI](../Rendering/DDGI-Dynamic.md) 时非常有用。
 
 树中不存在的条目会被跳过并显示一条通知，这不会造成任何影响。
 
@@ -132,7 +132,7 @@ STRIP=FeaturePacks\StarterContent.upack
 #PLUGIN_LIST=ExcludedPlugins.txt
 ```
 
-`ExcludedPlugins.txt` 文件列出了大约 200 个引擎插件路径，涵盖移动和 XR 平台、除您当前使用的源代码控制提供商之外的其他源代码控制提供商、Chaos 插件（由于 Vite 使用 [PhysX](PhysX.md)，因此无需列出）、企业和虚拟生产工具，以及大量实验性插件。
+`ExcludedPlugins.txt` 文件列出了大约 200 个引擎插件路径，涵盖移动和 XR 平台、除您当前使用的源代码控制提供商之外的其他源代码控制提供商、Chaos 插件（由于 Vite 使用 [PhysX](../Physics/PhysX.md)，因此无需列出）、企业和虚拟生产工具，以及大量实验性插件。
 
 
 系统首先会在脚本目录下查找该文件，然后在引擎根目录下查找。
@@ -140,7 +140,7 @@ STRIP=FeaturePacks\StarterContent.upack
 
 !!! 警告
 
-    启用此渲染通道前，请阅读 `ExcludedPlugins.txt` 文件。该文件包含您的项目可能需要的插件条目，例如 `Engine/Plugins/Runtime/GameplayAbilities/`、`Engine/Plugins/Runtime/ApexDestruction/`、`Engine/Plugins/Runtime/HairStrands/`、`Engine/Plugins/Runtime/Nvidia/`（包含 [DLSS 和 Streamline 插件](Upscalers.md)）以及 `Engine/Plugins/Runtime/PhysXVehicles/`。
+启用此渲染通道前，请阅读 `ExcludedPlugins.txt` 文件。该文件包含您的项目可能需要的插件条目，例如 `Engine/Plugins/Runtime/GameplayAbilities/`、`Engine/Plugins/Runtime/ApexDestruction/`、`Engine/Plugins/Runtime/HairStrands/`、`Engine/Plugins/Runtime/Nvidia/`（包含 [DLSS 和 Streamline 插件](../Rendering/Upscalers.md)）以及 `Engine/Plugins/Runtime/PhysXVehicles/`。
 
     运行此渲染通道前，请注释掉您使用的所有插件对应的行。
 
@@ -181,11 +181,11 @@ STRIP=FeaturePacks\StarterContent.upack
 
 精简插件可以减少磁盘占用空间，并通过插件阶段缩短构建时间。但它**不会**提高运行时性能——即使插件存在但已禁用，运行时也不会消耗任何资源。
 
-有关运行时性能，请参阅[性能分析](Profiling.md)和[引擎默认更改](Engine-Defaults.md)。关于构建时间，移除添加的 Vite 插件可以在 15 分钟的完整构建过程中节省大约 3 分钟；请参阅[着色器编译和PSO](Shader-Compilation-And-PSO.md)。
+有关运行时性能，请参阅[性能分析](../Performance/Profiling.md)和[引擎默认更改](../Performance/Engine-Defaults.md)。关于构建时间，移除添加的 Vite 插件可以在 15 分钟的完整构建过程中节省大约 3 分钟；请参阅[着色器编译和PSO](../Performance/Shader-Compilation-And-PSO.md)。
 
 ## 另请参阅
 
-- [从源代码构建](Build-From-Source.md)
-- [引擎默认设置更改](Engine-Defaults.md)
-- [捆绑插件](Bundled-Plugins.md)
-- [缓存管理](Cache-Management.md)
+- [从源代码构建](../GettingStarted/Build-From-Source.md)
+- [引擎默认设置更改](../Performance/Engine-Defaults.md)
+- [捆绑插件](../Plugins/Bundled-Plugins.md)
+- [缓存管理](../Tools/Cache-Management.md)

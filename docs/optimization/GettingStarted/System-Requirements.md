@@ -1,80 +1,64 @@
-# System Requirements
+# 系统要求
 
-<tldr>
-<p>
-Windows 10 or 11 x64. A ray-tracing capable GPU is recommended but not required &mdash;
-<a href="DDGI-Static.md">Static DDGI</a> and the raster paths run on hardware with no DXR support at all.
-Dynamic DDGI is designed to scale down to GTX 1060 6&nbsp;GB class GPUs.
-</p>
-</tldr>
 
-Vite has two distinct sets of requirements: what it takes to *run* content built on the engine, and what it
-takes to *build the engine itself*. They are very different, and the second one is much heavier.
+Windows 10 或 11 x64。建议使用具有光线追踪功能的 GPU，但不是必需的 -<a href="../Rendering/DDGI-Static.md">静态 DDGI</a> 和光栅路径可以在根本不支持 DXR 的硬件上运行。动态 DDGI 旨在缩小至 GTX 1060 6 GB 级 GPU。
 
-## Running Vite content
 
-Vite is explicitly designed to scale across a wide hardware range, which is the point of choosing DDGI over
-Lumen in the first place.
+模拟引擎有两组不同的要求：“运行”在引擎上构建的内容需要什么，以及“构建引擎本身”需要什么。它们非常不同，第二个要重得多。
 
-| | Minimum                         | Recommended |
+## 运行模拟引擎的内容
+
+模拟引擎的设计明确是为了在广泛的硬件范围内扩展，这是选择 DDGI 而不是 Lumen 的首要目的。
+
+| | 最低要求                         | 推荐 |
 |---|---------------------------------|---|
-| OS | Windows 10 x64                  | Windows 11 x64 |
-| GPU (no ray tracing) | Any DirectX 11 capable GPU      | &mdash; |
-| GPU (Dynamic DDGI) | GTX 1060 6&nbsp;GB or any RDNA2 | RTX 2060 / RX 6600 or better |
-| GPU (full RT suite) | RTX 2060 / RX 6600              | RTX 3070 / RX 6700 XT or better |
-| VRAM | 6&nbsp;GB                       | 8&nbsp;GB or more |
+| 操作系统 | Windows 10 x64                  | Windows 11 x64 |
+| GPU (无光线追踪) | 任何支持 DirectX 11 的 GPU      | &mdash; |
+| GPU (动态 DDGI) | GTX 1060 6&nbsp;GB 或任何 RDNA2 | RTX 2060 /RX 6600 或更好 |
+| GPU (完整的 RT 套件) | RTX 2060 / RX 6600              | RTX 3070 / RX 6700 XT 或更好 |
+| VRAM | 6&nbsp;GB                       | 8&nbsp;GB 或更多 |
 
-Dynamic DDGI works from GTX 1060 6&nbsp;GB class GPUs upward. Below that, or on any GPU with no ray tracing
-support, use [Static DDGI](DDGI-Static.md), which bakes irradiance into probe volumes and has no runtime
-ray tracing cost.
+动态 DDGI 适用于 GTX 1060 6 GB 级 GPU 及以上。在此之下，或者在任何不支持光线追踪的 GPU 上，使用[静态 DDGI](../Rendering/DDGI-Static.md)，它将辐照度烘焙到探测体积中，并且没有运行时光线追踪成本。
 
-### Test Hardware
+### 测试硬件
 
-These are the configurations Vite is actively benchmarked and tuned against. The following Test Hardware is owned by main Devs of this fork.
+这些是模拟引擎积极进行基准测试和调整的配置。以下测试硬件由该分叉的主要开发人员拥有。
 
 
 
-| Vendor | Hardware                        | Why it matters                               |
+| 供应商 | 硬件                        | 为什么这很重要                               |
 |---|---------------------------------|----------------------------------------------|
-| AMD | RX 6700 (RDNA2)                 | Closest desktop match to PlayStation 5       |
-| AMD | Steam Deck LCD Van Gogh (RDNA2) | Handheld Class                               |
-| AMD | RX 9600XT (RDNA4)               | Mid Tier GPU                                 |
-| NVIDIA | RTX 2060 (Turing)               | Lower Bound for HW RT & DLSS                 |
-| NVIDIA | RTX 3060 (Ampere)               | Matches Steam most common GPU                |
-| NVIDIA | RTX 4080 Super (Ada Lovelace)   | Upper-bound reference for 4K native captures |
+| AMD | RX 6700 (RDNA2)                 | 与 PlayStation 5 最接近的桌面游戏       |
+| AMD | Steam Deck LCD Van Gogh (RDNA2) | 手持类                               |
+| AMD | RX 9600XT (RDNA4)               | 中级 GPU                                 |
+| NVIDIA | RTX 2060 (Turing)               | HW RT 和 DLSS 的下限                 |
+| NVIDIA | RTX 3060 (Ampere)               | 匹配 Steam 最常见的 GPU                |
+| NVIDIA | RTX 4080 Super (Ada Lovelace)   | 4K 原生捕获的上限参考 |
 
-Testing is most useful on a 4K native monitor or TV(from 6700/RTX 4060), because Vite's whole argument is about holding native
-resolution rather than upscaling from a lower internal one.
+测试在 4K 本机显示器或电视（从 6700/RTX 4060 开始）上最有用，因为引擎的整个论点是保持本机分辨率，而不是从较低的内部分辨率进行升级。
 
-If you want to showcase results in your hardware (as in from the Demos), the `#showcase` channel on Discord is where testing is coordinated.
+如果您想展示硬件中的结果（如演示中的结果），Discord 上的`#showcase`频道是协调测试的地方。
 
-## Building the engine from source
+## 从源代码构建引擎
 
-Building is CPU-, RAM- and disk-bound. Treat these as practical guidance rather than hard cutoffs.
+构建受 CPU、RAM 和磁盘限制。将这些视为实际指导而不是硬性限制。
 
-| | Practical minimum           | Comfortable                         |
+| | 实用最低限度           | 舒适                         |
 |---|-----------------------------|-------------------------------------|
-| CPU | 6 cores / 12 threads        | 16 cores / 32 threads or more       |
-| RAM | 24&nbsp;GB                  | 32&nbsp;GB                          |
-| Storage | SATA SSD with 50gb of Space | NVMe SSD 157GB of space (Full Size) |
-| OS | Windows 10 x64              | Windows 11 x64                      |
+| CPU | 6核/12线程        | 16核/32线程或更多       |
+| 内存 | 24&nbsp;GB                  | 32&nbsp;GB                          |
+| 硬盘 | 具有 50GB 空间的 SATA SSD | NVMe SSD 157GB 空间（全尺寸） |
+| 操作系统 | Windows 10 x64              | Windows 11 x64                      |
 
-An Unreal Engine 4.27 source tree with dependencies, intermediates and a built editor is very large &mdash;
-budget well over a hundred gigabytes, and more again if you produce an installed build alongside it, since
-that writes a second copy into `LocalBuilds\Engine\Windows\`. A mechanical hard drive will work but makes
-every step painful; use an SSD.
+包含依赖项、中间体和构建编辑器的虚幻引擎 4.27 源代码树非常大 -预算远超过 100 GB，如果您在其旁边生成已安装的构建，则预算会更多，因为这会将第二个副本写入“LocalBuilds\Engine\Windows\”。机械硬盘可以工作，但每一步都会很痛苦；建议使用SSD。
 
-Compile time scales almost linearly with core count. A full build on a Ryzen 9 9950X3D takes roughly
-14 minutes. You can reclaim a meaningful amount of both time and disk space by excluding platforms you do
-not target and stripping optional content &mdash; see [Debloat Guide](Debloat-Guide.md) and the setup
-presets described in [Building from Source](Build-From-Source.md).
+编译时间几乎与核心数量成线性关系。 Ryzen 9 9950X3D 的完整构建大约需要 14 分钟。您可以通过排除不针对的平台并删除可选内容来回收大量的时间和磁盘空间 -请参阅 [精简指南](../Performance/Debloat-Guide.md) 和 [从源代码构建](Build-From-Source.md) 中描述的设置预设。
 
-You also need a specific compiler and SDK. This is not optional and is covered separately in
-[Toolchain Requirements](Toolchain-Requirements.md).
+您还需要特定的编译器和 SDK。这不是可选的，在[工具链要求](Toolchain-Requirements.md) 中单独介绍。
 
-## See also
+## 参见
 
-- [Toolchain Requirements](Toolchain-Requirements.md)
-- [Building from Source](Build-From-Source.md)
-- [Platform Support](Platforms.md)
-- [Performance Targets](Performance-Targets.md)
+- [工具链要求](Toolchain-Requirements.md)
+- [从源代码构建](Build-From-Source.md)
+- [平台支持](../Platforms/Platforms.md)
+- [性能目标](../EngineOverview/Performance-Targets.md)

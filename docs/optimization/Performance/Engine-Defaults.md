@@ -101,7 +101,7 @@ and bone corrections, no longer run unless re-enabled per component.
 
 Static mesh import no longer generates lightmap UVs by default.
 
-Most Vite projects use [DDGI](DDGI-Dynamic.md) rather than baked lighting, so generating lightmap UVs for
+Most Vite projects use [DDGI](../Rendering/DDGI-Dynamic.md) rather than baked lighting, so generating lightmap UVs for
 every imported mesh is wasted import time and wasted UV channels. If your project bakes lighting, enable
 the setting in the static mesh import options.
 
@@ -201,7 +201,7 @@ See the [Debloat Guide](Debloat-Guide.md) for the tooling.
 
 ## See also
 
-- [Migrating from UE5](Migrating-From-UE5.md)
+- [Migrating from UE5](../GettingStarted/Migrating-From-UE5.md)
 - [Debloat Guide](Debloat-Guide.md)
 - [Profiling](Profiling.md)
 - [Compile-Time Switches](Compile-Time-Switches.md)

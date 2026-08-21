@@ -10,10 +10,10 @@ Vite推荐的GI设置是动态**动态漫反射全局光照**（Dynamic Diffuse 
 
 | 解决方案                          | 成本                 | 需要 DXR | 动态照明 | 最适合                                                          |
 |-----------------------------------|----------------------|---|---|-------------------------------------------------------------------|
-| [动态 DDGI](DDGI-Dynamic.md)   | 低                  | 是 | 完全动态 | 几乎所有的东西                                                 |
-| [静态 DDGI](DDGI-Static.md)     | 运行时接近于零 | No | 烘焙 | 低端和无 DXR 硬件                                       |
-| [SSGI](SSGI.md)                   | 低                  | 否 | 完全动态 | 高频细节，与 DDGI 一起运行                 |
-| [Per-pixel RT GI](Ray-Tracing.md) | 高                 | 是 | 完全动态 | GPU 比 PS5 快得多，参考                     |
+| [动态 DDGI](./DDGI-Dynamic.md)   | 低                  | 是 | 完全动态 | 几乎所有的东西                                                 |
+| [静态 DDGI](./DDGI-Static.md)     | 运行时接近于零 | No | 烘焙 | 低端和无 DXR 硬件                                       |
+| [SSGI](./SSGI.md)                   | 低                  | 否 | 完全动态 | 高频细节，与 DDGI 一起运行                 |
+| [Per-pixel RT GI](./Ray-Tracing.md) | 高                 | 是 | 完全动态 | GPU 比 PS5 快得多，参考                     |
 | 路径追踪                      | 极端主义者                | 是 | 完全动态 | RTX 5080 及以上，Ground Truth 参考                        |
 | 烘焙光照贴图                   | 运行时为零      | 否 | 仅静态 | 全静态场景，始终使用 CPU LightMass 以获得最高质量 |
 
@@ -69,7 +69,7 @@ r.GlobalIllumination.ExperimentalPlugin=1
 r.SSGI.Enable=1
 ```
 
-然后，您需要将 DDGI 体积放置在关卡中。请参阅 [动态 DDGI](DDGI-Dynamic.md) 了解体积设置、探针密度和重要的设置。
+然后，您需要将 DDGI 体积放置在关卡中。请参阅 [动态 DDGI](./DDGI-Dynamic.md) 了解体积设置、探针密度和重要的设置。
 
 ## 根据硬件配置选择合适的全局光照 (GI) 配置
 
@@ -86,8 +86,8 @@ r.SSGI.Enable=1
 
 ## 另请参阅
 
-- [动态 DDGI](DDGI-Dynamic.md)
-- [静态 DDGI](DDGI-Static.md)
-- [SSGI](SSGI.md)
-- [光线追踪](Ray-Tracing.md)
-- [性能目标](Performance-Targets.md)
+- [动态 DDGI](./DDGI-Dynamic.md)
+- [静态 DDGI](./DDGI-Static.md)
+- [SSGI](./SSGI.md)
+- [光线追踪](./Ray-Tracing.md)
+- [性能目标](../EngineOverview/Performance-Targets.md)

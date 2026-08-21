@@ -9,7 +9,7 @@ no DXR support at all.
 </tldr>
 
 Static DDGI uses the same probe volumes and the same Irradiance calculations and Octahedral representations as
-[Dynamic DDGI](DDGI-Dynamic.md), but resolves irradiance once at bake time instead of continuously at
+[Dynamic DDGI](./DDGI-Dynamic.md), but resolves irradiance once at bake time instead of continuously at
 runtime. It is the low-end and no Ray-Tracing Hardware GPU support (GTX 900/ Radeon 5000 series or older) path.
 
 <note>
@@ -45,7 +45,7 @@ This is what makes Static DDGI viable on ultra-low-end GPUs and on hardware with
 | Minimum spec has no DXR support | Static RT DDGI                               |
 | Minimum spec is very low-end but DXR capable | Dynamic RT DDGI at lower Ray Budget          |
 | Lighting is fully static (no time of day, no destructible lights) | Static DDGI is sufficient                    |
-| Lighting changes at runtime | [Dynamic RT DDGI](DDGI-Dynamic.md)           |
+| Lighting changes at runtime | [Dynamic RT DDGI](./DDGI-Dynamic.md)           |
 | Shipping across a wide hardware range | Both, switched automatically by HW detection |
 
 That last row is the common case and the reason Static DDGI is worth setting up even on a project targeting
@@ -82,11 +82,11 @@ intensity contributing bounce, no bounce from destructible geometry after it is 
 can still be fully dynamic; it is only the indirect bounce that is frozen.
 
 Probe spacing still bounds spatial resolution, so the same reasoning about contact detail applies. Combining
-with [SSGI](SSGI.md) is worthwhile here too, and SSGI has no ray tracing requirement, so it remains
+with [SSGI](./SSGI.md) is worthwhile here too, and SSGI has no ray tracing requirement, so it remains
 available on the same hardware.
 
 Note that Vite disables lightmap UV generation by default on import &mdash; see
-[Engine Default Changes](Engine-Defaults.md). If you intend to use traditional lightmaps alongside or instead
+[Engine Default Changes](../Performance/Engine-Defaults.md). If you intend to use traditional lightmaps alongside or instead
 of Static DDGI, you will need to re-enable it.
 
 <note>
@@ -98,8 +98,8 @@ and in general there won't be artifacts or crush out calculations from the GI re
 
 ## See also
 
-- [Dynamic DDGI](DDGI-Dynamic.md)
-- [Global Illumination](Global-Illumination.md)
-- [SSGI](SSGI.md)
-- [Scalability](Engine-Defaults.md)
-- [Platform Support](Platforms.md)
+- [Dynamic DDGI](./DDGI-Dynamic.md)
+- [Global Illumination](./Global-Illumination.md)
+- [SSGI](./SSGI.md)
+- [Scalability](../Performance/Engine-Defaults.md)
+- [Platform Support](../Platforms/Platforms.md)

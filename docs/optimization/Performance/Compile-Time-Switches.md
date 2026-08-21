@@ -51,7 +51,7 @@ public MyGameTarget(TargetInfo Target) : base(Target)
     <step>
         Rebuild the engine, and wipe the shader cache if you changed
         <code>VITE_RT_PSO_DEBLOAT</code> or any switch that affects shader permutations. See
-        <a href="Cache-Management.md">Cache Management</a>.
+        <a href="../Tools/Cache-Management.md">Cache Management</a>.
     </step>
 </procedure>
 
@@ -99,16 +99,16 @@ Setting the console variable will appear to succeed and the effect will not rend
 | Ray-traced sky light | Unaffected |
 | DDGI | Unaffected. DDGI is a plugin and does not go through these permutations. |
 
-The set that remains is exactly Vite's recommended configuration: [DDGI](DDGI-Dynamic.md) for indirect
-lighting, [RT reflections](RT-Reflections.md) via the deferred path, and
-[RT shadows and AO](RT-Shadows-And-Ambient-Occlusion.md). See
-[Global Illumination](Global-Illumination.md) for why DDGI is preferred over per-pixel ray-traced GI in the
+The set that remains is exactly Vite's recommended configuration: [DDGI](../Rendering/DDGI-Dynamic.md) for indirect
+lighting, [RT reflections](../Rendering/RT-Reflections.md) via the deferred path, and
+[RT shadows and AO](../Rendering/RT-Shadows-And-Ambient-Occlusion.md). See
+[Global Illumination](../Rendering/Global-Illumination.md) for why DDGI is preferred over per-pixel ray-traced GI in the
 first place &mdash; the debloat switch encodes that recommendation into the build.
 
 ### Turning it off
 
 Set `VITE_RT_PSO_DEBLOAT=0` and rebuild if you need path tracing for
-[reference imagery](Path-Tracing.md), RTXDI for a many-lights scene, or ray-traced translucency and
+[reference imagery](../Rendering/Path-Tracing.md), RTXDI for a many-lights scene, or ray-traced translucency and
 caustics.
 
 <warning>
@@ -131,7 +131,7 @@ r.Vite.SSAO 1   // optimised path
 
 Shipping builds are locked to the compile-time value; the CVar does not exist. The runtime toggle exists so
 the two paths can be A/B compared during development, which is how the optimisation was validated. There is
-no reason to turn the compile-time switch off. See [Ambient Occlusion](Ambient-Occlusion.md).
+no reason to turn the compile-time switch off. See [Ambient Occlusion](../Rendering/Ambient-Occlusion.md).
 
 ## VITE_PHYSX_FIXED_TIMESTEP
 
@@ -140,7 +140,7 @@ Off by default. Enables deterministic fixed-step PhysX simulation with render in
 
 The compile-time gate exists because the feature adds branches and double-buffered transform storage to the
 physics scene, substep task and animation physics blend. Projects with no determinism requirement should
-not pay for it. Full documentation is in [Fixed Timestep](Fixed-Timestep.md).
+not pay for it. Full documentation is in [Fixed Timestep](../Physics/Fixed-Timestep.md).
 
 ## VITE_DLSS_PATCH
 
@@ -149,7 +149,7 @@ passes so selected translucent primitives render at output resolution after upsc
 `r.VolumetricFog.UseUpScaledSizeVolumetricFog` so the fog grid can be computed from output resolution.
 
 Only relevant to projects shipping with an upscaler enabled. See
-[Upscalers and Frame Generation](Upscalers.md).
+[Upscalers and Frame Generation](../Rendering/Upscalers.md).
 
 ## VITE_NVRTX_TRANSLUCENCY_DEPTH
 
@@ -172,7 +172,7 @@ build, `r.Vite.SSAO` will not be found because it is compiled out.
 ## See also
 
 - [Shader Compilation and PSO](Shader-Compilation-And-PSO.md)
-- [Ray Tracing](Ray-Tracing.md)
-- [Fixed Timestep](Fixed-Timestep.md)
-- [Cache Management](Cache-Management.md)
-- [Build from Source](Build-From-Source.md)
+- [Ray Tracing](../Rendering/Ray-Tracing.md)
+- [Fixed Timestep](../Physics/Fixed-Timestep.md)
+- [Cache Management](../Tools/Cache-Management.md)
+- [Build from Source](../GettingStarted/Build-From-Source.md)

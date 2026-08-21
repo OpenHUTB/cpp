@@ -24,7 +24,7 @@ result as the stock path at lower cost, and is enabled by default.
 
 The runtime CVar exists so you can A/B the optimised path against stock during development, which is how the
 optimisation was validated. In Shipping the CVar does not exist at all &mdash; the path is compiled in.
-See [Compile-Time Switches](Compile-Time-Switches.md).
+See [Compile-Time Switches](../Performance/Compile-Time-Switches.md).
 
 Standard UE4.27 SSAO settings all still apply and are found under **Rendering Features > Ambient Occlusion**
 in a post process volume: Intensity, Radius, Quality, Power, Bias, Fade Out Distance and the rest.
@@ -83,7 +83,7 @@ before committing to an aggressive value.
 
 ## Ray-traced ambient occlusion
 
-RTAO is covered in detail in [RT Shadows and Ambient Occlusion](RT-Shadows-And-Ambient-Occlusion.md). In
+RTAO is covered in detail in [RT Shadows and Ambient Occlusion](../Rendering/RT-Shadows-And-Ambient-Occlusion.md). In
 brief: it traces actual occlusion rays, so it handles off-screen occluders correctly and does not suffer
 from screen-space AO's fundamental limitation of only knowing about what is visible.
 
@@ -99,20 +99,20 @@ It is also the most expensive of the three, and requires DXR.
 | Fidelity Full RT 1440p30 | RTAO |
 
 The general rule is that AO should be the cheapest thing in your frame that produces its result. If
-[DDGI](DDGI-Dynamic.md) is already resolving the indirect lighting in a space correctly, heavy AO on top of
+[DDGI](../Rendering/DDGI-Dynamic.md) is already resolving the indirect lighting in a space correctly, heavy AO on top of
 it is double-darkening &mdash; you are subtracting light that the GI solution never added.
 
 <warning>
 Watch for AO stacking. Enabling material AO, SSAO, HBAO+ and RTAO simultaneously produces a scene that is
 much darker in contact areas than it should be. Each layer multiplies. Compare against a
-<a href="Path-Tracing.md">path-traced</a> reference if you are unsure whether your contact shadows are
+<a href="../Rendering/Path-Tracing.md">path-traced</a> reference if you are unsure whether your contact shadows are
 physically plausible or just dark.
 </warning>
 
 ## See also
 
-- [RT Shadows and Ambient Occlusion](RT-Shadows-And-Ambient-Occlusion.md)
-- [Global Illumination](Global-Illumination.md)
-- [SSGI](SSGI.md)
-- [Compile-Time Switches](Compile-Time-Switches.md)
-- [Performance Targets](Performance-Targets.md)
+- [RT Shadows and Ambient Occlusion](../Rendering/RT-Shadows-And-Ambient-Occlusion.md)
+- [Global Illumination](../Rendering/Global-Illumination.md)
+- [SSGI](../Rendering/SSGI.md)
+- [Compile-Time Switches](../Performance/Compile-Time-Switches.md)
+- [Performance Targets](../EngineOverview/Performance-Targets.md)

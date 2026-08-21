@@ -27,26 +27,26 @@ small opening, a large volume of dim indirect light, and a lot of geometric clut
 Three things get tested harder here than in an average scene:
 
 - **Dynamic range.** Direct sun and deep shadow in the same frame stresses the
-  [tonemapper and exposure setup](Color-Management.md). Get this wrong and the scene either blows out at
+  [tonemapper and exposure setup](../Rendering/Color-Management.md). Get this wrong and the scene either blows out at
   the window or crushes everything else to black.
 - **Indirect bounce falloff.** How light attenuates as it bounces further from the opening is what sells
   the depth of the space. This is where probe density and GI method choice show.
 - **Contact detail.** Clutter against floors and walls needs
-  [ambient occlusion](Ambient-Occlusion.md) and ideally [SSGI](SSGI.md) to read as grounded.
+  [ambient occlusion](../Rendering/Ambient-Occlusion.md) and ideally [SSGI](../Rendering/SSGI.md) to read as grounded.
 
 ## What to look at
 
-Compare [static and dynamic DDGI](DDGI-Static.md) here. A static bake is entirely adequate for a scene
+Compare [static and dynamic DDGI](../Rendering/DDGI-Static.md) here. A static bake is entirely adequate for a scene
 where nothing moves, and it is the cheaper option; the value of dynamic DDGI only appears once the sun
 angle or an occluder changes. Moving the directional light makes the distinction obvious.
 
-Then look at the [anti-aliasing](Anti-Aliasing.md) treatment. Fine clutter geometry against a bright
+Then look at the [anti-aliasing](../Rendering/Anti-Aliasing.md) treatment. Fine clutter geometry against a bright
 window is a hard case, and it is where SMAA's behaviour differs most visibly from TAA's.
 
 ## 另请参阅
 
-- [全局照明](Global-Illumination.md)
-- [静态 DDGI](DDGI-Static.md)
-- [颜色管理](Color-Management.md)
-- [抗锯齿](Anti-Aliasing.md)
-- [废弃的公寓场景](Abandone-Apartment.md)
+- [全局照明](../Rendering/Global-Illumination.md)
+- [静态 DDGI](../Rendering/DDGI-Static.md)
+- [颜色管理](../Rendering/Color-Management.md)
+- [抗锯齿](../Rendering/Anti-Aliasing.md)
+- [废弃的公寓场景](./Abandone-Apartment.md)

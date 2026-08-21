@@ -70,7 +70,7 @@ r.DefaultFeature.AntiAliasing 4
 | `r.Vite.SMAA.Mode` | `1` | `0` = Low, `1` = High |
 
 Marked `ECVF_Scalability`, so it can be driven from scalability groups. High quality is the default and is
-what the [performance targets](Performance-Targets.md) assume; Low exists for the lowest scalability bucket
+what the [performance targets](../EngineOverview/Performance-Targets.md) assume; Low exists for the lowest scalability bucket
 where the difference in edge quality is a reasonable trade for the frame time.
 
 ### Where SMAA runs in the pipeline
@@ -108,7 +108,7 @@ with the surface rather than sitting on silhouette edges is a content problem.
 
 ## See also
 
-- [Rendering](Rendering.md)
+- [Rendering](../Rendering/Rendering.md)
 - [Upscalers and Frame Generation](Upscalers.md)
 - [Performance Targets](Performance-Targets.md)
 - [Colour Management](Color-Management.md)

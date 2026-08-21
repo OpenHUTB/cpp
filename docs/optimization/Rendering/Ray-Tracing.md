@@ -11,7 +11,7 @@ that appears to do nothing.
 
 Ray tracing in Vite is an engine-agnostic pipeline: acceleration structures are maintained independently of
 any single lighting solution, so each effect can be enabled or disabled on its own. This is the arrangement
-UE 4.27 had and UE 5.1+ moved away from &mdash; see [Why NvRTX 4.27](Why-NvRTX-427.md).
+UE 4.27 had and UE 5.1+ moved away from &mdash; see [Why NvRTX 4.27](../EngineOverview/Why-NvRTX-427.md).
 
 ## Availability
 
@@ -25,27 +25,27 @@ renders nothing.**
 
 | Effect | Console variable | Default build | Page |
 |---|---|---|---|
-| Reflections | `r.RayTracing.Reflections` | Available | [RT Reflections](RT-Reflections.md) |
-| Shadows | `r.RayTracing.Shadows` | Available | [RT Shadows and AO](RT-Shadows-And-Ambient-Occlusion.md) |
-| Ambient occlusion | `r.RayTracing.AmbientOcclusion` | Available | [RT Shadows and AO](RT-Shadows-And-Ambient-Occlusion.md) |
+| Reflections | `r.RayTracing.Reflections` | Available | [RT Reflections](./RT-Reflections.md) |
+| Shadows | `r.RayTracing.Shadows` | Available | [RT Shadows and AO](./RT-Shadows-And-Ambient-Occlusion.md) |
+| Ambient occlusion | `r.RayTracing.AmbientOcclusion` | Available | [RT Shadows and AO](./RT-Shadows-And-Ambient-Occlusion.md) |
 | Sky light | `r.RayTracing.SkyLight` | Available | This page |
-| Translucency | `r.RayTracing.Translucency` | Compiled out | [RT Translucency and Caustics](RT-Translucency-And-Caustics.md) |
-| Mesh caustics | `r.RayTracing.MeshCaustics.Enable` | Compiled out | [RT Translucency and Caustics](RT-Translucency-And-Caustics.md) |
-| Water caustics | `r.RayTracing.WaterCaustics.Type` | Compiled out | [RT Translucency and Caustics](RT-Translucency-And-Caustics.md) |
-| Sampled direct lighting (RTXDI) | `r.RayTracing.SampledDirectLighting` | Compiled out | [RTXDI](RTXDI.md) |
+| Translucency | `r.RayTracing.Translucency` | Compiled out | [RT Translucency and Caustics](./RT-Translucency-And-Caustics.md) |
+| Mesh caustics | `r.RayTracing.MeshCaustics.Enable` | Compiled out | [RT Translucency and Caustics](./RT-Translucency-And-Caustics.md) |
+| Water caustics | `r.RayTracing.WaterCaustics.Type` | Compiled out | [RT Translucency and Caustics](./RT-Translucency-And-Caustics.md) |
+| Sampled direct lighting (RTXDI) | `r.RayTracing.SampledDirectLighting` | Compiled out | [RTXDI](./RTXDI.md) |
 | Per-pixel global illumination | `r.RayTracing.GlobalIllumination` | Compiled out | This page |
-| Reflection captures and probes | `r.RayTracing.Reflections.RayTraceEnvironmentCaptures` | Compiled out | [RT Reflections](RT-Reflections.md) |
-| Path tracing | `r.PathTracing` | Compiled out | [Path Tracing](Path-Tracing.md) |
+| Reflection captures and probes | `r.RayTracing.Reflections.RayTraceEnvironmentCaptures` | Compiled out | [RT Reflections](./RT-Reflections.md) |
+| Path tracing | `r.PathTracing` | Compiled out | [Path Tracing](./Path-Tracing.md) |
 
 To use anything in the compiled-out set, rebuild with `VITE_RT_PSO_DEBLOAT=0`. See
-[Compile-Time Switches](Compile-Time-Switches.md).
+[Compile-Time Switches](../Performance/Compile-Time-Switches.md).
 
 Reflections have one further caveat even when available: the debloat switch forces the sorted deferred
 reflection algorithm and compiles out the older non-deferred path.
 
 Dynamic DDGI is a separate system, enabled through `r.GlobalIllumination.ExperimentalPlugin` rather than the
 `r.RayTracing.*` group, and is **not** affected by the debloat switch. See
-[Dynamic DDGI](DDGI-Dynamic.md).
+[Dynamic DDGI](./DDGI-Dynamic.md).
 
 This is the rendering stack Black Myth: Wukong shipped on.
 
@@ -148,7 +148,7 @@ current optimizations are applicable to any Future Rendering path.
 
 <note>
 Compiled out in a default build. Requires <code>VITE_RT_PSO_DEBLOAT=0</code>. See
-<a href="Compile-Time-Switches.md">Compile-Time Switches</a>.
+<a href="../Performance/Compile-Time-Switches.md">Compile-Time Switches</a>.
 </note>
 
 Distinct from DDGI, Vite retains the per-pixel ray-traced GI path including the NvRTX ReStir GI improvements:
@@ -175,10 +175,10 @@ a reasonable result.
 
 ## See also
 
-- [Global Illumination](Global-Illumination.md)
-- [RT Reflections](RT-Reflections.md)
-- [RT Shadows and Ambient Occlusion](RT-Shadows-And-Ambient-Occlusion.md)
-- [RT Translucency and Caustics](RT-Translucency-And-Caustics.md)
-- [RTXDI](RTXDI.md)
-- [Compile-Time Switches](Compile-Time-Switches.md)
-- [Console Variable Reference](Console-Variables.md)
+- [Global Illumination](./Global-Illumination.md)
+- [RT Reflections](./RT-Reflections.md)
+- [RT Shadows and Ambient Occlusion](./RT-Shadows-And-Ambient-Occlusion.md)
+- [RT Translucency and Caustics](./RT-Translucency-And-Caustics.md)
+- [RTXDI](./RTXDI.md)
+- [Compile-Time Switches](../Performance/Compile-Time-Switches.md)
+- [Console Variable Reference](../Reference/Console-Variables.md)

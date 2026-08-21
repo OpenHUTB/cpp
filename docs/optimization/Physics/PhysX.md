@@ -60,7 +60,7 @@ Vite 物理堆栈包括以下 NVIDIA 系统：
 | APEX Cloth（布料） | 顶点绘制的布料约束和骨架网格物体布料模拟 |
 | NVIDIA Blast（爆炸） | 破损资产和断裂工作流程与 PhysX 后端集成 |
 
-请参阅[破损和布料](Destruction-And-Cloth.md)以获取创作和运行时指南。
+请参阅[破损和布料](./Destruction-And-Cloth.md)以获取创作和运行时指南。
 
 ## Vite 扩展
 
@@ -70,11 +70,11 @@ Vite 的 PhysX 库和构建文件已针对较新的 MSVC 和 Clang 工具链进�
 
 ### 固定时间步长模拟
 
-可选的固定时间步长路径将模拟节奏与可变渲染帧解耦，并添加渲染插值。它适用于需要稳定的模拟增量或可重复捕获的项目。有关编译时设置和集成要求，请参阅[固定时间步长](Fixed-Timestep.md)。
+可选的固定时间步长路径将模拟节奏与可变渲染帧解耦，并添加渲染插值。它适用于需要稳定的模拟增量或可重复捕获的项目。有关编译时设置和集成要求，请参阅[固定时间步长](./Fixed-Timestep.md)。
 
 ### 实例物理子系统
 
-实例化子系统通过实例化网格表示大型同质刚体集，而不是每个主体一个 Actor 和组件层次结构。它适用于碎片、炮弹、环境物体和其他高计数模拟。请参阅[实例物理子系统](Instanced-Physics.md)。
+实例化子系统通过实例化网格表示大型同质刚体集，而不是每个主体一个 Actor 和组件层次结构。它适用于碎片、炮弹、环境物体和其他高计数模拟。请参阅[实例物理子系统](./Instanced-Physics.md)。
 
 ### 原生 actor 路径
 
@@ -99,7 +99,7 @@ Vite 的 PhysX 库和构建文件已针对较新的 MSVC 和 Clang 工具链进�
 
 从必须保持稳定的最快交互中选择“最大子步增量时间”，然后设置“最大子步”以限制最坏情况的工作。上限可防止慢速帧产生无限制的模拟积压。
 
-对于固定模拟节奏而不是帧触发子步，请使用[固定时间步路径](Fixed-Timestep.md)。
+对于固定模拟节奏而不是帧触发子步，请使用[固定时间步路径](./Fixed-Timestep.md)。
 
 ## PhysX 可视化调试器
 
@@ -118,13 +118,13 @@ PhysX Visual Debugger（PVD）可以检查连接的场景，包括参与者、�
 
 具有代表性碰撞几何形状、刚体计数、睡眠行为和事件生成的分析。每次比较时记录物理毫秒、刚体/形状计数、激活刚体计数、求解器设置、子步骤和工作配置。
 
-对于高刚体数，请使用相同的形状和求解器设置将基于 Actor 的标准模拟与[实例子系统](Instanced-Physics.md)进行比较。
+对于高刚体数，请使用相同的形状和求解器设置将基于 Actor 的标准模拟与[实例子系统](./Instanced-Physics.md)进行比较。
 
 ## 另请参阅
 
-- [物理](Physics.md)
-- [固定时间步长](Fixed-Timestep.md)
-- [破损与布料](Destruction-And-Cloth.md)
-- [实例物理子系统](Instanced-Physics.md)
+- [物理](./Physics.md)
+- [固定时间步长](./Fixed-Timestep.md)
+- [破损与布料](./Destruction-And-Cloth.md)
+- [实例物理子系统](./Instanced-Physics.md)
 - [物理立方台](../ProjectsAndDemos/Physics-Cube-Bench.md)
 - [PhysX 测试](../ProjectsAndDemos/PhysXTest.md)

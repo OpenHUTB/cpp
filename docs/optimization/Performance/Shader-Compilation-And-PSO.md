@@ -23,7 +23,7 @@
 
 您可以控制材质着色器数量的以下选项：
 
-**着色模型。** 每个使用的[着色模型](Shading-Models.md)都会增加排列组合。使用默认光照和 Callisto BRDF 的项目编译的着色器数量远少于使用六个模型的项目。这是实际的预算，而非理论预算。
+**着色模型。** 每个使用的[着色模型](../Rendering/Shading-Models.md)都会增加排列组合。使用默认光照和 Callisto BRDF 的项目编译的着色器数量远少于使用六个模型的项目。这是实际的预算，而非理论预算。
 
 **材质使用标志。** 材质上的每个**Used With**（使用于）标志都会增加一个顶点工厂排列组合：用于骨骼网格、实例化静态网格、粒子精灵、样条线等等。Unreal 会在遇到新的使用情况时自动设置这些标志，这意味着材质可能会悄悄地积累不再需要的标志。请检查这些标志。
 
@@ -31,7 +31,7 @@
 
 **质量级别和功能级别。** 项目目标着色器平台和质量级别的每个值都会乘以上述所有值。
 
-**细分曲面。** 启用材质[细分](Tessellation.md)会增加外壳和域着色器排列组合。
+**细分曲面。** 启用材质[细分](../Rendering/Tessellation.md)会增加外壳和域着色器排列组合。
 
 ## 编译时间
 
@@ -78,7 +78,7 @@ PSO 缓存通过记录构建实际使用的 PSO，并在启动或加载期间预
 过时的着色器缓存会导致虚幻引擎中一些最令人困惑的故障：着色器与源文件不匹配、材质渲染错误、编辑器加载时崩溃，以及编译时开关的更改似乎没有任何效果。
 
 
-如果您更改了 `VITE_RT_PSO_DEBLOAT` 或任何其他影响着色器排列的开关，请清除缓存。请参阅[缓存管理](Cache-Management.md)中的 `WipeShaderCache.bat`，该脚本会清除引擎级派生数据缓存、中间着色器和着色器调试信息。
+如果您更改了 `VITE_RT_PSO_DEBLOAT` 或任何其他影响着色器排列的开关，请清除缓存。请参阅[缓存管理](../Tools/Cache-Management.md)中的 `WipeShaderCache.bat`，该脚本会清除引擎级派生数据缓存、中间着色器和着色器调试信息。
 
 
 ## 诊断
@@ -95,8 +95,8 @@ PSO 缓存通过记录构建实际使用的 PSO，并在启动或加载期间预
 
 ## 另请参阅
 
-- [编译时开关](Compile-Time-Switches.md)
-- [着色模型](Shading-Models.md)
-- [缓存管理](Cache-Management.md)
-- [构建故障排除](Build-Troubleshooting.md)
+- [编译时开关](../Performance/Compile-Time-Switches.md)
+- [着色模型](../Rendering/Shading-Models.md)
+- [缓存管理](../Tools/Cache-Management.md)
+- [构建故障排除](../GettingStarted/Build-Troubleshooting.md)
 - [精简指南](Debloat-Guide.md)

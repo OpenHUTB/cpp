@@ -19,7 +19,7 @@ section are approximations.
 ## What it is for
 
 **Lighting validation.** Path tracing tells you what the scene *should* look like. When
-[DDGI](DDGI-Dynamic.md) output looks wrong, and you cannot tell whether the problem is probe density, volume
+[DDGI](./DDGI-Dynamic.md) output looks wrong, and you cannot tell whether the problem is probe density, volume
 placement or the lighting rig itself, a converged path-traced frame from the same camera answers the
 question.
 
@@ -34,7 +34,7 @@ before checking how the real-time path approximates it.
 ## What it is not for
 
 Path tracing is not a main shipping runtime configuration in Vite, and it is not one of the
-[performance targets](Performance-Targets.md). Convergence takes many frames; a camera cut restarts
+[performance targets](../EngineOverview/Performance-Targets.md). Convergence takes many frames; a camera cut restarts
 accumulation from scratch. *The Editor Path tracer path setup is not the same as what can be shipped for runtime title. 
 
 Black Myth: Wukong shipped a Path Tracing mode based on the same PT tech that's available in Vite; for this title 
@@ -43,7 +43,7 @@ it is offered as a high-end PC option to be used with upscaling and frame genera
 ## Using it
 
 Path tracing shaders are compiled out when `VITE_RT_PSO_DEBLOAT` is `1`, which is the default. Rebuild the
-engine with `VITE_RT_PSO_DEBLOAT=0` first &mdash; see [Compile-Time Switches](Compile-Time-Switches.md).
+engine with `VITE_RT_PSO_DEBLOAT=0` first &mdash; see [Compile-Time Switches](../Performance/Compile-Time-Switches.md).
 
 Because path tracing is a tool you use occasionally rather than something the game ships with, the cleanest
 arrangement is a separate editor target configuration with the debloat switch off, used for reference
@@ -76,8 +76,8 @@ The most useful workflow is A/B comparison from a fixed camera.
     <step>
         Compare. Differences in overall brightness and bounce colour usually indicate DDGI probe density or
         volume placement problems. Differences confined to contact areas indicate you need
-        <a href="SSGI.md">SSGI</a> or stronger <a href="Ambient-Occlusion.md">ambient occlusion</a>.
-        Differences in reflections point at <a href="RT-Reflections.md">reflection</a> settings.
+        <a href="./SSGI.md">SSGI</a> or stronger <a href="./Ambient-Occlusion.md">ambient occlusion</a>.
+        Differences in reflections point at <a href="./RT-Reflections.md">reflection</a> settings.
     </step>
     <step>Adjust the real-time configuration and repeat, rather than adjusting the lighting rig to compensate.</step>
 </procedure>
@@ -88,8 +88,8 @@ under one configuration.
 
 ## See also
 
-- [Ray Tracing](Ray-Tracing.md)
-- [Global Illumination](Global-Illumination.md)
-- [Dynamic DDGI](DDGI-Dynamic.md)
-- [Compile-Time Switches](Compile-Time-Switches.md)
-- [Colour Management](Color-Management.md)
+- [Ray Tracing](./Ray-Tracing.md)
+- [Global Illumination](./Global-Illumination.md)
+- [Dynamic DDGI](./DDGI-Dynamic.md)
+- [Compile-Time Switches](../Performance/Compile-Time-Switches.md)
+- [Colour Management](../Rendering/Color-Management.md)
