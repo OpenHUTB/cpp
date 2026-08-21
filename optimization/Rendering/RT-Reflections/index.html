@@ -124,7 +124,7 @@
 <p><tldr></p>
 <p>
 Enabled with <code>r.RayTracing.Reflections 1</code>. Vite's reflections are heavily optimised and can
-run at 4K native 60 FPS on PS5-class hardware. When <a href="DDGI-Dynamic.md">DDGI</a> is active,
+run at 4K native 60 FPS on PS5-class hardware. When <a href="./DDGI-Dynamic.md">DDGI</a> is active,
 reflection rays sample probe irradiance for their secondary bounce, which is a large quality win.
 </p>
 <p></tldr></p>
@@ -139,7 +139,7 @@ facing away from the camera.</p>
 the second most expensive ray tracing effect after per-pixel GI.</p>
 <p>Vite's reflections are capable of running at 4K native 60 FPS on a PS5-class GPU, as demonstrated by the
 Unreal Tournament Vite demo, which combines them with DDGI and tessellation. That configuration is the
-"Performance, high end" row in <a href="Performance-Targets.md">Performance Targets</a>.</p>
+"Performance, high end" row in <a href="../../EngineOverview/Performance-Targets/">Performance Targets</a>.</p>
 <p>Further RT reflection performance work is ongoing, with the stated goal of reaching performance
 characteristics comparable to RE Engine's implementation as seen in Devil May Cry 5 Special Edition on PS5.</p>
 <h2 id="ddgi-lit-reflections">DDGI-lit reflections</h2>
@@ -171,7 +171,7 @@ reflections under motion, this is where to look.</p>
 <code>FRayTracingReflectionsRGS</code> path, which supports hybrid reflections and reflected translucency, and the
 newer sorted deferred path.</p>
 <p>In a default build, <code>VITE_RT_PSO_DEBLOAT</code> forces the <strong>sorted deferred</strong> path and compiles out the older
-one. This is the faster of the two and the one Vite's <a href="Performance-Targets.md">performance targets</a> are
+one. This is the faster of the two and the one Vite's <a href="../../EngineOverview/Performance-Targets/">performance targets</a> are
 measured against.</p>
 <p>Consequences worth knowing:</p>
 <ul>
@@ -182,7 +182,7 @@ measured against.</p>
   (<code>r.RayTracing.Reflections.RayTraceEnvironmentCaptures</code>) are compiled out.</li>
 <li>Single layer water ray-traced reflections (<code>r.Water.SingleLayer.RTR</code>) are compiled out.</li>
 </ul>
-<p>See <a href="Compile-Time-Switches.md">Compile-Time Switches</a> to restore the full set.</p>
+<p>See <a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a> to restore the full set.</p>
 <h2 id="reflected-translucency">Reflected translucency</h2>
 <p><note>
 Requires <code>VITE_RT_PSO_DEBLOAT=0</code>. These controls are permutation dimensions on the non-deferred
@@ -226,8 +226,8 @@ and vehicle paint &mdash; anywhere a large, smooth surface reflects something th
 <li><a href="../Ray-Tracing/">Ray Tracing</a></li>
 <li><a href="../DDGI-Dynamic/">Dynamic DDGI</a></li>
 <li><a href="../RT-Translucency-And-Caustics/">RT Translucency and Caustics</a></li>
-<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
-<li><a href="Performance-Targets.md">Performance Targets</a></li>
+<li><a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a></li>
+<li><a href="../../EngineOverview/Performance-Targets/">Performance Targets</a></li>
 </ul>
               
             </div>

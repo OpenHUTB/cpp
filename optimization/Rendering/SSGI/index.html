@@ -124,7 +124,7 @@
 <p><tldr></p>
 <p>
 UE4-era screen-space global illumination, enabled with <code>r.SSGI.Enable 1</code>. Recommended
-<i>alongside</i> <a href="DDGI-Dynamic.md">DDGI</a> rather than instead of it: DDGI supplies world-scale
+<i>alongside</i> <a href="./DDGI-Dynamic.md">DDGI</a> rather than instead of it: DDGI supplies world-scale
 bounce, SSGI supplies high-frequency contact detail. No ray tracing hardware required.
 </p>
 <p></tldr></p>
@@ -207,7 +207,7 @@ buffer. This is usually acceptable but becomes visible with fast camera motion.<
 setup &mdash; they produce a locally less detailed one, which is a much better failure mode.</p>
 <h2 id="cost">Cost</h2>
 <p>SSGI is cheap relative to any world-space technique, and it scales with resolution and quality setting
-rather than with scene complexity. On the <a href="Performance-Targets.md">Performance Targets</a> that include it, it
+rather than with scene complexity. On the <a href="../../EngineOverview/Performance-Targets/">Performance Targets</a> that include it, it
 is not the dominant cost; DDGI and reflections are.</p>
 <p>If you are hunting frame time, measure before you disable it. <code>stat gpu</code> will tell you what the pass
 actually costs in your scene, and it is frequently less than people assume.</p>
@@ -217,7 +217,7 @@ actually costs in your scene, and it is frequently less than people assume.</p>
 <li><a href="../DDGI-Dynamic/">Dynamic DDGI</a></li>
 <li><a href="../DDGI-Static/">Static DDGI</a></li>
 <li><a href="../Ambient-Occlusion/">Ambient Occlusion</a></li>
-<li><a href="Console-Variables.md">Console Variable Reference</a></li>
+<li><a href="../../Reference/Console-Variables/">Console Variable Reference</a></li>
 </ul>
               
             </div>

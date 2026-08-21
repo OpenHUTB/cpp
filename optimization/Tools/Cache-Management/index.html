@@ -170,7 +170,7 @@ Try <code>recompileshaders global</code> or <code>recompileshaders changed</code
 &mdash; it is far faster than a full wipe.
 </def>
 <def title="You changed a compile-time switch">
-Changing <a href="Compile-Time-Switches.md">VITE_RT_PSO_DEBLOAT</a>, <code>VITE_O_SSAO</code> or any other
+Changing <a href="../Performance/Compile-Time-Switches.md">VITE_RT_PSO_DEBLOAT</a>, <code>VITE_O_SSAO</code> or any other
 <code>VITE_*</code> switch changes which shader permutations exist. The engine rebuild handles the C++,
 but cached shaders from the old configuration can linger. Wipe after switching.
 </def>
@@ -192,10 +192,10 @@ Worth trying before deeper investigation, since it is cheap to rule out.
   not touch them.</li>
 <li><strong>Runtime rendering bugs.</strong> If an effect renders wrongly but consistently, that is a code or
   configuration problem, not a cache problem. Check the
-  <a href="Ray-Tracing.md">compile-time switch availability table</a> first &mdash; many ray tracing features are
+  <a href="../../Rendering/Ray-Tracing/">compile-time switch availability table</a> first &mdash; many ray tracing features are
   compiled out by default and their console variables silently do nothing.</li>
 <li><strong>Long shader compile times.</strong> Wiping makes this worse, not better. See
-  <a href="Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a>.</li>
+  <a href="../../Performance/Shader-Compilation-And-PSO/">Shader Compilation and PSO</a>.</li>
 </ul>
 <h2 id="lighter-weight-alternatives">Lighter-weight alternatives</h2>
 <p>Try these before a full wipe:</p>
@@ -294,14 +294,14 @@ concluding your local cache was the problem.
 <p>The engine DDC grows without bound during development. On a project that exercises many material and
 ray-tracing permutations it can reach tens of gigabytes. Periodically wiping it is a legitimate way to
 reclaim disk space, accepting the recompile cost.</p>
-<p>If disk space is the actual concern, the <a href="Debloat-Guide.md">Debloat Guide</a> covers larger and more permanent
+<p>If disk space is the actual concern, the <a href="../../Performance/Debloat-Guide/">Debloat Guide</a> covers larger and more permanent
 savings.</p>
 <h2 id="see-also">See also</h2>
 <ul>
-<li><a href="Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a></li>
-<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
-<li><a href="Build-Troubleshooting.md">Build Troubleshooting</a></li>
-<li><a href="Debloat-Guide.md">Debloat Guide</a></li>
+<li><a href="../../Performance/Shader-Compilation-And-PSO/">Shader Compilation and PSO</a></li>
+<li><a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a></li>
+<li><a href="../../GettingStarted/Build-Troubleshooting/">Build Troubleshooting</a></li>
+<li><a href="../../Performance/Debloat-Guide/">Debloat Guide</a></li>
 </ul>
               
             </div>

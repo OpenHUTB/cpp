@@ -147,13 +147,13 @@ acceptable and frame time is irrelevant.</p>
 before checking how the real-time path approximates it.</p>
 <h2 id="what-it-is-not-for">What it is not for</h2>
 <p>Path tracing is not a main shipping runtime configuration in Vite, and it is not one of the
-<a href="Performance-Targets.md">performance targets</a>. Convergence takes many frames; a camera cut restarts
+<a href="../../EngineOverview/Performance-Targets/">performance targets</a>. Convergence takes many frames; a camera cut restarts
 accumulation from scratch. *The Editor Path tracer path setup is not the same as what can be shipped for runtime title. </p>
 <p>Black Myth: Wukong shipped a Path Tracing mode based on the same PT tech that's available in Vite; for this title 
 it is offered as a high-end PC option to be used with upscaling and frame generation, not as the console rendering path.</p>
 <h2 id="using-it">Using it</h2>
 <p>Path tracing shaders are compiled out when <code>VITE_RT_PSO_DEBLOAT</code> is <code>1</code>, which is the default. Rebuild the
-engine with <code>VITE_RT_PSO_DEBLOAT=0</code> first &mdash; see <a href="Compile-Time-Switches.md">Compile-Time Switches</a>.</p>
+engine with <code>VITE_RT_PSO_DEBLOAT=0</code> first &mdash; see <a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a>.</p>
 <p>Because path tracing is a tool you use occasionally rather than something the game ships with, the cleanest
 arrangement is a separate editor target configuration with the debloat switch off, used for reference
 capture, while the game target keeps the default.</p>
@@ -178,8 +178,8 @@ the camera or scene changes, so let it converge before evaluating an image.</p>
     <step>
         Compare. Differences in overall brightness and bounce colour usually indicate DDGI probe density or
         volume placement problems. Differences confined to contact areas indicate you need
-        <a href="SSGI.md">SSGI</a> or stronger <a href="Ambient-Occlusion.md">ambient occlusion</a>.
-        Differences in reflections point at <a href="RT-Reflections.md">reflection</a> settings.
+        <a href="./SSGI.md">SSGI</a> or stronger <a href="./Ambient-Occlusion.md">ambient occlusion</a>.
+        Differences in reflections point at <a href="./RT-Reflections.md">reflection</a> settings.
     </step>
     <step>Adjust the real-time configuration and repeat, rather than adjusting the lighting rig to compensate.</step>
 </procedure></p>
@@ -191,7 +191,7 @@ under one configuration.</p>
 <li><a href="../Ray-Tracing/">Ray Tracing</a></li>
 <li><a href="../Global-Illumination/">Global Illumination</a></li>
 <li><a href="../DDGI-Dynamic/">Dynamic DDGI</a></li>
-<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
+<li><a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a></li>
 <li><a href="../Color-Management/">Colour Management</a></li>
 </ul>
               

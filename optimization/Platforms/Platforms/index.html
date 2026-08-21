@@ -200,7 +200,7 @@ DLSS and its alternatives, HBAO+, hardware tessellation &mdash; are Deferred Pat
 test it and the fork's rendering features are unavailable or unvalidated there.</p>
 <h2 id="_3">启用其他平台</h2>
 <p>Platform dependencies are opt-in at setup time.</p>
-<p>Through <a href="ViteSetup.md">ViteSetup</a>, choose the <strong>Win64 + Android</strong> or <strong>Win64 + Linux</strong> profile, or use the
+<p>Through <a href="../../Tools/ViteSetup/">ViteSetup</a>, choose the <strong>Win64 + Android</strong> or <strong>Win64 + Linux</strong> profile, or use the
 step-by-step assistant to toggle platforms individually. <strong>Full setup</strong> passes no <code>-exclude</code> argument to
 <code>Setup.bat</code> and downloads everything.</p>
 <p>For the debloat scripts, uncomment the relevant line in <code>devops\config.txt</code>:</p>
@@ -256,27 +256,27 @@ first build if you can.
 <h3 id="dx12">需要 DX12 什么</h3>
 <p>Everything ray-traced needs DXR, which in Vite means DirectX 12:</p>
 <ul>
-<li><a href="RT-Reflections.md">Ray-traced reflections</a>, shadows, ambient occlusion and sky light</li>
-<li><a href="DDGI-Dynamic.md">动态 DDGI</a> and per-pixel ray-traced GI</li>
-<li><a href="RTXDI.md">RTXDI</a> and <a href="Path-Tracing.md">path tracing</a>, if you rebuild with <code>VITE_RT_PSO_DEBLOAT=0</code></li>
-<li><a href="RT-Translucency-And-Caustics.md">Translucency and caustics</a>, same condition</li>
+<li><a href="../../Rendering/RT-Reflections/">Ray-traced reflections</a>, shadows, ambient occlusion and sky light</li>
+<li><a href="../../Rendering/DDGI-Dynamic/">动态 DDGI</a> and per-pixel ray-traced GI</li>
+<li><a href="../../Rendering/RTXDI/">RTXDI</a> and <a href="../../Rendering/Path-Tracing/">path tracing</a>, if you rebuild with <code>VITE_RT_PSO_DEBLOAT=0</code></li>
+<li><a href="../../Rendering/RT-Translucency-And-Caustics/">Translucency and caustics</a>, same condition</li>
 </ul>
-<p><a href="Upscalers.md">FSR 4</a> is also DX12-only, independently of ray tracing.</p>
+<p><a href="../../Rendering/Upscalers/">FSR 4</a> is also DX12-only, independently of ray tracing.</p>
 <h3 id="what-works-on-dx11">What works on DX11</h3>
 <ul>
-<li><a href="Ambient-Occlusion.md">HBAO4+</a> &mdash; despite the console variable help text claiming DX11-only, it has a
+<li><a href="../../Rendering/Ambient-Occlusion/">HBAO4+</a> &mdash; despite the console variable help text claiming DX11-only, it has a
   D3D12 implementation too</li>
-<li><a href="Anti-Aliasing.md">SMAA</a></li>
+<li><a href="../../Rendering/Anti-Aliasing/">SMAA</a></li>
 <li><a href="SSGI.md">SSGI</a></li>
-<li><a href="Tessellation.md">Hardware tessellation</a></li>
-<li>The <a href="Shading-Models.md">Callisto BRDF and Toon shading models</a></li>
+<li><a href="../../Rendering/Tessellation/">Hardware tessellation</a></li>
+<li>The <a href="../../Rendering/Shading-Models/">Callisto BRDF and Toon shading models</a></li>
 </ul>
 <p>A DX11 target is viable if you are willing to give up ray tracing. It is the right choice for a project
-whose <a href="Performance-Targets.md">performance targets</a> do not leave budget for DXR.</p>
+whose <a href="../../EngineOverview/Performance-Targets/">performance targets</a> do not leave budget for DXR.</p>
 <h2 id="_4">硬件</h2>
-<p>See <a href="System-Requirements.md">System Requirements</a> for development and runtime hardware.</p>
+<p>See <a href="../../GettingStarted/System-Requirements/">System Requirements</a> for development and runtime hardware.</p>
 <h2 id="_5">打包</h2>
-<p>The <a href="Installed-Builds.md">installed build</a> is produced with Development and Shipping game configurations
+<p>The <a href="../../Tools/Installed-Builds/">installed build</a> is produced with Development and Shipping game configurations
 for Win64. If you need other configurations or platforms, edit the <code>RunUAT.bat</code> BuildGraph arguments:</p>
 <div class="highlight"><pre><span></span><code>-set:WithLinux=true
 -set:GameConfigurations=Development;Test;Shipping
@@ -284,11 +284,11 @@ for Win64. If you need other configurations or platforms, edit the <code>RunUAT.
 <p>Each additional platform and configuration lengthens an already long build considerably.</p>
 <h2 id="_6">另请参阅</h2>
 <ul>
-<li><a href="System-Requirements.md">系统要求</a></li>
-<li><a href="Installed-Builds.md">已安装好的构建</a></li>
-<li><a href="ViteSetup.md">ViteSetup 助手</a></li>
-<li><a href="Ray-Tracing.md">光线追踪</a></li>
-<li><a href="Debloat-Guide.md">Debloat 指南</a></li>
+<li><a href="../../GettingStarted/System-Requirements/">系统要求</a></li>
+<li><a href="../../Tools/Installed-Builds/">已安装好的构建</a></li>
+<li><a href="../../Tools/ViteSetup/">ViteSetup 助手</a></li>
+<li><a href="../../Rendering/Ray-Tracing/">光线追踪</a></li>
+<li><a href="../../Performance/Debloat-Guide/">精简指南</a></li>
 </ul>
               
             </div>

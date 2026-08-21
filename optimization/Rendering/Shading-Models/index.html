@@ -161,7 +161,7 @@ remain available.</p>
 <h2 id="callisto-brdf">Callisto BRDF</h2>
 <p>Callisto BRDF provides single- and dual-lobe GGX specular with specular Fresnel falloff, aimed at
 characters and skin where the default lit model's single specular lobe is too crude. The
-<a href="Callisto-BRDF-Demos.md">Callisto BRDF demo projects</a> show it applied to male and female character
+<a href="../../ProjectsAndDemos/Callisto-BRDF-Demos/">Callisto BRDF demo projects</a> show it applied to male and female character
 surfaces.</p>
 <h3 id="pin-mapping">Pin mapping</h3>
 <p>The model repurposes several standard material pins. The material editor relabels them automatically once
@@ -285,21 +285,21 @@ which means it avoids the masked and translucent-only attribute compilation that
 <p>Every shading model in use adds shader permutations, which cost compile time, PSO count and disk space.
 This is a real budget rather than a theoretical concern &mdash; permutation growth was one of the specific
 regressions Vite exists to avoid, as described in
-<a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 versus UE5 Cost Analysis</a>.</p>
+<a href="../../EngineOverview/UE4-Versus-UE5-Cost-Analysis/">UE4 versus UE5 Cost Analysis</a>.</p>
 <blockquote>
 <p>Use the smallest set of shading models your art direction needs. A project that ships Default Lit,
 Callisto BRDF for characters and nothing else will compile faster, have fewer PSOs and load faster than
 one that uses six models across its material library.</p>
 <p>{style="note"}</p>
 </blockquote>
-<p>See <a href="Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a> for how Vite manages permutations, and note
+<p>See <a href="../../Performance/Shader-Compilation-And-PSO/">Shader Compilation and PSO</a> for how Vite manages permutations, and note
 that runtime PSOs are debloated in Shipping configuration.</p>
 <h2 id="see-also">See also</h2>
 <ul>
 <li><a href="../Rendering/">Rendering</a></li>
-<li><a href="Callisto-BRDF-Demos.md">Callisto BRDF Demos</a></li>
+<li><a href="../../ProjectsAndDemos/Callisto-BRDF-Demos/">Callisto BRDF Demos</a></li>
 <li><a href="../Hair-Rendering/">Hair Rendering</a></li>
-<li><a href="Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a></li>
+<li><a href="../../Performance/Shader-Compilation-And-PSO/">Shader Compilation and PSO</a></li>
 <li><a href="../Color-Management/">Colour Management</a></li>
 </ul>
               

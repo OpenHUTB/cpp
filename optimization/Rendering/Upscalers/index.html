@@ -124,7 +124,7 @@
 <p><tldr></p>
 <p>
 Vite bundles DLSS 4.5, DLSS Frame Generation, FSR2, FSR 4, XeSS 3, NIS &mdash;. They are <b>optional headroom</b>, not the rendering plan. Vite's
-<a href="Performance-Targets.md">performance targets</a> are met at native resolution without any of them.
+<a href="../EngineOverview/Performance-Targets.md">performance targets</a> are met at native resolution without any of them.
 </p>
 <p></tldr></p>
 <p>Check out the <a href="https://github.com/ViteStudio-Tech/ueVite-UpscalerTest">UpscalerTest Sample project</a></p>
@@ -294,7 +294,7 @@ is actually active.</p>
 </table>
 <p>The switch is defined in <code>Engine/Source/Runtime/Core/Public/Misc/CoreDefines.h</code> and defaults to off, since
 it costs frame time and only matters for projects that ship with upscaling enabled. See
-<a href="Compile-Time-Switches.md">Compile-Time Switches</a> for how to change it.</p>
+<a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a> for how to change it.</p>
 <h2 id="enabling-an-upscaler">Enabling an upscaler</h2>
 <p><procedure title="Add DLSS to a project" id="enable-dlss">
     <step>Open <b>Edit &gt; Plugins</b>, find <b>NVIDIA DLSS Super Resolution/Ray Reconstruction/DLAA</b>, enable it and restart the editor.</step>
@@ -306,17 +306,17 @@ it costs frame time and only matters for projects that ship with upscaling enabl
     </step>
     <step>Expose quality mode as a player setting rather than forcing one. Include an off state.</step>
     <step>
-        Test the interaction with your <a href="Anti-Aliasing.md">anti-aliasing</a> setting. DLSS replaces
+        Test the interaction with your <a href="./Anti-Aliasing.md">anti-aliasing</a> setting. DLSS replaces
         the anti-aliasing pass; leaving SMAA enabled alongside it wastes frame time.
     </step>
 </procedure></p>
 <h2 id="see-also">See also</h2>
 <ul>
 <li><a href="../Anti-Aliasing/">Anti-Aliasing</a></li>
-<li><a href="Performance-Targets.md">Performance Targets</a></li>
+<li><a href="../../EngineOverview/Performance-Targets/">Performance Targets</a></li>
 <li><a href="../Ray-Tracing/">Ray Tracing</a></li>
-<li><a href="Bundled-Plugins.md">Bundled Plugins</a></li>
-<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
+<li><a href="../../Plugins/Bundled-Plugins/">Bundled Plugins</a></li>
+<li><a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a></li>
 </ul>
               
             </div>

@@ -131,41 +131,40 @@ The questions that come up most often, with short answers and links to the full 
 <p>Because for a large class of projects UE5's headline features cost more than they return. Nanite, Lumen and
 Chaos each carry a base cost whether or not you exploit them, and UE5's core class and tick overhead is
 higher. Vite takes 4.27's lower baseline and adds the rendering technology that was actually worth having.</p>
-<p>The detailed argument, with numbers, is in <a href="Why-NvRTX-427.md">Why NvRTX 4.27</a> and
-<a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 versus UE5 Cost Analysis</a>.</p>
+<p>The detailed argument, with numbers, is in <a href="../../EngineOverview/Why-NvRTX-427/">Why NvRTX 4.27</a> and
+<a href="../../EngineOverview/UE4-Versus-UE5-Cost-Analysis/">UE4 versus UE5 Cost Analysis</a>.</p>
 <h3 id="is-vite-a-drop-in-replacement-for-stock-427">Is Vite a drop-in replacement for stock 4.27?</h3>
 <p>Close, but not exactly. Vite changes a number of engine defaults for performance &mdash; overlap event
 handling, scalability settings, tick behaviour, ray tracing culling and others. A project moving from stock
-4.27 will mostly work, but should read <a href="Engine-Defaults.md">Engine Defaults</a> to understand what changed.</p>
+4.27 will mostly work, but should read <a href="../../Performance/Engine-Defaults/">Engine Defaults</a> to understand what changed.</p>
 <h3 id="can-i-use-ue5-marketplace-assets">Can I use UE5 marketplace assets?</h3>
 <p>Not directly. The Asset Downgrader plugin converts UE5 assets to 4.27, stripping data that has no 4.27
 equivalent such as Nanite geometry. Features that do not exist in 4.27 cannot be ported, only removed. See
-<a href="Migrating-From-UE5.md">Migrating from UE5</a>.</p>
+<a href="../../GettingStarted/Migrating-From-UE5/">Migrating from UE5</a>.</p>
 <h3 id="what-platforms-does-vite-support">What platforms does Vite support?</h3>
 <p>Windows 64-bit, primarily on DirectX 12. Other platforms inherit stock 4.27 support but are neither tested
-nor tuned. See <a href="Platforms.md">Platforms</a>.</p>
+nor tuned. See <a href="../../Platforms/Platforms/">Platforms</a>.</p>
 <h2 id="setup-and-building">Setup and building</h2>
 <h3 id="what-toolchain-do-i-need">What toolchain do I need?</h3>
 <p>Vite is currently developed against Visual Studio 2026 with MSVC 14.50 and Windows SDK 10.0.26100.</p>
 <p><warning>
 <code>ViteSetup.bat</code>'s environment check still enforces Visual Studio 2022 with MSVC 14.44 and SDK
 10.0.26100.7705, and will fail on the newer toolchain. Build through the manual path or the individual
-menu options if you hit this. See <a href="Toolchain-Requirements.md">Toolchain Requirements</a>.
+menu options if you hit this. See <a href="../GettingStarted/Toolchain-Requirements.md">Toolchain Requirements</a>.
 </warning></p>
 <h3 id="the-build-fails-immediately-on-a-fresh-clone">The build fails immediately on a fresh clone</h3>
 <p>Most often missing .NET Framework 4.5 reference assemblies, which recent Visual Studio installers no longer
-include by default. See <a href="Build-Troubleshooting.md">Build Troubleshooting</a>.</p>
+include by default. See <a href="../../GettingStarted/Build-Troubleshooting/">Build Troubleshooting</a>.</p>
 <h3 id="do-i-need-to-build-from-source">Do I need to build from source?</h3>
-<p>Only if you need to modify engine C++ or change a <a href="Compile-Time-Switches.md">compile-time switch</a>. For
-everything else an <a href="Install-Binary-Build.md">installed build</a> is faster to get running and needs far less
-disk.</p>
+<p>Only if you need to modify engine C++ or change a <a href="../../Performance/Compile-Time-Switches/">compile-time switch</a>. For
+everything else an <a href="../../GettingStarted/Install-Binary-Build/">installed build</a> is faster to get running and needs far less disk.</p>
 <h3 id="how-long-does-a-build-take">How long does a build take?</h3>
 <p>A source build is hours on typical hardware, and an installed build is longer. Shader compilation dominates
-the first launch afterwards. See <a href="Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a>.</p>
+the first launch afterwards. See <a href="../../Performance/Shader-Compilation-And-PSO/">Shader Compilation and PSO</a>.</p>
 <h3 id="the-engine-takes-too-much-disk-space">The engine takes too much disk space</h3>
 <p>Run the debloat suite in <code>devops\</code>. It moves platform binaries, templates, samples and optionally plugins
 out of the tree, with a dry-run mode and a recovery folder rather than deletion. See
-<a href="Debloat-Guide.md">Debloat Guide</a>.</p>
+<a href="../../Performance/Debloat-Guide/">Debloat Guide</a>.</p>
 <h2 id="rendering">Rendering</h2>
 <h3 id="i-set-a-ray-tracing-console-variable-and-nothing-happened">I set a ray tracing console variable and nothing happened</h3>
 <p>This is the single most common question, and the answer is almost always
@@ -178,92 +177,92 @@ out of the tree, with a dry-run mode and a recovery folder rather than deletion.
 <li>The non-deferred reflection path, and with it reflected translucency and RT reflection captures</li>
 </ul>
 <p>The console variables still exist and still set. Nothing renders. Rebuild the engine with
-<code>VITE_RT_PSO_DEBLOAT=0</code> to use them. See <a href="Compile-Time-Switches.md">Compile-Time Switches</a> and
-<a href="Ray-Tracing.md">Ray Tracing</a>.</p>
+<code>VITE_RT_PSO_DEBLOAT=0</code> to use them. See <a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a> and
+<a href="../../Rendering/Ray-Tracing/">Ray Tracing</a>.</p>
 <h3 id="which-ray-tracing-features-work-out-of-the-box">Which ray tracing features work out of the box?</h3>
 <p>Reflections, shadows, ambient occlusion and sky light. Those four are available in a default build; the
-rest are compiled out. Full table in <a href="Ray-Tracing.md">Ray Tracing</a>.</p>
+rest are compiled out. Full table in <a href="../../Rendering/Ray-Tracing/">Ray Tracing</a>.</p>
 <h3 id="which-gi-should-i-use">Which GI should I use?</h3>
 <p>For most projects, DDGI plus SSGI. DDGI provides the low-frequency indirect bounce and SSGI adds
 contact-scale detail its probe grid cannot resolve. Static DDGI is cheaper and correct if nothing moves.
 Per-pixel ray-traced GI is reference-only and compiled out by default. See
-<a href="Global-Illumination.md">Global Illumination</a>.</p>
+<a href="../../Rendering/Global-Illumination/">Global Illumination</a>.</p>
 <h3 id="why-smaa-instead-of-taa">Why SMAA instead of TAA?</h3>
 <p>TAA's ghosting, smearing and motion softness are structural, not tuning problems. SMAA is spatial and does
 not have them. It is Vite's recommended default and is enabled with <code>r.Vite.SMAA.Mode</code>. See
-<a href="Anti-Aliasing.md">Anti-Aliasing</a>.</p>
+<a href="../../Rendering/Anti-Aliasing/">Anti-Aliasing</a>.</p>
 <h3 id="which-upscaler-should-i-use">Which upscaler should I use?</h3>
 <p>DLSS if you are on NVIDIA hardware and shipping to NVIDIA users. FSR or XeSS for cross-vendor coverage. NIS
 as a cheap fallback with no temporal component. Most projects should offer more than one. See
-<a href="Upscalers.md">Upscalers</a>.</p>
+<a href="../../Rendering/Upscalers/">Upscalers</a>.</p>
 <h3 id="volumetric-fog-looks-wrong-with-upscaling-enabled">Volumetric fog looks wrong with upscaling enabled</h3>
 <p>That is what <code>VITE_DLSS_PATCH</code> fixes. It adds
 <code>r.VolumetricFog.UseUpScaledSizeVolumetricFog</code>, which renders fog at output rather than internal
 resolution, along with translucency fixes. It defaults to <code>0</code>, so it requires a rebuild. See
-<a href="Upscalers.md">Upscalers</a>.</p>
+<a href="../../Rendering/Upscalers/">Upscalers</a>.</p>
 <h3 id="does-vite-have-nanite-or-lumen">Does Vite have Nanite or Lumen?</h3>
 <p>No, and it will not. Those are UE5 systems built on UE5 assumptions. Vite's answers are hardware
 tessellation and LODs for geometry, and DDGI plus SSGI for global illumination.</p>
 <h2 id="physics">Physics</h2>
 <h3 id="why-physx-instead-of-chaos">Why PhysX instead of Chaos?</h3>
 <p>PhysX is faster and more predictable on the workloads Vite targets, and it keeps Apex Destruction and Apex
-Cloth &mdash; both removed in UE5 &mdash; available. See <a href="PhysX.md">PhysX</a>.</p>
+Cloth &mdash; both removed in UE5 &mdash; available. See <a href="../../Physics/PhysX/">PhysX</a>.</p>
 <h3 id="how-do-i-get-deterministic-physics">How do I get deterministic physics?</h3>
 <p>Rebuild with <code>VITE_PHYSX_FIXED_TIMESTEP=1</code>, then enable
 <code>p.VitePhysXFixedTimestep.Enabled</code>. Without the compile-time switch the console variables do nothing. See
-<a href="Fixed-Timestep.md">Fixed Timestep</a>.</p>
+<a href="../../Physics/Fixed-Timestep/">Fixed Timestep</a>.</p>
 <h3 id="i-need-thousands-of-physics-objects">I need thousands of physics objects</h3>
-<p>Use the <a href="Instanced-Physics.md">PhysX Instanced Subsystem</a>. Conventional actor-per-body physics hits actor
+<p>Use the <a href="../../Physics/Instanced-Physics/">PhysX Instanced Subsystem</a>. Conventional actor-per-body physics hits actor
 overhead, not solver limits, at a few thousand bodies. The subsystem removes that overhead by driving
 instanced mesh transforms directly.</p>
 <h2 id="performance">Performance</h2>
 <h3 id="where-do-i-start-optimising">Where do I start optimising?</h3>
 <p><code>stat unit</code>, and identify which of Game, Draw or GPU is the largest. Optimising the wrong one produces no
-frame time improvement at all. See <a href="Profiling.md">Profiling</a>.</p>
+frame time improvement at all. See <a href="../../Performance/Profiling/">Profiling</a>.</p>
 <h3 id="my-game-thread-is-the-bottleneck">My game thread is the bottleneck</h3>
 <p>The usual suspects, in rough order of frequency: Character Movement Components, animation evaluation,
 Blueprint tick logic, and actor tick overhead generally. See
-<a href="400-Characters-CMC-Bench.md">400 Characters CMC Bench</a> and
-<a href="Performance-Targets.md">Performance Targets</a>.</p>
+<a href="../../ProjectsAndDemos/400-Characters-CMC-Bench/">400 Characters CMC Bench</a> and
+<a href="../../EngineOverview/Performance-Targets/">Performance Targets</a>.</p>
 <h3 id="shader-compilation-is-taking-forever">Shader compilation is taking forever</h3>
 <p>Check what your permutation count actually is before assuming it is unavoidable. Every shading model in
 use, every enabled plugin and every quality level multiplies. <code>VITE_RT_PSO_DEBLOAT=1</code> already removes a
 large share of the ray tracing permutations, which is why it is the default. See
-<a href="Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a>.</p>
+<a href="../../Performance/Shader-Compilation-And-PSO/">Shader Compilation and PSO</a>.</p>
 <h3 id="shaders-behave-as-though-my-change-did-not-happen">Shaders behave as though my change did not happen</h3>
 <p>Stale cache. Try <code>recompileshaders changed</code> or <code>recompileshaders global</code> first &mdash; both are far cheaper
 than a full wipe. If neither helps, run <code>WipeShaderCache.bat</code>. See
-<a href="Cache-Management.md">Cache Management</a>.</p>
+<a href="../../Tools/Cache-Management/">Cache Management</a>.</p>
 <h2 id="plugins">Plugins</h2>
 <h3 id="a-feature-is-missing-from-the-editor">A feature is missing from the editor</h3>
 <p>Check whether its plugin is enabled. Most bundled plugins default to off. Only RTXGI, NRD and the custom
-splash screen are on by default. See <a href="Bundled-Plugins.md">Bundled Plugins</a>.</p>
+splash screen are on by default. See <a href="../../Plugins/Bundled-Plugins/">Bundled Plugins</a>.</p>
 <h3 id="can-i-get-plugin-x-bundled">Can I get plugin X bundled?</h3>
 <p>If it is 4.21&ndash;4.27 compatible, permissively licensed and worth its size and compile cost, propose it.
-UE5-only plugins are out of scope. See <a href="Proposed-Plugins.md">Proposed Plugins</a>.</p>
+UE5-only plugins are out of scope. See <a href="../../Plugins/Proposed-Plugins/">Proposed Plugins</a>.</p>
 <h3 id="the-debloat-script-removed-a-plugin-i-need">The debloat script removed a plugin I need</h3>
 <p><code>ExcludedPlugins.txt</code> is aggressive and includes plugins many projects use. If you ran in move mode, the
 files are in <code>ViteDebloat_Moved</code> next to the engine folder. If you ran in delete mode, they are gone and
-you need to restore from source control. See <a href="Debloat-Guide.md">Debloat Guide</a>.</p>
+you need to restore from source control. See <a href="../../Performance/Debloat-Guide/">Debloat Guide</a>.</p>
 <h2 id="contributing">Contributing</h2>
 <h3 id="what-gets-a-pull-request-rejected-fastest">What gets a pull request rejected fastest?</h3>
 <p>Modifying an ABI: ray tracing payload bitfields, shader-visible enums, packed RHI or RenderCore bitmasks,
 reflection bitmask definitions, or any CPU/GPU shared struct layout. These are rejected regardless of the
-rest of the change. See <a href="Coding-Guidelines.md">Coding Guidelines</a>.</p>
+rest of the change. See <a href="../../Contributing/Coding-Guidelines/">Coding Guidelines</a>.</p>
 <h3 id="can-i-use-recursion-virtuals-or-templates">Can I use recursion, virtuals or templates?</h3>
 <p>Recursion is banned. New virtuals need strict justification. Templates are discouraged unless they earn
 their compile-time and binary-size cost. New Blueprint-exposed functions need explicit approval.</p>
 <h3 id="how-do-i-document-my-change">How do I document my change?</h3>
 <p>In the same pull request. New console variables go on the relevant feature page, new <code>VITE_*</code> switches go
-in <a href="Compile-Time-Switches.md">Compile-Time Switches</a>, and changed defaults go in
-<a href="Engine-Defaults.md">Engine Defaults</a>. See
-<a href="Documentation-Contributions.md">Documentation Contributions</a>.</p>
+in <a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a>, and changed defaults go in
+<a href="../../Performance/Engine-Defaults/">Engine Defaults</a>. See
+<a href="../../Contributing/Documentation-Contributions/">Documentation Contributions</a>.</p>
 <h2 id="see-also">See also</h2>
 <ul>
 <li><a href="../Console-Variables/">Console Variables</a></li>
 <li><a href="../Glossary/">Glossary</a></li>
-<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
-<li><a href="Build-Troubleshooting.md">Build Troubleshooting</a></li>
+<li><a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a></li>
+<li><a href="../../GettingStarted/Build-Troubleshooting/">Build Troubleshooting</a></li>
 </ul>
               
             </div>

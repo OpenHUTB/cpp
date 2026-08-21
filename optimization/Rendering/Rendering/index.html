@@ -144,9 +144,9 @@
 <p><tldr></p>
 <p>
 Vite's renderer is a deferred SM5 renderer with an engine-agnostic DXR ray tracing pipeline. Global
-illumination is <a href="DDGI-Dynamic.md">DDGI</a> rather than Lumen, geometric detail is
-<a href="Tessellation.md">tessellation</a> rather than Nanite, and anti-aliasing defaults to native
-resolution with <a href="Anti-Aliasing.md">SMAA</a> rather than temporal reconstruction.
+illumination is <a href="./DDGI-Dynamic.md">DDGI</a> rather than Lumen, geometric detail is
+<a href="./Tessellation.md">tessellation</a> rather than Nanite, and anti-aliasing defaults to native
+resolution with <a href="./Anti-Aliasing.md">SMAA</a> rather than temporal reconstruction.
 </p>
 <p></tldr></p>
 <p>This is the largest section of the manual, because rendering is where Vite diverges most from both stock
@@ -158,7 +158,7 @@ tracing pipeline is <em>agnostic</em>: acceleration structures are built and upd
 particular lighting solution, which is what allows DDGI, RTXDI and the various RT effects to coexist and be
 enabled independently.</p>
 <p>That is the opposite of the UE 5.1+ arrangement, where ray tracing scene construction is coupled to Lumen,
-Nanite and GPU Scene. See <a href="Why-NvRTX-427.md">Why NvRTX 4.27</a>.</p>
+Nanite and GPU Scene. See <a href="../../EngineOverview/Why-NvRTX-427/">Why NvRTX 4.27</a>.</p>
 <blockquote>
 <p>Vite enables Ray Tracing effects by default in new projects. This is intentional for
 discoverability but means you should consciously decide what to turn off. See
@@ -197,7 +197,7 @@ discoverability but means you should consciously decide what to turn off. See
 </ul>
 <h2 id="choosing-a-rendering-configuration">Choosing a rendering configuration</h2>
 <p>The right starting point depends on your performance target. These are the configurations behind the four
-targets in <a href="Performance-Targets.md">Performance Targets</a>.</p>
+targets in <a href="../../EngineOverview/Performance-Targets/">Performance Targets</a>.</p>
 <table>
 <thead>
 <tr>
@@ -260,13 +260,13 @@ targets in <a href="Performance-Targets.md">Performance Targets</a>.</p>
 </table>
 <p>Every one of these is a starting point, not a prescription. The console variables for each are documented
 on the corresponding pages and collected in the
-<a href="Console-Variables.md">Console Variable Reference</a>.</p>
+<a href="../../Reference/Console-Variables/">Console Variable Reference</a>.</p>
 <h2 id="see-also">See also</h2>
 <ul>
-<li><a href="Performance-Targets.md">Performance Targets</a></li>
-<li><a href="Profiling.md">Profiling and Benchmarking</a></li>
-<li><a href="Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a></li>
-<li><a href="Console-Variables.md">Console Variable Reference</a></li>
+<li><a href="../../EngineOverview/Performance-Targets/">Performance Targets</a></li>
+<li><a href="../../Performance/Profiling/">Profiling and Benchmarking</a></li>
+<li><a href="../../Performance/Shader-Compilation-And-PSO/">Shader Compilation and PSO</a></li>
+<li><a href="../../Reference/Console-Variables/">Console Variable Reference</a></li>
 </ul>
               
             </div>

@@ -148,7 +148,7 @@ artists, designers and anyone who does not modify engine C++ can use one directl
     -clean
 </code></pre></div>
 <p>The configuration is Win64-only with Development and Shipping game configurations, matching Vite's
-<a href="Platforms.md">platform focus</a>. <code>WithDDC=false</code> skips derived data cache generation, which shortens the
+<a href="../../Platforms/Platforms/">platform focus</a>. <code>WithDDC=false</code> skips derived data cache generation, which shortens the
 build considerably at the cost of first-launch shader compilation for the end user.</p>
 <p>You can also reach this through <a href="../ViteSetup/">ViteSetup</a> &mdash; step 4, binary option, or menu option 8.
 The ViteSetup path is incremental; <code>RunUAT.bat</code> as shipped passes <code>-clean</code>.</p>
@@ -221,7 +221,7 @@ exclude PDBs. If you need symbols in the archive, use
 <h3 id="the-exclusion-lists">The exclusion lists</h3>
 <p><code>ExcludedPdbs.txt</code> lists roughly 1,100 PDB paths covering the engine modules and plugins. Debug symbols are
 a very large fraction of a source build's size, so excluding them is the single biggest packaging saving.</p>
-<p><code>ExcludedPlugins.txt</code> is the same list used by the <a href="Debloat-Guide.md">debloat suite</a>. In the <code>Separate</code>
+<p><code>ExcludedPlugins.txt</code> is the same list used by the <a href="../../Performance/Debloat-Guide/">debloat suite</a>. In the <code>Separate</code>
 variants it splits plugins into their own archive rather than removing them &mdash; users extract the base
 engine and add the plugin archive only if they need it.</p>
 <h3 id="why-split-plugins">Why split plugins</h3>
@@ -261,16 +261,16 @@ distinct names.</p>
 <p>Installed builds cannot compile engine C++. Projects using them can still have their own C++ modules, which
 compile against the installed engine's headers and libraries, but engine source changes require a source
 build.</p>
-<p>This includes <a href="Compile-Time-Switches.md">compile-time switches</a>. If your project needs
+<p>This includes <a href="../../Performance/Compile-Time-Switches/">compile-time switches</a>. If your project needs
 <code>VITE_RT_PSO_DEBLOAT=0</code> for path tracing or RTXDI, that has to be baked into the installed build at the
 time it is produced.</p>
 <h2 id="see-also">See also</h2>
 <ul>
 <li><a href="../ViteSetup/">ViteSetup Assistant</a></li>
-<li><a href="Install-Binary-Build.md">Install a Binary Build</a></li>
-<li><a href="Build-From-Source.md">Build from Source</a></li>
-<li><a href="Debloat-Guide.md">Debloat Guide</a></li>
-<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
+<li><a href="../../GettingStarted/Install-Binary-Build/">Install a Binary Build</a></li>
+<li><a href="../../GettingStarted/Build-From-Source/">Build from Source</a></li>
+<li><a href="../../Performance/Debloat-Guide/">Debloat Guide</a></li>
+<li><a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a></li>
 </ul>
               
             </div>

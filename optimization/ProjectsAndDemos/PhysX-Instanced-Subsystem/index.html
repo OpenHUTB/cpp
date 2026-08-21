@@ -135,8 +135,7 @@ instanced mesh transforms with PhysX bodies managed from a world subsystem.
 <p><em>采用实例化渲染，每个实例都使用真实的 PhysX 物理体。在相同预算下，这里的物理体数量远远超过每个角色一个物理体的模拟方式。</em></p>
 <h2 id="what-it-demonstrates">What it demonstrates</h2>
 <p>Conventional Unreal physics spawns an <code>AActor</code> with a <code>UPrimitiveComponent</code> per body. That works to a few
-thousand bodies and then the actor and component overhead, not the solver, becomes the limit &mdash; as the
-<a href="../Physics-Cube-Bench/">Physics Cube Bench</a> shows.</p>
+thousand bodies and then the actor and component overhead, not the solver, becomes the limit &mdash; as the <a href="../Physics-Cube-Bench/">Physics Cube Bench</a> shows.</p>
 <p>The subsystem keeps one or a few instanced mesh actors for rendering, creates per-instance PhysX rigid
 bodies, and writes their poses back into ISM/HISM instance transforms. Rendering is instanced, simulation
 is real, and the actor overhead is gone.</p>
@@ -175,7 +174,7 @@ is real, and the actor overhead is gone.</p>
 <p>The budget and auto-stop behaviour is the part worth understanding. Large body counts are affordable
 because most bodies are asleep most of the time; the subsystem makes that automatic rather than something
 you manage.</p>
-<p>Full API and configuration detail in <a href="Instanced-Physics.md">Instanced Physics</a>.</p>
+<p>Full API and configuration detail in <a href="../../Physics/Instanced-Physics/">Instanced Physics</a>.</p>
 <h2 id="when-to-use-it">When to use it</h2>
 <p>Debris, rubble, shell casings, foliage knocked loose, destruction fallout &mdash; anything where you want
 many physically simulated objects that do not each need their own actor identity, gameplay logic or
@@ -184,13 +183,13 @@ replication.</p>
 case where the objects are scenery that happens to move.</p>
 <h2 id="status">Status</h2>
 <p>Bundled at version 1.11 in <code>Engine\Plugins\Runtime\VitePlugins\PhysXInstancedSubsystem</code>. See
-<a href="Bundled-Plugins.md">Bundled Plugins</a>.</p>
+<a href="../../Plugins/Bundled-Plugins/">Bundled Plugins</a>.</p>
 <h2 id="see-also">See also</h2>
 <ul>
-<li><a href="Instanced-Physics.md">Instanced Physics</a></li>
+<li><a href="../../Physics/Instanced-Physics/">Instanced Physics</a></li>
 <li><a href="../Physics-Cube-Bench/">Physics Cube Bench</a></li>
-<li><a href="PhysX.md">PhysX</a></li>
-<li><a href="Bundled-Plugins.md">Bundled Plugins</a></li>
+<li><a href="../Plugins/PhysX.md">PhysX</a></li>
+<li><a href="../../Plugins/Bundled-Plugins/">Bundled Plugins</a></li>
 </ul>
               
             </div>

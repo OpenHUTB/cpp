@@ -136,11 +136,11 @@ and water caustics all have their shader permutations removed when <code>VITE_RT
 <code>1</code>, which is the default. Their console variables will set successfully and render nothing.</p>
 <p>
 Rebuild with <code>VITE_RT_PSO_DEBLOAT=0</code> to use them. See
-<a href="Compile-Time-Switches.md">Compile-Time Switches</a>.
+<a href="../Performance/Compile-Time-Switches.md">Compile-Time Switches</a>.
 </p>
 <p></warning></p>
 <p>These are the most expensive effects in the ray tracing suite, and none of them fit inside Vite's
-<a href="Performance-Targets.md">performance targets</a> at 4K. They are documented here because the NvRTX lineage
+<a href="../../EngineOverview/Performance-Targets/">performance targets</a> at 4K. They are documented here because the NvRTX lineage
 provides them and some projects will want them for cinematics, marketing captures or specific set pieces.</p>
 <blockquote>
 <p>All code and art assets of the RTX features inherited from the NvRTX Caustics branch are covered by the
@@ -477,8 +477,8 @@ tune <strong>Dispersion Offset</strong>.</p>
 </ul>
 <p>Specific scenes: the POV-Ray Glasses scene for heavy refraction, a prism dispersion demonstration, the
 Swimming Pool scene for water caustics, and the Office scene mixing particles, reflections, refractions,
-mesh caustics and RTGI. See also <a href="Abandone-Apartment.md">Abandoned Apartment</a> and
-<a href="Attic-Scene.md">Attic Scene</a> in this manual.</p>
+mesh caustics and RTGI. See also <a href="../../ProjectsAndDemos/Abandone-Apartment/">Abandoned Apartment</a> and
+<a href="../../ProjectsAndDemos/Attic-Scene/">Attic Scene</a> in this manual.</p>
 <p><img alt="" src="../../../img/optimization/RTOfficeScene.jpg" /></p>
 <p><em>结合了体积光、半透明球体、光线追踪反射和折射的办公场景</em></p>
 <p><em>办公室场景一次性运用了所有技术：粒子、半透明反射和折射、网格焦散和光线追踪全局光照都在单个帧中实现。</em></p>
@@ -487,7 +487,7 @@ mesh caustics and RTGI. See also <a href="Abandone-Apartment.md">Abandoned Apart
 <li><a href="../Ray-Tracing/">Ray Tracing</a></li>
 <li><a href="../RT-Reflections/">RT Reflections</a></li>
 <li><a href="../Upscalers/">Upscalers and Frame Generation</a></li>
-<li><a href="Console-Variables.md">Console Variable Reference</a></li>
+<li><a href="../../Reference/Console-Variables/">Console Variable Reference</a></li>
 </ul>
               
             </div>

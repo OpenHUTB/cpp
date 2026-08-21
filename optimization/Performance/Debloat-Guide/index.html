@@ -212,19 +212,20 @@ STRIP=FeaturePacks\StarterContent.upack
 #STRIP=Samples\PixelStreaming
 #STRIP=Samples\RTXGI_Test
 </code></pre></div>
-<p>根据精简策略，初始内容已被移除。默认情况下，分支特定的测试样本会被保留——特别是 <code>RTXGI_Test</code>，它在验证 <a href="DDGI-Dynamic.md">DDGI</a> 时非常有用。</p>
+<p>根据精简策略，初始内容已被移除。默认情况下，分支特定的测试样本会被保留——特别是 <code>RTXGI_Test</code>，它在验证 <a href="../../Rendering/DDGI-Dynamic/">DDGI</a> 时非常有用。</p>
 <p>树中不存在的条目会被跳过并显示一条通知，这不会造成任何影响。</p>
 <h2 id="_9">插件通过</h2>
 <p>默认情况下禁用，因为每个项目的插件需求各不相同：</p>
 <div class="highlight"><pre><span></span><code>#PLUGIN_LIST=ExcludedPlugins.txt
 </code></pre></div>
-<p><code>ExcludedPlugins.txt</code> 文件列出了大约 200 个引擎插件路径，涵盖移动和 XR 平台、除您当前使用的源代码控制提供商之外的其他源代码控制提供商、Chaos 插件（由于 Vite 使用 <a href="PhysX.md">PhysX</a>，因此无需列出）、企业和虚拟生产工具，以及大量实验性插件。</p>
+<p><code>ExcludedPlugins.txt</code> 文件列出了大约 200 个引擎插件路径，涵盖移动和 XR 平台、除您当前使用的源代码控制提供商之外的其他源代码控制提供商、Chaos 插件（由于 Vite 使用 <a href="../../Physics/PhysX/">PhysX</a>，因此无需列出）、企业和虚拟生产工具，以及大量实验性插件。</p>
 <p>系统首先会在脚本目录下查找该文件，然后在引擎根目录下查找。</p>
 <div class="admonition 警告">
 <p class="admonition-title">警告</p>
-<p>启用此渲染通道前，请阅读 <code>ExcludedPlugins.txt</code> 文件。该文件包含您的项目可能需要的插件条目，例如 <code>Engine/Plugins/Runtime/GameplayAbilities/</code>、<code>Engine/Plugins/Runtime/ApexDestruction/</code>、<code>Engine/Plugins/Runtime/HairStrands/</code>、<code>Engine/Plugins/Runtime/Nvidia/</code>（包含 <a href="Upscalers.md">DLSS 和 Streamline 插件</a>）以及 <code>Engine/Plugins/Runtime/PhysXVehicles/</code>。</p>
-<p>运行此渲染通道前，请注释掉您使用的所有插件对应的行。</p>
 </div>
+<p>启用此渲染通道前，请阅读 <code>ExcludedPlugins.txt</code> 文件。该文件包含您的项目可能需要的插件条目，例如 <code>Engine/Plugins/Runtime/GameplayAbilities/</code>、<code>Engine/Plugins/Runtime/ApexDestruction/</code>、<code>Engine/Plugins/Runtime/HairStrands/</code>、<code>Engine/Plugins/Runtime/Nvidia/</code>（包含 <a href="../../Rendering/Upscalers/">DLSS 和 Streamline 插件</a>）以及 <code>Engine/Plugins/Runtime/PhysXVehicles/</code>。</p>
+<pre><code>运行此渲染通道前，请注释掉您使用的所有插件对应的行。
+</code></pre>
 <h2 id="_10">运行</h2>
 <h3 id="_11">精简引擎安装</h3>
 <ol>
@@ -259,10 +260,10 @@ STRIP=FeaturePacks\StarterContent.upack
 <p>有关运行时性能，请参阅<a href="../Profiling/">性能分析</a>和<a href="../Engine-Defaults/">引擎默认更改</a>。关于构建时间，移除添加的 Vite 插件可以在 15 分钟的完整构建过程中节省大约 3 分钟；请参阅<a href="../Shader-Compilation-And-PSO/">着色器编译和PSO</a>。</p>
 <h2 id="_15">另请参阅</h2>
 <ul>
-<li><a href="Build-From-Source.md">从源代码构建</a></li>
+<li><a href="../../GettingStarted/Build-From-Source/">从源代码构建</a></li>
 <li><a href="../Engine-Defaults/">引擎默认设置更改</a></li>
-<li><a href="Bundled-Plugins.md">捆绑插件</a></li>
-<li><a href="Cache-Management.md">缓存管理</a></li>
+<li><a href="../../Plugins/Bundled-Plugins/">捆绑插件</a></li>
+<li><a href="../../Tools/Cache-Management/">缓存管理</a></li>
 </ul>
               
             </div>

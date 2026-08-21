@@ -146,7 +146,7 @@ difference is visible &mdash; usually the key light and any large area light &md
 on shadow maps. This is by far the most effective optimisation available and it is frequently overlooked.</p>
 <p><strong>Maximum distance.</strong> Bounding shadow ray distance limits cost in large scenes.</p>
 <p>Vite includes rendering optimisations specifically targeting RT shadows and RT direct lighting, and further
-performance work on RTAO and RT shadows is in progress. See <a href="Release-Notes.md">Release Notes</a>.</p>
+performance work on RTAO and RT shadows is in progress. See <a href="../../EngineOverview/Release-Notes/">Release Notes</a>.</p>
 <h2 id="ray-traced-ambient-occlusion">Ray-traced ambient occlusion</h2>
 <p>RTAO traces short rays into the hemisphere around each shaded point to determine how occluded it is. Unlike
 screen-space AO it accounts for geometry that is off-screen or occluded, so it does not exhibit the halo and
@@ -193,7 +193,7 @@ disocclusion artefacts SSAO produces under camera motion.</p>
 <p>In practice, most Vite projects targeting 60 FPS or above run cascaded shadow maps and either the SSAO fast
 path or HBAO+, and spend the ray tracing budget on <a href="../DDGI-Dynamic/">DDGI</a> and
 <a href="../RT-Reflections/">reflections</a> instead. Only the 1440p30 "Fidelity, full RT" target in
-<a href="Performance-Targets.md">Performance Targets</a> enables both RT shadows and RTAO.</p>
+<a href="../../EngineOverview/Performance-Targets/">Performance Targets</a> enables both RT shadows and RTAO.</p>
 <p>Note that Vite's SSAO has both a fast path and a memory-access optimisation. It is much cheaper than the
 stock 4.27 implementation, which shifts the calculus further away from RTAO than you might expect from
 experience with other engines.</p>
@@ -210,7 +210,7 @@ frequently the single largest ray tracing cost in the frame, ahead of reflection
 <li><a href="../Ray-Tracing/">Ray Tracing</a></li>
 <li><a href="../Ambient-Occlusion/">Ambient Occlusion</a></li>
 <li><a href="../RTXDI/">RTXDI</a></li>
-<li><a href="Performance-Targets.md">Performance Targets</a></li>
+<li><a href="../../EngineOverview/Performance-Targets/">Performance Targets</a></li>
 </ul>
               
             </div>

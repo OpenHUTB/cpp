@@ -190,7 +190,7 @@ your tree.</p>
 </tbody>
 </table>
 <p>FSR 4 uses the native ffx-api and is DX12-only. It was backported to 4.27 specifically for Vite. Full
-detail in <a href="Upscalers.md">Upscalers</a>.</p>
+detail in <a href="../../Rendering/Upscalers/">Upscalers</a>.</p>
 <h2 id="_3">光线追踪和渲染</h2>
 <table>
 <thead>
@@ -234,8 +234,8 @@ detail in <a href="Upscalers.md">Upscalers</a>.</p>
 </tr>
 </tbody>
 </table>
-<p>RTXGI provides the DDGI implementation that is Vite's recommended dynamic GI solution. NRD/ReLAX denoises ray-traced output. Both being on by default is deliberate: they are the basis of Vite's recommended lighting setup. See <a href="Global-Illumination.md">Global Illumination</a> and
-<a href="DDGI-Dynamic.md">Dynamic DDGI</a>.</p>
+<p>RTXGI provides the DDGI implementation that is Vite's recommended dynamic GI solution. NRD/ReLAX denoises ray-traced output. Both being on by default is deliberate: they are the basis of Vite's recommended lighting setup. See <a href="../../Rendering/Global-Illumination/">Global Illumination</a> and
+<a href="../../Rendering/DDGI-Dynamic/">Dynamic DDGI</a>.</p>
 <h2 id="_4">头发</h2>
 <table>
 <thead>
@@ -262,7 +262,7 @@ detail in <a href="Upscalers.md">Upscalers</a>.</p>
 </tbody>
 </table>
 <p>Two independent hair systems with different authoring pipelines. See
-<a href="Hair-Rendering.md">Hair Rendering</a>.</p>
+<a href="../../Rendering/Hair-Rendering/">Hair Rendering</a>.</p>
 <h2 id="_5">物理和破坏</h2>
 <table>
 <thead>
@@ -301,13 +301,13 @@ detail in <a href="Upscalers.md">Upscalers</a>.</p>
 </tbody>
 </table>
 <p>Apex Destruction, Apex Cloth and PhysX Vehicles are stock 4.27 plugins that Vite retains &mdash; they were
-removed in UE5 when Chaos replaced PhysX. See <a href="Destruction-And-Cloth.md">Destruction and Cloth</a>.</p>
+removed in UE5 when Chaos replaced PhysX. See <a href="../../Physics/Destruction-And-Cloth/">Destruction and Cloth</a>.</p>
 <p>Kawaii Physics is a UE5 secondary-motion bone solver backported to Vite. It gives hair, cloth and
 accessories physical follow-through from a single animation node, far more cheaply than a full cloth
 simulation.</p>
 <p>The PhysX Instanced Subsystem manages large numbers of PhysX-backed instanced bodies through a world
 subsystem, writing poses back into ISM/HISM instance transforms rather than spawning individual actors.
-See <a href="Instanced-Physics.md">Instanced Physics</a>.</p>
+See <a href="../../Physics/Instanced-Physics/">Instanced Physics</a>.</p>
 <h2 id="animation">Animation</h2>
 <table>
 <thead>
@@ -332,7 +332,7 @@ See <a href="Instanced-Physics.md">Instanced Physics</a>.</p>
 </table>
 <p>ACL replaces Unreal's built-in animation compression with a substantially better size/quality curve. On a
 project with a large animation set the memory saving is significant, and it is one of the cheapest wins
-available &mdash; see <a href="Performance-Targets.md">Performance Targets</a>.</p>
+available &mdash; see <a href="../../EngineOverview/Performance-Targets/">Performance Targets</a>.</p>
 <p>Motion Symphony provides motion matching and pose matching, the Ubisoft-style approach to animation
 synthesis. It is the closest 4.27 equivalent to UE5's Motion Matching.
 <a href="https://www.wikiful.com/@AnimationUprising/motion-symphony/motion-matching">Documentation</a> ·
@@ -364,7 +364,7 @@ GAS's complexity and replication model.</p>
 <p>Flecs ECS is an engine-level integration of the Flecs entity component system, providing a world subsystem,
 Blueprint entity handles, an ISM-based rendering demo and optional Flecs Explorer support. It is off by
 default. Useful when actor-per-entity overhead is the bottleneck &mdash; see the
-<a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 vs UE5 cost analysis</a> on core class base costs.</p>
+<a href="../../EngineOverview/UE4-Versus-UE5-Cost-Analysis/">UE4 vs UE5 cost analysis</a> on core class base costs.</p>
 <h2 id="debug-and-profiling">Debug and profiling</h2>
 <table>
 <thead>
@@ -400,7 +400,7 @@ default. Useful when actor-per-entity overhead is the bottleneck &mdash; see the
 <p>ImGui gives you immediate-mode debug UI that works in the viewport and in standalone builds, where Slate
 debug widgets are awkward. ImGui Tools builds functional development tools on top of it.</p>
 <p>The GPA plugin integrates Intel Graphics Performance Analyzers into the editor. Automatron improves
-automated testing for C++ and Blueprints. See <a href="Profiling.md">Profiling</a>.</p>
+automated testing for C++ and Blueprints. See <a href="../../Performance/Profiling/">Profiling</a>.</p>
 <h2 id="content-and-utilities">Content and utilities</h2>
 <table>
 <thead>
@@ -463,15 +463,15 @@ call cost you cannot afford.</p>
 </table>
 <p>Everything else is opt-in. If a feature appears not to work, check that its plugin is enabled before
 debugging further &mdash; and for ray tracing features, check the
-<a href="Ray-Tracing.md">compile-time switch availability table</a> as well.</p>
+<a href="../../Rendering/Ray-Tracing/">compile-time switch availability table</a> as well.</p>
 <h2 id="see-also">See also</h2>
 <ul>
 <li><a href="../Plugins/">Plugins</a></li>
 <li><a href="../Proposed-Plugins/">Proposed Plugins</a></li>
-<li><a href="Upscalers.md">Upscalers</a></li>
-<li><a href="Hair-Rendering.md">Hair Rendering</a></li>
-<li><a href="Instanced-Physics.md">Instanced Physics</a></li>
-<li><a href="Debloat-Guide.md">Debloat Guide</a></li>
+<li><a href="../../Rendering/Upscalers/">Upscalers</a></li>
+<li><a href="../../Rendering/Hair-Rendering/">Hair Rendering</a></li>
+<li><a href="../../Physics/Instanced-Physics/">Instanced Physics</a></li>
+<li><a href="../../Performance/Debloat-Guide/">Debloat Guide</a></li>
 </ul>
               
             </div>

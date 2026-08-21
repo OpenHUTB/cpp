@@ -131,7 +131,7 @@ full set.
 <p><warning>
 Several ray tracing variables in this list are <b>compiled out</b> in a default build. They will set
 successfully and render nothing. Availability is noted per variable; see
-<a href="Compile-Time-Switches.md">Compile-Time Switches</a>.
+<a href="../Performance/Compile-Time-Switches.md">Compile-Time Switches</a>.
 </warning></p>
 <p>Set variables at runtime in the console, or persistently in <code>Config\DefaultEngine.ini</code>:</p>
 <div class="highlight"><pre><span></span><code><span class="k">[/Script/Engine.RendererSettings]</span>
@@ -152,12 +152,12 @@ successfully and render nothing. Availability is noted per variable; see
 <tr>
 <td><code>r.Vite.SMAA.Mode</code></td>
 <td>1</td>
-<td>SMAA quality. 0 = Low, 1 = High. See <a href="Anti-Aliasing.md">Anti-Aliasing</a>.</td>
+<td>SMAA quality. 0 = Low, 1 = High. See <a href="../../Rendering/Anti-Aliasing/">Anti-Aliasing</a>.</td>
 </tr>
 <tr>
 <td><code>r.Vite.SSAO</code></td>
 <td>&mdash;</td>
-<td>Vite's optimised SSAO path. See <a href="Ambient-Occlusion.md">Ambient Occlusion</a>.</td>
+<td>Vite's optimised SSAO path. See <a href="../../Rendering/Ambient-Occlusion/">Ambient Occlusion</a>.</td>
 </tr>
 <tr>
 <td><code>r.AntiAliasing.SMAA.Debug</code></td>
@@ -198,7 +198,7 @@ successfully and render nothing. Availability is noted per variable; see
 </table>
 <p><note>
 The <code>p.VitePhysXFixedTimestep.*</code> variables require a build with
-<code>VITE_PHYSX_FIXED_TIMESTEP=1</code>. See <a href="Fixed-Timestep.md">Fixed Timestep</a>.
+<code>VITE_PHYSX_FIXED_TIMESTEP=1</code>. See <a href="../Physics/Fixed-Timestep.md">Fixed Timestep</a>.
 </note></p>
 <h2 id="ray-tracing">Ray tracing</h2>
 <table>
@@ -215,43 +215,43 @@ The <code>p.VitePhysXFixedTimestep.*</code> variables require a build with
 <td><code>r.RayTracing.Reflections</code></td>
 <td>0</td>
 <td>Available</td>
-<td><a href="RT-Reflections.md">RT Reflections</a></td>
+<td><a href="../../Rendering/RT-Reflections/">RT Reflections</a></td>
 </tr>
 <tr>
 <td><code>r.RayTracing.Shadows</code></td>
 <td>0</td>
 <td>Available</td>
-<td><a href="RT-Shadows-And-Ambient-Occlusion.md">RT Shadows and AO</a></td>
+<td><a href="../../Rendering/RT-Shadows-And-Ambient-Occlusion/">RT Shadows and AO</a></td>
 </tr>
 <tr>
 <td><code>r.RayTracing.AmbientOcclusion</code></td>
 <td>0</td>
 <td>Available</td>
-<td><a href="Ambient-Occlusion.md">Ambient Occlusion</a></td>
+<td><a href="../../Rendering/Ambient-Occlusion/">Ambient Occlusion</a></td>
 </tr>
 <tr>
 <td><code>r.RayTracing.SkyLight</code></td>
 <td>&mdash;</td>
 <td>Available</td>
-<td><a href="Ray-Tracing.md">Ray Tracing</a></td>
+<td><a href="../../Rendering/Ray-Tracing/">Ray Tracing</a></td>
 </tr>
 <tr>
 <td><code>r.RayTracing.GlobalIllumination</code></td>
 <td>-1</td>
 <td><strong>Compiled out</strong></td>
-<td><a href="Global-Illumination.md">Global Illumination</a></td>
+<td><a href="../../Rendering/Global-Illumination/">Global Illumination</a></td>
 </tr>
 <tr>
 <td><code>r.RayTracing.Translucency</code></td>
 <td>0</td>
 <td><strong>Compiled out</strong></td>
-<td><a href="RT-Translucency-And-Caustics.md">RT Translucency and Caustics</a></td>
+<td><a href="../../Rendering/RT-Translucency-And-Caustics/">RT Translucency and Caustics</a></td>
 </tr>
 <tr>
 <td><code>r.RayTracing.SampledDirectLighting</code></td>
 <td>0</td>
 <td><strong>Compiled out</strong></td>
-<td><a href="RTXDI.md">RTXDI</a></td>
+<td><a href="../../Rendering/RTXDI/">RTXDI</a></td>
 </tr>
 </tbody>
 </table>
@@ -288,7 +288,7 @@ The <code>p.VitePhysXFixedTimestep.*</code> variables require a build with
 </tbody>
 </table>
 <p>Culling settings are among the most effective ray tracing performance levers, and Vite changes some of
-their defaults &mdash; see <a href="Engine-Defaults.md">Engine Defaults</a>.</p>
+their defaults &mdash; see <a href="../../Performance/Engine-Defaults/">Engine Defaults</a>.</p>
 <h3 id="sky-light">Sky light</h3>
 <table>
 <thead>
@@ -404,7 +404,7 @@ temporal resampling, ReGIR cell configuration and per-light-type toggles &mdash;
 </tr>
 </tbody>
 </table>
-<p>See <a href="RTXDI.md">RTXDI</a>.</p>
+<p>See <a href="../../Rendering/RTXDI/">RTXDI</a>.</p>
 <h3 id="caustics">Caustics</h3>
 <p>Mesh and water caustics are driven primarily by post-process volume settings rather than console variables,
 and both are compiled out by default. Related variables:</p>
@@ -430,7 +430,7 @@ and both are compiled out by default. Related variables:</p>
 </tr>
 </tbody>
 </table>
-<p>See <a href="RT-Translucency-And-Caustics.md">RT Translucency and Caustics</a>.</p>
+<p>See <a href="../../Rendering/RT-Translucency-And-Caustics/">RT Translucency and Caustics</a>.</p>
 <h2 id="global-illumination">Global illumination</h2>
 <table>
 <thead>
@@ -474,8 +474,8 @@ and both are compiled out by default. Related variables:</p>
 </tr>
 </tbody>
 </table>
-<p>The RTXGI plugin is enabled by default. See <a href="DDGI-Dynamic.md">Dynamic DDGI</a> and
-<a href="Global-Illumination.md">Global Illumination</a>.</p>
+<p>The RTXGI plugin is enabled by default. See <a href="../../Rendering/DDGI-Dynamic/">Dynamic DDGI</a> and
+<a href="../../Rendering/Global-Illumination/">Global Illumination</a>.</p>
 <h2 id="ambient-occlusion">Ambient occlusion</h2>
 <table>
 <thead>
@@ -508,7 +508,7 @@ and both are compiled out by default. Related variables:</p>
 (9500), depth sharpness (50.0), and foreground and background AO distances.</p>
 <p><note>
 The <code>r.HBAO.Enable</code> help text describes HBAO+ as DX11-only. This is out of date; there is a
-working D3D12 implementation. See <a href="Ambient-Occlusion.md">Ambient Occlusion</a>.
+working D3D12 implementation. See <a href="../Rendering/Ambient-Occlusion.md">Ambient Occlusion</a>.
 </note></p>
 <h2 id="tessellation">Tessellation</h2>
 <table>
@@ -527,7 +527,7 @@ working D3D12 implementation. See <a href="Ambient-Occlusion.md">Ambient Occlusi
 </tr>
 </tbody>
 </table>
-<p>See <a href="Tessellation.md">Tessellation</a>.</p>
+<p>See <a href="../../Rendering/Tessellation/">Tessellation</a>.</p>
 <h2 id="hair">Hair</h2>
 <table>
 <thead>
@@ -551,7 +551,7 @@ working D3D12 implementation. See <a href="Ambient-Occlusion.md">Ambient Occlusi
 </tr>
 </tbody>
 </table>
-<p>See <a href="Hair-Rendering.md">Hair Rendering</a>.</p>
+<p>See <a href="../../Rendering/Hair-Rendering/">Hair Rendering</a>.</p>
 <h2 id="volumetric-fog">Volumetric fog</h2>
 <table>
 <thead>
@@ -574,7 +574,7 @@ working D3D12 implementation. See <a href="Ambient-Occlusion.md">Ambient Occlusi
 <p><note>
 <code>r.VolumetricFog.UseUpScaledSizeVolumetricFog</code> only exists in builds with
 <code>VITE_DLSS_PATCH=1</code>. It exists to fix volumetric fog resolution when upscaling. See
-<a href="Upscalers.md">Upscalers</a>.
+<a href="../Rendering/Upscalers.md">Upscalers</a>.
 </note></p>
 <h2 id="profiling">Profiling</h2>
 <p>Standard Unreal, but worth having in one place:</p>
@@ -632,7 +632,7 @@ working D3D12 implementation. See <a href="Ambient-Occlusion.md">Ambient Occlusi
 </tr>
 </tbody>
 </table>
-<p>See <a href="Profiling.md">Profiling</a>.</p>
+<p>See <a href="../../Performance/Profiling/">Profiling</a>.</p>
 <h2 id="finding-variables-yourself">Finding variables yourself</h2>
 <table>
 <thead>
@@ -666,9 +666,9 @@ behaviour and help text disagree, the source is authoritative.
 </warning></p>
 <h2 id="see-also">See also</h2>
 <ul>
-<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
-<li><a href="Engine-Defaults.md">Engine Defaults</a></li>
-<li><a href="Profiling.md">Profiling</a></li>
+<li><a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a></li>
+<li><a href="../../Performance/Engine-Defaults/">Engine Defaults</a></li>
+<li><a href="../../Performance/Profiling/">Profiling</a></li>
 <li><a href="../Glossary/">Glossary</a></li>
 </ul>
               

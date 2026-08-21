@@ -124,7 +124,7 @@
 <p><tldr></p>
 <p>
 Rigid body throughput test using conventional PhysX actors. The baseline that the
-<a href="Instanced-Physics.md">instanced subsystem</a> is measured against.
+<a href="../Physics/Instanced-Physics.md">instanced subsystem</a> is measured against.
 </p>
 <p></tldr></p>
 <p><img alt="" src="../../../img/optimization/PhysicsCubeBench.png" /></p>
@@ -156,7 +156,7 @@ count and they grow differently:</p>
 </tr>
 </tbody>
 </table>
-<p>The second one is what the <a href="Instanced-Physics.md">PhysX Instanced Subsystem</a> eliminates. Comparing this
+<p>The second one is what the <a href="../../Physics/Instanced-Physics/">PhysX Instanced Subsystem</a> eliminates. Comparing this
 benchmark against the <a href="../PhysX-Instanced-Subsystem/">instanced subsystem demo</a> shows the difference
 directly.</p>
 <h2 id="running-it">Running it</h2>
@@ -187,16 +187,16 @@ directly.</p>
 and the instanced path is the answer.</p>
 <h2 id="physx-versus-chaos">PhysX versus Chaos</h2>
 <p>Vite retains PhysX rather than migrating to Chaos. On this class of workload PhysX is the faster and more
-predictable solver, which is part of why. See <a href="PhysX.md">PhysX</a>.</p>
+predictable solver, which is part of why. See <a href="../../Physics/PhysX/">PhysX</a>.</p>
 <p>If you need frame-rate-independent determinism from this kind of simulation, Vite's optional
-<a href="Fixed-Timestep.md">fixed timestep</a> applies &mdash; it requires rebuilding with
+<a href="../../Physics/Fixed-Timestep/">fixed timestep</a> applies &mdash; it requires rebuilding with
 <code>VITE_PHYSX_FIXED_TIMESTEP=1</code>.</p>
 <h2 id="see-also">See also</h2>
 <ul>
-<li><a href="PhysX.md">PhysX</a></li>
-<li><a href="Instanced-Physics.md">Instanced Physics</a></li>
-<li><a href="Fixed-Timestep.md">Fixed Timestep</a></li>
-<li><a href="Profiling.md">Profiling</a></li>
+<li><a href="../../Physics/PhysX/">PhysX</a></li>
+<li><a href="../../Physics/Instanced-Physics/">Instanced Physics</a></li>
+<li><a href="../../Physics/Fixed-Timestep/">Fixed Timestep</a></li>
+<li><a href="../../Performance/Profiling/">Profiling</a></li>
 </ul>
               
             </div>

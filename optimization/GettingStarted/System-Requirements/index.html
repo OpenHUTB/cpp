@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>System Requirements - 引擎优化文档</title>
+    <title>系统要求 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "System Requirements";
+        var mkdocs_page_name = "\u7cfb\u7edf\u8981\u6c42";
         var mkdocs_page_input_path = "optimization/GettingStarted/System-Requirements.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">System Requirements</li>
+      <li class="breadcrumb-item active">系统要求</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/GettingStarted/System-Requirements.md"> 编辑页面</a>
     </li>
@@ -120,153 +120,135 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="system-requirements">System Requirements</h1>
-<p><tldr></p>
-<p>
-Windows 10 or 11 x64. A ray-tracing capable GPU is recommended but not required &mdash;
-<a href="DDGI-Static.md">Static DDGI</a> and the raster paths run on hardware with no DXR support at all.
-Dynamic DDGI is designed to scale down to GTX 1060 6&nbsp;GB class GPUs.
-</p>
-<p></tldr></p>
-<p>Vite has two distinct sets of requirements: what it takes to <em>run</em> content built on the engine, and what it
-takes to <em>build the engine itself</em>. They are very different, and the second one is much heavier.</p>
-<h2 id="running-vite-content">Running Vite content</h2>
-<p>Vite is explicitly designed to scale across a wide hardware range, which is the point of choosing DDGI over
-Lumen in the first place.</p>
+                <h1 id="_1">系统要求</h1>
+<p>Windows 10 或 11 x64。建议使用具有光线追踪功能的 GPU，但不是必需的 -<a href="../Rendering/DDGI-Static.md">静态 DDGI</a> 和光栅路径可以在根本不支持 DXR 的硬件上运行。动态 DDGI 旨在缩小至 GTX 1060 6 GB 级 GPU。</p>
+<p>模拟引擎有两组不同的要求：“运行”在引擎上构建的内容需要什么，以及“构建引擎本身”需要什么。它们非常不同，第二个要重得多。</p>
+<h2 id="_2">运行模拟引擎的内容</h2>
+<p>模拟引擎的设计明确是为了在广泛的硬件范围内扩展，这是选择 DDGI 而不是 Lumen 的首要目的。</p>
 <table>
 <thead>
 <tr>
 <th></th>
-<th>Minimum</th>
-<th>Recommended</th>
+<th>最低要求</th>
+<th>推荐</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>OS</td>
+<td>操作系统</td>
 <td>Windows 10 x64</td>
 <td>Windows 11 x64</td>
 </tr>
 <tr>
-<td>GPU (no ray tracing)</td>
-<td>Any DirectX 11 capable GPU</td>
+<td>GPU (无光线追踪)</td>
+<td>任何支持 DirectX 11 的 GPU</td>
 <td>&mdash;</td>
 </tr>
 <tr>
-<td>GPU (Dynamic DDGI)</td>
-<td>GTX 1060 6&nbsp;GB or any RDNA2</td>
-<td>RTX 2060 / RX 6600 or better</td>
+<td>GPU (动态 DDGI)</td>
+<td>GTX 1060 6&nbsp;GB 或任何 RDNA2</td>
+<td>RTX 2060 /RX 6600 或更好</td>
 </tr>
 <tr>
-<td>GPU (full RT suite)</td>
+<td>GPU (完整的 RT 套件)</td>
 <td>RTX 2060 / RX 6600</td>
-<td>RTX 3070 / RX 6700 XT or better</td>
+<td>RTX 3070 / RX 6700 XT 或更好</td>
 </tr>
 <tr>
 <td>VRAM</td>
 <td>6&nbsp;GB</td>
-<td>8&nbsp;GB or more</td>
+<td>8&nbsp;GB 或更多</td>
 </tr>
 </tbody>
 </table>
-<p>Dynamic DDGI works from GTX 1060 6&nbsp;GB class GPUs upward. Below that, or on any GPU with no ray tracing
-support, use <a href="DDGI-Static.md">Static DDGI</a>, which bakes irradiance into probe volumes and has no runtime
-ray tracing cost.</p>
-<h3 id="test-hardware">Test Hardware</h3>
-<p>These are the configurations Vite is actively benchmarked and tuned against. The following Test Hardware is owned by main Devs of this fork.</p>
+<p>动态 DDGI 适用于 GTX 1060 6 GB 级 GPU 及以上。在此之下，或者在任何不支持光线追踪的 GPU 上，使用<a href="../../Rendering/DDGI-Static/">静态 DDGI</a>，它将辐照度烘焙到探测体积中，并且没有运行时光线追踪成本。</p>
+<h3 id="_3">测试硬件</h3>
+<p>这些是模拟引擎积极进行基准测试和调整的配置。以下测试硬件由该分叉的主要开发人员拥有。</p>
 <table>
 <thead>
 <tr>
-<th>Vendor</th>
-<th>Hardware</th>
-<th>Why it matters</th>
+<th>供应商</th>
+<th>硬件</th>
+<th>为什么这很重要</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>AMD</td>
 <td>RX 6700 (RDNA2)</td>
-<td>Closest desktop match to PlayStation 5</td>
+<td>与 PlayStation 5 最接近的桌面游戏</td>
 </tr>
 <tr>
 <td>AMD</td>
 <td>Steam Deck LCD Van Gogh (RDNA2)</td>
-<td>Handheld Class</td>
+<td>手持类</td>
 </tr>
 <tr>
 <td>AMD</td>
 <td>RX 9600XT (RDNA4)</td>
-<td>Mid Tier GPU</td>
+<td>中级 GPU</td>
 </tr>
 <tr>
 <td>NVIDIA</td>
 <td>RTX 2060 (Turing)</td>
-<td>Lower Bound for HW RT &amp; DLSS</td>
+<td>HW RT 和 DLSS 的下限</td>
 </tr>
 <tr>
 <td>NVIDIA</td>
 <td>RTX 3060 (Ampere)</td>
-<td>Matches Steam most common GPU</td>
+<td>匹配 Steam 最常见的 GPU</td>
 </tr>
 <tr>
 <td>NVIDIA</td>
 <td>RTX 4080 Super (Ada Lovelace)</td>
-<td>Upper-bound reference for 4K native captures</td>
+<td>4K 原生捕获的上限参考</td>
 </tr>
 </tbody>
 </table>
-<p>Testing is most useful on a 4K native monitor or TV(from 6700/RTX 4060), because Vite's whole argument is about holding native
-resolution rather than upscaling from a lower internal one.</p>
-<p>If you want to showcase results in your hardware (as in from the Demos), the <code>#showcase</code> channel on Discord is where testing is coordinated.</p>
-<h2 id="building-the-engine-from-source">Building the engine from source</h2>
-<p>Building is CPU-, RAM- and disk-bound. Treat these as practical guidance rather than hard cutoffs.</p>
+<p>测试在 4K 本机显示器或电视（从 6700/RTX 4060 开始）上最有用，因为引擎的整个论点是保持本机分辨率，而不是从较低的内部分辨率进行升级。</p>
+<p>如果您想展示硬件中的结果（如演示中的结果），Discord 上的<code>#showcase</code>频道是协调测试的地方。</p>
+<h2 id="_4">从源代码构建引擎</h2>
+<p>构建受 CPU、RAM 和磁盘限制。将这些视为实际指导而不是硬性限制。</p>
 <table>
 <thead>
 <tr>
 <th></th>
-<th>Practical minimum</th>
-<th>Comfortable</th>
+<th>实用最低限度</th>
+<th>舒适</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>CPU</td>
-<td>6 cores / 12 threads</td>
-<td>16 cores / 32 threads or more</td>
+<td>6核/12线程</td>
+<td>16核/32线程或更多</td>
 </tr>
 <tr>
-<td>RAM</td>
+<td>内存</td>
 <td>24&nbsp;GB</td>
 <td>32&nbsp;GB</td>
 </tr>
 <tr>
-<td>Storage</td>
-<td>SATA SSD with 50gb of Space</td>
-<td>NVMe SSD 157GB of space (Full Size)</td>
+<td>硬盘</td>
+<td>具有 50GB 空间的 SATA SSD</td>
+<td>NVMe SSD 157GB 空间（全尺寸）</td>
 </tr>
 <tr>
-<td>OS</td>
+<td>操作系统</td>
 <td>Windows 10 x64</td>
 <td>Windows 11 x64</td>
 </tr>
 </tbody>
 </table>
-<p>An Unreal Engine 4.27 source tree with dependencies, intermediates and a built editor is very large &mdash;
-budget well over a hundred gigabytes, and more again if you produce an installed build alongside it, since
-that writes a second copy into <code>LocalBuilds\Engine\Windows\</code>. A mechanical hard drive will work but makes
-every step painful; use an SSD.</p>
-<p>Compile time scales almost linearly with core count. A full build on a Ryzen 9 9950X3D takes roughly
-14 minutes. You can reclaim a meaningful amount of both time and disk space by excluding platforms you do
-not target and stripping optional content &mdash; see <a href="Debloat-Guide.md">Debloat Guide</a> and the setup
-presets described in <a href="../Build-From-Source/">Building from Source</a>.</p>
-<p>You also need a specific compiler and SDK. This is not optional and is covered separately in
-<a href="../Toolchain-Requirements/">Toolchain Requirements</a>.</p>
-<h2 id="see-also">See also</h2>
+<p>包含依赖项、中间体和构建编辑器的虚幻引擎 4.27 源代码树非常大 -预算远超过 100 GB，如果您在其旁边生成已安装的构建，则预算会更多，因为这会将第二个副本写入“LocalBuilds\Engine\Windows\”。机械硬盘可以工作，但每一步都会很痛苦；建议使用SSD。</p>
+<p>编译时间几乎与核心数量成线性关系。 Ryzen 9 9950X3D 的完整构建大约需要 14 分钟。您可以通过排除不针对的平台并删除可选内容来回收大量的时间和磁盘空间 -请参阅 <a href="../../Performance/Debloat-Guide/">精简指南</a> 和 <a href="../Build-From-Source/">从源代码构建</a> 中描述的设置预设。</p>
+<p>您还需要特定的编译器和 SDK。这不是可选的，在<a href="../Toolchain-Requirements/">工具链要求</a> 中单独介绍。</p>
+<h2 id="_5">参见</h2>
 <ul>
-<li><a href="../Toolchain-Requirements/">Toolchain Requirements</a></li>
-<li><a href="../Build-From-Source/">Building from Source</a></li>
-<li><a href="Platforms.md">Platform Support</a></li>
-<li><a href="Performance-Targets.md">Performance Targets</a></li>
+<li><a href="../Toolchain-Requirements/">工具链要求</a></li>
+<li><a href="../Build-From-Source/">从源代码构建</a></li>
+<li><a href="../../Platforms/Platforms/">平台支持</a></li>
+<li><a href="../../EngineOverview/Performance-Targets/">性能目标</a></li>
 </ul>
               
             </div>

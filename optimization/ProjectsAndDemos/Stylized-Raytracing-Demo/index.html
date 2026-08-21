@@ -146,24 +146,24 @@ strong, deliberate lighting where screen-space artefacts are conspicuous.</p>
 </thead>
 <tbody>
 <tr>
-<td><a href="RT-Reflections.md">Reflections</a></td>
+<td><a href="../../Rendering/RT-Reflections/">Reflections</a></td>
 <td>Reflections of off-screen geometry, which screen-space reflections cannot produce</td>
 </tr>
 <tr>
-<td><a href="RT-Shadows-And-Ambient-Occlusion.md">Shadows</a></td>
+<td><a href="../../Rendering/RT-Shadows-And-Ambient-Occlusion/">Shadows</a></td>
 <td>Contact-accurate shadows without shadow map resolution and bias tuning</td>
 </tr>
 <tr>
-<td><a href="DDGI-Dynamic.md">DDGI</a></td>
+<td><a href="../../Rendering/DDGI-Dynamic/">DDGI</a></td>
 <td>Colour bleed that reinforces a limited palette rather than fighting it</td>
 </tr>
 <tr>
-<td><a href="Ambient-Occlusion.md">Ambient occlusion</a></td>
+<td><a href="../../Rendering/Ambient-Occlusion/">Ambient occlusion</a></td>
 <td>Grounded contact without the halos screen-space AO produces</td>
 </tr>
 </tbody>
 </table>
-<p>Combining ray-traced lighting with the <a href="Shading-Models.md">Toon shading model</a> is well supported in Vite
+<p>Combining ray-traced lighting with the <a href="../../Rendering/Shading-Models/">Toon shading model</a> is well supported in Vite
 &mdash; Toon is one of the custom shading models the fork adds.</p>
 <h2 id="what-to-look-at">What to look at</h2>
 <p>Turn ray-traced reflections off and on in the demo. The difference is largest exactly where screen-space
@@ -178,16 +178,16 @@ caustics, RTXDI, path tracing and per-pixel ray-traced GI are <b>compiled out</b
 <code>VITE_RT_PSO_DEBLOAT</code>, which defaults to <code>1</code>.</p>
 <p>
 If a console variable from that second group appears to do nothing, this is why. See
-<a href="Ray-Tracing.md">Ray Tracing</a> and
-<a href="Compile-Time-Switches.md">Compile-Time Switches</a>.
+<a href="../Rendering/Ray-Tracing.md">Ray Tracing</a> and
+<a href="../Performance/Compile-Time-Switches.md">Compile-Time Switches</a>.
 </p>
 <p></warning></p>
 <h2 id="see-also">See also</h2>
 <ul>
-<li><a href="Ray-Tracing.md">Ray Tracing</a></li>
-<li><a href="Shading-Models.md">Shading Models</a></li>
-<li><a href="DDGI-Dynamic.md">Dynamic DDGI</a></li>
-<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
+<li><a href="../../Rendering/Ray-Tracing/">Ray Tracing</a></li>
+<li><a href="../../Rendering/Shading-Models/">Shading Models</a></li>
+<li><a href="../../Rendering/DDGI-Dynamic/">Dynamic DDGI</a></li>
+<li><a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a></li>
 </ul>
               
             </div>

@@ -141,19 +141,19 @@ Cloth. The reference project for verifying that a build works correctly.
 <tbody>
 <tr>
 <td>NVIDIA DDGI Cornell Box office sample</td>
-<td><a href="DDGI-Dynamic.md">Dynamic DDGI</a> in a controlled reference setting</td>
+<td><a href="../../Rendering/DDGI-Dynamic/">Dynamic DDGI</a> in a controlled reference setting</td>
 </tr>
 <tr>
 <td>PhysX Apex Destruction test bed</td>
-<td><a href="Destruction-And-Cloth.md">Apex Destruction</a></td>
+<td><a href="../../Physics/Destruction-And-Cloth/">Apex Destruction</a></td>
 </tr>
 <tr>
 <td>PhysX Apex Cloth sample</td>
-<td><a href="Destruction-And-Cloth.md">Apex Cloth</a></td>
+<td><a href="../../Physics/Destruction-And-Cloth/">Apex Cloth</a></td>
 </tr>
 <tr>
 <td>"High End" DDGI + SSGI Deep Elder Caves</td>
-<td><a href="DDGI-Dynamic.md">DDGI</a> combined with <a href="SSGI.md">SSGI</a> in production-scale content</td>
+<td><a href="../../Rendering/DDGI-Dynamic/">DDGI</a> combined with <a href="../../Rendering/SSGI/">SSGI</a> in production-scale content</td>
 </tr>
 </tbody>
 </table>
@@ -162,25 +162,25 @@ scene precisely because the correct answer is known, so probe placement, leaking
 visible against a ground truth.</p>
 <p>The Deep Elder Caves scene is the opposite case: production-scale geometry where DDGI and SSGI are layered.
 DDGI supplies the low-frequency bounce and SSGI adds the contact-scale detail DDGI's probe grid cannot
-resolve. See <a href="Global-Illumination.md">Global Illumination</a> for why both are used together.</p>
+resolve. See <a href="../../Rendering/Global-Illumination/">Global Illumination</a> for why both are used together.</p>
 <h2 id="download">Download</h2>
 <p><a href="https://drive.google.com/file/d/1SuHlT4KC3nTQrB2rwVcwBpNgWa_r6yKh/view">Tech Demo Project</a></p>
 <h2 id="using-it-as-a-verification-project">Using it as a verification project</h2>
-<p>Vite's <a href="Coding-Guidelines.md">contribution guidelines</a> name this project specifically: engine changes must
+<p>Vite's <a href="../../Contributing/Coding-Guidelines/">contribution guidelines</a> name this project specifically: engine changes must
 produce no crashes on startup, shutdown or on the Tech Showcase project. If you are modifying the engine,
 run this before opening a pull request.</p>
 <p>It exercises a useful cross-section: dynamic GI, ray tracing, PhysX destruction and cloth. A change that
 breaks any of those tends to break it here.</p>
 <h2 id="requirements">Requirements</h2>
 <p>Dynamic DDGI requires a DXR-capable GPU on DirectX 12. Apex Destruction and Apex Cloth require their
-plugins, which are stock 4.27 plugins Vite retains. See <a href="Platforms.md">Platforms</a> and
-<a href="System-Requirements.md">System Requirements</a>.</p>
+plugins, which are stock 4.27 plugins Vite retains. See <a href="../../Platforms/Platforms/">Platforms</a> and
+<a href="../../GettingStarted/System-Requirements/">System Requirements</a>.</p>
 <h2 id="see-also">See also</h2>
 <ul>
-<li><a href="DDGI-Dynamic.md">Dynamic DDGI</a></li>
-<li><a href="Global-Illumination.md">Global Illumination</a></li>
-<li><a href="Destruction-And-Cloth.md">Destruction and Cloth</a></li>
-<li><a href="ProjectsAndDemos.md">Projects and Demos</a></li>
+<li><a href="../../Rendering/DDGI-Dynamic/">Dynamic DDGI</a></li>
+<li><a href="../../Rendering/Global-Illumination/">Global Illumination</a></li>
+<li><a href="../../Physics/Destruction-And-Cloth/">Destruction and Cloth</a></li>
+<li><a href="../">Projects and Demos</a></li>
 </ul>
               
             </div>

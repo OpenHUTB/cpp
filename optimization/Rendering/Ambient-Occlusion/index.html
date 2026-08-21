@@ -157,7 +157,7 @@ result as the stock path at lower cost, and is enabled by default.</p>
 </table>
 <p>The runtime CVar exists so you can A/B the optimised path against stock during development, which is how the
 optimisation was validated. In Shipping the CVar does not exist at all &mdash; the path is compiled in.
-See <a href="Compile-Time-Switches.md">Compile-Time Switches</a>.</p>
+See <a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a>.</p>
 <p>Standard UE4.27 SSAO settings all still apply and are found under <strong>Rendering Features &gt; Ambient Occlusion</strong>
 in a post process volume: Intensity, Radius, Quality, Power, Bias, Fade Out Distance and the rest.</p>
 <h2 id="hbao">HBAO+</h2>
@@ -330,7 +330,7 @@ it is double-darkening &mdash; you are subtracting light that the GI solution ne
 <p><warning>
 Watch for AO stacking. Enabling material AO, SSAO, HBAO+ and RTAO simultaneously produces a scene that is
 much darker in contact areas than it should be. Each layer multiplies. Compare against a
-<a href="Path-Tracing.md">path-traced</a> reference if you are unsure whether your contact shadows are
+<a href="../Rendering/Path-Tracing.md">path-traced</a> reference if you are unsure whether your contact shadows are
 physically plausible or just dark.
 </warning></p>
 <h2 id="see-also">See also</h2>
@@ -338,8 +338,8 @@ physically plausible or just dark.
 <li><a href="../RT-Shadows-And-Ambient-Occlusion/">RT Shadows and Ambient Occlusion</a></li>
 <li><a href="../Global-Illumination/">Global Illumination</a></li>
 <li><a href="../SSGI/">SSGI</a></li>
-<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
-<li><a href="Performance-Targets.md">Performance Targets</a></li>
+<li><a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a></li>
+<li><a href="../../EngineOverview/Performance-Targets/">Performance Targets</a></li>
 </ul>
               
             </div>

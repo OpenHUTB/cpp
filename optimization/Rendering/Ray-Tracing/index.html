@@ -131,7 +131,7 @@ that appears to do nothing.
 <p></tldr></p>
 <p>Ray tracing in Vite is an engine-agnostic pipeline: acceleration structures are maintained independently of
 any single lighting solution, so each effect can be enabled or disabled on its own. This is the arrangement
-UE 4.27 had and UE 5.1+ moved away from &mdash; see <a href="Why-NvRTX-427.md">Why NvRTX 4.27</a>.</p>
+UE 4.27 had and UE 5.1+ moved away from &mdash; see <a href="../../EngineOverview/Why-NvRTX-427/">Why NvRTX 4.27</a>.</p>
 <h2 id="availability">Availability</h2>
 <p>The <code>VITE_RT_PSO_DEBLOAT</code> compile-time switch defaults to <code>1</code> and removes shader permutations for effects
 outside Vite's recommended configuration. Ray tracing PSOs must be compiled and bound whether or not their
@@ -218,7 +218,7 @@ renders nothing.</strong></p>
 </tbody>
 </table>
 <p>To use anything in the compiled-out set, rebuild with <code>VITE_RT_PSO_DEBLOAT=0</code>. See
-<a href="Compile-Time-Switches.md">Compile-Time Switches</a>.</p>
+<a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a>.</p>
 <p>Reflections have one further caveat even when available: the debloat switch forces the sorted deferred
 reflection algorithm and compiles out the older non-deferred path.</p>
 <p>Dynamic DDGI is a separate system, enabled through <code>r.GlobalIllumination.ExperimentalPlugin</code> rather than the
@@ -422,7 +422,7 @@ current optimizations are applicable to any Future Rendering path.</p>
 <h2 id="per-pixel-ray-traced-gi">Per-pixel ray-traced GI</h2>
 <p><note>
 Compiled out in a default build. Requires <code>VITE_RT_PSO_DEBLOAT=0</code>. See
-<a href="Compile-Time-Switches.md">Compile-Time Switches</a>.
+<a href="../Performance/Compile-Time-Switches.md">Compile-Time Switches</a>.
 </note></p>
 <p>Distinct from DDGI, Vite retains the per-pixel ray-traced GI path including the NvRTX ReStir GI improvements:
 a new SVGF-based denoiser, a reservoir-resampling final gather, emissive material support, quarter- and
@@ -450,8 +450,8 @@ a reasonable result.</p>
 <li><a href="../RT-Shadows-And-Ambient-Occlusion/">RT Shadows and Ambient Occlusion</a></li>
 <li><a href="../RT-Translucency-And-Caustics/">RT Translucency and Caustics</a></li>
 <li><a href="../RTXDI/">RTXDI</a></li>
-<li><a href="Compile-Time-Switches.md">Compile-Time Switches</a></li>
-<li><a href="Console-Variables.md">Console Variable Reference</a></li>
+<li><a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a></li>
+<li><a href="../../Reference/Console-Variables/">Console Variable Reference</a></li>
 </ul>
               
             </div>

@@ -195,7 +195,7 @@ public MyGameTarget(TargetInfo Target) : base(Target)
     <step>
         Rebuild the engine, and wipe the shader cache if you changed
         <code>VITE_RT_PSO_DEBLOAT</code> or any switch that affects shader permutations. See
-        <a href="Cache-Management.md">Cache Management</a>.
+        <a href="../Tools/Cache-Management.md">Cache Management</a>.
     </step>
 </procedure></p>
 <p>Prefer <code>GlobalDefinitions</code> in a target file over editing <code>CoreDefines.h</code>. Editing the header changes the
@@ -286,14 +286,14 @@ from <code>ShouldCompilePermutation</code> for everything else.</p>
 </tr>
 </tbody>
 </table>
-<p>The set that remains is exactly Vite's recommended configuration: <a href="DDGI-Dynamic.md">DDGI</a> for indirect
-lighting, <a href="RT-Reflections.md">RT reflections</a> via the deferred path, and
-<a href="RT-Shadows-And-Ambient-Occlusion.md">RT shadows and AO</a>. See
-<a href="Global-Illumination.md">Global Illumination</a> for why DDGI is preferred over per-pixel ray-traced GI in the
+<p>The set that remains is exactly Vite's recommended configuration: <a href="../../Rendering/DDGI-Dynamic/">DDGI</a> for indirect
+lighting, <a href="../../Rendering/RT-Reflections/">RT reflections</a> via the deferred path, and
+<a href="../../Rendering/RT-Shadows-And-Ambient-Occlusion/">RT shadows and AO</a>. See
+<a href="../../Rendering/Global-Illumination/">Global Illumination</a> for why DDGI is preferred over per-pixel ray-traced GI in the
 first place &mdash; the debloat switch encodes that recommendation into the build.</p>
 <h3 id="turning-it-off">Turning it off</h3>
 <p>Set <code>VITE_RT_PSO_DEBLOAT=0</code> and rebuild if you need path tracing for
-<a href="Path-Tracing.md">reference imagery</a>, RTXDI for a many-lights scene, or ray-traced translucency and
+<a href="../../Rendering/Path-Tracing/">reference imagery</a>, RTXDI for a many-lights scene, or ray-traced translucency and
 caustics.</p>
 <p><warning>
 Turning this off substantially increases shader compilation time, packaged build size and ray tracing PSO
@@ -309,19 +309,19 @@ r.Vite.SSAO 1   // optimised path
 </code></pre></div>
 <p>Shipping builds are locked to the compile-time value; the CVar does not exist. The runtime toggle exists so
 the two paths can be A/B compared during development, which is how the optimisation was validated. There is
-no reason to turn the compile-time switch off. See <a href="Ambient-Occlusion.md">Ambient Occlusion</a>.</p>
+no reason to turn the compile-time switch off. See <a href="../../Rendering/Ambient-Occlusion/">Ambient Occlusion</a>.</p>
 <h2 id="vite_physx_fixed_timestep">VITE_PHYSX_FIXED_TIMESTEP</h2>
 <p>Off by default. Enables deterministic fixed-step PhysX simulation with render interpolation, plus the
 <code>p.VitePhysXFixedTimestep.*</code> console variables.</p>
 <p>The compile-time gate exists because the feature adds branches and double-buffered transform storage to the
 physics scene, substep task and animation physics blend. Projects with no determinism requirement should
-not pay for it. Full documentation is in <a href="Fixed-Timestep.md">Fixed Timestep</a>.</p>
+not pay for it. Full documentation is in <a href="../../Physics/Fixed-Timestep/">Fixed Timestep</a>.</p>
 <h2 id="vite_dlss_patch">VITE_DLSS_PATCH</h2>
 <p>Off by default. Adds <code>TranslucencyAfterDOFUpscaledRT</code> and <code>TranslucencyAfterDOFModulateUpscaledRT</code> mesh
 passes so selected translucent primitives render at output resolution after upscaling, and adds
 <code>r.VolumetricFog.UseUpScaledSizeVolumetricFog</code> so the fog grid can be computed from output resolution.</p>
 <p>Only relevant to projects shipping with an upscaler enabled. See
-<a href="Upscalers.md">Upscalers and Frame Generation</a>.</p>
+<a href="../../Rendering/Upscalers/">Upscalers and Frame Generation</a>.</p>
 <h2 id="vite_nvrtx_translucency_depth">VITE_NVRTX_TRANSLUCENCY_DEPTH</h2>
 <p>Off by default. Allocates and writes a separate translucency depth texture alongside separate translucency
 colour, inherited from the NvRTX branch. Required by some NvRTX effects that need translucent depth; costs
@@ -337,10 +337,10 @@ build, <code>r.Vite.SSAO</code> will not be found because it is compiled out.</p
 <h2 id="see-also">See also</h2>
 <ul>
 <li><a href="../Shader-Compilation-And-PSO/">Shader Compilation and PSO</a></li>
-<li><a href="Ray-Tracing.md">Ray Tracing</a></li>
-<li><a href="Fixed-Timestep.md">Fixed Timestep</a></li>
-<li><a href="Cache-Management.md">Cache Management</a></li>
-<li><a href="Build-From-Source.md">Build from Source</a></li>
+<li><a href="../../Rendering/Ray-Tracing/">Ray Tracing</a></li>
+<li><a href="../../Physics/Fixed-Timestep/">Fixed Timestep</a></li>
+<li><a href="../../Tools/Cache-Management/">Cache Management</a></li>
+<li><a href="../../GettingStarted/Build-From-Source/">Build from Source</a></li>
 </ul>
               
             </div>

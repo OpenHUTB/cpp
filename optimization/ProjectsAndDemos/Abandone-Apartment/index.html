@@ -139,15 +139,15 @@ options:</p>
 </thead>
 <tbody>
 <tr>
-<td><a href="DDGI-Static.md">静态 DDGI</a></td>
+<td><a href="../../Rendering/DDGI-Static/">静态 DDGI</a></td>
 <td>Baked probe data. Cheapest, and correct if nothing moves.</td>
 </tr>
 <tr>
-<td><a href="DDGI-Dynamic.md">动态 DDGI</a></td>
+<td><a href="../../Rendering/DDGI-Dynamic/">动态 DDGI</a></td>
 <td>Probes update at runtime. Handles time of day and moving occluders.</td>
 </tr>
 <tr>
-<td><a href="SSGI.md">SSGI</a></td>
+<td><a href="../../Rendering/SSGI/">SSGI</a></td>
 <td>Adds contact-scale detail the probe grid cannot resolve</td>
 </tr>
 <tr>
@@ -158,24 +158,24 @@ options:</p>
 </table>
 <p>The realistic answer for most interiors is DDGI plus SSGI. DDGI supplies the low-frequency bounce and SSGI
 fills in the detail near contacts and in corners. See
-<a href="Global-Illumination.md">Global Illumination</a>.</p>
+<a href="../../Rendering/Global-Illumination/">Global Illumination</a>.</p>
 <h2 id="what-to-look-at">What to look at</h2>
 <ul>
 <li><strong>Light leaking.</strong> Probe-based GI leaks through thin geometry when probe spacing is too coarse relative
   to wall thickness. Interiors are full of thin walls, so this is where to tune probe density.</li>
 <li><strong>Corner darkening.</strong> Compare DDGI alone against DDGI with SSGI enabled. The difference concentrates in
   corners and at contacts.</li>
-<li><strong>Ambient occlusion choice.</strong> <a href="Ambient-Occlusion.md">HBAO+ versus the optimised SSAO path</a> is most
+<li><strong>Ambient occlusion choice.</strong> <a href="../../Rendering/Ambient-Occlusion/">HBAO+ versus the optimised SSAO path</a> is most
   visible in cluttered interiors.</li>
 <li><strong>Ray-traced reflections.</strong> Interior surfaces reflect a great deal of off-screen geometry, which is
   exactly the case screen-space reflections cannot handle.</li>
 </ul>
 <h2 id="_4">另请参阅</h2>
 <ul>
-<li><a href="Global-Illumination.md">全局照明</a></li>
-<li><a href="DDGI-Dynamic.md">动态 DDGI</a></li>
-<li><a href="SSGI.md">SSGI</a></li>
-<li><a href="Ambient-Occlusion.md">环境遮蔽</a></li>
+<li><a href="../../Rendering/Global-Illumination/">全局照明</a></li>
+<li><a href="../../Rendering/DDGI-Dynamic/">动态 DDGI</a></li>
+<li><a href="../../Rendering/SSGI/">SSGI</a></li>
+<li><a href="../../Rendering/Ambient-Occlusion/">环境遮蔽</a></li>
 <li><a href="../Attic-Scene/">阁楼场景</a></li>
 </ul>
               

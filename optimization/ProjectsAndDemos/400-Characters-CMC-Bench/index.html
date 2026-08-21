@@ -166,14 +166,14 @@ CPU-bound on the game thread and no amount of rendering optimisation will help.<
 </tr>
 </tbody>
 </table>
-<p>See <a href="Profiling.md">Profiling</a>.</p>
+<p>See <a href="../../Performance/Profiling/">Profiling</a>.</p>
 <h2 id="vite">这对 Vite 为什么重要</h2>
 <p>Game thread cost is where UE 4.27 has a structural advantage over UE5, and it is central to
-<a href="Why-NvRTX-427.md">Vite's rationale</a>. The base cost of core classes, the tick pipeline and the movement
+<a href="../../EngineOverview/Why-NvRTX-427/">Vite's rationale</a>. The base cost of core classes, the tick pipeline and the movement
 component are all lighter in 4.27, and Vite trims them further &mdash; see
-<a href="Engine-Defaults.md">Engine Defaults</a> for the specific changes.</p>
+<a href="../../Performance/Engine-Defaults/">Engine Defaults</a> for the specific changes.</p>
 <p>The relevant comparison numbers are in
-<a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 versus UE5 Cost Analysis</a>.</p>
+<a href="../../EngineOverview/UE4-Versus-UE5-Cost-Analysis/">UE4 versus UE5 Cost Analysis</a>.</p>
 <h2 id="cmc">在自己的项目中减少 CMC 消耗</h2>
 <p>If this benchmark's shape matches your bottleneck:</p>
 <ul>
@@ -183,15 +183,15 @@ component are all lighter in 4.27, and Vite trims them further &mdash; see
 <li><strong>Budget 动画。</strong> The Animation Budget Allocator plugin is stock 4.27 and directly targets this.</li>
 <li><strong>考虑不使用 CMC.</strong> For crowds that do not need networked prediction, a simpler custom movement
   path avoids most of the cost.</li>
-<li><strong>考虑 ECS.</strong> For very large entity counts, the bundled <a href="Bundled-Plugins.md">Flecs ECS</a> integration
+<li><strong>考虑 ECS.</strong> For very large entity counts, the bundled <a href="../../Plugins/Bundled-Plugins/">Flecs ECS</a> integration
   sidesteps actor-per-entity overhead entirely.</li>
 </ul>
 <h2 id="_4">另请参阅</h2>
 <ul>
-<li><a href="Performance-Targets.md">性能目标</a></li>
-<li><a href="Profiling.md">性能分析</a></li>
-<li><a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 和 UE5 的消耗对比分析</a></li>
-<li><a href="Engine-Defaults.md">引擎默认</a></li>
+<li><a href="../../EngineOverview/Performance-Targets/">性能目标</a></li>
+<li><a href="../../Performance/Profiling/">性能分析</a></li>
+<li><a href="../../EngineOverview/UE4-Versus-UE5-Cost-Analysis/">UE4 和 UE5 的消耗对比分析</a></li>
+<li><a href="../../Performance/Engine-Defaults/">引擎默认</a></li>
 </ul>
               
             </div>

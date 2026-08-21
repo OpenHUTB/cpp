@@ -186,7 +186,7 @@ stat slate       // UI 成本
 <p><strong>参与者的节拍计数：</strong> 每个节拍操作的参与者都会消耗资源，即使是那些节拍操作本身没有任何作用的参与者也不例外。<code>stat engine</code>会报告节拍计数。禁用不需要节拍操作的参与者的节拍功能，并在节拍函数（<code>Tick</code>）内部使用节拍间隔而不是提前退出。</p>
 <p><strong>角色移动：</strong> 角色移动组件（Character Movement Component, CMC）开销很大，并且会随着角色数量的增加而急剧增加。<a href="../../ProjectsAndDemos/400-Characters-CMC-Bench/">400 角色 CMC 基准测试</a>演示程序正是为了精确地衡量这一点而存在的。如果你有很多角色，这很可能就是你的主要开销。</p>
 <p><img alt="" src="../../../img/optimization/400CharCMCBench.png" /></p>
-<p><strong>物理引擎。</strong> 另请参阅<a href="PhysX.md">PhysX</a>。注意物理引擎的运行时间占游戏线程运行时间的比例。大量的模拟物体应该移动到<a href="Instanced-Physics.md">实例化的子系统</a>中。</p>
+<p><strong>物理引擎。</strong> 另请参阅<a href="../../Physics/PhysX/">PhysX</a>。注意物理引擎的运行时间占游戏线程运行时间的比例。大量的模拟物体应该移动到<a href="../../Physics/Instanced-Physics/">实例化的子系统</a>中。</p>
 <p><strong>重叠事件。</strong> 模拟引擎默认禁用图元组件的重叠事件，正是因为它们是常见的隐藏开销。另请参阅<a href="../Engine-Defaults/">引擎默认设置更改</a>。</p>
 <p><strong>蓝图。</strong> 蓝图虚拟机的执行速度比原生 C++ 慢。每帧的热点逻辑应该用 C++ 编写。</p>
 <h2 id="_5">渲染线程瓶颈</h2>

@@ -130,7 +130,7 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="performance-and-optimisation">Performance and Optimisation</h1>
+                <h1 id="_1">性能和优化</h1>
 <p><tldr></p>
 <p>
 Vite exists to hit native-resolution, high-frame-rate targets on console-class hardware. This section
@@ -175,7 +175,7 @@ are the specification, and everything in this section exists to help you stay in
 <p><strong>Measure before changing anything.</strong> The single most common failure in Unreal optimisation is optimising
 the wrong thread. A game that is game-thread bound will not get faster if you reduce shader complexity, and
 one that is GPU bound will not get faster if you reduce actor count.</p>
-<p><strong>Know which target you are building for.</strong> The <a href="Performance-Targets.md">four performance targets</a> have
+<p><strong>Know which target you are building for.</strong> The <a href="../../EngineOverview/Performance-Targets/">four performance targets</a> have
 different rendering configurations, and a scene that fits the 4K30 fidelity target will not fit 4K120
 stylised. Decide first.</p>
 <p><strong>Prefer removing work over making work cheaper.</strong> Turning off an effect is always cheaper than optimising
@@ -185,20 +185,20 @@ unused ray tracing permutations rather than making them faster.</p>
 render thread, GPU and specific systems in advance turns "is this too slow?" into a question with an answer.</p>
 <h2 id="where-vites-performance-comes-from">Where Vite's performance comes from</h2>
 <p>It is worth being clear that Vite's advantage over UE5 is not one optimisation. It is the absence of
-several regressions, documented in <a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 versus UE5 Cost Analysis</a>:
-cheaper materials, <a href="PhysX.md">PhysX rather than Chaos</a>, lower character movement cost, smaller memory
+several regressions, documented in <a href="../../EngineOverview/UE4-Versus-UE5-Cost-Analysis/">UE4 versus UE5 Cost Analysis</a>:
+cheaper materials, <a href="../../Physics/PhysX/">PhysX rather than Chaos</a>, lower character movement cost, smaller memory
 footprint, cheaper Slate and UI, and a lighter render thread.</p>
-<p>On top of that baseline, Vite adds targeted work: the <a href="Ambient-Occlusion.md">optimised SSAO path</a>,
+<p>On top of that baseline, Vite adds targeted work: the <a href="../../Rendering/Ambient-Occlusion/">optimised SSAO path</a>,
 <a href="../Compile-Time-Switches/">ray tracing PSO debloat</a>, engine tick reductions, and
 <a href="../Engine-Defaults/">changed defaults</a>.</p>
 <p>The practical implication is that most of the win is already yours before you optimise anything. Your job is
 mostly not to spend it.</p>
 <h2 id="see-also">See also</h2>
 <ul>
-<li><a href="Performance-Targets.md">Performance Targets</a></li>
-<li><a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 versus UE5 Cost Analysis</a></li>
-<li><a href="Rendering.md">Rendering</a></li>
-<li><a href="Physics.md">Physics</a></li>
+<li><a href="../../EngineOverview/Performance-Targets/">Performance Targets</a></li>
+<li><a href="../../EngineOverview/UE4-Versus-UE5-Cost-Analysis/">UE4 versus UE5 Cost Analysis</a></li>
+<li><a href="../../Rendering/Rendering/">Rendering</a></li>
+<li><a href="../../Physics/Physics/">Physics</a></li>
 </ul>
               
             </div>

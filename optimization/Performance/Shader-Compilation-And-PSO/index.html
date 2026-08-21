@@ -130,11 +130,11 @@
 <p>这是一个很大的改进。这也是这些效果在默认版本中无法正常工作的原因。完整详情请参阅<a href="../Compile-Time-Switches/">编译时开关</a>部分。</p>
 <h2 id="_2">材质排列组合</h2>
 <p>您可以控制材质着色器数量的以下选项：</p>
-<p><strong>着色模型。</strong> 每个使用的<a href="Shading-Models.md">着色模型</a>都会增加排列组合。使用默认光照和 Callisto BRDF 的项目编译的着色器数量远少于使用六个模型的项目。这是实际的预算，而非理论预算。</p>
+<p><strong>着色模型。</strong> 每个使用的<a href="../../Rendering/Shading-Models/">着色模型</a>都会增加排列组合。使用默认光照和 Callisto BRDF 的项目编译的着色器数量远少于使用六个模型的项目。这是实际的预算，而非理论预算。</p>
 <p><strong>材质使用标志。</strong> 材质上的每个<strong>Used With</strong>（使用于）标志都会增加一个顶点工厂排列组合：用于骨骼网格、实例化静态网格、粒子精灵、样条线等等。Unreal 会在遇到新的使用情况时自动设置这些标志，这意味着材质可能会悄悄地积累不再需要的标志。请检查这些标志。</p>
 <p><strong>静态开关。</strong> 每个静态开关参数都会使排列组合数量翻倍。两个开关对应四个变体；十个开关对应 1024 个变体。当排列组合数量过多时，请使用动态分支或单独的材质。</p>
 <p><strong>质量级别和功能级别。</strong> 项目目标着色器平台和质量级别的每个值都会乘以上述所有值。</p>
-<p><strong>细分曲面。</strong> 启用材质<a href="Tessellation.md">细分</a>会增加外壳和域着色器排列组合。</p>
+<p><strong>细分曲面。</strong> 启用材质<a href="../../Rendering/Tessellation/">细分</a>会增加外壳和域着色器排列组合。</p>
 <h2 id="_3">编译时间</h2>
 <p>参考数据来自 Vite 代码库，在 Ryzen 9 9950X3D 上测得：</p>
 <table>
@@ -186,7 +186,7 @@
 <p>这项工作确实非常繁琐，而且通常会被拖延到最后。务必在内容锁定之前安排好这项工作，而不是之后。</p>
 <h2 id="_4">缓存问题</h2>
 <p>过时的着色器缓存会导致虚幻引擎中一些最令人困惑的故障：着色器与源文件不匹配、材质渲染错误、编辑器加载时崩溃，以及编译时开关的更改似乎没有任何效果。</p>
-<p>如果您更改了 <code>VITE_RT_PSO_DEBLOAT</code> 或任何其他影响着色器排列的开关，请清除缓存。请参阅<a href="Cache-Management.md">缓存管理</a>中的 <code>WipeShaderCache.bat</code>，该脚本会清除引擎级派生数据缓存、中间着色器和着色器调试信息。</p>
+<p>如果您更改了 <code>VITE_RT_PSO_DEBLOAT</code> 或任何其他影响着色器排列的开关，请清除缓存。请参阅<a href="../../Tools/Cache-Management/">缓存管理</a>中的 <code>WipeShaderCache.bat</code>，该脚本会清除引擎级派生数据缓存、中间着色器和着色器调试信息。</p>
 <h2 id="_5">诊断</h2>
 <table>
 <thead>
@@ -222,9 +222,9 @@
 <h2 id="_6">另请参阅</h2>
 <ul>
 <li><a href="../Compile-Time-Switches/">编译时开关</a></li>
-<li><a href="Shading-Models.md">着色模型</a></li>
-<li><a href="Cache-Management.md">缓存管理</a></li>
-<li><a href="Build-Troubleshooting.md">构建故障排除</a></li>
+<li><a href="../../Rendering/Shading-Models/">着色模型</a></li>
+<li><a href="../../Tools/Cache-Management/">缓存管理</a></li>
+<li><a href="../../GettingStarted/Build-Troubleshooting/">构建故障排除</a></li>
 <li><a href="../Debloat-Guide/">精简指南</a></li>
 </ul>
               

@@ -236,9 +236,9 @@ than assuming it transfers.</p>
 <p><deflist>
 <def title="The scene looks washed out or milky">
 Usually excessive ambient or fog rather than a grading problem. Check whether
-<a href="Ambient-Occlusion.md">AO</a> is being applied and whether your
-<a href="Global-Illumination.md">GI</a> intensity is too high. Compare against a
-<a href="Path-Tracing.md">path-traced</a> reference before reaching for contrast in the grade.
+<a href="./Ambient-Occlusion.md">AO</a> is being applied and whether your
+<a href="./Global-Illumination.md">GI</a> intensity is too high. Compare against a
+<a href="./Path-Tracing.md">path-traced</a> reference before reaching for contrast in the grade.
 </def>
 <def title="Colours shift between the editor viewport and packaged builds">
 Almost always a different output device or a post process volume that is not unbound. Confirm
@@ -249,7 +249,7 @@ Check <code>r.Tonemapper.GrainQuantization</code> is <code>1</code>. If banding 
 the source gradient itself may be quantised &mdash; check the sky texture or gradient material precision.
 </def>
 <def title="The image is sharp in the editor and soft in game">
-Confirm no upscaler is active. See <a href="Upscalers.md">Upscalers and Frame Generation</a>. Vite renders
+Confirm no upscaler is active. See <a href="./Upscalers.md">Upscalers and Frame Generation</a>. Vite renders
 at native resolution by default; an upscaler enabled in a game settings menu is the usual cause.
 </def>
 </deflist></p>

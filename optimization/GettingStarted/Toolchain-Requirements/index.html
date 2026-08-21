@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Toolchain Requirements - 引擎优化文档</title>
+    <title>工具链要求 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Toolchain Requirements";
+        var mkdocs_page_name = "\u5de5\u5177\u94fe\u8981\u6c42";
         var mkdocs_page_input_path = "optimization/GettingStarted/Toolchain-Requirements.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Toolchain Requirements</li>
+      <li class="breadcrumb-item active">工具链要求</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/GettingStarted/Toolchain-Requirements.md"> 编辑页面</a>
     </li>
@@ -120,26 +120,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="toolchain-requirements">Toolchain Requirements</h1>
-<p><tldr></p>
-<p>
-Current Vite toolchain: <b>Visual Studio 2026</b> with <b>MSVC 14.50</b> and <b>Windows SDK 10.0.26100</b>.
-Uninstall or deselect every other MSVC toolset. A mismatched toolchain does not produce a clear error &mdash;
-it produces <code>C4668: '__has_feature' is not defined</code> and similar noise.
-</p>
-<p></tldr></p>
-<p>Compiling Unreal Engine Vite from source requires a specific, pinned set of build tools. Unreal Build Tool
-picks a toolchain by scanning what is installed, so having several MSVC versions side by side is the single
-most common cause of build failure. Install exactly what this page lists and remove the rest.</p>
-<h2 id="supported-toolchains">Supported toolchains</h2>
-<p>Vite is validated against the following combinations. The first row is the current recommendation.</p>
+                <h1 id="_1">工具链要求</h1>
+<p>当前 Vite 工具链：<strong>Visual Studio 2026</strong>，<strong>MSVC 版本 14.50</strong>，<strong>Windows SDK 版本 10.0.26100</strong>。请卸载或取消选择所有其他 MSVC 工具集。工具链不匹配不会产生明确的错误信息，而是会显示 <code>C4668: '__has_feature' is not defined</code> 等类似错误。</p>
+<p>从源代码编译 Unreal Engine Vite 需要一组特定的构建工具。Unreal 构建工具会扫描已安装的工具链来选择合适的工具链，因此同时安装多个 MSVC 版本是导致构建失败的最常见原因。请仅安装此页面列出的工具链，并移除其余工具链。</p>
+<h2 id="_2">支持的工具链</h2>
+<p>Vite 已针对以下工具链组合进行验证。第一行是当前推荐的工具链组合。</p>
 <table>
 <thead>
 <tr>
-<th>Toolchain</th>
+<th>工具链</th>
 <th>MSVC</th>
 <th>Windows SDK</th>
-<th>Status</th>
+<th>状态</th>
 </tr>
 </thead>
 <tbody>
@@ -147,42 +139,36 @@ most common cause of build failure. Install exactly what this page lists and rem
 <td>Visual Studio 2026 (latest)</td>
 <td>14.50</td>
 <td>10.0.26100</td>
-<td><strong>Current.</strong> Highest compiler performance and the toolchain Vite development targets.</td>
+<td><strong>当前。</strong> 最高编译器性能和工具链 Vite 开发目标。</td>
 </tr>
 <tr>
 <td>Visual Studio 2022 (latest)</td>
 <td>14.44</td>
 <td>10.0.26100</td>
-<td>Supported. Matches the last toolchain update verified by Epic's UE 4.27 Plus branch.</td>
+<td>支持。与 Epic 的 UE 4.27 Plus 分支验证的最新工具链更新相匹配。</td>
 </tr>
 <tr>
 <td>Visual Studio 2019 / 2022</td>
 <td>14.29</td>
 <td>10.0.18362</td>
-<td>Maximum stability. Oldest supported combination; use if your project needs the original toolchains.</td>
+<td>最大稳定性。最旧的支持组合；如果您的项目需要原始工具链，请使用。</td>
 </tr>
 </tbody>
 </table>
-<blockquote>
-<p>The <code>ViteSetup.bat</code> assistant currently hard-pins Visual Studio 2022, MSVC 14.44 and Windows SDK
-10.0.26100 subversion 7705 or higher, and refuses to continue otherwise. If you are on the VS 2026 /
-MSVC 14.50 toolchain, run the build steps manually rather than through the assistant, or update the
-<code>REQUIRED_*</code> variables at the top of the script. See <a href="ViteSetup.md">ViteSetup Assistant</a>.</p>
-<p>{style="warning"}</p>
-</blockquote>
-<h2 id="required-components">Required components</h2>
-<p>Install these through the Visual Studio Installer, under <strong>Individual components</strong>.</p>
+<div class="admonition 警告">
+<p class="admonition-title">警告</p>
+</div>
+<p><code>ViteSetup.bat</code> 助手目前强制要求使用 Visual Studio 2022、MSVC 14.44 和 Windows SDK 10.0.26100 子版本 7705 或更高版本，否则将无法继续运行。如果您使用的是 VS 2026 / MSVC 14.50 工具链，请手动运行构建步骤，而不是通过助手运行，或者更新脚本顶部的 <code>REQUIRED_*</code> 变量。请参阅 <a href="../../Tools/ViteSetup/">ViteSetup 助手</a>。</p>
+<h2 id="_3">所需组件</h2>
+<p>通过 Visual Studio 安装程序在<strong>独立组件</strong>下安装这些组件。</p>
 <ul>
-<li>Desktop development with C++ workload</li>
-<li>MSVC v14.50 &ndash; VS 2026 C++ x64/x86 build tools (or the version matching your chosen row above)</li>
+<li>使用 C++ 工作负载的桌面开发</li>
+<li>MSVC v14.50 – VS 2026 C++ x64/x86 构建工具（或与上面您选择的行匹配的版本）</li>
 <li>Windows 11 SDK (10.0.26100)</li>
-<li>.NET Framework 4.6.2 targeting pack &mdash; required by UnrealBuildTool and AutomationTool</li>
-<li>.NET Framework 4.5 targeting pack &mdash; required by SwarmAgent, SwarmCoordinator, NetworkProfiler and
-  UnrealControls</li>
+<li>.NET Framework 4.6.2 目标包 — UnrealBuildTool 和 AutomationTool 所需</li>
+<li>.NET Framework 4.5 目标包 — SwarmAgent、SwarmCoordinator、NetworkProfiler 和 UnrealControls 所需</li>
 </ul>
-<p>To skip the manual component selection, download and import the
-<a href="https://drive.google.com/file/d/1NwpPUiM_7yVI_kjhW94kYxvVP42ViV3Q/view?usp=sharing">Vite VSConfig</a> file
-through the Visual Studio 26 Installer's <strong>Import configuration</strong> option.</p>
+<p>要跳过手动组件选择，请通过 Visual Studio 26 安装程序的 <strong>导入配置</strong>选项下载并导入 <a href="https://drive.google.com/file/d/1NwpPUiM_7yVI_kjhW94kYxvVP42ViV3Q/view?usp=sharing">Vite VSConfig</a> 文件。</p>
 <h3 id="removing-conflicting-toolsets">Removing conflicting toolsets</h3>
 <p><procedure title="Remove conflicting MSVC versions" id="remove-conflicting-msvc">
     <step>Open the Visual Studio Installer.</step>
@@ -246,7 +232,7 @@ toolchain UBT reports using. Catching a mismatch there is much cheaper than catc
 <ul>
 <li><a href="../Build-From-Source/">Building from Source</a></li>
 <li><a href="../Build-Troubleshooting/">Build Troubleshooting</a></li>
-<li><a href="ViteSetup.md">ViteSetup Assistant</a></li>
+<li><a href="../../Tools/ViteSetup/">ViteSetup Assistant</a></li>
 <li><a href="../System-Requirements/">System Requirements</a></li>
 </ul>
               

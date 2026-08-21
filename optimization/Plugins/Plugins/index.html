@@ -214,10 +214,10 @@ them. Enable per project:</p>
 </code></pre></div>
 <p><note>
 Enabling a plugin adds its shader permutations, modules and startup cost to every build. Enable what you
-use; leave the rest off. See <a href="Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a>.
+use; leave the rest off. See <a href="../Performance/Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a>.
 </note></p>
 <h2 id="debloating">插件和 debloating</h2>
-<p>The <a href="Debloat-Guide.md">debloat suite</a> can strip plugins from the engine tree using
+<p>The <a href="../../Performance/Debloat-Guide/">debloat suite</a> can strip plugins from the engine tree using
 <code>ExcludedPlugins.txt</code>. That list is aggressive and includes plugins many projects genuinely need &mdash;
 <code>GameplayAbilities</code>, <code>ApexDestruction</code>, <code>HairStrands</code> and the NVIDIA plugins among them.</p>
 <p><warning>
@@ -225,7 +225,7 @@ Read <code>ExcludedPlugins.txt</code> before running a plugin strip. Removing a 
 will not fail cleanly &mdash; assets referencing it fail to load.
 </warning></p>
 <p>The same list is used by <code>LocalBuilds\CompressBuildSeparate.bat</code> to split plugins into their own archive,
-which is a non-destructive alternative. See <a href="Installed-Builds.md">Installed Builds</a>.</p>
+which is a non-destructive alternative. See <a href="../../Tools/Installed-Builds/">Installed Builds</a>.</p>
 <h2 id="_5">添加自己的插件</h2>
 <p>Project plugins go in <code>&lt;Project&gt;\Plugins</code>, as with stock Unreal. Engine plugins that the whole team should have go in <code>Engine\Plugins\Runtime\VitePlugins</code> and require an engine rebuild and redistribution.</p>
 <p>If you want a plugin bundled with Vite, it must be compatible with 4.21&ndash;4.27. UE5-only plugins are out of scope. See <a href="../Proposed-Plugins/">Proposed Plugins</a> for the criteria and the current candidate list.</p>
@@ -233,8 +233,8 @@ which is a non-destructive alternative. See <a href="Installed-Builds.md">Instal
 <ul>
 <li><a href="../Bundled-Plugins/">Bundled 插件</a></li>
 <li><a href="../Proposed-Plugins/">提议的插件</a></li>
-<li><a href="Debloat-Guide.md">Debloat 指南</a></li>
-<li><a href="Upscalers.md">Upscalers</a></li>
+<li><a href="../../Performance/Debloat-Guide/">Debloat 指南</a></li>
+<li><a href="../../Rendering/Upscalers/">Upscalers</a></li>
 </ul>
               
             </div>
