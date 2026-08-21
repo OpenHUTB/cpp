@@ -121,11 +121,7 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="5">从虚幻引擎 5 迁移</h1>
-<p><tldr></p>
-<p>
-使用 <a href="Propose-Plugins.md">UE Downgrader</a> 插件将资源向下移动，该插件支持 UE 5.8 及更低版本，直至回到 4.27。代码移动比原生 4.27 更容易，因为 Vite 向后移植了许多 UE5 容器、游戏框架和 GAS API。 4.27 中不存在的功能（Nanite、Lumen、VSM、World Partition）没有等效项，需要设计决策，而不是转换。
-</p>
-<p></tldr></p>
+<p>使用<a href="../../Plugins/Proposed-Plugins/">UE Downgrader</a>插件将资源向下移动，该插件支持 UE 5.8 及更低版本，直至回到 4.27。代码移动比原生 4.27 更容易，因为 Vite 向后移植了许多 UE5 容器、游戏框架和 GAS API。 4.27 中不存在的功能（Nanite、Lumen、VSM、World Partition）没有等效项，需要设计决策，而不是转换。</p>
 <p>将项目从虚幻引擎 5 迁移到 Vite 是真正的迁移，而不是版本升级。本页列出了哪些内容可以干净地迁移，哪些内容需要替换，以及按什么顺序进行。</p>
 <h2 id="_1">什么迁移了，什么没有迁移</h2>
 <table>
@@ -160,47 +156,47 @@
 <tr>
 <td>Nanite</td>
 <td>没有等同的</td>
-<td>编写常规 LOD；使用 <a href="Tessellation.md">Tessellation</a> 获取表面细节</td>
+<td>编写常规 LOD；使用<a href="../../Rendering/Tessellation/">细分曲面</a>获取表面细节</td>
 </tr>
 <tr>
 <td>流明</td>
 <td>替换</td>
-<td>使用 <a href="DDGI-Dynamic.md">DDGI</a>，可选择与 <a href="SSGI.md">SSGI</a> 一起使用</td>
+<td>使用 <a href="../Reference/DDGI-Dynamic.md">DDGI</a>，可选择与 <a href="../../Rendering/SSGI/">SSGI</a> 一起使用</td>
 </tr>
 <tr>
 <td>虚拟阴影贴图</td>
 <td>没有等同的</td>
-<td>级联阴影贴图，或<a href="RT-Shadows-And-Ambient-Occlusion.md">光线追踪阴影</a></td>
+<td>级联阴影贴图，或<a href="../../Rendering/RT-Shadows-And-Ambient-Occlusion/">光线追踪阴影</a></td>
 </tr>
 <tr>
 <td>TSR</td>
 <td>替换</td>
-<td><a href="Upscalers.md">DLSS, FSR, XeSS</a>, or native with <a href="Anti-Aliasing.md">SMAA</a></td>
+<td><a href="../../Rendering/Upscalers/">DLSS, FSR, XeSS</a>, or native with <a href="../../Rendering/Anti-Aliasing/">SMAA</a></td>
 </tr>
 <tr>
 <td>MegaLights</td>
 <td>替换</td>
-<td><a href="RTXDI.md">RTXDI</a></td>
+<td><a href="../../Rendering/RTXDI/">RTXDI</a></td>
 </tr>
 <tr>
 <td>Chaos physics</td>
 <td>替换</td>
-<td><a href="PhysX.md">PhysX</a></td>
+<td><a href="../../Physics/PhysX/">PhysX</a></td>
 </tr>
 <tr>
 <td>Chaos Destruction</td>
 <td>替换</td>
-<td><a href="Destruction-And-Cloth.md">Apex Destruction</a> 和 <a href="Destruction-And-Cloth.md">Blast</a></td>
+<td><a href="Destruction-And-Cloth.md">Apex Destruction</a> 和 <a href="../../Physics/Destruction-And-Cloth/">Blast</a></td>
 </tr>
 <tr>
 <td>Chaos Cloth</td>
 <td>替换</td>
-<td><a href="Destruction-And-Cloth.md">Apex Cloth</a></td>
+<td><a href="../../Physics/Destruction-And-Cloth/">Apex Cloth</a></td>
 </tr>
 <tr>
 <td>Substrate</td>
 <td>没有等同的</td>
-<td>标准材质模型，加上 <a href="Shading-Models.md">Callisto BRDF</a></td>
+<td>标准材质模型，加上 <a href="../../Rendering/Shading-Models/">Callisto BRDF</a></td>
 </tr>
 <tr>
 <td>世界分区</td>
@@ -210,12 +206,12 @@
 <tr>
 <td>Niagara</td>
 <td>迁移</td>
-<td>可用的; <a href="Propose-Plugins.md">PopcornFX</a> 是更快的替代方案</td>
+<td>可用的; <a href="../../Plugins/Proposed-Plugins/">PopcornFX</a> 是更快的替代方案</td>
 </tr>
 <tr>
 <td>MetaSounds</td>
 <td>没有等同的</td>
-<td>声音提示，或 <a href="Proproped-Plugins.md">Wwise</a></td>
+<td>声音提示，或 <a href="../Plugins/Proproped-Plugins.md">Wwise</a></td>
 </tr>
 </tbody>
 </table>
@@ -227,8 +223,8 @@
 <p>这是 Vite 上比 Stock 4.27 更容易的部分。该分支故意向后移植 UE5 API 表面，以便 UE5 时代的代码编译时只需较少的更改：更新的容器类、游戏框架更新和游戏能力系统功能都存在。</p>
 <p>你仍然会遇到分歧。按以下顺序完成它们：</p>
 <ol>
-<li><strong>物理.</strong> 任何涉及“Chaos”命名空间、“FCaosScene”、几何集合或 Chaos 载具的内容都需要转移到 PhysX 等效项。这通常是最大的单个工作块。请参阅 <a href="PhysX.md">PhysX 概述</a>。</li>
-<li><strong>渲染.</strong> 查询或驱动 Lumen、Nanite 或 VSM 控制台变量的代码没有目标。替换为 <a href="Rendering.md">Rendering</a> 中的 Vite 等效项。</li>
+<li><strong>物理.</strong> 任何涉及“Chaos”命名空间、“FCaosScene”、几何集合或 Chaos 载具的内容都需要转移到 PhysX 等效项。这通常是最大的单个工作块。请参阅 <a href="../../Physics/PhysX/">PhysX 概述</a>。</li>
+<li><strong>渲染.</strong> 查询或驱动 Lumen、Nanite 或 VSM 控制台变量的代码没有目标。替换为 <a href="../../Rendering/Rendering/">Rendering</a> 中的 Vite 等效项。</li>
 <li><strong>核心 API 漂移.</strong> <code>FVector</code> 在 UE5 (<code>FVector3d</code>) 中是双精度，在 4.27 中是单精度。大世界坐标假设不成立。需要审核在大世界偏移量下执行精度敏感数学的任何代码。</li>
 <li><strong>模块和构建规则.</strong> 引用仅限 UE5 的模块的 .build.cs 文件需要删除或替换这些依赖项。</li>
 </ol>
@@ -266,10 +262,10 @@
 <h2 id="_6">另请参阅</h2>
 <ul>
 <li><a href="../Introduction-to-Vite/">Vite 简介</a></li>
-<li><a href="PhysX.md">PhysX 概述</a></li>
-<li><a href="Global-Illumination.md">全局照明</a></li>
-<li><a href="Proposed-Plugins.md">建议的插件</a></li>
-<li><a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 与 UE5 成本分析</a></li>
+<li><a href="../../Physics/PhysX/">PhysX 概述</a></li>
+<li><a href="../../Rendering/Global-Illumination/">全局照明</a></li>
+<li><a href="../../Plugins/Proposed-Plugins/">建议的插件</a></li>
+<li><a href="../../EngineOverview/UE4-Versus-UE5-Cost-Analysis/">UE4 与 UE5 成本分析</a></li>
 </ul>
               
             </div>

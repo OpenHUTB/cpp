@@ -149,22 +149,22 @@ Vite 是 Unreal Engine 4.27 面向生产的分支，基于 NVIDIA 的 NvRTX Caus
 <p>集成工作由具有丰富虚幻引擎源代码经验的引擎程序员完成，他们使用适当的代码保护、托管着色器排列以及将每个精心挑选的 UE5 更改手动调整为 Vite 代码库，而不是盲目合并。</p>
 <p>借助 PhysX 以及组合的 DDGI 和 SSGI 光照管线，Vite 与用于启动 <em>The Finals</em> 的定制虚幻引擎构建非常相似。</p>
 <h2 id="headline">Headline 特色</h2>
-<p><strong><a href="DDGI-Dynamic.md">动态 DDGI</a>.</strong> Lumen 的无噪声全局照明替代品。与软件流明相比，反射质量更高，漏光更少，与反射的硬件流明相当，并且通常约为帧速率的两倍。 DDGI 已在《地铁：离去》、《守望先锋 2》、《总决赛》、《控制》、《巫师 3》、《战锤 40,000：暗潮》、《DOOM：黑暗时代》、《夺宝奇兵：夺宝奇兵》、《007 曙光》、《羊蹄之魂》和《星球大战亡命之徒》（包括 Switch 2 版本）中应用。</p>
-<p><strong><a href="DDGI-Static.md">静态 DDGI</a>.</strong> 烘焙模式具有近乎即时的烘焙时间、比传统烘焙照明更高的反弹保真度以及更好的移动对象覆盖范围，可在根本不支持光线追踪的 GPU 上使用。</p>
-<p><strong><a href="PhysX.md">PhysX 3.4</a>.</strong> 稳定、经过商业验证，并且在 Vite 中升级为在较新的 Clang 版本下构建，以获得有意义的编译器优化收益。内部压力测试显示，在物理限制场景中，Chaos 的运行速度比 PhysX 慢五倍以上。</p>
-<p><strong><a href="RTXDI.md">RTXDI</a>.</strong> MegaLights 的噪音较小的替代品，以其独立形式而不是 UE 5.1 和更高版本的 NvRTX 分支中的 Lumen 集成版本。</p>
-<p><strong><a href="Tessellation.md">细分曲面（Tessellation）</a>.</strong> 距离和位移驱动的几何细节，无需 Nanite 的开销。</p>
-<p><strong><a href="Ray-Tracing.md">完整的光线追踪套件</a>.</strong> 反射、环境光遮挡、阴影、天光、半透明、焦散、直接光照、每像素光线追踪 GI 和路径追踪——《黑神话：悟空》所搭载的渲染堆栈。</p>
-<p>有关完整列表，请参阅<a href="Release-Notes.md">发行说明</a>。</p>
+<p><strong><a href="../../Rendering/DDGI-Dynamic/">动态 DDGI</a>.</strong> Lumen 的无噪声全局照明替代品。与软件流明相比，反射质量更高，漏光更少，与反射的硬件流明相当，并且通常约为帧速率的两倍。 DDGI 已在《地铁：离去》、《守望先锋 2》、《总决赛》、《控制》、《巫师 3》、《战锤 40,000：暗潮》、《DOOM：黑暗时代》、《夺宝奇兵：夺宝奇兵》、《007 曙光》、《羊蹄之魂》和《星球大战亡命之徒》（包括 Switch 2 版本）中应用。</p>
+<p><strong><a href="../../Rendering/DDGI-Static/">静态 DDGI</a>.</strong> 烘焙模式具有近乎即时的烘焙时间、比传统烘焙照明更高的反弹保真度以及更好的移动对象覆盖范围，可在根本不支持光线追踪的 GPU 上使用。</p>
+<p><strong><a href="../../Physics/PhysX/">PhysX 3.4</a>.</strong> 稳定、经过商业验证，并且在 Vite 中升级为在较新的 Clang 版本下构建，以获得有意义的编译器优化收益。内部压力测试显示，在物理限制场景中，Chaos 的运行速度比 PhysX 慢五倍以上。</p>
+<p><strong><a href="../../Rendering/RTXDI/">RTXDI</a>.</strong> MegaLights 的噪音较小的替代品，以其独立形式而不是 UE 5.1 和更高版本的 NvRTX 分支中的 Lumen 集成版本。</p>
+<p><strong><a href="../../Rendering/Tessellation/">细分曲面（Tessellation）</a>.</strong> 距离和位移驱动的几何细节，无需 Nanite 的开销。</p>
+<p><strong><a href="../../Rendering/Ray-Tracing/">完整的光线追踪套件</a>.</strong> 反射、环境光遮挡、阴影、天光、半透明、焦散、直接光照、每像素光线追踪 GI 和路径追踪——《黑神话：悟空》所搭载的渲染堆栈。</p>
+<p>有关完整列表，请参阅<a href="../../EngineOverview/Release-Notes/">发行说明</a>。</p>
 <h2 id="ue4">UE4 不是已弃用的代码库吗？</h2>
 <p>这是一个公平的问题，答案是虚幻引擎 4 继续为最近的 AAA 版本提供支持：《最终幻想 VII 重生》（2024 年 4.26 版）、《星辰之刃》（2024 年 4.26 版）、《往日不再重制版》（2025 年 4.11 版）、《三角洲特种部队》（2026 年 4.22 版）、《真人快打 1》（2023 年 4.27 版）、《马里奥与路易吉：兄弟情谊 (4.26, 2024)、桃子公主：演出时间！ （2024 年 4.26 日）、《皮克敏 4》（2023 年 4.26 日）、Square Enix 的《勇者斗恶龙 VII 重制版》（2026 年 4.27 日）以及即将推出的《最终幻想 VII：启示录》（2027 年 4.27 日）。它们都搭载了 PhysX。</p>
 <p>这些作品保留在 UE4 上，以保留特定功能并满足保真度和性能目标。 UE4 还继续通过 4.27 Plus 分支接收来自主要工作室的更新，并且仍然是任天堂平台的优先事项。</p>
-<p>Vite 的计划是继续升级该代码库：优化核心系统、现代化渲染核心、改进 UI 并更新工具链，而不是将 4.27 视为冻结的工件。请参阅 <a href="Why-NvRTX-427.md">为什么选择 NvRTX 4.27</a> 了解基本版本选择背后的技术原因。</p>
+<p>Vite 的计划是继续升级该代码库：优化核心系统、现代化渲染核心、改进 UI 并更新工具链，而不是将 4.27 视为冻结的工件。请参阅 <a href="../../EngineOverview/Why-NvRTX-427/">为什么选择 NvRTX 4.27</a> 了解基本版本选择背后的技术原因。</p>
 <h2 id="_2">另请参阅</h2>
 <ul>
-<li><a href="Performance-Targets.md">性能目标</a></li>
-<li><a href="Why-NvRTX-427.md">为什么选择 NvRTX 4.27</a></li>
-<li><a href="UE4-Versus-UE5-Cost-Analysis.md">UE4 与 UE5 成本分析</a></li>
+<li><a href="../../EngineOverview/Performance-Targets/">性能目标</a></li>
+<li><a href="../../EngineOverview/Why-NvRTX-427/">为什么选择 NvRTX 4.27</a></li>
+<li><a href="../../EngineOverview/UE4-Versus-UE5-Cost-Analysis/">UE4 与 UE5 成本分析</a></li>
 <li><a href="../Getting-Started/">入门</a></li>
 </ul>
               
