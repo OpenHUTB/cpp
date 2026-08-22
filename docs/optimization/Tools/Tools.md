@@ -1,17 +1,15 @@
-# Tools and Automation
+# 工具和自动化
 
-<tldr>
-<p>
+
 Vite ships batch tooling for the whole engine lifecycle: <code>ViteSetup.bat</code> for setup and building,
 <code>RunUAT.bat</code> for installed builds, the <code>LocalBuilds\</code> scripts for packaging and
 registration, and <code>WipeShaderCache.bat</code> for when caches go stale.
-</p>
-</tldr>
+
 
 Building Unreal from source involves a long sequence of steps, each with its own failure modes. Vite wraps
 that sequence in tooling so the common paths do not require remembering the exact command lines.
 
-## In this section
+## 在这部分
 
 | Topic | Covers |
 |---|---|
@@ -32,7 +30,7 @@ that sequence in tooling so the common paths do not require remembering the exac
 | `LocalBuilds\MakeShortcut.bat` | `LocalBuilds\` | Creates `UEViteFork.lnk` |
 | `devops\ueVite-debloat-*.bat` | `devops\` | Engine debloat suite &mdash; see [Debloat Guide](../Performance/Debloat-Guide.md) |
 
-## Which one you want
+## 你想要哪个
 
 <deflist>
 <def title="I just cloned the repository">

@@ -1,21 +1,16 @@
-# Cache Management
+# 缓存管理
 
-<tldr>
-<p>
-<code>WipeShaderCache.bat</code> at the engine root deletes the engine's derived data cache, intermediate
-shaders and shader debug info. Reach for it when the editor's behaviour stops matching your source
-changes.
-</p>
-</tldr>
 
-Unreal caches aggressively. That is what makes iteration bearable, but it also means a stale cache can make
-a correct change appear not to work &mdash; or an incorrect one appear to.
+<code>WipeShaderCache.bat</code> at the engine root deletes the engine's derived data cache, intermediate shaders and shader debug info. Reach for it when the editor's behaviour stops matching your source changes.
 
-## What the script clears
+
+Unreal caches aggressively. That is what makes iteration bearable, but it also means a stale cache can make a correct change appear not to work &mdash; or an incorrect one appear to.
+
+## 脚本清除了什么
 
 `WipeShaderCache.bat` deletes three directories relative to the engine root:
 
-| Directory | Contents |
+| 目录 | 内容 |
 |---|---|
 | `Engine\DerivedDataCache` | Compiled shaders, cooked textures, built meshes and every other derived artefact |
 | `Engine\Intermediate\Shaders` | Intermediate shader compilation output |
@@ -32,7 +27,7 @@ compile workers can outlive the editor; check Task Manager if a deletion fails.
 After wiping, the next editor launch recompiles everything it needs. On a large project this can be tens of
 minutes or more. Do not do it casually.
 
-## When to wipe
+## 什么时候清除
 
 <deflist>
 <def title="You changed a .usf or .ush file and nothing happened">
@@ -56,28 +51,28 @@ Worth trying before deeper investigation, since it is cheap to rule out.
 </def>
 </deflist>
 
-## When not to wipe
+## 什么时候不清除
 
 Wiping the DDC is a heavy hammer and is frequently applied to problems it cannot solve.
 
 - **Project-level problems.** The script clears the *engine* DDC. Your project has its own
   `DerivedDataCache` folder and its own `Intermediate` and `Saved` directories. Engine-level wiping does
   not touch them.
-- **Runtime rendering bugs.** If an effect renders wrongly but consistently, that is a code or
+- **运行时渲染问题。** If an effect renders wrongly but consistently, that is a code or
   configuration problem, not a cache problem. Check the
   [compile-time switch availability table](../Rendering/Ray-Tracing.md) first &mdash; many ray tracing features are
   compiled out by default and their console variables silently do nothing.
-- **Long shader compile times.** Wiping makes this worse, not better. See
-  [Shader Compilation and PSO](../Performance/Shader-Compilation-And-PSO.md).
+- **长渲染编译时间。** Wiping makes this worse, not better. See
+  [着色器编译和 PSO](../Performance/Shader-Compilation-And-PSO.md).
 
-## Lighter-weight alternatives
+## 更轻量级的选择
 
 Try these before a full wipe:
 
-| Approach | Clears | Cost |
+| 方法 | 清除 | 花费 |
 |---|---|---|
-| `recompileshaders changed` | Modified shaders only | Seconds |
-| `recompileshaders global` | Global shaders | Under a minute |
+| `recompileshaders changed` | 仅修改的着色器 | 秒 |
+| `recompileshaders global` | 全局着色器 | Under a minute |
 | `recompileshaders material <name>` | One material | Seconds |
 | Delete the project's `Intermediate\` | Project build intermediates | Project rebuild |
 | Delete `Engine\Intermediate\Shaders` only | Intermediate shader output, keeping the DDC | Partial recompile |
@@ -86,17 +81,17 @@ The last one is worth knowing: the DDC is the expensive part to rebuild. If you 
 intermediate shader state, deleting that one directory by hand is much cheaper than running the full
 script.
 
-## Cache locations
+## 缓存位置
 
-| Cache | Path | Cleared by the script |
+| 缓存 | 路径 | 是否被脚本清除 |
 |---|---|---|
-| Engine DDC | `Engine\DerivedDataCache` | Yes |
-| Engine intermediate shaders | `Engine\Intermediate\Shaders` | Yes |
-| Shader debug info | `Engine\Saved\ShaderDebugInfo` | Yes |
-| Project DDC | `<Project>\DerivedDataCache` | No |
-| Project intermediates | `<Project>\Intermediate` | No |
-| Shared / network DDC | Per `BaseEngine.ini` DDC configuration | No |
-| Local user DDC | `%LOCALAPPDATA%\UnrealEngine\Common\DerivedDataCache` | No |
+| Engine DDC | `Engine\DerivedDataCache` | 是 |
+| Engine intermediate shaders | `Engine\Intermediate\Shaders` | 是 |
+| Shader debug info | `Engine\Saved\ShaderDebugInfo` | 是 |
+| Project DDC | `<Project>\DerivedDataCache` | 否 |
+| Project intermediates | `<Project>\Intermediate` | 否 |
+| Shared / network DDC | Per `BaseEngine.ini` DDC configuration | 否 |
+| Local user DDC | `%LOCALAPPDATA%\UnrealEngine\Common\DerivedDataCache` | 否 |
 
 <note>
 If your team uses a shared network DDC, wiping locally is usually pointless: the local cache repopulates
@@ -113,9 +108,9 @@ reclaim disk space, accepting the recompile cost.
 If disk space is the actual concern, the [Debloat Guide](../Performance/Debloat-Guide.md) covers larger and more permanent
 savings.
 
-## See also
+## 另请参见
 
-- [Shader Compilation and PSO](../Performance/Shader-Compilation-And-PSO.md)
+- [着色器编译和 PSO](../Performance/Shader-Compilation-And-PSO.md)
 - [Compile-Time Switches](../Performance/Compile-Time-Switches.md)
 - [Build Troubleshooting](../GettingStarted/Build-Troubleshooting.md)
-- [Debloat Guide](../Performance/Debloat-Guide.md)
+- [精简指南](../Performance/Debloat-Guide.md)

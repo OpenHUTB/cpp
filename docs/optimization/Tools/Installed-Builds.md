@@ -1,16 +1,12 @@
 # 已安装的构建
 
-<tldr>
-<p>
-An installed build is a precompiled, redistributable engine that works like an Epic Games Launcher install.
-<code>RunUAT.bat</code> produces one; the <code>LocalBuilds\</code> scripts package and register it.
-</p>
-</tldr>
 
-A source build requires a full toolchain, a long compile and a lot of disk. An installed build does not:
-artists, designers and anyone who does not modify engine C++ can use one directly.
+An installed build is a precompiled, redistributable engine that works like an Epic Games Launcher install. <code>RunUAT.bat</code> produces one; the <code>LocalBuilds\</code> scripts package and register it.
 
-## Building
+
+A source build requires a full toolchain, a long compile and a lot of disk. An installed build does not: artists, designers and anyone who does not modify engine C++ can use one directly.
+
+## 构建
 
 `RunUAT.bat` at the engine root drives the BuildGraph installed-build target:
 
@@ -32,9 +28,7 @@ Engine\Build\BatchFiles\RunUAT.bat BuildGraph
     -clean
 ```
 
-The configuration is Win64-only with Development and Shipping game configurations, matching Vite's
-[platform focus](../Platforms/Platforms.md). `WithDDC=false` skips derived data cache generation, which shortens the
-build considerably at the cost of first-launch shader compilation for the end user.
+The configuration is Win64-only with Development and Shipping game configurations, matching Vite's [platform focus](../Platforms/Platforms.md). `WithDDC=false` skips derived data cache generation, which shortens the build considerably at the cost of first-launch shader compilation for the end user.
 
 You can also reach this through [ViteSetup](./ViteSetup.md) &mdash; step 4, binary option, or menu option 8.
 The ViteSetup path is incremental; `RunUAT.bat` as shipped passes `-clean`.
@@ -46,13 +40,13 @@ and final outputs are large.
 
 Output lands in `LocalBuilds\Engine\Windows`.
 
-## Packaging
+## 打包
 
 Four scripts in `LocalBuilds\` compress the staged build with 7-Zip. All expect
 `LocalBuilds\Engine\Windows` to contain the staged build, and all look for 7-Zip at
 `C:\Program Files\7-Zip\7z.exe` unless the `SEVEN_ZIP` environment variable points elsewhere.
 
-| Script | Debug symbols | Plugins |
+| 脚本 | 调试符号 | 插件 |
 |---|---|---|
 | `CompressBuild.bat` | Excluded per `ExcludedPdbs.txt` | Single archive |
 | `CompressBuildSeparate.bat` | Excluded per `ExcludedPdbs.txt` | Split into a second archive |
@@ -68,14 +62,14 @@ exclude PDBs. If you need symbols in the archive, use
 
 All four exclude `FeaturePacks\`, `Samples\` and `Templates\` from the main archive.
 
-Outputs:
+输出:
 
-| File | Contents |
+| 文件 | 内容 |
 |---|---|
 | `LocalBuilds\Engine\UE_ViteFork.7z` | The engine |
 | `LocalBuilds\Engine\ExcludedPlugins.7z` | Plugins, in the `Separate` variants only |
 
-### The exclusion lists
+### 排除列表
 
 `ExcludedPdbs.txt` lists roughly 1,100 PDB paths covering the engine modules and plugins. Debug symbols are
 a very large fraction of a source build's size, so excluding them is the single biggest packaging saving.
@@ -89,7 +83,7 @@ engine and add the plugin archive only if they need it.
 A team where most people need the base engine and only a few need the full plugin set can distribute a much
 smaller primary download. The split is by archive, not by deletion, so nothing is lost.
 
-## Installing on a target machine
+## 在目标机器上安装
 
 <procedure title="Install a packaged Vite build" id="install-binary">
     <step>Extract <code>UE_ViteFork.7z</code> to its final location. Moving it later requires re-registering.</step>
@@ -108,7 +102,7 @@ smaller primary download. The split is by archive, not by deletion, so nothing i
 The packaged archive root contains `MakeShortcut.bat`, `RegistryAdd.bat` and `RegistryRemove.bat` alongside
 `Engine\`, plus `FeaturePacks\`, `Templates\` and `Samples\` if they were included at build time.
 
-## Moving or removing
+## 移动或移除
 
 Registration stores an absolute path, so moving the build breaks it.
 
@@ -121,7 +115,7 @@ Registration stores an absolute path, so moving the build breaks it.
 
 To remove entirely, run `RegistryRemove.bat`, delete the shortcut, and delete the folder.
 
-## Running alongside a source build
+## 在源代码构建旁运行
 
 Both can coexist, but they register under the same `UEViteFork` name, so only one is registered at a time.
 Whichever ran `RegistryAdd.bat` most recently is the one projects will find.
@@ -129,7 +123,7 @@ Whichever ran `RegistryAdd.bat` most recently is the one projects will find.
 If you regularly switch, note which is currently registered, or edit the registry key manually to give them
 distinct names.
 
-## Limitations
+## 局限性
 
 Installed builds cannot compile engine C++. Projects using them can still have their own C++ modules, which
 compile against the installed engine's headers and libraries, but engine source changes require a source
@@ -139,10 +133,10 @@ This includes [compile-time switches](../Performance/Compile-Time-Switches.md). 
 `VITE_RT_PSO_DEBLOAT=0` for path tracing or RTXDI, that has to be baked into the installed build at the
 time it is produced.
 
-## See also
+## 另请参见
 
-- [ViteSetup Assistant](./ViteSetup.md)
-- [Install a Binary Build](../GettingStarted/Install-Binary-Build.md)
-- [Build from Source](../GettingStarted/Build-From-Source.md)
-- [Debloat Guide](../Performance/Debloat-Guide.md)
+- [ViteSetup 助手](./ViteSetup.md)
+- [安装二进制构建](../GettingStarted/Install-Binary-Build.md)
+- [从源代码构建](../GettingStarted/Build-From-Source.md)
+- [精简指南](../Performance/Debloat-Guide.md)
 - [Compile-Time Switches](../Performance/Compile-Time-Switches.md)
