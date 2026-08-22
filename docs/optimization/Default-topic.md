@@ -32,7 +32,7 @@ Vite针对的是活跃生产中的团队。它不是一个研究分支或技术�
 </style>
 
 
-*完全由动态光线追踪全局照明照亮的风格化演示：在 RTX 4080 Super 上以 1440p 原生测得 811 FPS。虚幻引擎 5.7 中 Lumen 上的同一场景测得 324 FPS。*
+*完全由动态光线追踪全局光照的风格化演示：在 RTX 4080 Super 上以 1440p 原生测得 811 FPS。虚幻引擎 5.7 中 Lumen 上的同一场景测得 324 FPS。*
 
 ## Vite 的目的是什么
 
@@ -56,7 +56,7 @@ Vite针对的是活跃生产中的团队。它不是一个研究分支或技术�
 | 从源代码编译引擎 | [从源代码构建](./GettingStarted/Build-From-Source.md) |
 | 修复编译或设置错误 | [构建故障排除](./GettingStarted/Build-Troubleshooting.md) |
 | 将现有的 UE5 项目移至 Vite 上 | [从虚幻引擎 5 迁移](./GettingStarted/Migrating-From-UE5.md) |
-| 在没有 Lumen 的情况下照亮场景 | [全局照明](./Rendering/Global-Illumination.md) |
+| 在没有 Lumen 的情况下照亮场景 | [全局光照](./Rendering/Global-Illumination.md) |
 | 在我的游戏代码中用 PhysX 替换 Chaos | [PhysX](./Physics/PhysX.md) |
 | 查找控制台变量 | [控制台变量](./Reference/Console-Variables.md) |
 | 为 fork 做出贡献 | [贡献](./Contributing/Contributing.md) |

@@ -1,14 +1,10 @@
-# Compile-Time Switches
+# 编译时开关
 
-<tldr>
-<p>
 Five <code>VITE_*</code> macros in
 <code>Engine/Source/Runtime/Core/Public/Misc/CoreDefines.h</code> control features that are decided at
 compile time rather than by console variable. <b><code>VITE_RT_PSO_DEBLOAT</code> defaults to
 <code>1</code> and compiles out several ray tracing effects entirely</b> &mdash; read that section before
 concluding a feature is broken.
-</p>
-</tldr>
 
 Some Vite features cannot be console variables. Either they change shader permutation sets, which are
 decided when shaders are compiled, or they alter hot code paths where a runtime branch would cost more than

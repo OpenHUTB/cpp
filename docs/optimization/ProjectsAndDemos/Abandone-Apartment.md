@@ -41,7 +41,7 @@ fills in the detail near contacts and in corners. See
 
 ## 另请参阅
 
-- [全局照明](../Rendering/Global-Illumination.md)
+- [全局光照](../Rendering/Global-Illumination.md)
 - [动态 DDGI](../Rendering/DDGI-Dynamic.md)
 - [SSGI](../Rendering/SSGI.md)
 - [环境遮蔽](../Rendering/Ambient-Occlusion.md)

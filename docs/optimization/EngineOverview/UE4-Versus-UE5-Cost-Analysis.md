@@ -1,12 +1,10 @@
-# UE4 versus UE5 Cost Analysis
+# UE4 与 UE5 的成本分析
 
-<tldr>
-<p>
+
 The performance gap is not one system. It is shader instruction counts, physics, character movement,
 memory, Slate, skeletal meshes, tick cost, render thread structure, the loss of Blueprint nativization,
 and volumetric shaders &mdash; each contributing independently.
-</p>
-</tldr>
+
 
 This page documents where the measured cost differences between Unreal Engine 4.27 and modern UE5 come
 from. It exists because "UE5 is slower" is not actionable; knowing *which* subsystem regressed and by how

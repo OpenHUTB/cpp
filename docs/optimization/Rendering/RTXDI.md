@@ -1,11 +1,10 @@
-# RTXDI
+# RTX 直接光照（RTX Direct Illumination, RTXDI）
 
-<tldr>
-<p>
+
 Ray-traced direct lighting for scenes with very many lights. This is the <b>standalone</b> RTXDI, not the
 Lumen-integrated version in UE 5.1+. A less noisy alternative to MegaLights.
-</p>
-<p>
+
+
 <b>Compiled out in a default build.</b> Requires rebuilding with
 <code>VITE_RT_PSO_DEBLOAT=0</code> before <code>r.RayTracing.SampledDirectLighting</code> does anything.
 </p>

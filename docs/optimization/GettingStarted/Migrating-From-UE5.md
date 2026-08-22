@@ -79,6 +79,6 @@ UE Downgrader 插件可将 UE 5.8 及更低版本的资源转换回 4.27 和 4.2
 
 - [Vite 简介](Introduction-to-Vite.md)
 - [PhysX 概述](../Physics/PhysX.md)
-- [全局照明](../Rendering/Global-Illumination.md)
+- [全局光照](../Rendering/Global-Illumination.md)
 - [建议的插件](../Plugins/Proposed-Plugins.md)
 - [UE4 与 UE5 成本分析](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md)

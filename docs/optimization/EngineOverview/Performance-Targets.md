@@ -22,7 +22,7 @@ Vite的性能目标不是理想的营销数字；它们是引擎调整的配置�
 
 Epic 的 UE 5.7 和 5.8 的目标是在 PS5 上以 720p–1080p 的动态内部分辨率实现约 60 FPS，使用 Lumen、Nanite、VSM、TSR 和 Chaos。 Vite 的主要宣称是，与预期功能集相比，实际游戏帧速率提高了 2.5 倍。
 
-最清晰的单个演示：在 Vite 中运行的具有光线追踪全局照明、光线追踪反射和曲面细分的场景优于 UE 5.7 中没有光线追踪、没有 Lumen、没有 Nanite 和曲面细分的“相同场景”。这适用于 RTX 4080 Super 上的 4K 原生分辨率、RDNA2 RX 6700 上的 4K 原生分辨率以及 Steam Deck 硬件上的原生分辨率。
+最清晰的单个演示：在 Vite 中运行的具有光线追踪全局光照、光线追踪反射和曲面细分的场景优于 UE 5.7 中没有光线追踪、没有 Lumen、没有 Nanite 和曲面细分的“相同场景”。这适用于 RTX 4080 Super 上的 4K 原生分辨率、RDNA2 RX 6700 上的 4K 原生分辨率以及 Steam Deck 硬件上的原生分辨率。
 
 [![Vite RT GI 和 RT Reflections](https://img.youtube.com/vi/2vfG3W-Gy5E/maxresdefault.jpg)](https://youtu.be/2vfG3W-Gy5E)
 
