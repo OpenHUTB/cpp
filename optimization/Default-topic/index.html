@@ -160,7 +160,7 @@ Unreal Engine Vite 是 Unreal Engine 4.27 的性能优先分支，基于 NvRTX �
 }
 </style>
 
-<p><em>完全由动态光线追踪全局照明照亮的风格化演示：在 RTX 4080 Super 上以 1440p 原生测得 811 FPS。虚幻引擎 5.7 中 Lumen 上的同一场景测得 324 FPS。</em></p>
+<p><em>完全由动态光线追踪全局光照的风格化演示：在 RTX 4080 Super 上以 1440p 原生测得 811 FPS。虚幻引擎 5.7 中 Lumen 上的同一场景测得 324 FPS。</em></p>
 <h2 id="vite">Vite 的目的是什么</h2>
 <p>虚幻引擎 5.7 和 5.8 的目标是在 PlayStation 5 上使用 Lumen、Nanite、虚拟阴影贴图、TSR 和 Chaos 技术，以 720p 到 1080p 的动态内部分辨率实现大约 60 FPS 的帧率。这套技术栈通过虚拟化和时间重建来提升画面保真度，但代价是处理、流式传输和内存开销，以及噪点、重影和模糊等问题，此外，渲染器本身的基础成本也很高，即使项目尚未构建任何内容，成本依然很高。</p>
 <p>随着任天堂 Switch 2 的上市、Steam Deck 等掌机的普及以及硬件成本的上涨，这种权衡越来越难以满足游戏运行所需的硬件需求。Vite则采取了截然相反的策略：在保持高视觉保真度的同时，严格控制帧时间并实现高原生分辨率。</p>
@@ -198,7 +198,7 @@ Unreal Engine Vite 是 Unreal Engine 4.27 的性能优先分支，基于 NvRTX �
 </tr>
 <tr>
 <td>在没有 Lumen 的情况下照亮场景</td>
-<td><a href="../Rendering/Global-Illumination/">全局照明</a></td>
+<td><a href="../Rendering/Global-Illumination/">全局光照</a></td>
 </tr>
 <tr>
 <td>在我的游戏代码中用 PhysX 替换 Chaos</td>

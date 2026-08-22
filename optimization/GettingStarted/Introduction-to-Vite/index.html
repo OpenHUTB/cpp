@@ -135,7 +135,7 @@ Vite 是 Unreal Engine 4.27 面向生产的分支，基于 NVIDIA 的 NvRTX Caus
 <p>Vite 采取相反的立场：优先考虑高视觉保真度，同时在控制台级硬件上以高原生分辨率保持严格的帧时间预算。</p>
 <div class="admonition 注意">
 <p class="admonition-title">注意</p>
-<p>在 Vite 中运行的具有光线追踪全局照明、光线追踪反射和曲面细分的场景优于 UE 5.7 中完全没有光线追踪、Lumen、Nanite 或曲面细分的相同场景。这在 RTX 4080 Super 和 RDNA2 RX 6700（相当于 PS5）上保持 4K 原生分辨率，在 Steam Deck 硬件上保持原生分辨率。</p>
+<p>在 Vite 中运行的具有光线追踪全局光照、光线追踪反射和曲面细分的场景优于 UE 5.7 中完全没有光线追踪、Lumen、Nanite 或曲面细分的相同场景。这在 RTX 4080 Super 和 RDNA2 RX 6700（相当于 PS5）上保持 4K 原生分辨率，在 Steam Deck 硬件上保持原生分辨率。</p>
 </div>
 <h2 id="vite_1">Vite 是由什么组成的</h2>
 <p>Vite 最初是 NvRTX 4.27 Caustics 的一个分支，它在 Epic 标准 4.27 分支上添加了 DX12、光线追踪和渲染改进，以及 DLSS、NVIDIA Reflex、改进的降噪器和全面的光线追踪支持，包括 DDGI-lit 光线追踪反射。</p>
@@ -149,7 +149,7 @@ Vite 是 Unreal Engine 4.27 面向生产的分支，基于 NVIDIA 的 NvRTX Caus
 <p>集成工作由具有丰富虚幻引擎源代码经验的引擎程序员完成，他们使用适当的代码保护、托管着色器排列以及将每个精心挑选的 UE5 更改手动调整为 Vite 代码库，而不是盲目合并。</p>
 <p>借助 PhysX 以及组合的 DDGI 和 SSGI 光照管线，Vite 与用于启动 <em>The Finals</em> 的定制虚幻引擎构建非常相似。</p>
 <h2 id="headline">Headline 特色</h2>
-<p><strong><a href="../../Rendering/DDGI-Dynamic/">动态 DDGI</a>.</strong> Lumen 的无噪声全局照明替代品。与软件流明相比，反射质量更高，漏光更少，与反射的硬件流明相当，并且通常约为帧速率的两倍。 DDGI 已在《地铁：离去》、《守望先锋 2》、《总决赛》、《控制》、《巫师 3》、《战锤 40,000：暗潮》、《DOOM：黑暗时代》、《夺宝奇兵：夺宝奇兵》、《007 曙光》、《羊蹄之魂》和《星球大战亡命之徒》（包括 Switch 2 版本）中应用。</p>
+<p><strong><a href="../../Rendering/DDGI-Dynamic/">动态 DDGI</a>.</strong> Lumen 的无噪声全局光照替代品。与软件流明相比，反射质量更高，漏光更少，与反射的硬件流明相当，并且通常约为帧速率的两倍。 DDGI 已在《地铁：离去》、《守望先锋 2》、《总决赛》、《控制》、《巫师 3》、《战锤 40,000：暗潮》、《DOOM：黑暗时代》、《夺宝奇兵：夺宝奇兵》、《007 曙光》、《羊蹄之魂》和《星球大战亡命之徒》（包括 Switch 2 版本）中应用。</p>
 <p><strong><a href="../../Rendering/DDGI-Static/">静态 DDGI</a>.</strong> 烘焙模式具有近乎即时的烘焙时间、比传统烘焙照明更高的反弹保真度以及更好的移动对象覆盖范围，可在根本不支持光线追踪的 GPU 上使用。</p>
 <p><strong><a href="../../Physics/PhysX/">PhysX 3.4</a>.</strong> 稳定、经过商业验证，并且在 Vite 中升级为在较新的 Clang 版本下构建，以获得有意义的编译器优化收益。内部压力测试显示，在物理限制场景中，Chaos 的运行速度比 PhysX 慢五倍以上。</p>
 <p><strong><a href="../../Rendering/RTXDI/">RTXDI</a>.</strong> MegaLights 的噪音较小的替代品，以其独立形式而不是 UE 5.1 和更高版本的 NvRTX 分支中的 Lumen 集成版本。</p>

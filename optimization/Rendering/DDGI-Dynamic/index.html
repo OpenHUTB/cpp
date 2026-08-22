@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Dynamic DDGI - 引擎优化文档</title>
+    <title>动态 DDGI - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Dynamic DDGI";
+        var mkdocs_page_name = "\u52a8\u6001 DDGI";
         var mkdocs_page_input_path = "optimization/Rendering/DDGI-Dynamic.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Dynamic DDGI</li>
+      <li class="breadcrumb-item active">动态 DDGI</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/DDGI-Dynamic.md"> 编辑页面</a>
     </li>
@@ -120,148 +120,104 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="dynamic-ddgi">Dynamic DDGI</h1>
-<p><tldr></p>
-<p>
-Real-time ray-traced irradiance probe volumes. Enable with
-<code>r.GlobalIllumination.ExperimentalPlugin 1</code>, then place DDGI volumes in the level.
-Noise-free by construction, fully dynamic, and roughly 2x the frame rate of hardware Lumen in
-comparable scenes.
-</p>
-<p></tldr></p>
-<p>Dynamic Diffuse Global Illumination is Vite's primary global illumination solution and the feature the fork
-is best known for. This page covers how it works, how to set it up, and how to tune it.</p>
+                <h1 id="ddgi">动态 DDGI</h1>
+<p>实时光线追踪辐照度探测体积设置方法：
+<div class="highlight"><pre><span></span><code><span class="err">r.GlobalIllumi</span><span class="kc">nat</span><span class="err">io</span><span class="kc">n</span><span class="err">.Experime</span><span class="kc">ntal</span><span class="err">Plugi</span><span class="kc">n</span><span class="w"> </span><span class="mi">1</span>
+</code></pre></div>
+然后将 DDGI 体积放置在关卡中。它本身无噪声，完全动态，并且在类似场景中帧速率约为硬件 Lumen 的两倍。</p>
+<p>动态漫反射全局光照 (Dynamic Diffuse Global Illumination, DDGI) 是 Vite 的主要全局光照解决方案，也是该分支最知名的功能。本页面将介绍其工作原理、设置方法和调整方法。</p>
 <p><img alt="" src="../../../img/optimization/DDGIDirectOnly.png" /></p>
-<p><em>阁楼内部只有直射光，阳光照射不到的地方一片漆黑。</em></p>
 <p><em>阁楼内部只有直射光，阳光照射不到的地方都是黑色的，因为没有任何东西能将光线传递到房间的各个角落。</em></p>
 <p><img alt="" src="../../../img/optimization/DDGIDirectPlusGI.png" /></p>
-<p><em>同样是阁楼内部，启用动态DDGI后，间接反射光充满整个房间。天花板、左侧的箱子以及屋檐下的空间完全由反射光照明——由于探头辐照度本身就是平滑的，因此无需进行降噪处理。</em></p>
-<h2 id="how-it-works">How it works</h2>
-<p>DDGI places a three-dimensional grid of probes across a volume. Each frame, a budget of rays is traced from
-each probe into the scene; the resulting radiance is accumulated into per-probe irradiance and depth
-textures, and stored using spherical harmonics.</p>
-<p>Two properties follow from that representation, and they explain almost everything about DDGI's behaviour:</p>
-<p><strong>It is noise-free.</strong> Because irradiance is accumulated and filtered into a smooth basis over many frames
-rather than sampled per-pixel per-frame, the output has no stochastic noise and needs no denoiser. That is
-why DDGI does not exhibit the boiling, ghosting and temporal instability associated with denoised
-ray-traced GI.</p>
-<p><strong>It is coarse.</strong> Spatial resolution is bounded by probe spacing. Lighting detail finer than the probe grid
-does not exist in the representation. This is the reason <a href="../SSGI/">SSGI</a> is recommended alongside it.</p>
-<p>The per-probe depth information is what prevents light leaking through thin geometry &mdash; probes know how
-far away the nearest surface is in each direction and can reject contributions that would have to pass
-through a wall. This is why DDGI leaks less than software Lumen.</p>
+<p><em>同样是阁楼内部，启用动态 DDGI 后，间接反射光充满整个房间。天花板、左侧的箱子以及屋檐下的空间完全由反射光照明——由于探头辐照度本身就是平滑的，因此无需进行降噪处理。</em></p>
+<h2 id="_1">工作原理</h2>
+<p>DDGI 在场景中放置一个三维探针网格。每一帧都会从每个探针追踪一定数量的光线进入场景；最终的辐射度会被累积到每个探针的辐照度和深度纹理中，并使用球谐函数进行存储。</p>
+<p>这种表示方法具有两个特性，几乎可以解释 DDGI 的所有行为：</p>
+<p><strong>它无噪声。</strong> 由于辐照度是在多帧内累积并滤波成一个平滑的基，而不是逐像素逐帧采样，因此输出没有随机噪声，无需降噪。这就是为什么 DDGI 不会出现与降噪光线追踪全局光照相关的沸腾、重影和时间不稳定性。</p>
+<p><strong>它较为粗糙。</strong> 空间分辨率受限于探针间距。这种表示方法无法呈现比探针网格更精细的光照细节。因此，建议将其与 <a href="../SSGI/">SSGI</a> 结合使用。</p>
+<p>每个探针的深度信息可以防止光线穿过薄壁结构泄漏——探针知道每个方向上最近表面的距离，并能排除那些必须穿过墙壁才能到达的光线。这就是为什么 DDGI 的泄漏量比软件 Lumen 少的原因。</p>
 <p><img alt="" src="../../../img/optimization/DDGIProbeVisualisation.png" /></p>
-<p><em>编辑器视口中，DDGI探测球体在整个内部空间中可视化显示。</em></p>
-<p><em>编辑器中的探针可视化功能。每个球体代表一个探针，显示其存储的辐照度，这使得探针间距和任何错位的探针都能立即显示出来。</em></p>
-<h2 id="vites-integration">Vite's integration</h2>
-<p>Vite's DDGI is not the stock 4.27 launcher plugin. It inherits NvRTX's engine-side integration, which
-reaches into the ray tracing pipeline rather than sitting alongside it. The practical differences:</p>
+<p><em>编辑器视口中，DDGI 探测球体在整个内部空间中可视化显示。每个球体代表一个探针，显示其存储的辐照度，这使得探针间距和任何错位的探针都能立即显示出来。</em></p>
+<h2 id="vite">Vite 的集成</h2>
+<p>Vite 的 DDGI 并非 4.27 版本自带的启动器插件。它继承了 NvRTX 的引擎端集成，直接深入光线追踪管线，而非仅仅作为辅助插件。实际区别如下：</p>
 <ul>
-<li><strong>Probe-based ray-traced reflections.</strong> Reflection rays can sample probe irradiance for their secondary
-  bounce instead of returning black or falling back to a cubemap. This substantially improves RT reflection
-  quality and is one of the larger visual wins in the fork. See
-  <a href="../RT-Reflections/">Ray-Traced Reflections</a>.</li>
-<li>Continued optimisation work on the DDGI update path as part of each release.</li>
-<li>Composition with the rest of the RT effect suite, so DDGI, RTXDI and RT reflections can all be active.</li>
+<li><strong>基于探针的光线追踪反射。</strong> 反射光线可以采样探针辐照度进行二次反射，而不是返回黑色或回退到立方体贴图。这显著提升了光线追踪反射的质量，也是该分支版本中最大的视觉优势之一。参见<a href="../RT-Reflections/">光线追踪反射</a>。</li>
+<li>持续优化 DDGI 更新路径，并在每个版本中持续更新。</li>
+<li>与其余光线追踪特效套件协同工作，因此 DDGI、RTXDI 和光线追踪反射可以同时激活。</li>
 </ul>
-<blockquote>
-<p>Do not install the launcher 4.27 DDGI plugin into a Vite project. The engine already ships DDGI and the
-two conflict. The standalone
-<a href="https://github.com/GapingPixel/UE4-RTXGI-1.1.5-Latest-Official">DDGI 1.1.5 plugin</a> is only for team
-members working in a stock launcher 4.27 install alongside a Vite project.</p>
-<p>{style="warning"}</p>
-</blockquote>
-<h2 id="setting-up">Setting up</h2>
-<p><procedure title="Set up Dynamic DDGI in a level" id="setup-ddgi">
-    <step>
-        Confirm ray tracing is enabled for the project. DDGI needs DXR support.
-    </step>
-    <step>
-        Enable the plugin path with <code>r.GlobalIllumination.ExperimentalPlugin 1</code>, either from the
-        console, from code, or in <code>DefaultEngine.ini</code>.
-    </step>
-    <step>
-        Place a DDGI volume actor so that it encloses the playable space you want lit. Volumes cover
-        volume, not surfaces &mdash; think about where the player and dynamic objects can go, not about
-        where the walls are.
-    </step>
-    <step>
-        Set probe counts per axis. Start coarse and increase only where you can see the difference; probe
-        count drives both memory and per-frame ray cost.
-    </step>
-    <step>
-        Enable <a href="./SSGI.md">SSGI</a> with <code>r.SSGI.Enable 1</code> to recover the contact detail
-        the probe grid cannot represent.
-    </step>
-    <step>
-        Verify in motion, not in a still frame. DDGI's advantages are temporal &mdash; a screenshot will not
-        show you the stability difference against a denoised technique.
-    </step>
-</procedure></p>
+<p><strong>注意：</strong> 请勿将 4.27 版本的启动器 DDGI 插件安装到 Vite 项目中。引擎本身已包含 DDGI，两者会冲突。独立的 <a href="https://github.com/GapingPixel/UE4-RTXGI-1.1.5-Latest-Official">DDGI 1.1.5 插件</a>仅适用于在 Vite 项目旁边使用标准启动器 4.27 安装的团队成员。</p>
+<h2 id="_2">设置</h2>
+<p><strong>在关卡中设置动态 DDGI</strong></p>
+<ol>
+<li>
+<p>确认项目已启用光线追踪。DDGI 需要 DXR 支持。</p>
+</li>
+<li>
+<p>使用 <code>r.GlobalIllumination.ExperimentalPlugin 1</code> 启用插件路径，可以通过控制台、代码或 <code>DefaultEngine.ini</code> 文件进行设置。</p>
+</li>
+<li>
+<p>放置一个 DDGI 体积 Actor，使其包围您想要照亮的可玩空间。体积覆盖的是体积，而不是表面——考虑的是玩家和动态物体可以移动的位置，而不是墙壁的位置。</p>
+</li>
+<li>
+<p>设置每个轴的探针数量。先从粗略设置开始，仅在能够看到差异时才增加；探针数量会影响内存和每帧光线的成本。</p>
+</li>
+<li>
+<p>使用 <code>r.SSGI.Enable 1</code> 启用 <a href="../SSGI/">SSGI</a>，以恢复探针网格无法表示的接触细节。</p>
+</li>
+<li>
+<p>在动态画面中进行验证，而不是在静态帧中。DDGI 的优势是暂时的——屏幕截图无法显示其与降噪技术相比的稳定性差异。</p>
+</li>
+</ol>
 <p><img alt="" src="../../../img/optimization/ProjectSettingsRHI.png" /></p>
-<p><em>项目设置显示默认 RHI 设置为 DirectX 12，并勾选了 DirectX 11 和 12 SM5。</em></p>
-<p><em>第一步，也是很多人会忽略的一步。</em><em>项目设置 → 平台 → Windows → 目标 THI</em><em>必须设置为 DirectX 12；4.27 版本中的光线追踪仅支持 DX12。</em></p>
+<p><em>第一步，也是很多人会忽略的一步。“项目设置 → 平台 → Windows → 目标 RHI”必须设置为 DirectX 12，并勾选了 DirectX 11 和 12 SM5；4.27 版本中的光线追踪仅支持 DX12。</em></p>
 <p><img alt="" src="../../../img/optimization/DDGIEnablePlugin.png" /></p>
-<p><em>在内置渲染下启用 NVIDIA RTX 全局光照插件的插件对话框</em></p>
-<p><em>GI 插件路径位于</em><em>内置”→“渲染</em><em>下。Vite 引擎自带此插件，因此这是引擎内置插件，而不是启动器 4.27 插件——请勿将其与后者同时安装。</em></p>
+<p><em>在内置渲染下启用 NVIDIA RTX 全局光照插件的插件对话框。全局光照插件路径位于</em><em>内置”→“渲染</em><em>下。Vite 引擎自带此插件，因此这是引擎内置插件，而不是启动器 4.27 插件——请勿将其与后者同时安装。</em></p>
 <p><img alt="" src="../../../img/optimization/DDGIVolumeEditor.png" /></p>
 <p><em>在编辑器视口的关卡中放置一个 DDGI 体积 Actor。体积覆盖空间，而非表面——根据摄像机和动态物体实际可以到达的位置来调整体积大小。</em></p>
-<h3 id="volume-settings">Volume settings</h3>
+<h3 id="volume">体积（Volume）设置</h3>
 <p><img alt="" src="../../../img/optimization/DDGISettingsVolume.png" /></p>
 <p><em>DDGI 体积设置面板</em></p>
 <p><img alt="" src="../../../img/optimization/DDGISettingsProbes.png" /></p>
-<p><em>DDGI探头设置面板显示每轴计数和探头间距控制</em></p>
+<p><em>DDGI 探头设置面板显示每轴计数和探头间距控制</em></p>
 <p><img alt="" src="../../../img/optimization/DDGISettingsLighting.png" /></p>
-<p><em>DDGI体积Actor的体积、探针和照明光照设置。每个轴的探针数量是影响内存占用和每帧光线消耗的关键参数。</em></p>
-<h2 id="tuning">Tuning</h2>
-<p>The settings that matter most, roughly in order of impact:</p>
-<p><strong>Probe density.</strong> The dominant cost and quality control. Denser grids resolve smaller lighting features and
-cost proportionally more in both rays traced and memory. Interior spaces with lots of small rooms need more
-probes than open exteriors.</p>
+<p><em>DDGI 体积 Actor 的体积、探针和照明光照设置。每个轴的探针数量是影响内存占用和每帧光线消耗的关键参数。</em></p>
+<h2 id="_3">微调</h2>
+<p>以下设置最为重要，大致按影响程度排序：</p>
+<p><strong>探针密度。</strong> 这是成本和质量控制的主要因素。更密集的网格可以解析更小的光照特征，但同时也会相应地增加光线追踪和内存消耗。室内空间（包含许多小房间）比开阔的室外空间需要更多的探针。</p>
 <p><img alt="" src="../../../img/optimization/DDGIProbeDensity.png" /></p>
-<p><em>探针密度对比图显示了照明细节如何随探针间距变化。</em></p>
-<p><em>探针密度与解析出的照明细节之间的关系。在任何质量设置下，图像中都不存在比探针间距更精细的细节——这就是 <a href="../SSGI/">SSGI</a> 的作用所在。</em></p>
-<p><strong>Volume placement and count.</strong> Several tightly-fitted volumes usually beat one large loose one. A volume
-that spans a whole level at low density wastes probes on solid geometry and starves the spaces that matter.</p>
-<p><strong>Rays per probe.</strong> Trades convergence speed against per-frame cost. Lower counts converge more slowly,
-which shows up as lag when lighting changes rapidly &mdash; a door opening onto a bright exterior, for
-instance.</p>
-<p><strong>Hysteresis / update rate.</strong> How quickly probes accept new information. Faster response reduces lag but
-increases temporal variation.</p>
-<p><strong>Normal and view bias.</strong> The standard controls for trading light leaking against contact shadow darkening.
-If you see light bleeding through thin walls, increase bias; if contact areas look detached, reduce it.</p>
-<h2 id="reference-material">Reference material</h2>
-<p>NVIDIA's original documentation and talks remain the best deep reference for the technique itself.</p>
+<p><em>探针密度对比图显示了照明细节如何随探针间距变化。在任何质量设置下，图像中都不存在比探针间距更精细的细节——这就是 <a href="../SSGI/">SSGI</a> 的作用所在。</em></p>
+<p><strong>体积放置和数量。</strong> 多个紧密贴合的体积通常优于一个松散的大型体积。低密度的体积如果覆盖整个关卡，会将探针浪费在实体几何体上，而忽略了真正重要的空间。</p>
+<p><strong>每个探针的射线数。</strong> 在收敛速度和每帧成本之间进行权衡。射线数越少，收敛速度越慢，这在光照快速变化时会表现为延迟——例如，门打开后映入明亮的室外。</p>
+<p><strong>滞后/更新速率。</strong> 探针接收新信息的速度。更快的响应速度可以减少延迟，但会增加时间变化。</p>
+<p><strong>法线和视图偏差。</strong> 用于平衡光线泄漏和接触阴影变暗的标准控制项。如果看到光线透过薄墙渗出，请增加偏差；如果接触区域看起来分离，请减少偏差。</p>
+<h2 id="_4">参考资料</h2>
+<p>NVIDIA 的原始文档和演讲仍然是深入理解该技术的最佳参考资料。</p>
 <ul>
-<li><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/tree/ue5Vite-release/Engine/Plugins/Runtime/Nvidia/RTXGI">RTXGI plugin README</a></li>
-<li><a href="https://developer.download.nvidia.com/video/gputechconf/gtc/2019/presentation/s9900-irradiance-fields-rtx-diffuse-global-illumination-for-local-and-cloud-graphics.pdf">Dynamic Diffuse Global Illumination, GDC presentation</a></li>
+<li><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/tree/ue5Vite-release/Engine/Plugins/Runtime/Nvidia/RTXGI">RTXGI 插件自述文件</a></li>
+<li><a href="https://developer.download.nvidia.com/video/gputechconf/gtc/2019/presentation/s9900-irradiance-fields-rtx-diffuse-global-illumination-for-local-and-cloud-graphics.pdf">动态漫反射全局光照，GDC 演讲</a></li>
 </ul>
-<p>Ray-Traced Irradiance Fields:</p>
-<p><a href="https://www.youtube.com/watch?v=KufJBCTdn_o"><img alt="Ray-Traced Irradiance Fields" src="https://img.youtube.com/vi/KufJBCTdn_o/0.jpg" /></a></p>
-<p>Sample scene setup, and combined usage with SSGI:</p>
-<p><a href="https://www.youtube.com/watch?v=ZefvmV1pdP8&amp;t=1210s"><img alt="DLSS and RTXGI Unreal Engine 4 Plugin: Settings Deep Dive" src="https://img.youtube.com/vi/ZefvmV1pdP8/0.jpg" /></a></p>
-<p>Plugin settings deep dive:</p>
-<p><a href="https://www.youtube.com/watch?v=U57_a3lGKOo"><img alt="NVIDIA RTXGI Unreal Engine 4 Plugin: Settings Deep Dive" src="https://img.youtube.com/vi/U57_a3lGKOo/0.jpg" /></a></p>
-<p>Full official playlist:</p>
-<p><a href="https://www.youtube.com/playlist?list=PL4FII4B-zM0f5h75klcOfiO1v_atlp8Ky"><img alt="Getting Started with NVIDIA RTXGI Unreal Engine 4 Plugin" src="https://img.youtube.com/vi/bxEVMnyXxqw/0.jpg" /></a></p>
-<p>There is also an internal
-<a href="https://docs.google.com/document/d/1kdZGRV6bRNjNvec1OzzEJd64NtLBDZ8hzQvFVzB2GfI/edit?tab=t.0">DDGI reference document</a>
-maintained by the team.</p>
-<h2 id="sample-scenes">Sample scenes</h2>
+<p>光线追踪辐照度场：</p>
+<p><a href="https://www.youtube.com/watch?v=KufJBCTdn_o"><img alt="光线追踪辐照度场" src="https://img.youtube.com/vi/KufJBCTdn_o/0.jpg" /></a></p>
+<p>示例场景设置，以及与 SSGI 的结合使用：</p>
+<p><a href="https://www.youtube.com/watch?v=ZefvmV1pdP8&amp;t=1210s"><img alt="DLSS 和 RTXGI 虚幻引擎 4 插件：设置深度解析" src="https://img.youtube.com/vi/ZefvmV1pdP8/0.jpg" /></a></p>
+<p>插件设置详解：</p>
+<p><a href="https://www.youtube.com/watch?v=U57_a3lGKOo"><img alt="NVIDIA RTXGI 虚幻引擎 4 插件：设置深度解析" src="https://img.youtube.com/vi/U57_a3lGKOo/0.jpg" /></a></p>
+<p>完整官方播放列表：</p>
+<p><a href="https://www.youtube.com/playlist?list=PL4FII4B-zM0f5h75klcOfiO1v_atlp8Ky"><img alt="NVIDIA RTXGI Unreal Engine 4 插件入门指南" src="https://img.youtube.com/vi/bxEVMnyXxqw/0.jpg" /></a></p>
+<p>团队还维护着一份内部 <a href="https://docs.google.com/document/d/1kdZGRV6bRNjNvec1OzzEJd64NtLBDZ8hzQvFVzB2GfI/edit?tab=t.0">DDGI 参考文档</a>。</p>
+<h2 id="_5">示例场景</h2>
 <ul>
-<li><a href="../../ProjectsAndDemos/Tech-Demo-Project/">Tech Demo Project</a> &mdash; includes NVIDIA's official DDGI Cornell Box sample and a
-  high-end DDGI plus SSGI cave scene.</li>
-<li><a href="../../ProjectsAndDemos/Stylized-Raytracing-Demo/">Stylized Raytracing Demo</a> &mdash; the 4K120 stylised target.</li>
-<li><a href="../../ProjectsAndDemos/Abandone-Apartment/">Abandoned Apartment</a> and <a href="../../ProjectsAndDemos/Attic-Scene/">Attic Scene</a> &mdash; NVIDIA's RTGI
-  showcase scenes.</li>
+<li><a href="../../ProjectsAndDemos/Tech-Demo-Project/">技术演示项目</a> — 包括 NVIDIA 官方的 DDGI Cornell Box 示例以及一个高端 DDGI + SSGI 洞穴场景。</li>
+<li><a href="../../ProjectsAndDemos/Stylized-Raytracing-Demo/">风格化光线追踪演示</a> — 4K120 风格化目标。</li>
+<li><a href="../../ProjectsAndDemos/Abandone-Apartment/">废弃公寓</a>和<a href="../../ProjectsAndDemos/Attic-Scene/">阁楼场景</a> — NVIDIA 的 RTGI 展示场景。</li>
 </ul>
-<h2 id="see-also">See also</h2>
+<h2 id="_6">另请参阅</h2>
 <ul>
-<li><a href="../Global-Illumination/">Global Illumination</a></li>
-<li><a href="../DDGI-Static/">Static DDGI</a></li>
+<li><a href="../Global-Illumination/">全局光照</a></li>
+<li><a href="../DDGI-Static/">静态 DDGI</a></li>
 <li><a href="../SSGI/">SSGI</a></li>
-<li><a href="../RT-Reflections/">Ray-Traced Reflections</a></li>
-<li><a href="../../EngineOverview/Performance-Targets/">Performance Targets</a></li>
+<li><a href="../RT-Reflections/">光线追踪反射</a></li>
+<li><a href="../../EngineOverview/Performance-Targets/">性能目标</a></li>
 </ul>
               
             </div>

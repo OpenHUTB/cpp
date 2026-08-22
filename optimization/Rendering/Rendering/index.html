@@ -63,23 +63,23 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="#">渲染</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#how-the-renderer-is-put-together">How the renderer is put together</a>
+    <li class="toctree-l2"><a class="reference internal" href="#_2">渲染器的组成结构</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#section-contents">Section contents</a>
+    <li class="toctree-l2"><a class="reference internal" href="#_3">章节内容</a>
         <ul>
-    <li class="toctree-l3"><a class="reference internal" href="#global-illumination">Global illumination</a>
+    <li class="toctree-l3"><a class="reference internal" href="#_4">全局光照</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#ray-tracing">Ray tracing</a>
+    <li class="toctree-l3"><a class="reference internal" href="#_5">光线追踪</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#surface-and-geometry">Surface and geometry</a>
+    <li class="toctree-l3"><a class="reference internal" href="#_6">表面和几何体</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#image-quality">Image quality</a>
+    <li class="toctree-l3"><a class="reference internal" href="#_7">图像质量</a>
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#choosing-a-rendering-configuration">Choosing a rendering configuration</a>
+    <li class="toctree-l2"><a class="reference internal" href="#_8">选择渲染配置</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#see-also">See also</a>
+    <li class="toctree-l2"><a class="reference internal" href="#_9">另请参阅</a>
     </li>
     </ul>
                 </li>
@@ -140,133 +140,116 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="rendering">Rendering</h1>
-<p><tldr></p>
-<p>
-Vite's renderer is a deferred SM5 renderer with an engine-agnostic DXR ray tracing pipeline. Global
-illumination is <a href="./DDGI-Dynamic.md">DDGI</a> rather than Lumen, geometric detail is
-<a href="./Tessellation.md">tessellation</a> rather than Nanite, and anti-aliasing defaults to native
-resolution with <a href="./Anti-Aliasing.md">SMAA</a> rather than temporal reconstruction.
-</p>
-<p></tldr></p>
-<p>This is the largest section of the manual, because rendering is where Vite diverges most from both stock
-Unreal Engine 4.27 and from UE5.</p>
-<h2 id="how-the-renderer-is-put-together">How the renderer is put together</h2>
-<p>The pipeline is Unreal Engine 4.27's deferred renderer, inheriting NvRTX Caustics' DirectX 12 and DXR
-improvements, with Vite's own additions layered on top. The important structural property is that the ray
-tracing pipeline is <em>agnostic</em>: acceleration structures are built and updated independently of any
-particular lighting solution, which is what allows DDGI, RTXDI and the various RT effects to coexist and be
-enabled independently.</p>
-<p>That is the opposite of the UE 5.1+ arrangement, where ray tracing scene construction is coupled to Lumen,
-Nanite and GPU Scene. See <a href="../../EngineOverview/Why-NvRTX-427/">Why NvRTX 4.27</a>.</p>
-<blockquote>
-<p>Vite enables Ray Tracing effects by default in new projects. This is intentional for
-discoverability but means you should consciously decide what to turn off. See
-<a href="../Ray-Tracing/">Ray Tracing</a>.</p>
-<p>{style="warning"}</p>
-</blockquote>
-<h2 id="section-contents">Section contents</h2>
-<h3 id="global-illumination">Global illumination</h3>
+                <h1 id="_1">渲染</h1>
+<p>Vite 的渲染器是一个延迟渲染的 SM5 渲染器，采用与引擎无关的 DXR 光线追踪管线。全局光照使用 <a href="../DDGI-Dynamic/">DDGI</a> 而非 Lumen，几何细节使用<a href="../Tessellation/">细分曲面</a>而非 Nanite，抗锯齿默认使用原生分辨率的 <a href="../Anti-Aliasing/">SMAA</a> 而非时间重建。</p>
+<div class="admonition 笔记">
+<p class="admonition-title">笔记</p>
+<p>“SM5 渲染器”指的是使用 Shader Model 5.0（着色器模型 5.0）这一图形特性级别来驱动渲染管线的渲染器。它定义了 GPU（显卡）需要支持哪些指令和功能，主要与 DirectX 11 API 绑定。</p>
+</div>
+<p>这是手册中篇幅最长的部分，因为渲染是 Vite 与 Unreal Engine 4.27 和 UE5 差异最大的地方。</p>
+<h2 id="_2">渲染器的组成结构</h2>
+<p>该管线基于 Unreal Engine 4.27 的延迟渲染器，继承了 NvRTX Caustics 的 DirectX 12 和 DXR 改进，并在此基础上添加了 Vite 自身的功能。其重要的结构特性在于光线追踪管线与引擎<em>无关</em>：加速结构的构建和更新独立于任何特定的光照解决方案，这使得 DDGI、RTXDI 和各种光线追踪效果能够共存并独立启用。</p>
+<p>这与 UE 5.1+ 的架构截然相反，在 UE 5.1+ 中，光线追踪场景构建与 Lumen、Nanite 和 GPU Scene 耦合在一起。参见 <a href="../../EngineOverview/Why-NvRTX-427/">NvRTX 4.27 的相关说明</a>。</p>
+<p><strong>注意：</strong> Vite 默认在新项目中启用光线追踪效果。这是为了方便用户发现，但也意味着您需要自行决定关闭哪些功能。参见<a href="../Ray-Tracing/">光线追踪</a>。</p>
+<h2 id="_3">章节内容</h2>
+<h3 id="_4">全局光照</h3>
 <ul>
-<li><a href="../Global-Illumination/">Global Illumination</a> &mdash; choosing between the available GI solutions</li>
-<li><a href="../DDGI-Dynamic/">Dynamic DDGI</a> &mdash; real-time ray-traced irradiance probe volumes</li>
-<li><a href="../DDGI-Static/">Static DDGI</a> &mdash; baked probe volumes with near-instant bake times</li>
-<li><a href="../SSGI/">SSGI</a> &mdash; screen-space GI, and why it belongs alongside DDGI</li>
+<li><a href="../Global-Illumination/">全局光照</a> — 选择可用的全局光照解决方案</li>
+<li><a href="../DDGI-Dynamic/">动态 DDGI</a> — 实时光线追踪辐照度探针体积</li>
+<li><a href="../DDGI-Static/">静态 DDGI</a> — 烘焙时间近乎瞬时的烘焙探针体积</li>
+<li><a href="../SSGI/">SSGI</a> — 屏幕空间全局光照（Screen-Space GI），以及它为何与 DDGI 并存</li>
 </ul>
-<h3 id="ray-tracing">Ray tracing</h3>
+<h3 id="_5">光线追踪</h3>
 <ul>
-<li><a href="../Ray-Tracing/">Ray Tracing</a> &mdash; overview and the master switches</li>
-<li><a href="../RT-Reflections/">Ray-Traced Reflections</a></li>
-<li><a href="../RT-Shadows-And-Ambient-Occlusion/">Ray-Traced Shadows and Ambient Occlusion</a></li>
+<li><a href="../Ray-Tracing/">光线追踪</a> — 概述和主要开关</li>
+<li><a href="../RT-Reflections/">光线追踪反射</a></li>
+<li><a href="../RT-Shadows-And-Ambient-Occlusion/">光线追踪阴影和环境光遮蔽</a></li>
 <li><a href="../RT-Translucency-And-Caustics/">光线追踪半透明和焦散</a></li>
-<li><a href="../RTXDI/">RTXDI</a> &mdash; ray-traced direct lighting for many-light scenes</li>
-<li><a href="../Path-Tracing/">Path Tracing</a></li>
+<li><a href="../RTXDI/">RTXDI</a> — 用于多光源场景的光线追踪直接光照</li>
+<li><a href="../Path-Tracing/">路径追踪</a></li>
 </ul>
-<h3 id="surface-and-geometry">Surface and geometry</h3>
+<h3 id="_6">表面和几何体</h3>
 <ul>
-<li><a href="../Shading-Models/">Shading Models</a> &mdash; including Callisto BRDF and Toon</li>
-<li><a href="../Tessellation/">Tessellation</a></li>
-<li><a href="../Hair-Rendering/">Hair Rendering</a> &mdash; TressFX</li>
+<li><a href="../Shading-Models/">着色模型</a> — 包括 Callisto BRDF 和 Toon（卡通渲染）</li>
+<li><a href="../Tessellation/">细分曲面</a></li>
+<li><a href="../Hair-Rendering/">毛发渲染</a> — TressFX</li>
 </ul>
-<h3 id="image-quality">Image quality</h3>
+<h3 id="_7">图像质量</h3>
 <ul>
-<li><a href="../Anti-Aliasing/">Anti-Aliasing</a> &mdash; SMAA, FXAA, TAA and MSAA</li>
-<li><a href="../Upscalers/">Upscalers and Frame Generation</a> &mdash; DLSS, FSR, XeSS, NIS</li>
-<li><a href="../Ambient-Occlusion/">Ambient Occlusion</a> &mdash; SSAO fast path and HBAO+</li>
-<li><a href="../Color-Management/">Colour Management</a> &mdash; ACES, tonemapping and HDR output</li>
+<li><a href="../Anti-Aliasing/">抗锯齿</a> &mdash; SMAA, FXAA, TAA 和 MSAA</li>
+<li><a href="../Upscalers/">超分辨率和帧生成</a> &mdash; DLSS, FSR, XeSS, NIS</li>
+<li><a href="../Ambient-Occlusion/">环境光遮蔽</a> — 屏幕空间环境光遮蔽（Screen Space Ambient Occlusion, SSAO）快速路径和 HBAO+</li>
+<li><a href="../Color-Management/">色彩管理</a> — 学院色彩编码系统（Academy Color Encoding System, ACES）、色调映射和 HDR 输出</li>
 </ul>
-<h2 id="choosing-a-rendering-configuration">Choosing a rendering configuration</h2>
-<p>The right starting point depends on your performance target. These are the configurations behind the four
-targets in <a href="../../EngineOverview/Performance-Targets/">Performance Targets</a>.</p>
+<h2 id="_8">选择渲染配置</h2>
+<p>合适的起点取决于您的性能目标。以下是<a href="../../EngineOverview/Performance-Targets/">性能目标</a>中四个目标对应的配置。</p>
 <table>
 <thead>
 <tr>
-<th>Target</th>
-<th>GI</th>
-<th>Reflections</th>
-<th>Shadows</th>
-<th>AO</th>
-<th>Geometry</th>
-<th>AA</th>
+<th>目标</th>
+<th>全局光照</th>
+<th>反射</th>
+<th>阴影</th>
+<th>环境光遮蔽</th>
+<th>几何体</th>
+<th>抗锯齿（AA）</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Stylised 4K120</td>
-<td>Dynamic DDGI</td>
+<td>风格化 4K120</td>
+<td>动态 DDGI</td>
 <td>Raster / SSR</td>
-<td>Cascaded</td>
-<td>SSAO fast path</td>
+<td>级联</td>
+<td>SSAO 快速路径</td>
 <td>LODs</td>
 <td>SMAA / TAA</td>
 </tr>
 <tr>
-<td>Performance 4K60</td>
+<td>性能 4K60</td>
 <td>DDGI + SSGI</td>
-<td>Ray traced</td>
-<td>Cascaded</td>
+<td>光线追踪</td>
+<td>级联</td>
 <td>SSAO / HBAO4+</td>
-<td>Tessellation</td>
+<td>曲面细分</td>
 <td>TAA / SMAA</td>
 </tr>
 <tr>
-<td>Fidelity 4K30</td>
+<td>保真 4K30</td>
 <td>DDGI + SSGI</td>
-<td>Ray traced</td>
-<td>Cascaded</td>
+<td>光线追踪</td>
+<td>级联</td>
 <td>HBAO4+</td>
-<td>Tessellation</td>
+<td>曲面细分</td>
 <td>TAA</td>
 </tr>
 <tr>
-<td>Full RT 1440p30</td>
+<td>全 RT 1440p30</td>
 <td>DDGI + SSGI</td>
-<td>Ray traced</td>
-<td>Ray traced</td>
+<td>光线追踪</td>
+<td>光线追踪</td>
 <td>RTAO</td>
-<td>Tessellation</td>
+<td>曲面细分</td>
 <td>TAA</td>
 </tr>
 <tr>
-<td>No-RT hardware</td>
-<td>Static DDGI</td>
+<td>无 RT 硬件</td>
+<td>静态 DDGI</td>
 <td>SSR</td>
-<td>Cascaded</td>
+<td>级联</td>
 <td>SSAO</td>
 <td>LODs</td>
 <td>TAA / SMAA / FXAA</td>
 </tr>
 </tbody>
 </table>
-<p>Every one of these is a starting point, not a prescription. The console variables for each are documented
-on the corresponding pages and collected in the
-<a href="../../Reference/Console-Variables/">Console Variable Reference</a>.</p>
-<h2 id="see-also">See also</h2>
+<p>这些都只是起点，并非最终方案。每项内容对应的控制台变量均已在相应页面中记录，并汇总在<a href="../../Reference/Console-Variables/">控制台变量参考</a>中。</p>
+<h2 id="_9">另请参阅</h2>
 <ul>
-<li><a href="../../EngineOverview/Performance-Targets/">Performance Targets</a></li>
-<li><a href="../../Performance/Profiling/">Profiling and Benchmarking</a></li>
-<li><a href="../../Performance/Shader-Compilation-And-PSO/">Shader Compilation and PSO</a></li>
-<li><a href="../../Reference/Console-Variables/">Console Variable Reference</a></li>
+<li><a href="../../EngineOverview/Performance-Targets/">性能目标</a></li>
+<li><a href="../../Performance/Profiling/">性能分析与基准测试</a></li>
+<li><a href="../../Performance/Shader-Compilation-And-PSO/">着色器编译与 PSO</a></li>
+<li><a href="../../Reference/Console-Variables/">控制台变量参考</a></li>
 </ul>
               
             </div>

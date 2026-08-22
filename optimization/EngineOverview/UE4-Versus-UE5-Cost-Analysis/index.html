@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>UE4 versus UE5 Cost Analysis - 引擎优化文档</title>
+    <title>UE4 与 UE5 的成本分析 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "UE4 versus UE5 Cost Analysis";
+        var mkdocs_page_name = "UE4 \u4e0e UE5 \u7684\u6210\u672c\u5206\u6790";
         var mkdocs_page_input_path = "optimization/EngineOverview/UE4-Versus-UE5-Cost-Analysis.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">UE4 versus UE5 Cost Analysis</li>
+      <li class="breadcrumb-item active">UE4 与 UE5 的成本分析</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/EngineOverview/UE4-Versus-UE5-Cost-Analysis.md"> 编辑页面</a>
     </li>
@@ -120,14 +120,10 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="ue4-versus-ue5-cost-analysis">UE4 versus UE5 Cost Analysis</h1>
-<p><tldr></p>
-<p>
-The performance gap is not one system. It is shader instruction counts, physics, character movement,
+                <h1 id="ue4-ue5">UE4 与 UE5 的成本分析</h1>
+<p>The performance gap is not one system. It is shader instruction counts, physics, character movement,
 memory, Slate, skeletal meshes, tick cost, render thread structure, the loss of Blueprint nativization,
-and volumetric shaders &mdash; each contributing independently.
-</p>
-<p></tldr></p>
+and volumetric shaders &mdash; each contributing independently.</p>
 <p>This page documents where the measured cost differences between Unreal Engine 4.27 and modern UE5 come
 from. It exists because "UE5 is slower" is not actionable; knowing <em>which</em> subsystem regressed and by how
 much is what lets you decide whether a fork is worth maintaining.</p>

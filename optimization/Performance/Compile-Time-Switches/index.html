@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Compile-Time Switches - 引擎优化文档</title>
+    <title>编译时开关 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Compile-Time Switches";
+        var mkdocs_page_name = "\u7f16\u8bd1\u65f6\u5f00\u5173";
         var mkdocs_page_input_path = "optimization/Performance/Compile-Time-Switches.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Compile-Time Switches</li>
+      <li class="breadcrumb-item active">编译时开关</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Performance/Compile-Time-Switches.md"> 编辑页面</a>
     </li>
@@ -120,16 +120,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="compile-time-switches">Compile-Time Switches</h1>
-<p><tldr></p>
-<p>
-Five <code>VITE_*</code> macros in
+                <h1 id="_1">编译时开关</h1>
+<p>Five <code>VITE_*</code> macros in
 <code>Engine/Source/Runtime/Core/Public/Misc/CoreDefines.h</code> control features that are decided at
 compile time rather than by console variable. <b><code>VITE_RT_PSO_DEBLOAT</code> defaults to
 <code>1</code> and compiles out several ray tracing effects entirely</b> &mdash; read that section before
-concluding a feature is broken.
-</p>
-<p></tldr></p>
+concluding a feature is broken.</p>
 <p>Some Vite features cannot be console variables. Either they change shader permutation sets, which are
 decided when shaders are compiled, or they alter hot code paths where a runtime branch would cost more than
 the feature saves.</p>
