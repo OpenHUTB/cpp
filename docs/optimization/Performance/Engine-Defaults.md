@@ -1,73 +1,47 @@
-# Engine Default Changes
+# 引擎默认更改
 
-<tldr>
-<p>
-Vite changes a number of stock Unreal Engine 4.27 defaults for performance. These changes affect your
-project directly &mdash; some of them change runtime behaviour, not just cost. Read this page before
-concluding that something is broken.
-</p>
-</tldr>
+为了提升性能，Vite 修改了虚幻引擎 4.27 的一些默认设置。这些修改会直接影响您的项目——其中一些会改变运行时行为，而不仅仅是成本。在断定项目出现问题之前，请先阅读此页面。
 
-Stock Unreal defaults are chosen to make everything work out of the box, which means they enable features
-most projects never use. Vite changes several of them to favour performance, on the principle that a
-feature you want should be something you turn on rather than something you forget to turn off.
+虚幻引擎的默认设置旨在确保所有功能开箱即用，这意味着它们启用了大多数项目永远不会用到的功能。Vite 修改了其中一些设置以提升性能，其原则是：您需要的功能应该是您主动开启的，而不是您忘记关闭的。
 
-The trade is that a project moved from stock 4.27 to Vite may behave differently. This page is the list.
+但代价是，从虚幻引擎 4.27 迁移到 Vite 的项目可能会出现不同的行为。此页面列出了所有变更。
 
-## Runtime behaviour changes
+## 运行时行为变更
 
-<warning>
-These change behaviour, not just performance. If gameplay logic depends on the stock default, it will need
-attention.
-</warning>
+**警告：** 这些更改不仅会改变性能，还会改变行为。如果游戏逻辑依赖于默认设置，则需要进行调整。
 
-### Overlap events disabled by default
+### 默认情况下禁用重叠事件 <span id='disabled_overlap'></span>
 
-Primitive components no longer generate overlap events unless explicitly enabled.
+除非显式启用，否则基本组件不再生成重叠事件。
 
-Overlap event generation costs on every component that has it, whether or not anything is bound to the
-event. In a stock project the majority of primitives generate overlap events that nothing listens to.
+生成重叠事件会消耗所有组件的资源，无论是否有任何组件绑定到该事件。在默认项目中，大多数基本组件生成的重叠事件都没有被任何组件监听。
 
-**What this means for you:** components that need overlap events must set **Generate Overlap Events**
-explicitly. Trigger volumes, pickup detection and anything driven by `OnComponentBeginOverlap` need the
-flag set. This is the most likely source of "my trigger stopped working" after migrating a project.
+**这意味着**：需要重叠事件的组件必须显式设置**生成重叠事件**。触发器体积、拾取检测以及任何由 `OnComponentBeginOverlap` 驱动的组件都需要设置此标志。这很可能是项目迁移后“我的触发器停止工作”问题的原因。
 
 ![](../../img/optimization/OverlapEventsDisabled.png)
 
-*提交差异，将 PrimitiveComponent.cpp 中的 SetGenerateOverlapEvents(true) 替换为 bGenerateOverlapEvents = false。*
-
-*`UPrimitiveComponent` 中的一行代码，应用于每个项目中的每个基本组件。*
+*[提交差异](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/02d7c0ad0a7542b382a70dc3e37877d6ec052d76)：将 PrimitiveComponent.cpp 中的 SetGenerateOverlapEvents(true) 替换为 bGenerateOverlapEvents = false，应用于每个项目中的每个基本组件。*
 
 
-[Commit](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/02d7c0ad0a7542b382a70dc3e37877d6ec052d76)
+### 优化 Actor 运行时
 
-### Optimised actor runtime
+Actor 运行时默认值已更改，以减少 `AActor::InitializeDefaults` 中每个 Actor 的开销：
 
-Actor runtime defaults are changed to reduce per-actor overhead in `AActor::InitializeDefaults`:
-
-| Default | Stock 4.27 | Vite | Why |
+| 默认 | 库存的 4.27 | Vite | 原因 |
 |---|---|---|---|
-| `SetCanBeDamaged` | `true` | `false` | Only actors that use the damage system need it |
-| `bRelevantForNetworkReplays` | `true` | `false` | Keeps actors out of demo net recording unless wanted |
-| `bRelevantForLevelBounds` | `true` | `false` | Avoids level-bounds iteration over actors that do not define bounds |
+| `SetCanBeDamaged` | `true` | `false` | 仅使用伤害系统的参与者需要此设置 |
+| `bRelevantForNetworkReplays` | `true` | `false` | 除非需要，否则将参与者排除在演示网络录制之外 |
+| `bRelevantForLevelBounds` | `true` | `false` | 避免对未定义边界的参与者进行边界迭代 |
 
 ![](../../img/optimization/OptimizedActorRuntime.png)
 
-*提交 Actor.cpp 中的差异，更改 SetCanBeDamaged、bRelevantForNetworkReplays 和 bRelevantForLevelBounds 的默认值*
+*[提交 Actor.cpp 中的差异](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/970cbb989c3712f13be1fa370b778e769e5d864c)：更改 SetCanBeDamaged、bRelevantForNetworkReplays 和 bRelevantForLevelBounds 的默认值。大型网格、阻挡体积和必须定义世界边界的植被需要将 `bRelevantForLevelBounds` 设置为 `true`。*
 
-*大型网格、阻挡体积和必须定义世界边界的植被需要将 `bRelevantForLevelBounds` 设置为 `true`。*
+### 骨骼网格体优化配置
 
+骨骼网格体是大多数项目中 CPU 占用率最高的组件之一，因此 `USkeletalMeshComponent` 默认提供的是性能优化配置，而非 Epic 提供的完整功能配置。游戏内资源通常包含大量骨骼网格体，因此为每个组件启用优化设置并不实际；可行的做法是将性能较低的配置设为默认，并在需要时启用性能较高的配置。
 
-[Commit](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/970cbb989c3712f13be1fa370b778e769e5d864c)
-
-### Skeletal mesh optimised configuration
-
-Skeletal meshes are among the top CPU offenders in most projects, so `USkeletalMeshComponent` ships with
-performance-oriented defaults instead of Epic's fully featured ones. In-world assets often contain many
-skeletal meshes, which makes enabling optimised settings per component impractical; configuring the cheap
-path as the default and opting into the expensive options where they are needed is the workable order.
-
-| Default | Stock 4.27 | Vite |
+| 默认 | 库存的 4.27 | Vite |
 |---|---|---|
 | `VisibilityBasedAnimTickOption` | `AlwaysTickPoseAndRefreshBones` | `OnlyTickPoseWhenRendered` |
 | `bEnableUpdateRateOptimizations` | `false` | `true` |
@@ -77,131 +51,100 @@ path as the default and opting into the expensive options where they are needed 
 
 ![](../../img/optimization/SkeletalMeshesOptimizedConfig.png)
 
-*SkeletalMeshComponent.cpp 中的提交差异显示了与 Epic 原版相比的五个已更改的默认值。*
+*SkeletalMeshComponent.cpp 中的[提交差异](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/33fe7c638829b8120e8a02ecc639acda761df835)显示了与 Epic 原版相比的五个已更改的默认值。每行更改的内容都会在末尾的注释中保留 Epic 的原始值，因此无需咨询上游即可恢复库存行为。*
 
-*每行更改的内容都会在末尾的注释中保留 Epic 的原始值，因此无需咨询上游即可恢复库存行为。*
+`VisibilityBasedAnimTickOption` 是需要关注的选项。`OnlyTickPoseWhenRendered` 表示屏幕外的参与者将完全停止评估其姿势；读取未渲染参与者骨骼变换或插槽的游戏玩法（例如武器枪口位置、IK 目标、远处参与者上的连接点）必须将组件设置回 `AlwaysTickPose` 或 `AlwaysTickPoseAndRefreshBones`。
 
-`VisibilityBasedAnimTickOption` is the one to watch. `OnlyTickPoseWhenRendered` means an off-screen
-character stops evaluating its pose entirely; gameplay that reads bone transforms or sockets on unrendered
-characters &mdash; weapon muzzle positions, IK targets, attach points on a distant actor &mdash; must set
-the component back to `AlwaysTickPose` or `AlwaysTickPoseAndRefreshBones`.
-
-`bDisablePostProcessBlueprint = true` is the second: post-process anim Blueprints, commonly used for IK
-and bone corrections, no longer run unless re-enabled per component.
+`bDisablePostProcessBlueprint = true` 是第二个选项：后处理动画蓝图（通常用于 IK 和骨骼校正）将不再运行，除非为每个组件重新启用。
 
 ![](../../img/optimization/SkeletalMeshDefault.png)
 
-*SkeletalMeshComponent.cpp 构造函数显示了周围的默认块*
+*SkeletalMeshComponent.cpp 构造函数显示了周围的默认块。有关这些默认值设置位置的上下文，请参阅 `SkeletalMeshComponent.cpp` 中的构造函数块。*
 
-*有关这些默认值设置位置的上下文，请参阅 `SkeletalMeshComponent.cpp` 中的构造函数块。*
 
-[Commit](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/33fe7c638829b8120e8a02ecc639acda761df835)
+### 已禁用生成光照贴图 UV
 
-### Generate Lightmap UVs disabled
+默认情况下，静态网格体导入不再生成光照贴图 UV（[提交差异](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/acce6fbe432fe9fe5a2536f0979befd5dcd741d1)）。
 
-Static mesh import no longer generates lightmap UVs by default.
+大多数 Vite 项目使用 [DDGI](../Rendering/DDGI-Dynamic.md) 而非烘焙光照，因此为每个导入的网格体生成光照贴图 UV 会浪费导入时间和 UV 通道。如果您的项目使用烘焙光照，请在静态网格体导入选项中启用此设置。
 
-Most Vite projects use [DDGI](../Rendering/DDGI-Dynamic.md) rather than baked lighting, so generating lightmap UVs for
-every imported mesh is wasted import time and wasted UV channels. If your project bakes lighting, enable
-the setting in the static mesh import options.
 
-[Commit](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/acce6fbe432fe9fe5a2536f0979befd5dcd741d1)
+## 可扩展性
 
-## Scalability
+阴影质量 4（Shadow Quality 4）用于中等阴影设置，在可扩展性范围的中间位置提高阴影质量（[提交差异](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/1718cd66e08a2b47222f895162e3be2b2c98ee6a)）。
 
-Shadow Quality 4 is used for the Medium shadow setting, raising shadow quality in the middle of the
-scalability range.
 
-[Commit](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/1718cd66e08a2b47222f895162e3be2b2c98ee6a)
 
-## Disabled plugins
+## 已禁用的插件
 
-A number of plugins that ship enabled in stock 4.27 are disabled by default. This reduces editor startup
-time, module load count and packaged build size.
+4.27 版本默认启用的一些插件已被禁用（[提交差异 1](https://github.com/GapingPixel/UnrealEngineVite-PhysX/commit/e9aebc2ef9f8acb7326a7e989f288ef68969342f) &middot;
+[提交差异 2](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/6c5948bf12ea61f82784193ccaa5d43c4f574ae9)）。这可以减少编辑器启动时间、模块加载数量和打包后的构建文件大小。
 
-**VR plugins in particular must be re-enabled if you need them.**
+**如果您需要使用 VR 插件，则必须重新启用它们。**
 
-[Commit 1](https://github.com/GapingPixel/UnrealEngineVite-PhysX/commit/e9aebc2ef9f8acb7326a7e989f288ef68969342f) &middot;
-[Commit 2](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/6c5948bf12ea61f82784193ccaa5d43c4f574ae9)
 
-## Tick optimisations
+## 节拍优化
 
-### SpeedTree tick
+### SpeedTree 节拍
 
-The SpeedTree tick in `LevelTick.cpp` is optimised. SpeedTree ticking runs regardless of whether a project
-uses SpeedTree assets, so this is a saving every project gets.
-
+[LevelTick.cpp](https://github.com/OpenHUTB/engine/tree/hutb/Engine/Source/Runtime/Engine/Private/LevelTick.cpp) 中的 [SpeedTree 节拍已优化](https://github.com/GapingPixel/UE5-PhysX-Vite/blob/3e4a16aa89de4f4c37da300c945d6a14dc62edd7/Engine/Source/Runtime/Engine/Private/LevelTick.cpp#L1709)。无论项目是否使用 SpeedTree 资源，SpeedTree 节拍都会运行，因此每个项目都能从中节省资源。
 ![](../../img/optimization/SpeedTreeTick.png)
+*LevelTick.cpp 显示了世界节拍中的 UpdateSpeedTreeWind 调用。`Scene->UpdateSpeedTreeWind` 在世界节拍中 — 无条件地在 stock 4.27 中。*
 
-*LevelTick.cpp 显示了世界节拍中的 UpdateSpeedTreeWind 调用。*
+### Niagara 节拍
 
-*`Scene->UpdateSpeedTreeWind` 在世界节拍中 — 无条件地在 stock 4.27 中。*
+Niagara 插件启用时会发出节拍信号。如果您不使用 Niagara 插件，请在项目关卡中禁用它；Cascade 在 4.27 版本中仍然可用。
 
-[Source](https://github.com/GapingPixel/UE5-PhysX-Vite/blob/3e4a16aa89de4f4c37da300c945d6a14dc62edd7/Engine/Source/Runtime/Engine/Private/LevelTick.cpp#L1709)
+## 光线追踪剔除
 
-### Niagara tick
-
-Niagara ticks whenever the plugin is enabled. Disable the Niagara plugin at project level if you do not use
-it; Cascade remains available in 4.27.
-
-## Ray tracing culling
-
-Ray tracing culling respects each primitive's minimum draw distance:
+光线追踪剔除会考虑每个图元的最小绘制距离（[提交差异](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/595f376f6de0912606b05768739aa3d24ac4f61a)）：
 
 ```c++
 GEngine->Exec(nullptr, TEXT("r.RayTracing.Culling.UseMinDrawDistance 1"));
 ```
 
-This is a cheap and generally safe win in scenes with many small detail meshes, since geometry too small to
-be drawn is also too small to matter in the acceleration structure.
+对于有很多小细节网格的场景来说，这是一种廉价且通常安全的解决方案，因为几何体太小以至于无法绘制，在加速结构中也太小以至于无关紧要。
 
-[Commit](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/595f376f6de0912606b05768739aa3d24ac4f61a)
 
-## Editor quality-of-life
+## 编辑器体验优化
 
-These do not affect runtime performance but change editor behaviour:
+这些优化不会影响运行时性能，但会改变编辑器的行为：
 
-- Animation assets always open in a new tab
-  ([commit](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/8bdae919e6eae61a27ef8d09d38027592a473d8c))
-- A config variable to disable the new plugins popup
-  ([commit](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/9af0349c1832b7094ceae7f47ba8ca5d261e0e69))
+- 动画资源始终在新标签页中打开
+  ([提交差异](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/8bdae919e6eae61a27ef8d09d38027592a473d8c))
+- 用于禁用新插件弹出窗口的配置变量
+  ([提交差异](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/9af0349c1832b7094ceae7f47ba8ca5d261e0e69))
 - `bDisableAllTutorialAlerts=True`
-  ([commit](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/d9fd593e11581fd93d0ff60b2933794f150b4780))
-- Assorted safe backports from later engine versions
-  ([commit](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/fe7a6f4d7c54d8725d6308820d5b4fd546b9ff49))
+  ([提交差异](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/d9fd593e11581fd93d0ff60b2933794f150b4780))
+- 从更高版本的引擎中安全移植的各种功能
+  ([提交差异](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/fe7a6f4d7c54d8725d6308820d5b4fd546b9ff49))
 
-## Optional debloat you can do yourself
+## 您可以自行进行一些可选的精简操作
 
-These cannot be disabled in the fork release branch for compatibility reasons, but are available to
-individual projects.
+出于兼容性考虑，这些操作无法在分支发布版本中禁用，但可以针对单个项目进行设置。
 
-**Vite plugin removal.** Removing the added Vite plugins improves compile times. Measured on a Ryzen 9
-9950X3D: full repository 15 minutes, without Vite plugins 12 minutes. Houdini is the largest single
-contributor.
+**移除 Vite 插件。** 移除已添加的 Vite 插件可以缩短编译时间。在 Ryzen 9 9950X3D 上测试：完整代码库编译耗时 15 分钟，移除 Vite 插件后仅需 12 分钟。Houdini 是最大的单一贡献者。
 
-See the [Debloat Guide](Debloat-Guide.md) for the tooling.
+有关工具，请参阅[精简指南](Debloat-Guide.md)。
 
-## Migrating an existing project
+## 迁移现有项目
 
-<procedure title="Check a migrated project against Vite defaults" id="check-defaults">
-    <step>
-        Test every trigger volume and overlap-driven interaction. Overlap events are the most common
-        breakage.
-    </step>
-    <step>
-        Check characters using leader/follower skeletal mesh setups for missing curve propagation.
-    </step>
-    <step>
-        If the project bakes lighting, re-enable lightmap UV generation and confirm existing meshes still
-        have valid lightmap UVs.
-    </step>
-    <step>Re-enable any plugins your project needs, VR in particular.</step>
-    <step>Review scalability settings, since Medium shadows now differ from stock.</step>
-</procedure>
+### 将迁移后的项目与 Vite 默认设置进行比较
 
-## See also
+1. 测试每个触发体积和重叠驱动的交互。重叠事件是最常见的故障点。
 
-- [Migrating from UE5](../GettingStarted/Migrating-From-UE5.md)
-- [Debloat Guide](Debloat-Guide.md)
-- [Profiling](Profiling.md)
-- [Compile-Time Switches](Compile-Time-Switches.md)
+2. 检查使用引导/跟随骨骼网格设置的角色是否存在曲线传播缺失的情况。
+
+3. 如果项目烘焙了光照，请重新启用光照贴图 UV 生成，并确认现有网格仍然具有有效的光照贴图 UV。
+
+4. 重新启用项目所需的所有插件，特别是 VR 插件。
+
+5. 检查缩放设置，因为中等阴影现在与默认设置有所不同。
+
+
+## 另请参阅
+
+- [从 UE5 迁移](../GettingStarted/Migrating-From-UE5.md)
+- [精简指南](Debloat-Guide.md)
+- [性能分析](Profiling.md)
+- [编译时切换](Compile-Time-Switches.md)

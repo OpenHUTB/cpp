@@ -123,7 +123,7 @@ Whichever ran `RegistryAdd.bat` most recently is the one projects will find.
 If you regularly switch, note which is currently registered, or edit the registry key manually to give them
 distinct names.
 
-## 局限性
+## 限制
 
 Installed builds cannot compile engine C++. Projects using them can still have their own C++ modules, which
 compile against the installed engine's headers and libraries, but engine source changes require a source

@@ -1,105 +1,66 @@
-# Static DDGI
+# 静态 DDGI
 
-<tldr>
-<p>
-Baked probe volumes with virtually instantaneous bake times. Better bounce fidelity than traditional baked
-lighting, better coverage of moving objects, and no runtime ray tracing cost &mdash; so it runs on GPUs with
-no DXR support at all.
-</p>
-</tldr>
+烘焙探针体积，烘焙时间几乎瞬间完成。相比传统烘焙光照，反射效果更佳，对运动物体的覆盖范围更广，且无运行时光线追踪开销——因此即使在完全不支持 DXR 的 GPU 上也能运行。
 
-Static DDGI uses the same probe volumes and the same Irradiance calculations and Octahedral representations as
-[Dynamic DDGI](./DDGI-Dynamic.md), but resolves irradiance once at bake time instead of continuously at
-runtime. It is the low-end and no Ray-Tracing Hardware GPU support (GTX 900/ Radeon 5000 series or older) path.
 
-<note>
-Dynamic RT DDGI works from 2016's GTX 1060 6GB (10 years old), 
-the minimum requirement is Pascal Architecture with atleast 6GB of VRAM.
-</note>
+静态 DDGI 使用与[动态 DDGI 相同](./DDGI-Dynamic.md)的探针体积、辐照度计算和八面体表示，但辐照度仅在烘焙时计算一次，而非在运行时持续计算。它是面向低端且不支持光线追踪硬件的 GPU（GTX 900/Radeon 5000 系列或更早型号）的方案。
 
-## What you get
+**注意：** 动态 RT DDGI 可从 2016 年的 GTX 1060 6GB（10 年前）开始运行，最低要求是 Pascal 架构，且至少配备 6GB 显存。
 
-**Near-instant bakes.** This is the headline difference from LightMass. Baking probe irradiance is a
-fundamentally cheaper problem than solving lightmap UVs and per-texel radiosity, and the iteration loop
-changes character entirely when a bake takes seconds rather than hours.
+## 您将获得
 
-**Better bounce fidelity than traditional baked lighting.** The Actual Geometrical Scene traversal representation 
-captures directional irradiance rather than a flat lightmap values, so surfaces respond correctly to their orientation
-even where lighting was baked.
+**近乎瞬时的烘焙。** 这是与 LightMass 的主要区别。烘焙探针辐照度比求解光照贴图 UV 和逐纹素辐射度要简单得多，而且当烘焙时间从数小时缩短到数秒时，迭代循环的性质也发生了彻底的改变。
 
-**Better coverage of moving objects.** This is the structural advantage over lightmaps. Lightmaps store
-lighting on *surfaces*, so a moving object has to fall back to indirect lighting samples or volumetric
-lightmaps. DDGI probe volumes store lighting in *space*, so anything that moves through the volume &mdash;
-characters, vehicles, physics debris &mdash; samples the same representation static geometry does, and looks
-consistent with it.
+**比传统烘焙光照更好的反射保真度。** 实际几何场景遍历表示捕获的是方向性辐照度，而不是平面光照贴图值，因此即使在光照已烘焙的区域，表面也能根据其方向做出正确的响应。
 
-<note>
-**No DXR requirement at runtime.** Once baked, the Probe texture data is serialized there is no RT acceleration. 
-This is what makes Static DDGI viable on ultra-low-end GPUs and on hardware with no ray tracing support at all.
-</note>
+**更好的运动物体覆盖。** 这是相对于光照贴图的结构优势。光照贴图将光照存储在**表面**上，因此运动物体必须回退到间接光照采样或体积光照贴图。DDGI 探针体积将光照存储在空间中，因此任何在体积中移动的物体（角色、车辆、物理碎片）都会采样与静态几何体相同的表示，并使其外观保持一致。
 
-## When to use it
+**注意：运行时无需 DXR。** 烘焙完成后，探针纹理数据将被序列化，无需实时加速。这使得静态 DDGI 能够在超低端 GPU 和完全不支持光线追踪的硬件上运行。
 
-| Situation | Recommendation                               |
+## 何时使用
+
+| 场景 | 建议                               |
 |---|----------------------------------------------|
-| Minimum spec has no DXR support | Static RT DDGI                               |
-| Minimum spec is very low-end but DXR capable | Dynamic RT DDGI at lower Ray Budget          |
-| Lighting is fully static (no time of day, no destructible lights) | Static DDGI is sufficient                    |
-| Lighting changes at runtime | [Dynamic RT DDGI](./DDGI-Dynamic.md)           |
-| Shipping across a wide hardware range | Both, switched automatically by HW detection |
+| 最低配置不支持 DXR | 静态 RT DDGI                               |
+| 最低配置要求非常低，但支持 DXR | 动态 RT DDGI，光线预算较低          |
+| 光照完全静态（无时间变化，无可破坏光源） | 静态 DDGI 即可满足需求                    |
+| 光照在运行时变化 | [动态 RT DDGI](./DDGI-Dynamic.md)           |
+| 适用于多种硬件 | 两者均可通过硬件检测自动切换 |
 
-That last row is the common case and the reason Static DDGI is worth setting up even on a project targeting
-dynamic lighting. Because the two modes share volumes and authoring, supporting both is a scalability
-setting rather than a second lighting pass through every level.
+最后一行描述的是常见情况，这也是即使在以动态光照为目标的项目中，设置静态 DDGI 也值得的原因。因为这两种模式共享体积和创作资源，所以同时支持它们是一种可扩展性设置，而不是在每个关卡中重复进行一次光照处理。
 
-## Setting up
 
-<procedure title="Bake Static DDGI" id="bake-static-ddgi">
-    <step>
-        Place and size DDGI volumes exactly as you would for the dynamic mode. Volume placement and probe
-        density authoring is shared.
-    </step>
-    <step>
-        Switch the volume to its static mode.
-    </step>
-    <step>
-        Finalise your lighting. Anything that changes after the bake will not be reflected in the probes.
-    </step>
-    <step>
-        Bake. Iterate freely &mdash; the bake is fast enough that you can treat it as part of the
-        lighting loop rather than an overnight job.
-    </step>
-    <step>
-        Verify with moving objects in the scene, since that is where Static DDGI most visibly beats
-        lightmaps.
-    </step>
-</procedure>
+## 设置
 
-## Limitations
+### 烘焙静态 DDGI
 
-Static DDGI is baked, so everything that implies applies: no time-of-day, no lights that move or change
-intensity contributing bounce, no bounce from destructible geometry after it is destroyed. Direct lighting
-can still be fully dynamic; it is only the indirect bounce that is frozen.
+1. 按照动态模式的设置，精确放置和调整 DDGI 体积的大小。体积放置和探针密度设置是相同的。
 
-Probe spacing still bounds spatial resolution, so the same reasoning about contact detail applies. Combining
-with [SSGI](./SSGI.md) is worthwhile here too, and SSGI has no ray tracing requirement, so it remains
-available on the same hardware.
+2. 将体积切换到静态模式。
 
-Note that Vite disables lightmap UV generation by default on import &mdash; see
-[Engine Default Changes](../Performance/Engine-Defaults.md). If you intend to use traditional lightmaps alongside or instead
-of Static DDGI, you will need to re-enable it.
+3. 完成灯光设置。烘焙后的任何更改都不会反映在探针中。
 
-<note>
-It's feasible to combine traditional LightMass with Static or Dynamic DDGI, the GI does blend nicely 
-and in general there won't be artifacts or crush out calculations from the GI related math.
-</note>
+4. 烘焙。您可以随意迭代——烘焙速度很快，您可以将其视为灯光循环的一部分，而不是耗时一整夜的工作。
+
+5. 使用场景中的移动物体进行验证，因为静态 DDGI 在移动物体上的效果比光照贴图更明显。
+
+
+## 限制
+
+静态 DDGI 是烘焙的，因此所有相关限制都适用：没有时间变化，没有移动或强度变化的灯光影响反射，可破坏几何体被破坏后也不会产生反射。直接光照仍然可以完全动态；只有间接反射被冻结。
+
+探针间距仍然限制空间分辨率，因此关于接触细节的相同理由仍然适用。与 [SSGI](./SSGI.md) 结合使用在这里也很有价值，而且 SSGI 不需要光线追踪，因此在相同的硬件上仍然可用。
+
+请注意，Vite 默认在导入时禁用光照贴图 UV 生成——请参阅[引擎默认更改](../Performance/Engine-Defaults.md)。如果您打算将传统光照贴图与静态 DDGI 一起使用或代替静态 DDGI，则需要重新启用它。
+
+**注意：** 将传统 LightMass 与静态或动态 DDGI 结合使用是可行的，全局光照可以很好地融合，通常不会出现瑕疵或因全局光照相关的数学运算而导致的计算错误。
 
 
 
-## See also
+## 另请参阅
 
-- [Dynamic DDGI](./DDGI-Dynamic.md)
-- [Global Illumination](./Global-Illumination.md)
+- [动态 DDGI](./DDGI-Dynamic.md)
+- [全局光照](./Global-Illumination.md)
 - [SSGI](./SSGI.md)
-- [Scalability](../Performance/Engine-Defaults.md)
-- [Platform Support](../Platforms/Platforms.md)
+- [可扩展性](../Performance/Engine-Defaults.md)
+- [平台支持](../Platforms/Platforms.md)
