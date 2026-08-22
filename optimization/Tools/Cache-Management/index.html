@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Cache Management - 引擎优化文档</title>
+    <title>缓存管理 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Cache Management";
+        var mkdocs_page_name = "\u7f13\u5b58\u7ba1\u7406";
         var mkdocs_page_input_path = "optimization/Tools/Cache-Management.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Cache Management</li>
+      <li class="breadcrumb-item active">缓存管理</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Tools/Cache-Management.md"> 编辑页面</a>
     </li>
@@ -120,23 +120,16 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="cache-management">Cache Management</h1>
-<p><tldr></p>
-<p>
-<code>WipeShaderCache.bat</code> at the engine root deletes the engine's derived data cache, intermediate
-shaders and shader debug info. Reach for it when the editor's behaviour stops matching your source
-changes.
-</p>
-<p></tldr></p>
-<p>Unreal caches aggressively. That is what makes iteration bearable, but it also means a stale cache can make
-a correct change appear not to work &mdash; or an incorrect one appear to.</p>
-<h2 id="what-the-script-clears">What the script clears</h2>
+                <h1 id="_1">缓存管理</h1>
+<p><code>WipeShaderCache.bat</code> at the engine root deletes the engine's derived data cache, intermediate shaders and shader debug info. Reach for it when the editor's behaviour stops matching your source changes.</p>
+<p>Unreal caches aggressively. That is what makes iteration bearable, but it also means a stale cache can make a correct change appear not to work &mdash; or an incorrect one appear to.</p>
+<h2 id="_2">脚本清除了什么</h2>
 <p><code>WipeShaderCache.bat</code> deletes three directories relative to the engine root:</p>
 <table>
 <thead>
 <tr>
-<th>Directory</th>
-<th>Contents</th>
+<th>目录</th>
+<th>内容</th>
 </tr>
 </thead>
 <tbody>
@@ -162,7 +155,7 @@ compile workers can outlive the editor; check Task Manager if a deletion fails.
 </warning></p>
 <p>After wiping, the next editor launch recompiles everything it needs. On a large project this can be tens of
 minutes or more. Do not do it casually.</p>
-<h2 id="when-to-wipe">When to wipe</h2>
+<h2 id="_3">什么时候清除</h2>
 <p><deflist>
 <def title="You changed a .usf or .ush file and nothing happened">
 Shader source changes are usually picked up, but engine-level global shader changes sometimes are not.
@@ -184,38 +177,38 @@ A classic stale-cache symptom: the reported error line does not exist in the fil
 Worth trying before deeper investigation, since it is cheap to rule out.
 </def>
 </deflist></p>
-<h2 id="when-not-to-wipe">When not to wipe</h2>
+<h2 id="_4">什么时候不清除</h2>
 <p>Wiping the DDC is a heavy hammer and is frequently applied to problems it cannot solve.</p>
 <ul>
 <li><strong>Project-level problems.</strong> The script clears the <em>engine</em> DDC. Your project has its own
   <code>DerivedDataCache</code> folder and its own <code>Intermediate</code> and <code>Saved</code> directories. Engine-level wiping does
   not touch them.</li>
-<li><strong>Runtime rendering bugs.</strong> If an effect renders wrongly but consistently, that is a code or
+<li><strong>运行时渲染问题。</strong> If an effect renders wrongly but consistently, that is a code or
   configuration problem, not a cache problem. Check the
   <a href="../../Rendering/Ray-Tracing/">compile-time switch availability table</a> first &mdash; many ray tracing features are
   compiled out by default and their console variables silently do nothing.</li>
-<li><strong>Long shader compile times.</strong> Wiping makes this worse, not better. See
-  <a href="../../Performance/Shader-Compilation-And-PSO/">Shader Compilation and PSO</a>.</li>
+<li><strong>长渲染编译时间。</strong> Wiping makes this worse, not better. See
+  <a href="../../Performance/Shader-Compilation-And-PSO/">着色器编译和 PSO</a>.</li>
 </ul>
-<h2 id="lighter-weight-alternatives">Lighter-weight alternatives</h2>
+<h2 id="_5">更轻量级的选择</h2>
 <p>Try these before a full wipe:</p>
 <table>
 <thead>
 <tr>
-<th>Approach</th>
-<th>Clears</th>
-<th>Cost</th>
+<th>方法</th>
+<th>清除</th>
+<th>花费</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>recompileshaders changed</code></td>
-<td>Modified shaders only</td>
-<td>Seconds</td>
+<td>仅修改的着色器</td>
+<td>秒</td>
 </tr>
 <tr>
 <td><code>recompileshaders global</code></td>
-<td>Global shaders</td>
+<td>全局着色器</td>
 <td>Under a minute</td>
 </tr>
 <tr>
@@ -238,50 +231,50 @@ Worth trying before deeper investigation, since it is cheap to rule out.
 <p>The last one is worth knowing: the DDC is the expensive part to rebuild. If you only need to clear
 intermediate shader state, deleting that one directory by hand is much cheaper than running the full
 script.</p>
-<h2 id="cache-locations">Cache locations</h2>
+<h2 id="_6">缓存位置</h2>
 <table>
 <thead>
 <tr>
-<th>Cache</th>
-<th>Path</th>
-<th>Cleared by the script</th>
+<th>缓存</th>
+<th>路径</th>
+<th>是否被脚本清除</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>Engine DDC</td>
 <td><code>Engine\DerivedDataCache</code></td>
-<td>Yes</td>
+<td>是</td>
 </tr>
 <tr>
 <td>Engine intermediate shaders</td>
 <td><code>Engine\Intermediate\Shaders</code></td>
-<td>Yes</td>
+<td>是</td>
 </tr>
 <tr>
 <td>Shader debug info</td>
 <td><code>Engine\Saved\ShaderDebugInfo</code></td>
-<td>Yes</td>
+<td>是</td>
 </tr>
 <tr>
 <td>Project DDC</td>
 <td><code>&lt;Project&gt;\DerivedDataCache</code></td>
-<td>No</td>
+<td>否</td>
 </tr>
 <tr>
 <td>Project intermediates</td>
 <td><code>&lt;Project&gt;\Intermediate</code></td>
-<td>No</td>
+<td>否</td>
 </tr>
 <tr>
 <td>Shared / network DDC</td>
 <td>Per <code>BaseEngine.ini</code> DDC configuration</td>
-<td>No</td>
+<td>否</td>
 </tr>
 <tr>
 <td>Local user DDC</td>
 <td><code>%LOCALAPPDATA%\UnrealEngine\Common\DerivedDataCache</code></td>
-<td>No</td>
+<td>否</td>
 </tr>
 </tbody>
 </table>
@@ -296,12 +289,12 @@ ray-tracing permutations it can reach tens of gigabytes. Periodically wiping it 
 reclaim disk space, accepting the recompile cost.</p>
 <p>If disk space is the actual concern, the <a href="../../Performance/Debloat-Guide/">Debloat Guide</a> covers larger and more permanent
 savings.</p>
-<h2 id="see-also">See also</h2>
+<h2 id="_7">另请参见</h2>
 <ul>
-<li><a href="../../Performance/Shader-Compilation-And-PSO/">Shader Compilation and PSO</a></li>
+<li><a href="../../Performance/Shader-Compilation-And-PSO/">着色器编译和 PSO</a></li>
 <li><a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a></li>
 <li><a href="../../GettingStarted/Build-Troubleshooting/">Build Troubleshooting</a></li>
-<li><a href="../../Performance/Debloat-Guide/">Debloat Guide</a></li>
+<li><a href="../../Performance/Debloat-Guide/">精简指南</a></li>
 </ul>
               
             </div>

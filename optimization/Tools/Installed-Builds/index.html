@@ -121,15 +121,9 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="_1">已安装的构建</h1>
-<p><tldr></p>
-<p>
-An installed build is a precompiled, redistributable engine that works like an Epic Games Launcher install.
-<code>RunUAT.bat</code> produces one; the <code>LocalBuilds\</code> scripts package and register it.
-</p>
-<p></tldr></p>
-<p>A source build requires a full toolchain, a long compile and a lot of disk. An installed build does not:
-artists, designers and anyone who does not modify engine C++ can use one directly.</p>
-<h2 id="building">Building</h2>
+<p>An installed build is a precompiled, redistributable engine that works like an Epic Games Launcher install. <code>RunUAT.bat</code> produces one; the <code>LocalBuilds\</code> scripts package and register it.</p>
+<p>A source build requires a full toolchain, a long compile and a lot of disk. An installed build does not: artists, designers and anyone who does not modify engine C++ can use one directly.</p>
+<h2 id="_2">构建</h2>
 <p><code>RunUAT.bat</code> at the engine root drives the BuildGraph installed-build target:</p>
 <div class="highlight"><pre><span></span><code>Engine\Build\BatchFiles\RunUAT.bat BuildGraph
     -script=&quot;Engine\Build\InstalledEngineBuild.xml&quot;
@@ -147,9 +141,7 @@ artists, designers and anyone who does not modify engine C++ can use one directl
     -set:WithDDC=false
     -clean
 </code></pre></div>
-<p>The configuration is Win64-only with Development and Shipping game configurations, matching Vite's
-<a href="../../Platforms/Platforms/">platform focus</a>. <code>WithDDC=false</code> skips derived data cache generation, which shortens the
-build considerably at the cost of first-launch shader compilation for the end user.</p>
+<p>The configuration is Win64-only with Development and Shipping game configurations, matching Vite's <a href="../../Platforms/Platforms/">platform focus</a>. <code>WithDDC=false</code> skips derived data cache generation, which shortens the build considerably at the cost of first-launch shader compilation for the end user.</p>
 <p>You can also reach this through <a href="../ViteSetup/">ViteSetup</a> &mdash; step 4, binary option, or menu option 8.
 The ViteSetup path is incremental; <code>RunUAT.bat</code> as shipped passes <code>-clean</code>.</p>
 <p><note>
@@ -157,16 +149,16 @@ This is a long build. Budget hours, not minutes, and considerable free disk spac
 and final outputs are large.
 </note></p>
 <p>Output lands in <code>LocalBuilds\Engine\Windows</code>.</p>
-<h2 id="packaging">Packaging</h2>
+<h2 id="_3">打包</h2>
 <p>Four scripts in <code>LocalBuilds\</code> compress the staged build with 7-Zip. All expect
 <code>LocalBuilds\Engine\Windows</code> to contain the staged build, and all look for 7-Zip at
 <code>C:\Program Files\7-Zip\7z.exe</code> unless the <code>SEVEN_ZIP</code> environment variable points elsewhere.</p>
 <table>
 <thead>
 <tr>
-<th>Script</th>
-<th>Debug symbols</th>
-<th>Plugins</th>
+<th>脚本</th>
+<th>调试符号</th>
+<th>插件</th>
 </tr>
 </thead>
 <tbody>
@@ -199,12 +191,12 @@ exclude PDBs. If you need symbols in the archive, use
 <code>-x@ExcludedPdbs.txt</code>.
 </note></p>
 <p>All four exclude <code>FeaturePacks\</code>, <code>Samples\</code> and <code>Templates\</code> from the main archive.</p>
-<p>Outputs:</p>
+<p>输出:</p>
 <table>
 <thead>
 <tr>
-<th>File</th>
-<th>Contents</th>
+<th>文件</th>
+<th>内容</th>
 </tr>
 </thead>
 <tbody>
@@ -218,7 +210,7 @@ exclude PDBs. If you need symbols in the archive, use
 </tr>
 </tbody>
 </table>
-<h3 id="the-exclusion-lists">The exclusion lists</h3>
+<h3 id="_4">排除列表</h3>
 <p><code>ExcludedPdbs.txt</code> lists roughly 1,100 PDB paths covering the engine modules and plugins. Debug symbols are
 a very large fraction of a source build's size, so excluding them is the single biggest packaging saving.</p>
 <p><code>ExcludedPlugins.txt</code> is the same list used by the <a href="../../Performance/Debloat-Guide/">debloat suite</a>. In the <code>Separate</code>
@@ -227,7 +219,7 @@ engine and add the plugin archive only if they need it.</p>
 <h3 id="why-split-plugins">Why split plugins</h3>
 <p>A team where most people need the base engine and only a few need the full plugin set can distribute a much
 smaller primary download. The split is by archive, not by deletion, so nothing is lost.</p>
-<h2 id="installing-on-a-target-machine">Installing on a target machine</h2>
+<h2 id="_5">在目标机器上安装</h2>
 <p><procedure title="Install a packaged Vite build" id="install-binary">
     <step>Extract <code>UE_ViteFork.7z</code> to its final location. Moving it later requires re-registering.</step>
     <step>If you were given <code>ExcludedPlugins.7z</code> and need those plugins, extract it over the same folder.</step>
@@ -243,7 +235,7 @@ smaller primary download. The split is by archive, not by deletion, so nothing i
 </procedure></p>
 <p>The packaged archive root contains <code>MakeShortcut.bat</code>, <code>RegistryAdd.bat</code> and <code>RegistryRemove.bat</code> alongside
 <code>Engine\</code>, plus <code>FeaturePacks\</code>, <code>Templates\</code> and <code>Samples\</code> if they were included at build time.</p>
-<h2 id="moving-or-removing">Moving or removing</h2>
+<h2 id="_6">移动或移除</h2>
 <p>Registration stores an absolute path, so moving the build breaks it.</p>
 <p><procedure title="Move an installed build" id="move-binary">
     <step>Run <code>RegistryRemove.bat</code> from the current location.</step>
@@ -252,24 +244,24 @@ smaller primary download. The split is by archive, not by deletion, so nothing i
     <step>Run <code>MakeShortcut.bat</code> again; the old shortcut points at the old path.</step>
 </procedure></p>
 <p>To remove entirely, run <code>RegistryRemove.bat</code>, delete the shortcut, and delete the folder.</p>
-<h2 id="running-alongside-a-source-build">Running alongside a source build</h2>
+<h2 id="_7">在源代码构建旁运行</h2>
 <p>Both can coexist, but they register under the same <code>UEViteFork</code> name, so only one is registered at a time.
 Whichever ran <code>RegistryAdd.bat</code> most recently is the one projects will find.</p>
 <p>If you regularly switch, note which is currently registered, or edit the registry key manually to give them
 distinct names.</p>
-<h2 id="limitations">Limitations</h2>
+<h2 id="_8">局限性</h2>
 <p>Installed builds cannot compile engine C++. Projects using them can still have their own C++ modules, which
 compile against the installed engine's headers and libraries, but engine source changes require a source
 build.</p>
 <p>This includes <a href="../../Performance/Compile-Time-Switches/">compile-time switches</a>. If your project needs
 <code>VITE_RT_PSO_DEBLOAT=0</code> for path tracing or RTXDI, that has to be baked into the installed build at the
 time it is produced.</p>
-<h2 id="see-also">See also</h2>
+<h2 id="_9">另请参见</h2>
 <ul>
-<li><a href="../ViteSetup/">ViteSetup Assistant</a></li>
-<li><a href="../../GettingStarted/Install-Binary-Build/">Install a Binary Build</a></li>
-<li><a href="../../GettingStarted/Build-From-Source/">Build from Source</a></li>
-<li><a href="../../Performance/Debloat-Guide/">Debloat Guide</a></li>
+<li><a href="../ViteSetup/">ViteSetup 助手</a></li>
+<li><a href="../../GettingStarted/Install-Binary-Build/">安装二进制构建</a></li>
+<li><a href="../../GettingStarted/Build-From-Source/">从源代码构建</a></li>
+<li><a href="../../Performance/Debloat-Guide/">精简指南</a></li>
 <li><a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a></li>
 </ul>
               
