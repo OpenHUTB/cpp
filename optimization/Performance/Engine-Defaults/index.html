@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Engine Default Changes - 引擎优化文档</title>
+    <title>引擎默认更改 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Engine Default Changes";
+        var mkdocs_page_name = "\u5f15\u64ce\u9ed8\u8ba4\u66f4\u6539";
         var mkdocs_page_input_path = "optimization/Performance/Engine-Defaults.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Engine Default Changes</li>
+      <li class="breadcrumb-item active">引擎默认更改</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Performance/Engine-Defaults.md"> 编辑页面</a>
     </li>
@@ -120,43 +120,27 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="engine-default-changes">Engine Default Changes</h1>
-<p><tldr></p>
-<p>
-Vite changes a number of stock Unreal Engine 4.27 defaults for performance. These changes affect your
-project directly &mdash; some of them change runtime behaviour, not just cost. Read this page before
-concluding that something is broken.
-</p>
-<p></tldr></p>
-<p>Stock Unreal defaults are chosen to make everything work out of the box, which means they enable features
-most projects never use. Vite changes several of them to favour performance, on the principle that a
-feature you want should be something you turn on rather than something you forget to turn off.</p>
-<p>The trade is that a project moved from stock 4.27 to Vite may behave differently. This page is the list.</p>
-<h2 id="runtime-behaviour-changes">Runtime behaviour changes</h2>
-<p><warning>
-These change behaviour, not just performance. If gameplay logic depends on the stock default, it will need
-attention.
-</warning></p>
-<h3 id="overlap-events-disabled-by-default">Overlap events disabled by default</h3>
-<p>Primitive components no longer generate overlap events unless explicitly enabled.</p>
-<p>Overlap event generation costs on every component that has it, whether or not anything is bound to the
-event. In a stock project the majority of primitives generate overlap events that nothing listens to.</p>
-<p><strong>What this means for you:</strong> components that need overlap events must set <strong>Generate Overlap Events</strong>
-explicitly. Trigger volumes, pickup detection and anything driven by <code>OnComponentBeginOverlap</code> need the
-flag set. This is the most likely source of "my trigger stopped working" after migrating a project.</p>
+                <h1 id="_1">引擎默认更改</h1>
+<p>为了提升性能，Vite 修改了虚幻引擎 4.27 的一些默认设置。这些修改会直接影响您的项目——其中一些会改变运行时行为，而不仅仅是成本。在断定项目出现问题之前，请先阅读此页面。</p>
+<p>虚幻引擎的默认设置旨在确保所有功能开箱即用，这意味着它们启用了大多数项目永远不会用到的功能。Vite 修改了其中一些设置以提升性能，其原则是：您需要的功能应该是您主动开启的，而不是您忘记关闭的。</p>
+<p>但代价是，从虚幻引擎 4.27 迁移到 Vite 的项目可能会出现不同的行为。此页面列出了所有变更。</p>
+<h2 id="_2">运行时行为变更</h2>
+<p><strong>警告：</strong> 这些更改不仅会改变性能，还会改变行为。如果游戏逻辑依赖于默认设置，则需要进行调整。</p>
+<h3 id="_3">默认情况下禁用重叠事件 <span id='disabled_overlap'></span></h3>
+<p>除非显式启用，否则基本组件不再生成重叠事件。</p>
+<p>生成重叠事件会消耗所有组件的资源，无论是否有任何组件绑定到该事件。在默认项目中，大多数基本组件生成的重叠事件都没有被任何组件监听。</p>
+<p><strong>这意味着</strong>：需要重叠事件的组件必须显式设置<strong>生成重叠事件</strong>。触发器体积、拾取检测以及任何由 <code>OnComponentBeginOverlap</code> 驱动的组件都需要设置此标志。这很可能是项目迁移后“我的触发器停止工作”问题的原因。</p>
 <p><img alt="" src="../../../img/optimization/OverlapEventsDisabled.png" /></p>
-<p><em>提交差异，将 PrimitiveComponent.cpp 中的 SetGenerateOverlapEvents(true) 替换为 bGenerateOverlapEvents = false。</em></p>
-<p><em><code>UPrimitiveComponent</code> 中的一行代码，应用于每个项目中的每个基本组件。</em></p>
-<p><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/02d7c0ad0a7542b382a70dc3e37877d6ec052d76">Commit</a></p>
-<h3 id="optimised-actor-runtime">Optimised actor runtime</h3>
-<p>Actor runtime defaults are changed to reduce per-actor overhead in <code>AActor::InitializeDefaults</code>:</p>
+<p><em><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/02d7c0ad0a7542b382a70dc3e37877d6ec052d76">提交差异</a>：将 PrimitiveComponent.cpp 中的 SetGenerateOverlapEvents(true) 替换为 bGenerateOverlapEvents = false，应用于每个项目中的每个基本组件。</em></p>
+<h3 id="actor">优化 Actor 运行时</h3>
+<p>Actor 运行时默认值已更改，以减少 <code>AActor::InitializeDefaults</code> 中每个 Actor 的开销：</p>
 <table>
 <thead>
 <tr>
-<th>Default</th>
-<th>Stock 4.27</th>
+<th>默认</th>
+<th>库存的 4.27</th>
 <th>Vite</th>
-<th>Why</th>
+<th>原因</th>
 </tr>
 </thead>
 <tbody>
@@ -164,36 +148,31 @@ flag set. This is the most likely source of "my trigger stopped working" after m
 <td><code>SetCanBeDamaged</code></td>
 <td><code>true</code></td>
 <td><code>false</code></td>
-<td>Only actors that use the damage system need it</td>
+<td>仅使用伤害系统的参与者需要此设置</td>
 </tr>
 <tr>
 <td><code>bRelevantForNetworkReplays</code></td>
 <td><code>true</code></td>
 <td><code>false</code></td>
-<td>Keeps actors out of demo net recording unless wanted</td>
+<td>除非需要，否则将参与者排除在演示网络录制之外</td>
 </tr>
 <tr>
 <td><code>bRelevantForLevelBounds</code></td>
 <td><code>true</code></td>
 <td><code>false</code></td>
-<td>Avoids level-bounds iteration over actors that do not define bounds</td>
+<td>避免对未定义边界的参与者进行边界迭代</td>
 </tr>
 </tbody>
 </table>
 <p><img alt="" src="../../../img/optimization/OptimizedActorRuntime.png" /></p>
-<p><em>提交 Actor.cpp 中的差异，更改 SetCanBeDamaged、bRelevantForNetworkReplays 和 bRelevantForLevelBounds 的默认值</em></p>
-<p><em>大型网格、阻挡体积和必须定义世界边界的植被需要将 <code>bRelevantForLevelBounds</code> 设置为 <code>true</code>。</em></p>
-<p><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/970cbb989c3712f13be1fa370b778e769e5d864c">Commit</a></p>
-<h3 id="skeletal-mesh-optimised-configuration">Skeletal mesh optimised configuration</h3>
-<p>Skeletal meshes are among the top CPU offenders in most projects, so <code>USkeletalMeshComponent</code> ships with
-performance-oriented defaults instead of Epic's fully featured ones. In-world assets often contain many
-skeletal meshes, which makes enabling optimised settings per component impractical; configuring the cheap
-path as the default and opting into the expensive options where they are needed is the workable order.</p>
+<p><em><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/970cbb989c3712f13be1fa370b778e769e5d864c">提交 Actor.cpp 中的差异</a>：更改 SetCanBeDamaged、bRelevantForNetworkReplays 和 bRelevantForLevelBounds 的默认值。大型网格、阻挡体积和必须定义世界边界的植被需要将 <code>bRelevantForLevelBounds</code> 设置为 <code>true</code>。</em></p>
+<h3 id="_4">骨骼网格体优化配置</h3>
+<p>骨骼网格体是大多数项目中 CPU 占用率最高的组件之一，因此 <code>USkeletalMeshComponent</code> 默认提供的是性能优化配置，而非 Epic 提供的完整功能配置。游戏内资源通常包含大量骨骼网格体，因此为每个组件启用优化设置并不实际；可行的做法是将性能较低的配置设为默认，并在需要时启用性能较高的配置。</p>
 <table>
 <thead>
 <tr>
-<th>Default</th>
-<th>Stock 4.27</th>
+<th>默认</th>
+<th>库存的 4.27</th>
 <th>Vite</th>
 </tr>
 </thead>
@@ -226,93 +205,73 @@ path as the default and opting into the expensive options where they are needed 
 </tbody>
 </table>
 <p><img alt="" src="../../../img/optimization/SkeletalMeshesOptimizedConfig.png" /></p>
-<p><em>SkeletalMeshComponent.cpp 中的提交差异显示了与 Epic 原版相比的五个已更改的默认值。</em></p>
-<p><em>每行更改的内容都会在末尾的注释中保留 Epic 的原始值，因此无需咨询上游即可恢复库存行为。</em></p>
-<p><code>VisibilityBasedAnimTickOption</code> is the one to watch. <code>OnlyTickPoseWhenRendered</code> means an off-screen
-character stops evaluating its pose entirely; gameplay that reads bone transforms or sockets on unrendered
-characters &mdash; weapon muzzle positions, IK targets, attach points on a distant actor &mdash; must set
-the component back to <code>AlwaysTickPose</code> or <code>AlwaysTickPoseAndRefreshBones</code>.</p>
-<p><code>bDisablePostProcessBlueprint = true</code> is the second: post-process anim Blueprints, commonly used for IK
-and bone corrections, no longer run unless re-enabled per component.</p>
+<p><em>SkeletalMeshComponent.cpp 中的<a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/33fe7c638829b8120e8a02ecc639acda761df835">提交差异</a>显示了与 Epic 原版相比的五个已更改的默认值。每行更改的内容都会在末尾的注释中保留 Epic 的原始值，因此无需咨询上游即可恢复库存行为。</em></p>
+<p><code>VisibilityBasedAnimTickOption</code> 是需要关注的选项。<code>OnlyTickPoseWhenRendered</code> 表示屏幕外的参与者将完全停止评估其姿势；读取未渲染参与者骨骼变换或插槽的游戏玩法（例如武器枪口位置、IK 目标、远处参与者上的连接点）必须将组件设置回 <code>AlwaysTickPose</code> 或 <code>AlwaysTickPoseAndRefreshBones</code>。</p>
+<p><code>bDisablePostProcessBlueprint = true</code> 是第二个选项：后处理动画蓝图（通常用于 IK 和骨骼校正）将不再运行，除非为每个组件重新启用。</p>
 <p><img alt="" src="../../../img/optimization/SkeletalMeshDefault.png" /></p>
-<p><em>SkeletalMeshComponent.cpp 构造函数显示了周围的默认块</em></p>
-<p><em>有关这些默认值设置位置的上下文，请参阅 <code>SkeletalMeshComponent.cpp</code> 中的构造函数块。</em></p>
-<p><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/33fe7c638829b8120e8a02ecc639acda761df835">Commit</a></p>
-<h3 id="generate-lightmap-uvs-disabled">Generate Lightmap UVs disabled</h3>
-<p>Static mesh import no longer generates lightmap UVs by default.</p>
-<p>Most Vite projects use <a href="../../Rendering/DDGI-Dynamic/">DDGI</a> rather than baked lighting, so generating lightmap UVs for
-every imported mesh is wasted import time and wasted UV channels. If your project bakes lighting, enable
-the setting in the static mesh import options.</p>
-<p><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/acce6fbe432fe9fe5a2536f0979befd5dcd741d1">Commit</a></p>
-<h2 id="scalability">Scalability</h2>
-<p>Shadow Quality 4 is used for the Medium shadow setting, raising shadow quality in the middle of the
-scalability range.</p>
-<p><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/1718cd66e08a2b47222f895162e3be2b2c98ee6a">Commit</a></p>
-<h2 id="disabled-plugins">Disabled plugins</h2>
-<p>A number of plugins that ship enabled in stock 4.27 are disabled by default. This reduces editor startup
-time, module load count and packaged build size.</p>
-<p><strong>VR plugins in particular must be re-enabled if you need them.</strong></p>
-<p><a href="https://github.com/GapingPixel/UnrealEngineVite-PhysX/commit/e9aebc2ef9f8acb7326a7e989f288ef68969342f">Commit 1</a> &middot;
-<a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/6c5948bf12ea61f82784193ccaa5d43c4f574ae9">Commit 2</a></p>
-<h2 id="tick-optimisations">Tick optimisations</h2>
-<h3 id="speedtree-tick">SpeedTree tick</h3>
-<p>The SpeedTree tick in <code>LevelTick.cpp</code> is optimised. SpeedTree ticking runs regardless of whether a project
-uses SpeedTree assets, so this is a saving every project gets.</p>
-<p><img alt="" src="../../../img/optimization/SpeedTreeTick.png" /></p>
-<p><em>LevelTick.cpp 显示了世界节拍中的 UpdateSpeedTreeWind 调用。</em></p>
-<p><em><code>Scene-&gt;UpdateSpeedTreeWind</code> 在世界节拍中 — 无条件地在 stock 4.27 中。</em></p>
-<p><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/blob/3e4a16aa89de4f4c37da300c945d6a14dc62edd7/Engine/Source/Runtime/Engine/Private/LevelTick.cpp#L1709">Source</a></p>
-<h3 id="niagara-tick">Niagara tick</h3>
-<p>Niagara ticks whenever the plugin is enabled. Disable the Niagara plugin at project level if you do not use
-it; Cascade remains available in 4.27.</p>
-<h2 id="ray-tracing-culling">Ray tracing culling</h2>
-<p>Ray tracing culling respects each primitive's minimum draw distance:</p>
+<p><em>SkeletalMeshComponent.cpp 构造函数显示了周围的默认块。有关这些默认值设置位置的上下文，请参阅 <code>SkeletalMeshComponent.cpp</code> 中的构造函数块。</em></p>
+<h3 id="uv">已禁用生成光照贴图 UV</h3>
+<p>默认情况下，静态网格体导入不再生成光照贴图 UV（<a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/acce6fbe432fe9fe5a2536f0979befd5dcd741d1">提交差异</a>）。</p>
+<p>大多数 Vite 项目使用 <a href="../../Rendering/DDGI-Dynamic/">DDGI</a> 而非烘焙光照，因此为每个导入的网格体生成光照贴图 UV 会浪费导入时间和 UV 通道。如果您的项目使用烘焙光照，请在静态网格体导入选项中启用此设置。</p>
+<h2 id="_5">可扩展性</h2>
+<p>阴影质量 4（Shadow Quality 4）用于中等阴影设置，在可扩展性范围的中间位置提高阴影质量（<a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/1718cd66e08a2b47222f895162e3be2b2c98ee6a">提交差异</a>）。</p>
+<h2 id="_6">已禁用的插件</h2>
+<p>4.27 版本默认启用的一些插件已被禁用（<a href="https://github.com/GapingPixel/UnrealEngineVite-PhysX/commit/e9aebc2ef9f8acb7326a7e989f288ef68969342f">提交差异 1</a> &middot;
+<a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/6c5948bf12ea61f82784193ccaa5d43c4f574ae9">提交差异 2</a>）。这可以减少编辑器启动时间、模块加载数量和打包后的构建文件大小。</p>
+<p><strong>如果您需要使用 VR 插件，则必须重新启用它们。</strong></p>
+<h2 id="_7">节拍优化</h2>
+<h3 id="speedtree">SpeedTree 节拍</h3>
+<p><a href="https://github.com/OpenHUTB/engine/tree/hutb/Engine/Source/Runtime/Engine/Private/LevelTick.cpp">LevelTick.cpp</a> 中的 <a href="https://github.com/GapingPixel/UE5-PhysX-Vite/blob/3e4a16aa89de4f4c37da300c945d6a14dc62edd7/Engine/Source/Runtime/Engine/Private/LevelTick.cpp#L1709">SpeedTree 节拍已优化</a>。无论项目是否使用 SpeedTree 资源，SpeedTree 节拍都会运行，因此每个项目都能从中节省资源。
+<img alt="" src="../../../img/optimization/SpeedTreeTick.png" />
+<em>LevelTick.cpp 显示了世界节拍中的 UpdateSpeedTreeWind 调用。<code>Scene-&gt;UpdateSpeedTreeWind</code> 在世界节拍中 — 无条件地在 stock 4.27 中。</em></p>
+<h3 id="niagara">Niagara 节拍</h3>
+<p>Niagara 插件启用时会发出节拍信号。如果您不使用 Niagara 插件，请在项目关卡中禁用它；Cascade 在 4.27 版本中仍然可用。</p>
+<h2 id="_8">光线追踪剔除</h2>
+<p>光线追踪剔除会考虑每个图元的最小绘制距离（<a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/595f376f6de0912606b05768739aa3d24ac4f61a">提交差异</a>）：</p>
 <div class="highlight"><pre><span></span><code><span class="n">GEngine</span><span class="o">-&gt;</span><span class="n">Exec</span><span class="p">(</span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.RayTracing.Culling.UseMinDrawDistance 1&quot;</span><span class="p">));</span>
 </code></pre></div>
-<p>This is a cheap and generally safe win in scenes with many small detail meshes, since geometry too small to
-be drawn is also too small to matter in the acceleration structure.</p>
-<p><a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/595f376f6de0912606b05768739aa3d24ac4f61a">Commit</a></p>
-<h2 id="editor-quality-of-life">Editor quality-of-life</h2>
-<p>These do not affect runtime performance but change editor behaviour:</p>
+<p>对于有很多小细节网格的场景来说，这是一种廉价且通常安全的解决方案，因为几何体太小以至于无法绘制，在加速结构中也太小以至于无关紧要。</p>
+<h2 id="_9">编辑器体验优化</h2>
+<p>这些优化不会影响运行时性能，但会改变编辑器的行为：</p>
 <ul>
-<li>Animation assets always open in a new tab
-  (<a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/8bdae919e6eae61a27ef8d09d38027592a473d8c">commit</a>)</li>
-<li>A config variable to disable the new plugins popup
-  (<a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/9af0349c1832b7094ceae7f47ba8ca5d261e0e69">commit</a>)</li>
+<li>动画资源始终在新标签页中打开
+  (<a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/8bdae919e6eae61a27ef8d09d38027592a473d8c">提交差异</a>)</li>
+<li>用于禁用新插件弹出窗口的配置变量
+  (<a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/9af0349c1832b7094ceae7f47ba8ca5d261e0e69">提交差异</a>)</li>
 <li><code>bDisableAllTutorialAlerts=True</code>
-  (<a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/d9fd593e11581fd93d0ff60b2933794f150b4780">commit</a>)</li>
-<li>Assorted safe backports from later engine versions
-  (<a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/fe7a6f4d7c54d8725d6308820d5b4fd546b9ff49">commit</a>)</li>
+  (<a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/d9fd593e11581fd93d0ff60b2933794f150b4780">提交差异</a>)</li>
+<li>从更高版本的引擎中安全移植的各种功能
+  (<a href="https://github.com/GapingPixel/UE5-PhysX-Vite/commit/fe7a6f4d7c54d8725d6308820d5b4fd546b9ff49">提交差异</a>)</li>
 </ul>
-<h2 id="optional-debloat-you-can-do-yourself">Optional debloat you can do yourself</h2>
-<p>These cannot be disabled in the fork release branch for compatibility reasons, but are available to
-individual projects.</p>
-<p><strong>Vite plugin removal.</strong> Removing the added Vite plugins improves compile times. Measured on a Ryzen 9
-9950X3D: full repository 15 minutes, without Vite plugins 12 minutes. Houdini is the largest single
-contributor.</p>
-<p>See the <a href="../Debloat-Guide/">Debloat Guide</a> for the tooling.</p>
-<h2 id="migrating-an-existing-project">Migrating an existing project</h2>
-<p><procedure title="Check a migrated project against Vite defaults" id="check-defaults">
-    <step>
-        Test every trigger volume and overlap-driven interaction. Overlap events are the most common
-        breakage.
-    </step>
-    <step>
-        Check characters using leader/follower skeletal mesh setups for missing curve propagation.
-    </step>
-    <step>
-        If the project bakes lighting, re-enable lightmap UV generation and confirm existing meshes still
-        have valid lightmap UVs.
-    </step>
-    <step>Re-enable any plugins your project needs, VR in particular.</step>
-    <step>Review scalability settings, since Medium shadows now differ from stock.</step>
-</procedure></p>
-<h2 id="see-also">See also</h2>
+<h2 id="_10">您可以自行进行一些可选的精简操作</h2>
+<p>出于兼容性考虑，这些操作无法在分支发布版本中禁用，但可以针对单个项目进行设置。</p>
+<p><strong>移除 Vite 插件。</strong> 移除已添加的 Vite 插件可以缩短编译时间。在 Ryzen 9 9950X3D 上测试：完整代码库编译耗时 15 分钟，移除 Vite 插件后仅需 12 分钟。Houdini 是最大的单一贡献者。</p>
+<p>有关工具，请参阅<a href="../Debloat-Guide/">精简指南</a>。</p>
+<h2 id="_11">迁移现有项目</h2>
+<h3 id="vite">将迁移后的项目与 Vite 默认设置进行比较</h3>
+<ol>
+<li>
+<p>测试每个触发体积和重叠驱动的交互。重叠事件是最常见的故障点。</p>
+</li>
+<li>
+<p>检查使用引导/跟随骨骼网格设置的角色是否存在曲线传播缺失的情况。</p>
+</li>
+<li>
+<p>如果项目烘焙了光照，请重新启用光照贴图 UV 生成，并确认现有网格仍然具有有效的光照贴图 UV。</p>
+</li>
+<li>
+<p>重新启用项目所需的所有插件，特别是 VR 插件。</p>
+</li>
+<li>
+<p>检查缩放设置，因为中等阴影现在与默认设置有所不同。</p>
+</li>
+</ol>
+<h2 id="_12">另请参阅</h2>
 <ul>
-<li><a href="../../GettingStarted/Migrating-From-UE5/">Migrating from UE5</a></li>
-<li><a href="../Debloat-Guide/">Debloat Guide</a></li>
-<li><a href="../Profiling/">Profiling</a></li>
-<li><a href="../Compile-Time-Switches/">Compile-Time Switches</a></li>
+<li><a href="../../GettingStarted/Migrating-From-UE5/">从 UE5 迁移</a></li>
+<li><a href="../Debloat-Guide/">精简指南</a></li>
+<li><a href="../Profiling/">性能分析</a></li>
+<li><a href="../Compile-Time-Switches/">编译时切换</a></li>
 </ul>
               
             </div>
