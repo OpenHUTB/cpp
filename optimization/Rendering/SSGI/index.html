@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>SSGI - 引擎优化文档</title>
+    <title>屏幕空间全局光照 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "SSGI";
+        var mkdocs_page_name = "\u5c4f\u5e55\u7a7a\u95f4\u5168\u5c40\u5149\u7167";
         var mkdocs_page_input_path = "optimization/Rendering/SSGI.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">SSGI</li>
+      <li class="breadcrumb-item active">屏幕空间全局光照</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/SSGI.md"> 编辑页面</a>
     </li>
@@ -120,23 +120,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="ssgi">SSGI</h1>
-<p><tldr></p>
-<p>
-UE4-era screen-space global illumination, enabled with <code>r.SSGI.Enable 1</code>. Recommended
-<i>alongside</i> <a href="./DDGI-Dynamic.md">DDGI</a> rather than instead of it: DDGI supplies world-scale
-bounce, SSGI supplies high-frequency contact detail. No ray tracing hardware required.
-</p>
-<p></tldr></p>
-<p>Screen-space global illumination gathers indirect light by sampling the depth and colour buffers. It only
-knows about what is on screen, which is simultaneously its great limitation and the reason it complements a
-world-space solution so well.</p>
-<h2 id="why-this-matters-in-vite-specifically">Why this matters in Vite specifically</h2>
-<p>SSGI experienced both quality and performance regressions in UE5 as a result of being integrated into
-Lumen, and it is no longer possible to activate it alongside a separate GI solution there.</p>
-<p>Vite retains the UE4-era implementation, which is both faster and composable. Running SSGI in tandem with
-DDGI is the recommended default configuration, not an exotic combination.</p>
-<h2 id="what-each-technique-contributes">What each technique contributes</h2>
+                <h1 id="_1">屏幕空间全局光照</h1>
+<p>UE4 时代的屏幕空间全局光照（Screen-Space Global Illumination, SSGI）通过 <code>r.SSGI.Enable 1</code> 启用。建议与 <a href="../DDGI-Dynamic/">DDGI</a> 配合使用，而非替代 DDGI：DDGI 提供世界尺度的反弹光，而 SSGI 提供高频接触细节。无需光线追踪硬件。</p>
+<p>屏幕空间全局光照通过采样深度和颜色缓冲区来收集间接光。它仅感知屏幕上的内容，这既是它的最大局限性，也是它与世界空间全局光照解决方案完美互补的原因。</p>
+<h2 id="vite">为什么这在 Vite 中尤为重要？</h2>
+<p>由于 SSGI 被集成到 Lumen 中，UE5 中的 SSGI 在质量和性能方面都出现了退步，并且无法再将其与独立的全局光照解决方案同时启用。</p>
+<p>Vite 保留了 UE4 时代的实现方式，这种方式速度更快且更易于组合。SSGI 与 DDGI 并行运行是推荐的默认配置，而非特殊组合。</p>
+<h2 id="_2">每种技术的作用</h2>
 <table>
 <thead>
 <tr>
@@ -147,77 +137,63 @@ DDGI is the recommended default configuration, not an exotic combination.</p>
 </thead>
 <tbody>
 <tr>
-<td>Spatial resolution</td>
-<td>Probe grid</td>
-<td>Per-pixel</td>
+<td>空间分辨率</td>
+<td>探测网格</td>
+<td>逐像素</td>
 </tr>
 <tr>
-<td>Knows about off-screen geometry</td>
-<td>Yes</td>
-<td>No</td>
+<td>了解屏幕外几何体</td>
+<td>是</td>
+<td>否</td>
 </tr>
 <tr>
-<td>Knows about occluded geometry</td>
-<td>Yes</td>
-<td>No</td>
+<td>了解遮挡几何体</td>
+<td>是</td>
+<td>否</td>
 </tr>
 <tr>
-<td>Captures contact-scale detail</td>
-<td>No</td>
-<td>Yes</td>
+<td>捕捉接触尺度细节</td>
+<td>否</td>
+<td>是</td>
 </tr>
 <tr>
-<td>Requires ray tracing hardware</td>
-<td>Yes (dynamic mode)</td>
-<td>No</td>
+<td>需要光线追踪硬件</td>
+<td>是（动态模式）</td>
+<td>否</td>
 </tr>
 <tr>
-<td>Stable under camera motion</td>
-<td>Yes</td>
-<td>Screen-space artefacts at frame edges</td>
+<td>相机运动下稳定</td>
+<td>是</td>
+<td>帧边缘出现屏幕空间伪影</td>
 </tr>
 </tbody>
 </table>
-<p>The two fail in opposite directions, which is exactly what you want from a pair of techniques. DDGI has
-complete world knowledge at coarse resolution; SSGI has pixel resolution over an incomplete view. Together
-they cover both scales.</p>
-<p>Concretely, SSGI is what gives you the darkening where a chair leg meets the floor, bounce inside a narrow
-gap between two objects, and the colour bleed from a nearby red wall onto a character's shoulder &mdash; all
-features smaller than typical probe spacing.</p>
-<h2 id="enabling">Enabling</h2>
+<p>这两种方法的不足之处恰恰相反，这正是我们希望它们结合使用的原因。DDGI 拥有粗分辨率下的完整世界信息；SSGI 则在不完整的视图上提供像素分辨率。它们结合起来可以覆盖两种尺度。</p>
+<p>具体来说，SSGI 技术能够实现椅子腿与地面接触处的暗化效果、物体间狭窄缝隙内的反弹效果，以及附近红色墙壁的颜色晕染到角色肩膀上的效果——所有这些细节都比典型的探测间距要小。</p>
+<h2 id="_3">启用</h2>
 <div class="highlight"><pre><span></span><code><span class="n">IConsoleManager</span><span class="o">::</span><span class="n">Get</span><span class="p">().</span><span class="n">FindConsoleVariable</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.SSGI.Enable&quot;</span><span class="p">))</span><span class="o">-&gt;</span><span class="n">Set</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
 </code></pre></div>
 <div class="highlight"><pre><span></span><code><span class="c1">; Config/DefaultEngine.ini</span>
 <span class="k">[/Script/Engine.RendererSettings]</span>
 <span class="na">r.SSGI.Enable</span><span class="o">=</span><span class="s">1</span>
 </code></pre></div>
-<p>SSGI quality is controlled through the standard UE4 SSGI console variables and the post process volume. The
-quality setting trades ray count and resolution against cost in the usual way.</p>
-<h2 id="limitations-to-design-around">Limitations to design around</h2>
-<p>Everything screen-space shares the same failure modes, and it is worth knowing them so you do not chase
-them as bugs:</p>
-<p><strong>Off-screen light is missing.</strong> A brightly lit wall just outside the frustum contributes nothing. As the
-camera turns and it comes into view, its contribution appears. This is why SSGI alone is not a viable GI
-solution and why the pairing matters.</p>
-<p><strong>Occluded geometry is missing.</strong> SSGI can only see the depth buffer's front surface. Light that should
-bounce from behind an object is not represented.</p>
-<p><strong>Frame edges.</strong> Contributions fade out towards the screen border because the sampling kernel runs out of
-buffer. This is usually acceptable but becomes visible with fast camera motion.</p>
-<p>Because DDGI is providing the world-scale answer, none of these produce a <em>wrong</em> image in the combined
-setup &mdash; they produce a locally less detailed one, which is a much better failure mode.</p>
-<h2 id="cost">Cost</h2>
-<p>SSGI is cheap relative to any world-space technique, and it scales with resolution and quality setting
-rather than with scene complexity. On the <a href="../../EngineOverview/Performance-Targets/">Performance Targets</a> that include it, it
-is not the dominant cost; DDGI and reflections are.</p>
-<p>If you are hunting frame time, measure before you disable it. <code>stat gpu</code> will tell you what the pass
-actually costs in your scene, and it is frequently less than people assume.</p>
-<h2 id="see-also">See also</h2>
+<p>SSGI 质量通过标准的 UE4 SSGI 控制台变量和后处理体积进行控制。质量设置以通常的方式在光线数量和分辨率与成本之间进行权衡。</p>
+<h2 id="_4">设计时需要考虑的局限性</h2>
+<p>所有屏幕空间渲染都存在相同的失效模式，了解这些模式有助于避免将其误判为 bug：</p>
+<p><strong>屏幕外光照缺失。</strong> 视锥体外的明亮墙壁不会产生任何贡献。当摄像机旋转并进入视野时，其贡献才会显现。这就是为什么单独使用 SSGI 并非可行的全局光照解决方案，以及为何需要与其他渲染器组合的原因。</p>
+<p><strong>被遮挡的几何体缺失。</strong> SSGI 只能看到深度缓冲区的正面。本应从物体后方反射的光线无法被表示。</p>
+<p><strong>帧边缘。</strong> 由于采样内核缓冲区不足，贡献会向屏幕边缘逐渐消失。这通常是可以接受的，但在摄像机快速移动时会变得明显。</p>
+<p>由于 DDGI 提供的是世界尺度的全局光照，因此在组合设置中，这些缺陷都不会导致图像<em>错误</em>——它们只会生成局部细节较少的图像，这是一种更好的失效模式。</p>
+<h2 id="_5">成本</h2>
+<p>相对于任何世界空间技术而言，SSGI 的成本都很低，而且它的成本与分辨率和质量设置成正比，而非与场景复杂度成正比。在包含 SSGI 的<a href="../../EngineOverview/Performance-Targets/">性能目标</a>中，它并非主要的成本来源；DDGI 和反射才是。</p>
+<p>如果您追求帧时间，请在禁用 SSGI 之前进行测量。<code>stat gpu</code> 命令会告诉您该通道在您的场景中的实际成本，通常比人们预想的要低。</p>
+<h2 id="_6">另请参阅</h2>
 <ul>
-<li><a href="../Global-Illumination/">Global Illumination</a></li>
-<li><a href="../DDGI-Dynamic/">Dynamic DDGI</a></li>
-<li><a href="../DDGI-Static/">Static DDGI</a></li>
-<li><a href="../Ambient-Occlusion/">Ambient Occlusion</a></li>
-<li><a href="../../Reference/Console-Variables/">Console Variable Reference</a></li>
+<li><a href="../Global-Illumination/">全局光照</a></li>
+<li><a href="../DDGI-Dynamic/">动态 DDGI</a></li>
+<li><a href="../DDGI-Static/">静态 DDGI</a></li>
+<li><a href="../Ambient-Occlusion/">环境光遮蔽</a></li>
+<li><a href="../../Reference/Console-Variables/">控制台变量参考</a></li>
 </ul>
               
             </div>

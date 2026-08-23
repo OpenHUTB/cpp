@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Ray Tracing - 引擎优化文档</title>
+    <title>光线追踪 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Ray Tracing";
+        var mkdocs_page_name = "\u5149\u7ebf\u8ffd\u8e2a";
         var mkdocs_page_input_path = "optimization/Rendering/Ray-Tracing.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Ray Tracing</li>
+      <li class="breadcrumb-item active">光线追踪</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/Ray-Tracing.md"> 编辑页面</a>
     </li>
@@ -120,119 +120,101 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="ray-tracing">Ray Tracing</h1>
-<p><tldr></p>
-<p>
-Vite ships the ray tracing suite from NvRTX 4.27 Caustics and NvRTX 5.0. In a default build,
-<b>reflections, shadows, ambient occlusion and sky light are available; the rest are compiled out</b> by
-<code>VITE_RT_PSO_DEBLOAT</code>. Read the availability table below before debugging a console variable
-that appears to do nothing.
-</p>
-<p></tldr></p>
-<p>Ray tracing in Vite is an engine-agnostic pipeline: acceleration structures are maintained independently of
-any single lighting solution, so each effect can be enabled or disabled on its own. This is the arrangement
-UE 4.27 had and UE 5.1+ moved away from &mdash; see <a href="../../EngineOverview/Why-NvRTX-427/">Why NvRTX 4.27</a>.</p>
-<h2 id="availability">Availability</h2>
-<p>The <code>VITE_RT_PSO_DEBLOAT</code> compile-time switch defaults to <code>1</code> and removes shader permutations for effects
-outside Vite's recommended configuration. Ray tracing PSOs must be compiled and bound whether or not their
-console variable is set, so leaving unused effects compiled in costs shader build time, package size and
-pipeline creation time for nothing.</p>
-<p>The practical consequence: <strong>setting the console variable for a compiled-out effect appears to succeed and
-renders nothing.</strong></p>
+                <h1 id="_1">光线追踪</h1>
+<p>Vite 内置了 NvRTX 4.27 Caustics 和 NvRTX 5.0 的光线追踪套件。在默认版本中，反射、阴影、环境光遮蔽和天空光可用；其余效果会被 <code>VITE_RT_PSO_DEBLOAT</code> 编译移除。在调试看似无效的控制台变量之前，请先阅读下方的可用性表格。</p>
+<p>Vite 中的光线追踪是一个与引擎无关的管线：加速结构独立于任何单一的光照解决方案，因此每个效果都可以单独启用或禁用。UE 4.27 采用了这种架构，而 UE 5.1 及更高版本则摒弃了这种架构——参见<a href="../../EngineOverview/Why-NvRTX-427/">为什么使用 NvRTX 4.27</a>。</p>
+<h2 id="_2">可用性</h2>
+<p>编译时开关 <code>VITE_RT_PSO_DEBLOAT</code> 默认值为 <code>1</code>，它会移除 Vite 推荐配置之外的效果的着色器排列组合。光线追踪 PSO 必须编译并绑定，无论其控制台变量是否设置，因此将未使用的效果编译在内存中会白白浪费着色器构建时间、包大小和管线创建时间。</p>
+<p>实际后果是：<strong>设置已编译移除的效果的控制台变量看似成功，但实际上不会渲染任何内容</strong>。</p>
 <table>
 <thead>
 <tr>
-<th>Effect</th>
-<th>Console variable</th>
-<th>Default build</th>
-<th>Page</th>
+<th>效果</th>
+<th>控制台变量</th>
+<th>默认构建</th>
+<th>页面</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Reflections</td>
+<td>反射</td>
 <td><code>r.RayTracing.Reflections</code></td>
-<td>Available</td>
-<td><a href="../RT-Reflections/">RT Reflections</a></td>
+<td>可用</td>
+<td><a href="../RT-Reflections/">RT 反射</a></td>
 </tr>
 <tr>
-<td>Shadows</td>
+<td>阴影</td>
 <td><code>r.RayTracing.Shadows</code></td>
-<td>Available</td>
-<td><a href="../RT-Shadows-And-Ambient-Occlusion/">RT Shadows and AO</a></td>
+<td>可用</td>
+<td><a href="../RT-Shadows-And-Ambient-Occlusion/">RT 阴影和 AO</a></td>
 </tr>
 <tr>
-<td>Ambient occlusion</td>
+<td>环境光遮蔽</td>
 <td><code>r.RayTracing.AmbientOcclusion</code></td>
-<td>Available</td>
-<td><a href="../RT-Shadows-And-Ambient-Occlusion/">RT Shadows and AO</a></td>
+<td>可用</td>
+<td><a href="../RT-Shadows-And-Ambient-Occlusion/">RT 阴影和 AO</a></td>
 </tr>
 <tr>
-<td>Sky light</td>
+<td>天空光</td>
 <td><code>r.RayTracing.SkyLight</code></td>
-<td>Available</td>
-<td>This page</td>
+<td>可用</td>
+<td>此页面</td>
 </tr>
 <tr>
-<td>Translucency</td>
+<td>半透明</td>
 <td><code>r.RayTracing.Translucency</code></td>
-<td>Compiled out</td>
-<td><a href="../RT-Translucency-And-Caustics/">RT Translucency and Caustics</a></td>
+<td>已编译</td>
+<td><a href="../RT-Translucency-And-Caustics/">RT 半透明和焦散</a></td>
 </tr>
 <tr>
-<td>Mesh caustics</td>
+<td>网格焦散</td>
 <td><code>r.RayTracing.MeshCaustics.Enable</code></td>
-<td>Compiled out</td>
-<td><a href="../RT-Translucency-And-Caustics/">RT Translucency and Caustics</a></td>
+<td>已编译</td>
+<td><a href="../RT-Translucency-And-Caustics/">RT 半透明和焦散</a></td>
 </tr>
 <tr>
-<td>Water caustics</td>
+<td>水焦散</td>
 <td><code>r.RayTracing.WaterCaustics.Type</code></td>
-<td>Compiled out</td>
-<td><a href="../RT-Translucency-And-Caustics/">RT Translucency and Caustics</a></td>
+<td>已编译</td>
+<td><a href="../RT-Translucency-And-Caustics/">RT 半透明和焦散</a></td>
 </tr>
 <tr>
-<td>Sampled direct lighting (RTXDI)</td>
+<td>采样直接光照 (RTXDI)</td>
 <td><code>r.RayTracing.SampledDirectLighting</code></td>
-<td>Compiled out</td>
+<td>已编译</td>
 <td><a href="../RTXDI/">RTXDI</a></td>
 </tr>
 <tr>
-<td>Per-pixel global illumination</td>
+<td>逐像素全局光照</td>
 <td><code>r.RayTracing.GlobalIllumination</code></td>
-<td>Compiled out</td>
-<td>This page</td>
+<td>已编译</td>
+<td>本页</td>
 </tr>
 <tr>
-<td>Reflection captures and probes</td>
+<td>反射捕捉和探测</td>
 <td><code>r.RayTracing.Reflections.RayTraceEnvironmentCaptures</code></td>
-<td>Compiled out</td>
-<td><a href="../RT-Reflections/">RT Reflections</a></td>
+<td>已编译</td>
+<td><a href="../RT-Reflections/">RT 反射</a></td>
 </tr>
 <tr>
-<td>Path tracing</td>
+<td>路径追踪</td>
 <td><code>r.PathTracing</code></td>
-<td>Compiled out</td>
-<td><a href="../Path-Tracing/">Path Tracing</a></td>
+<td>已编译</td>
+<td><a href="../Path-Tracing/">路径追踪</a></td>
 </tr>
 </tbody>
 </table>
-<p>To use anything in the compiled-out set, rebuild with <code>VITE_RT_PSO_DEBLOAT=0</code>. See
-<a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a>.</p>
-<p>Reflections have one further caveat even when available: the debloat switch forces the sorted deferred
-reflection algorithm and compiles out the older non-deferred path.</p>
-<p>Dynamic DDGI is a separate system, enabled through <code>r.GlobalIllumination.ExperimentalPlugin</code> rather than the
-<code>r.RayTracing.*</code> group, and is <strong>not</strong> affected by the debloat switch. See
-<a href="../DDGI-Dynamic/">Dynamic DDGI</a>.</p>
-<p>This is the rendering stack Black Myth: Wukong shipped on.</p>
-<p><a href="https://www.youtube.com/watch?v=A5boaueGopg"><img alt="Black Myth: Wukong ray tracing comparison" src="https://img.youtube.com/vi/A5boaueGopg/0.jpg" /></a></p>
-<h2 id="enabling-and-disabling">Enabling and disabling</h2>
-<p>From code:</p>
+<p>要使用编译输出集中的任何内容，请使用 <code>VITE_RT_PSO_DEBLOAT=0</code> 重新构建。请参阅<a href="../../Performance/Compile-Time-Switches/">编译时开关</a>。</p>
+<p>即使反射可用，也存在一个额外的注意事项：debloat 开关会强制使用排序延迟反射算法，并编译掉旧的非延迟路径。</p>
+<p>动态 DDGI 是一个独立的系统，它通过 <code>r.GlobalIllumination.ExperimentalPlugin</code> 而不是 <code>r.RayTracing.*</code> 组启用，并且<strong>不受</strong> debloat 开关的影响。请参阅<a href="../DDGI-Dynamic/">动态 DDGI</a>。这是《黑神话：悟空》所用的渲染堆栈。
+<a href="https://www.youtube.com/watch?v=A5boaueGopg"><img alt="《黑神话：悟空》光线追踪对比" src="https://img.youtube.com/vi/A5boaueGopg/0.jpg" /></a></p>
+<h2 id="_3">启用和禁用</h2>
+<p>来自代码：</p>
 <div class="highlight"><pre><span></span><code><span class="n">IConsoleManager</span><span class="o">::</span><span class="n">Get</span><span class="p">().</span><span class="n">FindConsoleVariable</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.RayTracing.AmbientOcclusion&quot;</span><span class="p">))</span><span class="o">-&gt;</span><span class="n">Set</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
 <span class="n">IConsoleManager</span><span class="o">::</span><span class="n">Get</span><span class="p">().</span><span class="n">FindConsoleVariable</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.RayTracing.Reflections&quot;</span><span class="p">))</span><span class="o">-&gt;</span><span class="n">Set</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
 <span class="n">IConsoleManager</span><span class="o">::</span><span class="n">Get</span><span class="p">().</span><span class="n">FindConsoleVariable</span><span class="p">(</span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.RayTracing.Shadows&quot;</span><span class="p">))</span><span class="o">-&gt;</span><span class="n">Set</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
 </code></pre></div>
-<p>From configuration, which is what shipping projects should use:</p>
+<p>从配置方面来说，这是项目交付时应该使用的：</p>
 <div class="highlight"><pre><span></span><code><span class="c1">; Config/DefaultEngine.ini</span>
 <span class="k">[/Script/Engine.RendererSettings]</span>
 <span class="na">r.RayTracing.Reflections</span><span class="o">=</span><span class="s">1</span>
@@ -240,100 +222,93 @@ reflection algorithm and compiles out the older non-deferred path.</p>
 <span class="na">r.RayTracing.AmbientOcclusion</span><span class="o">=</span><span class="s">0</span>
 <span class="na">r.RayTracing.Translucency</span><span class="o">=</span><span class="s">0</span>
 </code></pre></div>
-<p><code>r.RayTracing.ForceAllRayTracingEffects 1</code> turns everything on at once. Treat it as a diagnostic &mdash; a
-way to see the ceiling and to audit which effects a scene responds to &mdash; not as a shipping setting.
-<code>r.RayTracing.ForceAllRayTracingEffects 0</code> forces everything off, which is the fastest way to establish how
-much of your frame time ray tracing accounts for.</p>
-<h2 id="culling-and-cost-control">Culling and cost control</h2>
-<p>Ray tracing cost scales with how much geometry is in the acceleration structure, so culling is the first
-lever to reach for before reducing effect quality.</p>
+<p><code>r.RayTracing.ForceAllRayTracingEffects 1</code> 会一次性启用所有光线追踪效果。请将其视为诊断工具——用于查看光线追踪效果的上限并审核场景对哪些效果做出响应——而不是最终的发布设置。<code>r.RayTracing.ForceAllRayTracingEffects 0</code> 会强制关闭所有光线追踪效果，这是确定光线追踪占用帧时间比例的最快方法。</p>
+<h2 id="_4">剔除和成本控制</h2>
+<p>光线追踪的成本与加速结构中的几何体数量成正比，因此在降低效果质量之前，剔除是首先应该考虑的因素。</p>
 <div class="highlight"><pre><span></span><code><span class="n">GEngine</span><span class="o">-&gt;</span><span class="n">Exec</span><span class="p">(</span><span class="k">nullptr</span><span class="p">,</span><span class="w"> </span><span class="n">TEXT</span><span class="p">(</span><span class="s">&quot;r.RayTracing.Culling.UseMinDrawDistance 1&quot;</span><span class="p">));</span>
 </code></pre></div>
-<p>This makes ray tracing culling respect each primitive's minimum draw distance, which is a cheap and
-generally safe win in scenes with a lot of small detail meshes.</p>
-<p>Beyond culling, the standard levers in rough order of effectiveness:</p>
+<p>这使得光线追踪剔除能够遵循每个图元的最小绘制距离，这在包含大量细小网格的场景中是一个成本低廉且通常安全的改进。</p>
+<p>除了剔除之外，以下是一些常用的优化方法，大致按有效性排序：</p>
 <ol>
-<li>Reduce the number of effects enabled. Turning an effect off is always cheaper than optimising it.</li>
-<li>Reduce effect resolution &mdash; most effects support half or quarter resolution buffers.</li>
-<li>Reduce sample counts and maximum bounce depth.</li>
-<li>Reduce the geometry that participates in ray tracing, per-primitive.</li>
+<li>减少启用的效果数量。关闭效果的成本总是比优化效果的成本更低。</li>
+<li>降低效果分辨率——大多数效果都支持半分辨率或四分之一分辨率的缓冲区。</li>
+<li>减少采样数和最大反弹深度。</li>
+<li>减少每个图元参与光线追踪的几何体数量。</li>
 </ol>
-<h2 id="amd-hardware">AMD hardware</h2>
-<p>Vite integrates AMD GPUOpen RT optimizations and a number of custom AMD RDNA specific GPU optimizations targeted at
-consoles. Ray tracing performance on RDNA2 hardware is a first-class concern rather than an afterthought,
-which follows directly from the PS5-class performance targets. </p>
-<h3 id="rdna-based-console-and-handheld-hardware"><strong>RDNA-based Console and Handheld Hardware</strong></h3>
+<h2 id="amd">AMD 硬件</h2>
+<p>Vite 集成了 AMD GPUOpen RT 优化以及多项针对游戏主机的 AMD RDNA 定制 GPU 优化。RDNA2 硬件上的光线追踪性能是首要考虑因素，而非事后考虑，这直接源于 PS5 级别的性能目标。</p>
+<h3 id="rdna"><strong>基于 RDNA 的主机和掌机硬件</strong></h3>
 <table>
 <thead>
 <tr>
-<th>Hardware</th>
-<th style="text-align: right;">GPU architecture</th>
-<th>GPU configuration</th>
+<th>硬件</th>
+<th style="text-align: right;">GPU 架构</th>
+<th>GPU 配置</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>PlayStation 5</td>
-<td style="text-align: right;">RDNA 2–based custom GPU</td>
-<td>36 CUs, up to 10.28 TFLOPS</td>
+<td style="text-align: right;">基于 RDNA 2 架构的定制 GPU</td>
+<td>36 个计算单元 (CU)，最高可达 10.28 TFLOPS</td>
 </tr>
 <tr>
 <td>PlayStation 5 Pro</td>
-<td style="text-align: right;">RDNA-based custom GPU*</td>
-<td>60 CUs, 16.7 TFLOPS</td>
+<td style="text-align: right;">基于 RDNA 架构的定制 GPU*</td>
+<td>60 个计算单元 (CU)，16.7 TFLOPS</td>
 </tr>
 <tr>
 <td>Xbox Series X</td>
 <td style="text-align: right;">RDNA 2</td>
-<td>52 CUs, 12 TFLOPS</td>
+<td>52 个计算单元 (CU)，12 TFLOPS</td>
 </tr>
 <tr>
 <td>Xbox Series S</td>
 <td style="text-align: right;">RDNA 2</td>
-<td>20 CUs, 4 TFLOPS</td>
+<td>20 个计算单元 (CU)，4 TFLOPS</td>
 </tr>
 <tr>
 <td>Steam Deck / Steam Deck OLED</td>
 <td style="text-align: right;">RDNA 2</td>
-<td>8 CUs, up to 1.6 GHz</td>
+<td>8 个计算单元 (CU)，最高可达 1.6 GHz</td>
 </tr>
 <tr>
 <td>ASUS ROG Ally</td>
 <td style="text-align: right;">RDNA 3</td>
-<td>Z1: 4 CUs; Z1 Extreme: 12 CUs</td>
+<td>Z1：4 个计算单元 (CU)； Z1 Extreme：12 个计算单元 (CU)</td>
 </tr>
 <tr>
 <td>ASUS ROG Ally X</td>
 <td style="text-align: right;">RDNA 3</td>
-<td>12 CUs (Ryzen Z1 Extreme)</td>
+<td>12 个计算单元 (CU)（Ryzen Z1 Extreme）</td>
 </tr>
 <tr>
 <td>ROG Xbox Ally</td>
 <td style="text-align: right;">RDNA 3</td>
-<td>8 CUs (Ryzen Z2 A)</td>
+<td>8 个计算单元 (CU)（Ryzen Z2 A）</td>
 </tr>
 <tr>
 <td>ROG Xbox Ally X</td>
 <td style="text-align: right;">RDNA 3.5</td>
-<td>16 CUs (Ryzen AI Z2 Extreme)</td>
+<td>16 个计算单元 (CU)（Ryzen AI Z2 Extreme）</td>
 </tr>
 <tr>
 <td>Valve Steam Machine (2026)</td>
 <td style="text-align: right;">RDNA 3</td>
-<td>Semi-custom GPU, 28 CUs, up to 2.45 GHz</td>
+<td>半定制 GPU，28 个计算单元 (CU)，最高频率可达 2.45 GHz</td>
 </tr>
 </tbody>
 </table>
-<p>*Sony officially labels the PS5 Pro GPU as “AMD Radeon RDNA-based”; it includes features beyond PC RDNA 3.5 Spec, inherting very specific tech from RDNA4.</p>
-<h3 id="major-android-flagship-samsung-galaxy-with-exynos-xclipse-gpus"><strong>Major Android Flagship; Samsung Galaxy with Exynos Xclipse GPUs</strong></h3>
+<p>*索尼官方将 PS5 Pro 的 GPU 称为“基于 AMD Radeon RDNA 的架构”；它包含超出 PC RDNA 3.5 规范的功能，继承了 RDNA4 的一些非常具体的技术。</p>
+<h3 id="galaxy-exynos-xclipse-gpu"><strong>安卓旗舰机型；三星 Galaxy 搭载 Exynos Xclipse GPU</strong></h3>
 <table>
 <thead>
 <tr>
-<th>Galaxy phone</th>
+<th>Galaxy 手机</th>
 <th>SoC</th>
 <th>Xclipse GPU</th>
-<th>RDNA architecture</th>
-<th>Availability</th>
+<th>RDNA 架构</th>
+<th>上市信息</th>
 </tr>
 </thead>
 <tbody>
@@ -342,116 +317,103 @@ which follows directly from the PS5-class performance targets. </p>
 <td>Exynos 2200</td>
 <td>Xclipse 920</td>
 <td>RDNA 2</td>
-<td>Selected regions</td>
+<td>部分地区</td>
 </tr>
 <tr>
 <td>Galaxy S22+</td>
 <td>Exynos 2200</td>
 <td>Xclipse 920</td>
 <td>RDNA 2</td>
-<td>Selected regions</td>
+<td>部分地区</td>
 </tr>
 <tr>
 <td>Galaxy S22 Ultra</td>
 <td>Exynos 2200</td>
 <td>Xclipse 920</td>
 <td>RDNA 2</td>
-<td>Selected regions</td>
+<td>部分地区</td>
 </tr>
 <tr>
 <td>Galaxy S23 FE</td>
 <td>Exynos 2200</td>
 <td>Xclipse 920</td>
 <td>RDNA 2</td>
-<td>Selected regions</td>
+<td>部分地区</td>
 </tr>
 <tr>
 <td>Galaxy S24</td>
 <td>Exynos 2400</td>
 <td>Xclipse 940</td>
 <td>RDNA 3</td>
-<td>Selected regions</td>
+<td>部分地区</td>
 </tr>
 <tr>
 <td>Galaxy S24+</td>
 <td>Exynos 2400</td>
 <td>Xclipse 940</td>
 <td>RDNA 3</td>
-<td>Selected regions</td>
+<td>部分地区</td>
 </tr>
 <tr>
 <td>Galaxy S24 FE</td>
 <td>Exynos 2400e</td>
 <td>Xclipse 940</td>
 <td>RDNA 3</td>
-<td>Global</td>
+<td>全球</td>
 </tr>
 <tr>
 <td>Galaxy Z Flip7</td>
 <td>Exynos 2500</td>
 <td>Xclipse 950</td>
-<td>RDNA 3–based</td>
-<td>Global</td>
+<td>基于 RDNA 3 架构</td>
+<td>全球</td>
 </tr>
 <tr>
 <td>Galaxy S25 FE</td>
 <td>Exynos 2400</td>
 <td>Xclipse 940</td>
 <td>RDNA 3</td>
-<td>Global</td>
+<td>全球</td>
 </tr>
 <tr>
 <td>Galaxy S26</td>
 <td>Exynos 2600</td>
 <td>Xclipse 960</td>
-<td>New Samsung architecture*</td>
-<td>Selected regions</td>
+<td>三星全新架构*</td>
+<td>部分地区</td>
 </tr>
 <tr>
 <td>Galaxy S26+</td>
 <td>Exynos 2600</td>
 <td>Xclipse 960</td>
-<td>New Samsung architecture*</td>
-<td>Selected regions</td>
+<td>三星全新架构*</td>
+<td>部分地区</td>
 </tr>
 </tbody>
 </table>
-<p>*Samsung describes the Xclipse 960 as a new architecture, rather than assigning it a public AMD RDNA version.</p>
-<p><em>Stock Vite </em><em>DOES NOT</em>* support Ray Tracing on Android, but this is a reference for future Vite Major Releases, 
-current optimizations are applicable to any Future Rendering path.</p>
-<h2 id="per-pixel-ray-traced-gi">Per-pixel ray-traced GI</h2>
-<p><note>
-Compiled out in a default build. Requires <code>VITE_RT_PSO_DEBLOAT=0</code>. See
-<a href="../Performance/Compile-Time-Switches.md">Compile-Time Switches</a>.
-</note></p>
-<p>Distinct from DDGI, Vite retains the per-pixel ray-traced GI path including the NvRTX ReStir GI improvements:
-a new SVGF-based denoiser, a reservoir-resampling final gather, emissive material support, quarter- and
-eighth-resolution modes, metallic material support and spherical harmonics for improved normal detail.</p>
-<p>It produces excellent reference imagery. It is also considerably more expensive than DDGI and reintroduces
-a denoising and temporal stability problems; DDGI exists to avoid. That trade is precisely why the debloat
-switch removes it by default. This Per Pixel RT GI Solution is higher Fidelity than HWRT Lumen, also somewhat more costly.</p>
-<p>Key controls, if you do use it:</p>
+<p>*三星将 Xclipse 960 描述为一种全新的架构，而非为其分配一个公开的 AMD RDNA 版本号。</p>
+<p><em>原生 Vite 在 Android 系统上</em><em>不</em>*支持光线追踪，但此信息仅供未来 Vite 主要版本参考，当前的优化适用于任何未来的渲染路径。</p>
+<h2 id="gi">逐像素光线追踪全局光照 (GI)</h2>
+<p><strong>注意：</strong> 默认编译时已移除。需要 <code>VITE_RT_PSO_DEBLOAT=0</code>。请参阅<a href="../../Performance/Compile-Time-Switches/">编译时开关</a>。</p>
+<p>与 DDGI 不同，Vite 保留了逐像素光线追踪全局光照路径，并包含 NvRTX ReStir GI 的改进：新的基于 SVGF 的降噪器、储层重采样最终聚集、自发光材质支持、四分之一和八分之一分辨率模式、金属材质支持以及用于改善法线细节的球谐函数。</p>
+<p>它能生成出色的参考图像。但它的计算成本也远高于 DDGI，并且重新引入了降噪和时间稳定性问题；DDGI 的存在正是为了避免这些问题。正是由于这种权衡，精简开关默认会将其移除。这种逐像素光线追踪全局光照解决方案比 HWRT Lumen 具有更高的保真度，但成本也略高一些。</p>
+<p>如果您使用此功能，以下是一些关键控制项：</p>
 <ul>
-<li><code>r.RayTracing.GlobalIllumination.FinalGather.UseReservoirResampling 0/1</code> &mdash; toggles the new final
-  gather sampler, which significantly reduces sampler noise and produces a much more stable result before
-  denoising, allowing lower samples per pixel.</li>
-<li><code>r.DiffuseIndirect.Denoiser 2</code> &mdash; selects the new SVGF denoiser.</li>
-<li><code>r.RayTracing.GlobalIllumination.EvalSkyLight 0/1</code> &mdash; includes skylight contribution. The skylight
-  actor's <strong>Affect Global Illumination</strong> flag must also be set.</li>
-<li><code>r.DiffuseIndirect.ApplyAO</code> &mdash; applies AO to the indirect lighting result. Significantly increases
-  lighting detail and is strongly recommended when this path is in use.</li>
+<li><code>r.RayTracing.GlobalIllumination.FinalGather.UseReservoirResampling 0/1</code> — 切换新的最终聚集采样器，该采样器可显著降低采样噪声，并在降噪前产生更稳定的结果，从而允许更低的每像素采样数。</li>
+<li><code>r.DiffuseIndirect.Denoiser 2</code> — 选择新的 SVGF 降噪器。</li>
+<li><code>r.RayTracing.GlobalIllumination.EvalSkyLight 0/1</code> — 包含天空光贡献。天空光 Actor 的<strong>影响全局光照</strong>标志也必须设置。</li>
+<li><code>r.DiffuseIndirect.ApplyAO</code> — 将环境光遮蔽 (AO) 应用于间接光照结果。显著增强光照细节，强烈建议在使用此路径时启用此功能。 </li>
 </ul>
-<p>In typical use, 4 samples per pixel with <code>r.RayTracing.GlobalIllumination.ScreenPercentage</code> at 12.5 produces
-a reasonable result.</p>
-<h2 id="see-also">See also</h2>
+<p>通常情况下，每个像素采样 4 次，<code>r.RayTracing.GlobalIllumination.ScreenPercentage</code> 设置为 12.5 可产生合理的结果。</p>
+<h2 id="_5">另请参阅</h2>
 <ul>
-<li><a href="../Global-Illumination/">Global Illumination</a></li>
-<li><a href="../RT-Reflections/">RT Reflections</a></li>
-<li><a href="../RT-Shadows-And-Ambient-Occlusion/">RT Shadows and Ambient Occlusion</a></li>
-<li><a href="../RT-Translucency-And-Caustics/">RT Translucency and Caustics</a></li>
+<li><a href="../Global-Illumination/">全局光照</a></li>
+<li><a href="../RT-Reflections/">RT 反射</a></li>
+<li><a href="../RT-Shadows-And-Ambient-Occlusion/">RT 阴影和环境光遮蔽</a></li>
+<li><a href="../RT-Translucency-And-Caustics/">RT 半透明和焦散</a></li>
 <li><a href="../RTXDI/">RTXDI</a></li>
-<li><a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a></li>
-<li><a href="../../Reference/Console-Variables/">Console Variable Reference</a></li>
+<li><a href="../../Performance/Compile-Time-Switches/">编译时开关</a></li>
+<li><a href="../../Reference/Console-Variables/">控制台变量参考</a></li>
 </ul>
               
             </div>
