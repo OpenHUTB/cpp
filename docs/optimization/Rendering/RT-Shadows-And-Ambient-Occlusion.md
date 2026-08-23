@@ -1,80 +1,62 @@
-# Ray-Traced Shadows and Ambient Occlusion
+# 光线追踪阴影和环境光遮蔽
 
-<tldr>
-<p>
-<code>r.RayTracing.Shadows 1</code> and <code>r.RayTracing.AmbientOcclusion 1</code>. Both are enabled by
-default in new Vite projects. Both are typically the first things to turn off when a project needs frame
-time, because cheaper alternatives get close for much less.
-</p>
-</tldr>
 
-These two effects are grouped together because they share a cost profile, a set of tuning controls, and a
-recommendation: enable them when your target has room, disable them first when it does not.
+`r.RayTracing.Shadows 1` 和 `r.RayTracing.AmbientOcclusion 1` 在新建的 Vite 项目中默认启用。当项目需要占用大量帧时间时，通常首先应该关闭这两个选项，因为更经济的替代方案可以达到类似的效果。
 
-## Ray-traced shadows
+这两个特效被归为一类，是因为它们共享相同的开销、一组调整控件以及一个建议：在目标帧时间允许的情况下启用它们，在帧时间不足时首先禁用它们。
 
-Ray-traced shadows replace shadow map sampling with rays traced from the shaded point toward each light.
-The benefits are correct contact hardening, accurate soft shadows from area lights, and no shadow map
-resolution artefacts, peter-panning or cascade transitions.
 
-The costs are real. Every light casting ray-traced shadows adds rays per pixel, so cost scales with light
-count in a way shadow maps do not. Shadow maps amortise across the frame; ray-traced shadows do not.
+## 光线追踪阴影
 
-### Tuning
+光线追踪阴影使用从阴影点向每个光源追踪的光线来代替阴影贴图采样。其优点是：正确的接触硬化、来自区域光的精确柔和阴影，以及避免阴影贴图分辨率伪影、彼得潘效应或级联过渡。
 
-**Sample count per light.** The dominant quality and cost control. Low counts are noisy and lean on the
-denoiser; high counts are expensive.
+开销是实实在在的。每个投射光线追踪阴影的光源都会增加每个像素的光线数量，因此开销会随着光源数量的增加而增加，而阴影贴图则不会。阴影贴图的开销会在整帧内摊销；光线追踪阴影则不会。
 
-**Light source radius.** Larger radii produce softer shadows and need more samples to resolve cleanly. A
-scene tuned for sharp shadows can use far fewer samples.
 
-**Per-light opt-in.** Rather than enabling ray-traced shadows globally, enable them on the lights where the
-difference is visible &mdash; usually the key light and any large area light &mdash; and leave fill lights
-on shadow maps. This is by far the most effective optimisation available and it is frequently overlooked.
+### 调整
 
-**Maximum distance.** Bounding shadow ray distance limits cost in large scenes.
+**每个光源的采样数。** 这是控制质量和成本的主要因素。采样数过低会导致噪点过多，需要依赖降噪器；采样数过高则会增加成本。
 
-Vite includes rendering optimisations specifically targeting RT shadows and RT direct lighting, and further
-performance work on RTAO and RT shadows is in progress. See [Release Notes](../EngineOverview/Release-Notes.md).
+**光源半径。** 较大的半径会产生更柔和的阴影，需要更多采样才能清晰地解析。针对锐利阴影进行优化的场景可以使用更少的采样。
 
-## Ray-traced ambient occlusion
+**单光源选择性启用。** 与其全局启用光线追踪阴影，不如在效果明显可见的光源上启用（通常是主光源和任何大面积光源），并将辅助光源的阴影贴图保留。这是目前最有效的优化方法，但经常被忽略。
 
-RTAO traces short rays into the hemisphere around each shaded point to determine how occluded it is. Unlike
-screen-space AO it accounts for geometry that is off-screen or occluded, so it does not exhibit the halo and
-disocclusion artefacts SSAO produces under camera motion.
+**最大距离。** 限制阴影光线距离可以降低大型场景的渲染成本。
 
-### Tuning
+Vite 包含专门针对光线追踪阴影和光线追踪直接光照的渲染优化，并且正在对实时环境光遮蔽 (RTAO) 和光线追踪阴影进行进一步的性能优化。请参阅[发行说明](../EngineOverview/Release-Notes.md)。
 
-**Radius.** How far occlusion rays travel. This is an art direction control as much as a performance one
-&mdash; small radii give tight contact darkening, large radii give broad ambient shaping and cost more.
 
-**Samples per pixel.** Quality against cost, mediated by the denoiser.
+## 光线追踪环境光遮蔽
 
-**Intensity.** Post-process strength. Cheap to change and worth exhausting before increasing sample counts.
+光线追踪环境光遮蔽（Ray-traced ambient occlusion, RTAO）会在每个阴影点周围的半球内追踪短光线，以确定其遮蔽程度。与屏幕空间环境光遮蔽 (SSAO) 不同，RTAO 会考虑屏幕外或被遮挡的几何体，因此不会像 SSAO 那样在摄像机运动时产生光晕和遮挡伪影。
 
-**Resolution.** Half-resolution RTAO is often visually indistinguishable and substantially cheaper.
+### 调整
 
-## The cheaper alternatives
+**半径。** 遮挡光线的传播距离。这既是美术指导的控制项，也是性能控制项——较小的半径会产生紧密的局部暗化效果，较大的半径会产生宽广的环境光塑形效果，但成本更高。
 
-Before committing frame time to either effect, know what you are buying relative to the alternatives.
+**每像素采样数。** 质量与成本之间的平衡，由降噪器调节。
 
-| Effect | Alternative | Trade-off |
+**强度。** 后期处理的强度。调整起来成本低，值得在增加采样数之前先尝试调整强度。
+
+**分辨率。** 半分辨率 RTAO 在视觉上通常难以区分，而且成本要低得多。
+
+## 成本更低的替代方案
+
+在投入时间使用任何一种效果器之前，请先了解你所购买的产品相对于其他替代方案的优势。
+
+| 效果 | 替代方案 | 权衡 |
 |---|---|---|
-| RT shadows | Cascaded shadow maps | Much cheaper. Resolution artefacts, no correct contact hardening, cascade transitions. |
-| RT shadows | Distance field shadows | Cheap soft shadows. Approximate, needs mesh distance fields. |
-| RTAO | [SSAO fast path](./Ambient-Occlusion.md) | Dramatically cheaper. Screen-space artefacts. Vite's implementation is significantly optimised. |
-| RTAO | [HBAO+](./Ambient-Occlusion.md) | Higher quality than SSAO at moderate cost. DirectX 11 only. |
+| RT 阴影 | 级联阴影贴图 | 成本更低。分辨率伪影，接触硬化不正确，级联过渡不平滑。 |
+| RT 阴影 | 距离场阴影 | 低成本的软阴影。效果近似，需要网格距离场。 |
+| RTAO | [SSAO 快速路径](./Ambient-Occlusion.md) | 成本大幅降低。屏幕空间伪影。Vite 的实现经过显著优化。 |
+| RTAO | [HBAO+](./Ambient-Occlusion.md) | 比 SSAO 质量更高，成本适中。仅支持 DirectX 11。 |
 
-In practice, most Vite projects targeting 60 FPS or above run cascaded shadow maps and either the SSAO fast
-path or HBAO+, and spend the ray tracing budget on [DDGI](./DDGI-Dynamic.md) and
-[reflections](./RT-Reflections.md) instead. Only the 1440p30 "Fidelity, full RT" target in
-[Performance Targets](../EngineOverview/Performance-Targets.md) enables both RT shadows and RTAO.
+实际上，大多数以 60 FPS 或更高帧率为目标的 Vite 项目都会运行级联阴影贴图，并选择 SSAO 快速路径或 HBAO+，而将光线追踪预算用于 [DDGI](./DDGI-Dynamic.md) 和[反射](./RT-Reflections.md)。只有[性能目标](../EngineOverview/Performance-Targets.md)中的 1440p30“高保真，全 RT”目标才会同时启用 RT 阴影和 RTAO。
 
-Note that Vite's SSAO has both a fast path and a memory-access optimisation. It is much cheaper than the
-stock 4.27 implementation, which shifts the calculus further away from RTAO than you might expect from
-experience with other engines.
+请注意，Vite 的 SSAO 同时具有快速路径和内存访问优化。它比 4.27 版本的默认实现成本低得多，这使得它与 RTAO 的计算方式之间的差异比您根据其他引擎的经验所预期的要大。
 
-## Disabling
+
+## 禁用
 
 ```ini
 ; Config/DefaultEngine.ini
@@ -83,12 +65,11 @@ r.RayTracing.Shadows=0
 r.RayTracing.AmbientOcclusion=0
 ```
 
-Measure with `stat gpu` before and after. In a scene with many shadow-casting lights, RT shadows are
-frequently the single largest ray tracing cost in the frame, ahead of reflections.
+使用 `stat gpu` 命令测量前后的性能。在包含大量投射阴影的光源的场景中，RT 阴影通常是帧中光线追踪性能消耗最大的部分，甚至超过反射。
 
-## See also
+## 另请参阅
 
-- [Ray Tracing](./Ray-Tracing.md)
-- [Ambient Occlusion](./Ambient-Occlusion.md)
+- [光线追踪](./Ray-Tracing.md)
+- [环境光遮蔽](./Ambient-Occlusion.md)
 - [RTXDI](./RTXDI.md)
-- [Performance Targets](../EngineOverview/Performance-Targets.md)
+- [性能目标](../EngineOverview/Performance-Targets.md)
