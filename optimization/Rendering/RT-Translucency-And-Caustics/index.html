@@ -121,373 +121,329 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="_1">光线追踪半透明和焦散</h1>
-<p><tldr></p>
-<p>
-Hybrid translucency lets rasterised and ray-traced translucency coexist. <code>r.RayTracing.Translucency 3</code>
-plus absorption is the recommended high-quality setup. Mesh and water caustics are separate systems
-enabled with <code>r.RayTracing.MeshCaustics.Enable</code> and <code>r.RayTracing.WaterCaustics.Type</code>.
-</p>
-<p></tldr></p>
-<p>These features come from NVIDIA's NvRTX 4.27 Caustics branch, which is Vite's base. They are the most
-parameter-heavy part of the renderer, so this page is structured as a reference rather than a narrative.</p>
-<p><warning>
-<b>Everything on this page is compiled out in a default build.</b> Ray-traced translucency, mesh caustics
-and water caustics all have their shader permutations removed when <code>VITE_RT_PSO_DEBLOAT</code> is
-<code>1</code>, which is the default. Their console variables will set successfully and render nothing.</p>
-<p>
-Rebuild with <code>VITE_RT_PSO_DEBLOAT=0</code> to use them. See
-<a href="../Performance/Compile-Time-Switches.md">Compile-Time Switches</a>.
-</p>
-<p></warning></p>
-<p>These are the most expensive effects in the ray tracing suite, and none of them fit inside Vite's
-<a href="../../EngineOverview/Performance-Targets/">performance targets</a> at 4K. They are documented here because the NvRTX lineage
-provides them and some projects will want them for cinematics, marketing captures or specific set pieces.</p>
-<blockquote>
-<p>All code and art assets of the RTX features inherited from the NvRTX Caustics branch are covered by the
-<a href="https://developer.nvidia.com/gameworks-source-sdk-eula">GameWorks license</a>.</p>
-<p>{style="note"}</p>
-</blockquote>
-<h2 id="translucency-modes">Translucency modes</h2>
-<p>Stock UE4 ray-traced translucency forces <em>all</em> translucency through the ray tracing pipeline, which makes
-unsupported primitive types such as Cascade particles disappear, and produces refraction behaviour that
-interacts unintuitively with content authored for rasterisation. Hybrid translucency solves this.</p>
+<p>混合半透明允许光栅化半透明和光线追踪半透明共存。推荐的高质量设置是 <code>r.RayTracing.Translucency 3</code> 加上吸收。网格焦散和水焦散是独立的系统，分别通过 <code>r.RayTracing.MeshCaustics.Enable</code> 和 <code>r.RayTracing.WaterCaustics.Type</code> 启用。</p>
+<p>这些特性源自 NVIDIA 的 NvRTX 4.27 焦散分支，Vite 正是基于此分支。它们是渲染器中参数最多的部分，因此本页以参考文档的形式呈现，而非叙述。</p>
+<p><strong>警告：</strong> 本页所有内容均在默认版本中编译完成。当 <code>VITE_RT_PSO_DEBLOAT</code> 设置为 1（默认值）时，光线追踪半透明、网格焦散和水焦散的着色器变体将被移除。它们的控制台变量将成功设置，但不会渲染任何内容。要使用这些特效，请使用 <code>VITE_RT_PSO_DEBLOAT=0</code> 重新编译。请参阅<a href="../../Performance/Compile-Time-Switches/">编译时开关</a>。</p>
+<p>这些是光线追踪套件中最耗费资源的特效，在 4K 分辨率下，它们都无法满足 Vite 的<a href="../../EngineOverview/Performance-Targets/">性能目标</a>。此处记录这些特效是因为 NvRTX 系列提供了这些特效，并且某些项目会在过场动画、宣传素材或特定场景中使用它们。</p>
+<p><strong>注意：</strong> 所有从 NvRTX Caustics 分支继承的 RTX 特性代码和美术资源均受 <a href="https://developer.nvidia.com/gameworks-source-sdk-eula">GameWorks 许可协议</a>保​​护。</p>
+<h2 id="_2">半透明模式</h2>
+<p>UE4 默认的光线追踪半透明效果会强制<strong>所有</strong>半透明效果都通过光线追踪管线实现，这会导致不支持的图元类型（例如级联粒子）消失，并且产生的折射行为与为光栅化而制作的内容交互起来不直观。混合半透明可以解决这个问题。</p>
 <table>
 <thead>
 <tr>
 <th><code>r.RayTracing.Translucency</code></th>
-<th>Mode</th>
+<th>模式</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>0</code></td>
-<td>Stock UE4 ray-traced translucency off</td>
+<td>UE4 原生光线追踪半透明关闭</td>
 </tr>
 <tr>
 <td><code>1</code></td>
-<td>Stock UE4 ray-traced translucency on</td>
+<td>UE4 原生光线追踪半透明开启</td>
 </tr>
 <tr>
 <td><code>2</code></td>
-<td>Hybrid Translucency 1 &mdash; ray-traced translucent reflection only</td>
+<td>混合半透明 1 — 仅光线追踪半透明反射</td>
 </tr>
 <tr>
 <td><code>3</code></td>
-<td>Hybrid Translucency 2 &mdash; ray-traced translucent reflection and refraction</td>
+<td>混合半透明 2 — 光线追踪半透明反射和折射</td>
 </tr>
 </tbody>
 </table>
-<p>Hybrid modes require the <strong>Hybrid Translucency</strong> checkbox in project settings, because they permute the base
-translucency shaders. The corresponding shader support switch is
-<code>r.RayTracing.HybridTranslucencySupport</code>.</p>
-<h3 id="mode-2-reflection-only">Mode 2 &mdash; reflection only</h3>
-<p>Traces several layers of translucency to an off-screen surface, then composites them as part of normal
-raster translucency. It loses order-independent transparency and refraction relative to full ray-traced
-translucency, but it is no worse than raster in those areas while delivering ray-traced reflections and
-shading.</p>
+<p>混合模式需要在项目设置中勾选<strong>混合半透明</strong>复选框，因为它们会改变基础半透明着色器。相应的着色器支持开关是 <code>r.RayTracing.HybridTranslucencySupport</code>。</p>
+<h3 id="2">模式 2 — 仅反射</h3>
+<p>将多层半透明效果追踪到屏幕外表面，然后将其合成为普通光栅半透明效果的一部分。与完全光线追踪的半透明效果相比，它会损失与顺序无关的透明度和折射效果，但在提供光线追踪反射和着色的同时，这些方面并不逊色于光栅模式。</p>
 <table>
 <thead>
 <tr>
-<th>Console variable</th>
-<th>Purpose</th>
+<th>控制台变量</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.RayTracing.Translucency.HybridLayers</code></td>
-<td>How many overlapping ray-traced translucency levels are tracked</td>
+<td>追踪多少个重叠的光线追踪半透明层</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.Translucency.HybridDepthThreshold</code></td>
-<td>World-space separation at which geometry counts as a different translucency layer. Too small and hybrid translucency will not appear, or z-fighting artefacts occur; too large and stacked layers incorrectly merge.</td>
+<td>几何体被视为不同半透明层的世界空间分离阈值。阈值过小，混合半透明效果将不会显示，或者会出现 Z 冲突伪影；阈值过大，堆叠的层会错误地合并。</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.Translucency.HalfRes</code></td>
-<td>0 full, 1 half vertically (interleaved), 2 half checkerboard (4-tap), 3 half checkerboard (2-tap vertical)</td>
+<td>0 全透明，1 垂直半透明（交错），2 半棋盘格（四点），3 半棋盘格（垂直两点）</td>
 </tr>
 </tbody>
 </table>
-<h3 id="mode-3-reflection-and-refraction">Mode 3 &mdash; reflection and refraction</h3>
-<p>Mixes raster and <em>fully</em> ray-traced translucency, including reflection, refraction and OIT support. Cascade
-particles can coexist with ray-traced translucency without losing its advantages. Order-independent
-transparency is automatic in this mode.</p>
-<p>This is the recommended mode for translucent meshes, used together with absorption.</p>
-<p>Recommended settings for best visual quality:</p>
+<h3 id="3">模式 3 — 反射和折射</h3>
+<p>混合了光栅化和<strong>完全</strong>光线追踪的半透明效果，包括反射、折射和 OIT 支持。级联粒子可以与光线追踪半透明效果共存，而不会损失其优势。此模式下，与顺序无关的透明度是自动的。</p>
+<p>这是半透明网格的推荐模式，建议与吸收效果结合使用。</p>
+<p>推荐设置以获得最佳视觉效果：</p>
 <div class="highlight"><pre><span></span><code>r.RayTracing.Translucency.Refraction 1
 r.RayTracing.Translucency.HybridLayers 5
 r.RayTracing.Translucency.MaxRefractionRays 5
 </code></pre></div>
-<p>In 4.27, when RT refraction is enabled under mode 3, per-material IOR is bound to the PBR-based refraction
-index input; the material's Refraction Mode input must be set to <strong>Index Of Refraction</strong>.</p>
-<p>Mode 3 also lets you choose per-mesh whether a translucent static mesh participates in ray tracing at all.
-Meshes excluded from ray tracing render through rasterisation, which lets you mix ray-traced and rasterised
-translucency in the same scene and can improve performance by reducing ray tracing pipeline workload.</p>
-<p>Additional notes for mode 3:</p>
+<p>在 4.27 版本中，当在模式 3 下启用 RT 折射时，每个材质的折射率 (IOR) 将绑定到基于 PBR 的折射率输入；材质的“折射模式”输入必须设置为“折射率（Index Of Refraction）”。</p>
+<p>模式 3 还允许您为每个网格选择半透明静态网格是否参与光线追踪。不参与光线追踪的网格将通过光栅化渲染，这允许您在同一场景中混合使用光线追踪和光栅化的半透明效果，并通过减少光线追踪管线的工作负载来提高性能。</p>
+<p>模式 3 的补充说明：</p>
 <ul>
-<li><code>r.RayTracing.Translucency.HybridDepthThreshold</code> does not apply. Use
-  <code>r.RayTracing.Translucency.PrimaryRayBias</code> instead to bias depth when determining layer ordering.</li>
-<li>Cascade and Niagara emitters spawning opaque meshes may disappear when fully occluded by ray-traced
-  translucent meshes, because some particle types cannot generate the BVH data hardware ray tracing
-  requires. This is a known stock UE4 behaviour that hybrid mode 2 does not change.</li>
-<li>Half-resolution refraction is available via <code>r.RayTracing.Translucency.HalfRes</code>: 0 full, 1 half
-  checkerboard with weighted colour reconstruction, 2 half checkerboard interframe, 3 half checkerboard with
-  average colour reconstruction. These reconstruction techniques are intended for use under TAA and need
-  careful tuning under DLSS, which can amplify pixel-level reconstruction artefacts.</li>
+<li><code>r.RayTracing.Translucency.HybridDepthThreshold</code> 不适用。在确定图层顺序时，请使用 <code>r.RayTracing.Translucency.PrimaryRayBias</code> 来调整深度。</li>
+<li>当 Cascade 和 Niagara 发射器生成的不透明网格被光线追踪生成的半透明网格完全遮挡时，这些不透明网格可能会消失，因为某些粒子类型无法生成光线追踪硬件所需的 BVH 数据。这是 UE4 的一个已知特性，混合模式 2 不会改变这一点。</li>
+<li>半分辨率折射可通过 <code>r.RayTracing.Translucency.HalfRes</code> 实现：0 为全分辨率折射，1 为加权颜色重建的半棋盘格折射，2 为帧间半棋盘格折射，3 为平均颜色重建的半棋盘格折射。这些重建技术旨在用于 TAA 抗锯齿，在 DLSS 下需要仔细调整，因为 DLSS 会放大像素级重建伪影。 </li>
 </ul>
-<h2 id="translucent-absorption">Translucent absorption</h2>
-<p>With absorption enabled, thicker objects made of the same material appear less transparent, which is the
-physically correct behaviour and a large fidelity win on glass and liquids. Absorption is a per-material
-option, so objects with and without it render together.</p>
-<p><procedure title="Enable translucent absorption" id="enable-absorption">
-    <step>Ensure ray-traced translucency is enabled.</step>
-    <step>Set <code>r.RayTracing.Translucency.EnableAbsorption 1</code>, or check <b>Enable Absorption</b> in the post process volume.</step>
-    <step>In the material editor, check <b>Ray Traced Translucency Absorption</b> on each material that should use it.</step>
-</procedure></p>
-<p>Throughput culling reduces cost by discarding low-contribution ray paths:</p>
+<h2 id="_3">半透明吸收</h2>
+<p>启用吸收后，由相同材质制成的较厚物体看起来透明度较低，这符合物理规律，并且在玻璃和液体材质的渲染上能显著提升保真度。吸收是针对特定材质的选项，因此启用和禁用吸收的物体会同时渲染。</p>
+<h3 id="_4">启用半透明吸收</h3>
+<ol>
+<li>
+<p>确保已启用光线追踪半透明。</p>
+</li>
+<li>
+<p>将 <code>r.RayTracing.Translucency.EnableAbsorption</code> 设置为 1，或在后处理体积中选中<strong>启用吸收（Enable Absorption）</strong>。</p>
+</li>
+<li>
+<p>在材质编辑器中，为每个需要使用吸收的材质选中<strong>光线追踪半透明吸收（Ray Traced Translucency Absorption）</strong>。</p>
+</li>
+</ol>
+<p>吞吐量剔除通过丢弃低贡献度的光线路径来降低渲染成本：</p>
 <table>
 <thead>
 <tr>
-<th>Console variable</th>
-<th>Purpose</th>
+<th>控制台变量</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.RayTracing.Translucency.MinRefractionThroughput</code></td>
-<td>Higher values cull more refraction rays. May introduce artefacts.</td>
+<td>值越高，剔除的折射光线越多。可能会产生瑕疵。</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.Translucency.MinReflectionThroughput</code></td>
-<td>Higher values cull more reflection rays. May introduce artefacts.</td>
+<td>值越高，剔除的反射光线越多。可能会产生瑕疵。</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.PrimaryRays.AbsorptionForceShadingOnOpaqueObjects</code></td>
-<td>Set to 1 to eliminate double-shading artefacts on transparent reflections where actors occlude background.</td>
+<td>设置为 1 可消除 Actor 遮挡背景时透明反射产生的双重着色瑕疵。</td>
 </tr>
 </tbody>
 </table>
-<h2 id="depth-of-field-from-primary-rays">Depth of field from primary rays</h2>
-<p>Rasterised depth of field handles translucency poorly, particularly where Cascade particles intersect
-translucent glass. Ray tracing makes accurate cinematic DOF achievable.</p>
-<p><procedure title="Enable ray-traced depth of field" id="enable-rt-dof">
-    <step>Use a cine camera and apply depth of field as normal.</step>
-    <step>
-        Collect every translucent material in the camera frustum, including translucent particles. For each
-        root material, check <b>Output Translucency Depth</b> and ensure <b>Translucency Depth Opacity
-        Threshold</b> is lower than the material instance's opacity parameter.
-    </step>
-    <step>Set <code>r.RayTracing.PrimaryRays.IncludeDOF 1</code>.</step>
-</procedure></p>
-<p>Enhanced translucency mode 3, RT translucent reflection and refraction, and translucent absorption are all
-strongly recommended alongside RT DOF. DLSS is supported automatically.</p>
-<h2 id="mesh-caustics">Mesh caustics</h2>
-<p>Renders interactive caustics for translucent and metallic objects. Supports all four UE4 light types,
-multiple light sources, reflective and refractive caustics, dispersion and soft caustics.</p>
-<p><img alt="" src="../../../img/optimization/MeshCaustics.jpg" /></p>
-<p><em>POV-Ray 眼镜场景，光线追踪折射焦散投射到瓷砖表面上</em></p>
-<p><em>POV-Ray眼镜场景。瓷砖上的每一个明亮图案都是折射焦散线，是描摹出来的，而不是创作出来的。</em></p>
-<p><img alt="" src="../../../img/optimization/CausticsDispersion.jpg" /></p>
-<p><em>棱镜通过光线追踪色散将白光束分解成光谱。</em></p>
-<p><em>色散。需要材质根节点中</em><em>光线追踪焦散色散量</em><em>大于 0，并且 <code>r.RayTracing.MeshCaustics.EnableDispersion 1</code>。</em></p>
-<p><procedure title="Enable mesh caustics" id="enable-mesh-caustics">
-    <step>Enable ray tracing.</step>
-    <step>Check <b>Enabled</b> under <b>Ray Tracing Mesh Caustics</b> in the post process volume, or set <code>r.RayTracing.MeshCaustics.Enable 1</code>.</step>
-    <step>In light properties, check <b>Cast Mesh Caustics</b>.</step>
-    <step>
-        For metallic materials, check <b>Cast Ray Traced Reflection Caustics</b>. For translucent objects,
-        check <b>Cast Ray Traced Reflection Caustics</b> for reflective caustics and <b>Cast Ray Traced
-        Refraction Caustics</b> for refractive caustics.
-    </step>
-</procedure></p>
-<h3 id="feature-settings">Feature settings</h3>
-<p>Where a console variable is set to <code>-1</code>, the post process volume controls the actual value.</p>
+<h2 id="_5">主光线景深</h2>
+<p>光栅化景深处理半透明效果不佳，尤其是在级联粒子与半透明玻璃相交时。光线追踪可以实现精确的<strong>影视级</strong>景深。</p>
+<h3 id="_6">启用光线追踪景深</h3>
+<ol>
+<li>
+<p>使用电影摄影机并按常规方式应用景深。</p>
+</li>
+<li>
+<p>收集摄影机视锥体内的所有半透明材质，包括半透明粒子。对于每个根材质，选中<strong>输出半透明深度（Output Translucency Depth）</strong>，并确保<strong>半透明深度不透明度阈值（Translucency Depth Opacity Threshold）</strong>低于材质实例的不透明度参数。</p>
+</li>
+<li>
+<p>设置 <code>r.RayTracing.PrimaryRays.IncludeDOF</code> 为 1。</p>
+</li>
+</ol>
+<p>强烈建议同时启用增强型半透明模式 3、光线追踪半透明反射和折射以及半透明吸收，并配合光线追踪景深使用。DLSS 会自动支持。</p>
+<h2 id="_7">网格焦散</h2>
+<p>为半透明和金属物体渲染交互式焦散效果。支持所有四种 UE4 光照类型、多个光源、反射和折射焦散、色散和柔和焦散。
+<img alt="" src="../../../img/optimization/MeshCaustics.jpg" />
+<em>POV-Ray 眼镜场景，光线追踪折射焦散投射到瓷砖表面上。瓷砖上的每一个明亮图案都是折射焦散线，是描摹出来的，而不是创作出来的。</em></p>
+<p><img alt="" src="../../../img/optimization/CausticsDispersion.jpg" />
+<em>棱镜通过光线追踪</em><em>色散</em><em>将白光束分解成光谱。需要材质根节点中</em><em>光线追踪焦散色散量</em><em>大于 0，并且 <code>r.RayTracing.MeshCaustics.EnableDispersion 1</code>。</em></p>
+<h3 id="_8">启用网格焦散</h3>
+<ol>
+<li>
+<p>启用光线追踪。</p>
+</li>
+<li>
+<p>在后处理体积的<strong>光线追踪网格焦散（Ray Tracing Mesh Caustics）</strong>下选中<strong>已启用（Enabled ）</strong>，或设置 <code>r.RayTracing.MeshCaustics.Enable 1</code>。</p>
+</li>
+<li>
+<p>在灯光属性中，选中<strong>投射网格焦散（Cast Mesh Caustics）</strong>。</p>
+</li>
+<li>
+<p>对于金属材质，选中<strong>投射光线追踪反射焦散（Cast Ray Traced Reflection Caustics）</strong>。对于半透明物体，选中
+<strong>投射光线追踪反射焦散（Cast Ray Traced Reflection Caustics）</strong>以启用反射焦散，选中<strong>投射光线追踪折射焦散（Cast Ray Traced Refraction Caustics）</strong>以启用折射焦散。</p>
+</li>
+</ol>
+<h3 id="_9">功能设置</h3>
+<p>当控制台变量设置为 <code>-1</code> 时，后处理体积控制其实际值。</p>
 <table>
 <thead>
 <tr>
-<th>Console variable</th>
-<th>Purpose</th>
+<th>控制台变量</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.RayTracing.MeshCaustics.EnableTranslucentReflection</code></td>
-<td>Reflective caustics for transparent objects</td>
+<td>为透明物体启用反射焦散</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.MeshCaustics.TranslucentReflectionMode</code></td>
-<td>0 refractive only, 1 refractive plus reflective first bounce, 2 reflective for arbitrary bounces</td>
+<td>0 仅折射，1 折射加反射（第一次反弹），2 任意反弹次数均反射</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.MeshCaustics.EnableDispersion</code></td>
-<td>Enables dispersion. Requires <strong>Ray Traced Caustics Dispersion Amount</strong> greater than 0 in the material root node.</td>
+<td>启用散射。需要材质根节点中<strong>光线追踪焦散散射量（Ray Traced Caustics Dispersion Amount）</strong>大于 0。</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.MeshCaustics.DispersionSamples</code></td>
-<td>Colour samples used for dispersion</td>
+<td>用于散射的颜色样本</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.MeshCaustics.SoftCausticsSample</code></td>
-<td>Sample count for soft caustics. Requires <strong>Mesh Caustics Softness</strong> greater than 0 in light settings.</td>
+<td>软焦散的样本数量。需要光照设置中<strong>网格焦散柔和度（Mesh Caustics Softness）</strong>大于 0。</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.MeshCaustics.EnableAdvancedSoftCaustics</code></td>
-<td>Higher quality soft caustics algorithm</td>
+<td>更高质量的软焦散算法</td>
 </tr>
 </tbody>
 </table>
-<p>To expose dispersion amount per material instance, check <strong>Ray Traced Caustics Use CustomData 0 As
-Dispersion Amount</strong> and connect a scalar to the Custom Data 0 channel, which makes the parameter tweakable
-at runtime.</p>
-<h3 id="performance-tuning">Performance tuning</h3>
-<p>The key to performance is limiting photon count. Set the view mode to
-<strong>Ray Tracing Debug &rarr; Mesh Caustics Debug Data</strong>, then set <strong>Debug Light Data Type</strong> to <strong>Photon
-Count</strong>. Around 100k photons produces decent results in typical cases. If the count is too high, increase
-<strong>Adaptive Photon Size</strong> and decrease <strong>Adaptive Variance Gain</strong> in the post process volume, and raise
-<strong>Final Cull Threshold</strong> and <strong>Mid Cull Threshold</strong> until caustics begin to disappear.</p>
+<p>要显示每个材质实例的色散量，请勾选<strong>光线追踪焦散使用自定义数据 0 作为色散量（Ray Traced Caustics Use CustomData 0 As Dispersion Amount）</strong>，并将一个标量连接到“自定义数据 0”通道，这样就可以在运行时调整该参数。</p>
+<h3 id="_10">性能调优</h3>
+<p>性能的关键在于限制光子数量。将视图模式设置为<strong>光线追踪调试→网格焦散调试数据（Ray Tracing Debug &rarr; Mesh Caustics Debug Data）</strong>，然后将<strong>调试光照数据类型（Debug Light Data Type）</strong>设置为<strong>光子数量（Photon Count）</strong>。在典型情况下，大约 10 万个光子即可获得不错的效果。如果光子数量过高，请在后处理体积中增加<strong>自适应光子大小（Adaptive Photon Size）</strong>并降低<strong>自适应方差增益（Adaptive Variance Gain）</strong>，同时提高<strong>最终剔除阈值（Final Cull Threshold）</strong>和<strong>中间剔除阈值（Mid Cull Threshold）</strong>，直到焦散开始消失。</p>
 <table>
 <thead>
 <tr>
-<th>Console variable</th>
-<th>Purpose</th>
+<th>控制台变量</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.RayTracing.MeshCaustics.FinalCullColorThreshold</code></td>
-<td>Culls low-contribution rays</td>
+<td>剔除低贡献度光线</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.MeshCaustics.MidCullColorThreshold</code></td>
-<td>Culls low-contribution rays</td>
+<td>剔除低贡献度光线</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.MeshCaustics.BufferScale</code></td>
-<td>-1 post process volume, 0 full, 1 half, 2 quarter resolution</td>
+<td>-1 表示后处理体积，0 表示全分辨率，1 表示半分辨率，2 表示四分之一分辨率</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.MeshCaustics.AdaptivePhotonSize</code></td>
-<td>Target screen-space photon size. Smaller is more detailed and more expensive.</td>
+<td>目标屏幕空间光子尺寸。尺寸越小，细节越丰富，但计算成本也越高。</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.MeshCaustics.AdaptiveVarianceGain</code></td>
-<td>Higher values suppress flickering</td>
+<td>更高的值可以抑制闪烁</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.MeshCaustics.EnableTemporalFilter</code></td>
-<td>Temporal filtering to reduce flicker</td>
+<td>启用时间滤波以减少闪烁</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.MeshCaustics.TemporalStrength</code></td>
-<td>Higher is more stable but can introduce lag or ghosting</td>
+<td>更高的值可以提高稳定性，但可能会引入延迟或重影</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.MeshCaustics.MaxTraceDepth</code></td>
-<td>Limits bounce count; raises performance for translucent objects</td>
+<td>限制反弹次数；提高半透明物体的性能</td>
 </tr>
 </tbody>
 </table>
-<h2 id="water-caustics">Water caustics</h2>
-<p>Renders interactive caustics for water areas from ponds to open sea. Supports all four light types, multiple
-lights, reflective and refractive caustics, dispersion, soft caustics and cascaded caustics maps.</p>
-<p><img alt="" src="../../../img/optimization/WaterCaustics.jpg" /></p>
-<p><em>泳池底部被光线追踪技术营造出水波纹效果，一个角色正在搅动水面。</em></p>
-<p><em>游泳池场景，采用单向光源照射。由于焦散效果是逐帧追踪水面网格生成的，因此会随着水面扰动而变化。</em></p>
-<p><procedure title="Enable water caustics" id="enable-water-caustics">
-    <step>Enable ray tracing.</step>
-    <step>Select a water caustics type in the post process volume, or set <code>r.RayTracing.WaterCaustics.Type</code> to 1 or 2.</step>
-    <step>In light properties, check <b>Cast Water Caustics</b>.</step>
-    <step>
-        On the water surface static mesh actor, check <b>Evaluate Ray Tracing Water Caustics</b> under the
-        Ray Tracing tab. The water surface material must use a Translucent blend mode.
-    </step>
-</procedure></p>
-<h3 id="choosing-an-algorithm">Choosing an algorithm</h3>
-<p><strong>Photon Difference Scattering (type 1)</strong> is flexible and works with all light types UE4 supports. It needs
-relatively high-resolution caustics maps to produce sharp patterns, so for large surfaces such as seas and
-large lakes, enable cascaded caustics maps alongside it. Cascades keep caustics sharp near the camera while
-rendering more cheaply at distance.</p>
-<p><strong>Procedural Caustic Mesh (type 2)</strong> produces very sharp caustics even from relatively low-resolution maps.
-It does not work with cascaded caustics maps, because it does not need them. It is usually faster than PDS,
-but it does not support area lights and can leave artefacts on the edges of caustics receivers.</p>
-<h3 id="settings">Settings</h3>
+<h2 id="_11">水体焦散效果</h2>
+<p>为从池塘到开阔<strong>海域</strong>的各种水域渲染交互式焦散效果。支持所有四种光照类型、多光源、反射和折射焦散、色散、柔和焦散和级联焦散贴图。
+<img alt="" src="../../../img/optimization/WaterCaustics.jpg" />
+<em>游泳池场景，泳池底部被光线追踪技术营造出水波纹效果，一个角色正在搅动水面。采用单向光源照射。由于焦散效果是逐帧追踪水面网格生成的，因此会随着水面扰动而变化。</em></p>
+<h3 id="_12">启用水体焦散</h3>
+<ol>
+<li>
+<p>启用光线追踪。</p>
+</li>
+<li>
+<p>在后处理体积中选择水体焦散类型，或将 <code>r.RayTracing.WaterCaustics.Type</code> 设置为 1 或 2。</p>
+</li>
+<li>
+<p>在灯光属性中，选中<strong>投射水体焦散（Cast Water Caustics）</strong>。</p>
+</li>
+<li>
+<p>在水面静态网格 Actor 上，在“光线追踪”选项卡下选中<strong>评估光线追踪水体焦散（Evaluate Ray Tracing Water Caustics）</strong>。水面材质必须使用半透明混合模式。</p>
+</li>
+</ol>
+<h3 id="_13">选择算法</h3>
+<p><strong>光子差分散射（类型 1）</strong> 灵活，适用于 UE4 支持的所有光照类型。它需要相对高分辨率的焦散贴图才能生成清晰的图案，因此对于海洋和大型湖泊等大面积表面，建议同时启用级联焦散贴图。级联焦散贴图可以保持摄像机附近的焦散清晰，同时降低远处的渲染成本。</p>
+<p><strong>程序化焦散网格（类型 2）</strong> 即使使用相对低分辨率的贴图也能生成非常清晰的焦散。它不需要级联焦散贴图，因此不与级联焦散贴图一起使用。它通常比 PDS 更快，但不支持面光源，并且可能会在焦散接收器的边缘留下瑕疵。</p>
+<h3 id="_14">设置</h3>
 <table>
 <thead>
 <tr>
-<th>Console variable</th>
-<th>Purpose</th>
+<th>控制台变量</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.RayTracing.WaterCaustics.MaxReflectionRayDistance</code></td>
-<td>Set to 0 to disable reflective caustics</td>
+<td>设置为 0 可禁用反射焦散</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.WaterCaustics.MaxRefractionRayDistance</code></td>
-<td>Set to 0 to disable refractive caustics</td>
+<td>设置为 0 可禁用折射焦散</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.WaterCaustics.MapCascades</code></td>
-<td>Cascade count, up to 4 levels. Type 1 only.</td>
+<td>级联数量，最多 4 级。仅限类型 1。</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.WaterCaustics.MapSizeX</code> / <code>MapSizeY</code></td>
-<td>Caustics map size, default 2048. 1024 is often enough for a small pond and saves substantial performance.</td>
+<td>焦散贴图大小，默认值为 2048。对于小型池塘，1024 通常足够，并且可以显著提升性能。</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.WaterCaustics.NumDenoisePasses</code></td>
-<td>Default 2. Reduce to 0 for a sharper result.</td>
+<td>默认值为 2。减少到 0 可获得更锐利的效果。</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.WaterCaustics.UseSceneLightDir</code></td>
-<td>Set to 0 to capture the caustics map from above the camera rather than along the light direction. Directional lights only.</td>
+<td>设置为 0 可从摄像机上方而非沿光照方向捕获焦散贴图。仅适用于平行光。</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.WaterCaustics.BufferScale</code></td>
-<td>1 full, 2 half, 4 quarter resolution</td>
+<td>1 表示全分辨率，2 表示半分辨率，4 表示四分之一分辨率</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.WaterCaustics.PhotonScale</code></td>
-<td>Initial photon size in PDS. Default 3.</td>
+<td>PDS 中的初始光子大小。默认值为 3。</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.WaterCaustics.ShowPhoton</code></td>
-<td>Debug: draws photons as points</td>
+<td>调试：将光子绘制为点</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.WaterCaustics.RefractBackFaceCullingThreshold</code></td>
-<td>Set around -0.5 to ignore surface normals where cracks or seams appear</td>
+<td>设置为 -0.5 左右可忽略出现裂缝或接缝的表面法线</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.WaterCaustics.ReflectBackFaceCullingThreshold</code></td>
-<td>As above, for reflective caustics</td>
+<td>与上述相同，用于反射焦散。</td>
 </tr>
 </tbody>
 </table>
-<p>Restricting water caustics to a single dynamic light saves a great deal of performance; light distance
-culling and intensity fade are fully supported.</p>
-<p>Caustics focus depends on mesh and normal strength: large waves or strong normal map values produce more
-dramatic caustics. To enable dispersion, increase <strong>Dispersion Intensity</strong> in the post process volume and
-tune <strong>Dispersion Offset</strong>.</p>
-<h2 id="sample-content">Sample content</h2>
-<p>NVIDIA provides project files and packaged demos for these features:</p>
+<p>将水体焦散限制在单个动态光源上可以显著提升性能；光源距离剔除和强度衰减功能完全受支持。</p>
+<p>焦散焦点取决于网格和法线强度：较大的波浪或较强的法线贴图值会产生更显著的焦散效果。要启用分散效果，请在后期处理体积中增加<strong>分散强度（Dispersion Intensity）</strong>并调整<strong>分散偏移（Dispersion Offset）</strong>。</p>
+<h2 id="_15">示例内容</h2>
+<p>NVIDIA 为以下功能提供了项目文件和打包演示：</p>
 <ul>
-<li><a href="https://drive.google.com/drive/folders/1MfJ1rLqwx8acdscFfQtaYOR2Cdm1WPz9?usp=sharing">All project files</a></li>
-<li><a href="https://drive.google.com/drive/folders/1yHFOtmZWVDof8GbfZJMeazfb927ahTDn?usp=sharing">All packaged demos</a></li>
+<li><a href="https://drive.google.com/drive/folders/1MfJ1rLqwx8acdscFfQtaYOR2Cdm1WPz9?usp=sharing">所有项目文件</a></li>
+<li><a href="https://drive.google.com/drive/folders/1yHFOtmZWVDof8GbfZJMeazfb927ahTDn?usp=sharing">所有打包演示</a></li>
 </ul>
-<p>Specific scenes: the POV-Ray Glasses scene for heavy refraction, a prism dispersion demonstration, the
-Swimming Pool scene for water caustics, and the Office scene mixing particles, reflections, refractions,
-mesh caustics and RTGI. See also <a href="../../ProjectsAndDemos/Abandone-Apartment/">Abandoned Apartment</a> and
-<a href="../../ProjectsAndDemos/Attic-Scene/">Attic Scene</a> in this manual.</p>
-<p><img alt="" src="../../../img/optimization/RTOfficeScene.jpg" /></p>
-<p><em>结合了体积光、半透明球体、光线追踪反射和折射的办公场景</em></p>
-<p><em>办公室场景一次性运用了所有技术：粒子、半透明反射和折射、网格焦散和光线追踪全局光照都在单个帧中实现。</em></p>
-<h2 id="see-also">See also</h2>
+<p>特定场景：用于演示强折射的 POV-Ray 眼镜场景、棱镜分散演示、用于演示水体焦散的游泳池场景，以及混合了粒子、反射、折射、网格焦散和实时全局光照 (RTGI) 的办公室场景。另请参阅本手册中的<a href="../../ProjectsAndDemos/Abandone-Apartment/">废弃公寓</a>和<a href="../../ProjectsAndDemos/Attic-Scene/">阁楼</a>场景。
+<img alt="" src="../../../img/optimization/RTOfficeScene.jpg" />
+<em>结合了体积光、半透明球体、光线追踪反射和折射的办公室场景，一次性运用了所有技术：粒子、半透明反射和折射、网格焦散和光线追踪全局光照都在单个帧中实现。</em></p>
+<h2 id="_16">另请参阅</h2>
 <ul>
-<li><a href="../Ray-Tracing/">Ray Tracing</a></li>
-<li><a href="../RT-Reflections/">RT Reflections</a></li>
-<li><a href="../Upscalers/">Upscalers and Frame Generation</a></li>
-<li><a href="../../Reference/Console-Variables/">Console Variable Reference</a></li>
+<li><a href="../Ray-Tracing/">光线追踪</a></li>
+<li><a href="../RT-Reflections/">光线追踪反射</a></li>
+<li><a href="../Upscalers/">超分辨率和帧生成</a></li>
+<li><a href="../../Reference/Console-Variables/">控制台变量参考</a></li>
 </ul>
               
             </div>
