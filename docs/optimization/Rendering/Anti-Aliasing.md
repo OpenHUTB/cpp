@@ -1,55 +1,34 @@
-# Anti-Aliasing
+# 抗锯齿
 
-<tldr>
-<p>
-Vite adds <b>SMAA</b> as a fourth antialiasing method alongside None, FXAA, TemporalAA and MSAA. SMAA is
-the recommended for hihest raw Image Quality and specially competitive titles.
-Vite improves upon <b>UE4's TAA</b> Image quality with both improved stabalization and improved Colour
-Reproduction of Materials, specially Glossy ones and textures sharpness.
-</p>
-</tldr>
+Vite 新增了 **SMAA**（子像素形态抗锯齿，Subpixel Morphological Anti-Aliasing）作为第四种抗锯齿方法，与 None、FXAA、TemporalAA 和 MSAA 并列。SMAA 被推荐用于追求最高原始图像质量的游戏，尤其适用于竞技类游戏。Vite 在 **UE4 的 TAA** 基础上提升了图像质量，增强了稳定性，并提高了材质（尤其是光泽材质和纹理）的色彩还原度。
 
-Antialiasing is where Vite’s rendering philosophy is most apparent. Unlike Epic’s Unreal Engine 5, Vite renders at native resolution by default and targets high frame rates. Its antialiasing solution therefore prioritizes temporal stability while preserving the image-quality benefits of a full native 4K output, 
-whose higher pixel density already reduces aliasing compared with lower internal resolutions. Compared with UE5, Vite effectively uses supersampling when the two engines are evaluated at the same output resolution but different internal rendering resolutions.
+抗锯齿是 Vite 渲染理念最显著的体现。与 Epic 的虚幻引擎 5 不同，Vite 默认以原生分辨率渲染，并追求高帧率。因此，其抗锯齿方案优先考虑时间稳定性，同时保留原生 4K 输出的图像质量优势，更高的像素密度本身就能比较低的内部渲染分辨率减少锯齿。与 UE5 相比，当两个引擎在相同的输出分辨率但不同的内部渲染分辨率下进行评估时，Vite 有效地使用了超采样技术。
 
-<note>
-Epic’s UE 5.8 defaults to an internal resolution with only one-quarter of the target pixel count—a 50% scale on each axis. 
-This behavior appears across several rendering paths: even when TSR is disabled, the engine may "insist" to fall back to another non-native scaling method, 
-such as TAAU or basic spatial upscaling. Vite has no such behavior, it always defaults to the Screen Full Native Resolution.
-When comparing Vite with UE5, always verify that both engines are rendering at the same native internal 
-resolution. Use stat unit to confirm the active resolution and performance characteristics.
-</note>
+**注意：** Epic 的 UE 5.8 默认使用内部分辨率，其像素数仅为目标分辨率的四分之一——每个轴缩放 50%。这种行为出现在多种渲染路径中：即使禁用 TSR，引擎也可能“坚持”回退到其他非原生缩放方法，例如 TAAU 或基本空间放大。Vite 没有这种行为，它始终默认使用屏幕全原生分辨率。将 Vite 与 UE5 进行比较时，务必确认两个引擎都以相同的原生内部分辨率进行渲染。使用 `stat unit` 来确认当前分辨率和性能特征。
 
-## Available methods
 
-The **Anti-Aliasing Method** setting under **Project Settings > Engine > Rendering > Default Settings**
-offers:
+## 可用方法
 
-| Method | Enum | `r.DefaultFeature.AntiAliasing` | Notes                                                                                                |
+“项目设置”>“引擎”>“渲染”>“默认设置”下的“抗锯齿方法”设置提供以下选项：
+
+| 方法 | 枚举 | `r.DefaultFeature.AntiAliasing` | 说明                                                                                                |
 |---|---|---|------------------------------------------------------------------------------------------------------|
-| None | `AAM_None` | 0 | Aliased. Useful for comparison and for debugging AA artefacts.                                       |
-| FXAA | `AAM_FXAA` | 1 | Cheap post-process filter. Blurs texture detail along with edges. Vite implements a higher IQ option |
-| TemporalAA | `AAM_TemporalAA` | 2 | Vite improves over UE4 TAA with higher IQ and stability. Better AA Handling with a cost on Image Quality |
-| MSAA | `AAM_MSAA` | 3 | Forward shading only. Sample count via `r.MSAACount`.                                                |
-| **SMAA** | `AAM_SMAA` | **4** | Vite's SMAA implementation faster and higher quality than other stock Morphological solutions        |
+| None | `AAM_None` | 0 | 启用抗锯齿。可用于比较和调试抗锯齿伪影。                                       |
+| FXAA | `AAM_FXAA` | 1 | 低成本的后处理滤镜。模糊纹理细节和边缘。Vite 实现了更高画质的选项。 |
+| TemporalAA | `AAM_TemporalAA` | 2 | Vite 相比 UE4 的 TAA 具有更高的画质和稳定性。更好的抗锯齿处理，但会牺牲一些图像质量。 |
+| MSAA | `AAM_MSAA` | 3 | 仅前向着色。采样数通过 `r.MSAACount` 获取。 .                                                |
+| **SMAA** | `AAM_SMAA` | **4** | Vite 的 SMAA 实现比其他原生形态学抗锯齿方案更快、质量更高。        |
 
 ## SMAA
 
-Subpixel Morphological Anti-Aliasing analyses the image for edge patterns and blends across them
-geometrically. It is a spatial technique: it looks at one frame and resolves the aliasing in that frame.
+亚像素形态抗锯齿 (SMAA) 分析图像的边缘模式，并以几何方式进行混合。它是一种空间技术：它只关注一帧图像，并解决该帧中的锯齿问题。
 
-That single property is why it fits Vite. Temporal techniques accumulate samples across frames, which is
-what produces ghosting behind moving objects, smearing on fast camera motion, and the general softness that
-makes TAA output look like it is rendered behind a thin layer of vaseline. SMAA has no history buffer, so it
-has none of those failure modes. What it gives up is subpixel detail reconstruction &mdash; it cannot
-recover information that was never rendered &mdash; which matters much less when you are rendering at native
-4K in the first place.
+正是这一特性使其非常适合 Vite。时间技术会在帧之间累积样本，这会导致移动物体后方出现重影、快速镜头运动时出现拖影，以及 TAA 输出看起来像是在薄薄一层凡士林后面渲染的那种整体柔化效果。SMAA 没有历史缓冲区，因此不存在这些缺陷。它的不足之处在于无法重建亚像素细节——它无法恢复从未渲染过的信息——但当你本来就以原生 4K 分辨率渲染时，这一点就显得无关紧要了。
 
-Vite's bespoke SMAA implementation is 32% faster than CMAA2 in Unreal Engine, that's why CMAA2 was deemed redundant.
-Other morphological solutions were evaluated; none of them provided any objective argument to be implemented in Vite 
-the logical choice was to simply keep improving the base SMAA shader beyond its original form. 
+Vite 定制的 SMAA 实现比虚幻引擎中的 CMAA2 快 32%，因此 CMAA2 被认为多余。我们也评估了其他形态学解决方案；他们都没有提供任何客观的论据来支持在 Vite 中实施，因此合乎逻辑的选择就是在原有基础上不断改进基础 SMAA 着色器。
 
-### Enabling SMAA
+
+### 启用 SMAA
 
 ```ini
 ; Config/DefaultEngine.ini
@@ -57,58 +36,51 @@ the logical choice was to simply keep improving the base SMAA shader beyond its 
 r.DefaultFeature.AntiAliasing=4
 ```
 
-Or per-camera through the post process volume's **Anti-Aliasing Method** override, or at runtime:
+或者通过后期处理体积的**抗锯齿方法（Anti-Aliasing Method）**重写为每个摄像机单独设置，或者在运行时设置：
 
 ```
 r.DefaultFeature.AntiAliasing 4
 ```
 
-### Quality
+### 质量
 
-| CVar | Default | Values |
+| CVar | 默认值 | 值 |
 |---|---|---|
-| `r.Vite.SMAA.Mode` | `1` | `0` = Low, `1` = High |
+| `r.Vite.SMAA.Mode` | `1` | `0` = 低, `1` = 高 |
 
-Marked `ECVF_Scalability`, so it can be driven from scalability groups. High quality is the default and is
-what the [performance targets](../EngineOverview/Performance-Targets.md) assume; Low exists for the lowest scalability bucket
-where the difference in edge quality is a reasonable trade for the frame time.
+标记为 `ECVF_Scalability`，因此可以从可扩展性分组中驱动。高质量是默认值，也是[性能目标](../EngineOverview/Performance-Targets.md)所基于的；低质量对应于最低可扩展性级别，此时边缘质量的差异与帧时间的损失可以接受。
 
-### Where SMAA runs in the pipeline
 
-Vite applies SMAA **before tonemapping**, unlike FXAA which runs after. This is deliberate: resolving edges
-in linear HDR space avoids the tonemapper amplifying partially-resolved edge pixels into visible fringing on
-high-contrast boundaries, which is a common complaint about post-tonemap SMAA implementations.
+### SMAA 在管线中的运行位置
 
-The practical consequence is that post-process materials in the **After Tonemapping** blend location see an
-already-anti-aliased image, and that SMAA composes correctly with HDR output.
+Vite 在**色调映射之前**应用 SMAA，这与在色调映射之后运行的 FXAA 不同。这是有意为之：在 HDR 线性空间中解析边缘可以避免色调映射器将部分解析的边缘像素放大到高对比度边界上的可见条纹，这是色调映射后 SMAA 实现的一个常见问题。
 
-### Debugging
+实际结果是，**色调映射后**混合位置中的后期处理材质看到的是已经抗锯齿的图像，并且 SMAA 可以与 HDR 输出正确合成。
 
-In non-Shipping builds:
 
-| CVar | Values |
+### 调试
+
+在非发布版本中：
+
+| CVar | 值 |
 |---|---|
-| `r.AntiAliasing.SMAA.Debug` | `0` = off, `1` = show detected edges, `2` = show blend weights |
+| `r.AntiAliasing.SMAA.Debug` | `0` = 关闭, `1` = 显示检测到的边缘, `2` = 显示混合权重 |
 
-Edge visualisation is the fastest way to diagnose SMAA that appears to be doing nothing (usually the method
-is not actually selected) or is over-blurring (usually excessive high-frequency content in the source image,
-often from an aggressive sharpening or noise post-process).
+边缘可视化是诊断SMAA（平滑抗锯齿）效果不佳（通常是由于未实际选择该方法）或过度模糊（通常是由于源图像中高频成分过多，而这往往是过度锐化或降噪后处理造成的）的最快方法。
 
-## Aliasing that anti-aliasing will not fix
+## 抗锯齿无法解决的锯齿问题
 
-Some aliasing is authored in rather than introduced by rasterisation, and no regular AA method resolves it:
+有些锯齿并非光栅化引入，而是图像本身固有的，常规的抗锯齿方法无法解决：
 
-- **Specular aliasing** from high-frequency normal maps on smooth materials. Fix with proper mip generation
-  and normal-to-roughness conversion, not with AA.
-- **Texture aliasing** from missing or badly generated mips. Fix in the texture import settings.
-- **Alpha-test shimmer** on foliage. Consider dithered opacity, or reduce the alpha-tested surface area.
+- 光滑材质上高频法线贴图产生的**镜面反射锯齿**应通过正确的mip贴图生成和法线到粗糙度的转换来解决，而非使用抗锯齿。
+- mip贴图缺失或生成错误导致的**纹理锯齿**。应在纹理导入设置中进行修复。
+- 树叶上的**Alpha测试闪烁**。可以考虑使用抖动不透明度，或减少Alpha测试的表面积。
 
-Diagnose these by switching to `AAM_None` and looking at where the aliasing appears. Aliasing that moves
-with the surface rather than sitting on silhouette edges is a content problem.
+可以通过切换到`AAM_None`（无抗锯齿）并观察锯齿出现的位置来诊断这些问题。如果锯齿随表面移动而不是停留在轮廓边缘，则属于内容问题。
 
-## See also
+## 另请参阅
 
-- [Rendering](../Rendering/Rendering.md)
-- [Upscalers and Frame Generation](Upscalers.md)
-- [Performance Targets](Performance-Targets.md)
-- [Colour Management](Color-Management.md)
+- [渲染](../Rendering/Rendering.md)
+- [超分辨率和帧生成](Upscalers.md)
+- [性能目标](Performance-Targets.md)
+- [色彩管理](Color-Management.md)

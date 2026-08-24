@@ -30,6 +30,12 @@ title: 主页
 
 ## 引擎优化 <span id='optimization'></span>
 
+<div align="center">
+过早优化是万恶之源。
+
+—— 高德纳
+</div>
+
 * [引擎优化入门](./optimization/Default-topic.md)
 * [引擎概述](./optimization/EngineOverview/Engine-Overview.md)
 * [渲染](./optimization/Rendering/Rendering.md)
