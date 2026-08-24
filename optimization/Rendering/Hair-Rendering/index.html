@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Hair Rendering - 引擎优化文档</title>
+    <title>毛发渲染 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Hair Rendering";
+        var mkdocs_page_name = "\u6bdb\u53d1\u6e32\u67d3";
         var mkdocs_page_input_path = "optimization/Rendering/Hair-Rendering.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Hair Rendering</li>
+      <li class="breadcrumb-item active">毛发渲染</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/Hair-Rendering.md"> 编辑页面</a>
     </li>
@@ -120,24 +120,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="hair-rendering">Hair Rendering</h1>
-<p><tldr></p>
-<p>
-Two strand-based hair systems ship with Vite: AMD <b>TressFX 5.0</b> and Epic's <b>Groom</b>
-(HairStrands). TressFX is the one Vite adds; Groom is the stock 4.27 system. Both are disabled by default.
-</p>
-<p></tldr></p>
-<p>Hair is one of the hardest surfaces to render convincingly. Card-based hair is cheap and predictable but
-never quite reads correctly under motion or from grazing angles. Strand-based hair simulates and renders
-individual fibres, which looks dramatically better and costs dramatically more.</p>
-<h2 id="available-systems">Available systems</h2>
+                <h1 id="_1">毛发渲染</h1>
+<p>Vite 内置了两款基于毛发的渲染系统：AMD <strong>TressFX 5.0</strong> 和 Epic 的 Groom（HairStrands）。TressFX 是 Vite 添加的；Groom 是 4.27 版本的自带系统。两者默认均处于禁用状态。</p>
+<p>毛发是最难渲染出逼真效果的表面之一。基于卡片的毛发渲染成本低廉且效果可预测，但在运动或掠射角度下始终无法准确呈现。基于毛发的渲染系统能够模拟并渲染每一根毛发，效果显著提升，但成本也更高。</p>
+<h2 id="_2">可用系统</h2>
 <table>
 <thead>
 <tr>
-<th>System</th>
-<th>Plugin</th>
-<th>Origin</th>
-<th>Notes</th>
+<th>系统</th>
+<th>插件</th>
+<th>来源</th>
+<th>备注</th>
 </tr>
 </thead>
 <tbody>
@@ -145,97 +138,75 @@ individual fibres, which looks dramatically better and costs dramatically more.<
 <td>TressFX 5.0</td>
 <td><code>Engine/Plugins/Runtime/TressFX</code></td>
 <td>AMD</td>
-<td>Added by Vite. Simulation, rendering and editor tooling.</td>
+<td>由 Vite 添加。包含模拟、渲染和编辑器工具。</td>
 </tr>
 <tr>
 <td>Groom (HairStrands)</td>
 <td><code>Engine/Plugins/Runtime/HairStrands</code></td>
 <td>Epic</td>
-<td>Stock 4.27. Alembic-based, works with the <code>Hair</code> shading model.</td>
+<td>原生版本 4.27。基于 Alembic 引擎，兼容 <code>Hair</code> 着色模型。</td>
 </tr>
 <tr>
 <td>Alembic Hair Importer</td>
 <td><code>Engine/Plugins/Importers/AlembicHairImporter</code></td>
 <td>Epic</td>
-<td>Import path for Groom assets</td>
+<td>毛发资源导入路径</td>
 </tr>
 </tbody>
 </table>
-<p>Neither hair system is enabled by default. Enable one from <strong>Edit &gt; Plugins</strong>; there is little reason to
-enable both in the same project.</p>
+<p>默认情况下，两种发型系统均未启用。请从<strong>编辑(Edit) &gt; 插件(Plugins)</strong> 中启用其中一个；在同一个项目中启用两个发型系统意义不大。</p>
 <h2 id="tressfx-50">TressFX 5.0</h2>
-<p>TressFX is AMD's open hair and fur system. The Vite integration includes three modules: <code>TressFXCore</code> for
-runtime simulation and rendering, <code>TressFXImportTranslator</code> for asset import, and <code>TressFXEditor</code> for
-authoring tools.</p>
-<p>It handles simulation (strands respond to head movement, wind and collision) and rendering (order-
-independent transparency, self-shadowing and the anisotropic specular that hair requires) as one system.</p>
-<h3 id="console-variables">Console variables</h3>
+<p>TressFX 是 AMD 的开源毛发系统。Vite 集成包含三个模块：TressFXCore 用于运行时模拟和渲染，<code>TressFXImportTranslator</code> 用于资源导入，<code>TressFXEditor</code> 用于创作工具。</p>
+<p>它将模拟（毛发响应头部运动、风力和碰撞）和渲染（与顺序无关的透明度、自阴影以及毛发所需的各向异性镜面反射）作为一个系统来处理。</p>
+<h3 id="_3">控制台变量</h3>
 <table>
 <thead>
 <tr>
 <th>CVar</th>
-<th>Default</th>
-<th>Purpose</th>
+<th>默认</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.TressFX.StrandsMode</code></td>
 <td><code>0</code></td>
-<td>Debug visualisation. <code>0</code> off, <code>1</code> simulation strands, <code>2</code> render strands coloured by simulation influence, <code>3</code> hair UV, <code>4</code> hair root UV, <code>5</code> hair seed, <code>6</code> dimensions</td>
+<td>调试可视化。<code>0</code> 关闭，<code>1</code> 模拟发束，<code>2</code> 渲染发束颜色受模拟影响，<code>3</code> 毛发 UV，<code>4</code> 毛发根部 UV，<code>5</code> 毛发种子，<code>6</code> 维度</td>
 </tr>
 <tr>
 <td><code>r.TressFX.Interoplation.FrustumCulling</code></td>
 <td><code>1</code></td>
-<td>Frustum culling during strand interpolation. Experimental.</td>
+<td>发束插值期间的视锥体剔除。实验性功能。</td>
 </tr>
 <tr>
 <td><code>r.TressFX.MorphTargetMeshVisualization</code></td>
 <td><code>0</code></td>
-<td>Accurate transmittance pass, improves rendering of small-scale TressFX</td>
+<td>精确的透射率通道，改善小尺寸 TressFX 的渲染效果</td>
 </tr>
 </tbody>
 </table>
-<p><note>
-<code>r.TressFX.Interoplation.FrustumCulling</code> is spelled as shown in the source, including the
-transposed letters in "Interpolation". Use the literal string.
-</note></p>
-<p>The debug modes are the fastest way to diagnose hair problems. Mode <code>2</code> in particular &mdash; render strands
-coloured by simulation influence &mdash; immediately shows whether your guide strand distribution is
-reasonable or whether large regions of render strands are being driven by too few guides.</p>
-<h3 id="cost">Cost</h3>
-<p>Strand hair is expensive in a way that is easy to underestimate, because the cost is split across
-simulation (compute), rendering (heavy overdraw with transparency) and shadowing. A single character with
-full TressFX hair can consume a meaningful fraction of a
-<a href="../../EngineOverview/Performance-Targets/">4K60 frame budget</a>.</p>
-<p>Practical guidance:</p>
+<p><strong>注意：</strong> <code>r.TressFX.Interoplation.FrustumCulling</code> 的拼写与源代码中所示一致，包括“Interpolation”中字母的转置。请使用字面字符串。</p>
+<p>调试模式是诊断头发问题的最快方法。特别是模式 <code>2</code>——渲染发丝时会根据模拟效果着色——可以立即显示引导发丝分布是否合理，或者是否存在大片渲染发丝区域由过少的引导发丝驱动的情况。</p>
+<h3 id="_4">成本</h3>
+<p>发丝渲染的成本很容易被低估，因为成本分散在模拟（计算）、渲染（大量透明叠加绘制）和阴影三个方面。一个拥有完整 TressFX 头发的角色可能会消耗 <a href="../../EngineOverview/Performance-Targets/">4K60 帧预算</a>中相当一部分的资源。</p>
+<p>实用指南：</p>
 <ul>
-<li>Budget strand hair for hero characters only. Crowd and background characters should use cards.</li>
-<li>Use LODs aggressively. Strand count should drop hard with distance, and switching to cards at mid-range
-  is normal.</li>
-<li>Test with your actual <a href="../Anti-Aliasing/">anti-aliasing</a> configuration. Thin geometry is exactly the case
-  where AA method matters most, and hair that looks acceptable with TAA may shimmer with SMAA.</li>
+<li>仅对主角使用发丝渲染。群众角色和背景角色应使用卡式渲染。</li>
+<li>积极使用 LOD（细节层次）。发丝数量应随距离大幅减少，在中距离切换到卡式渲染是正常的。</li>
+<li>使用实际的<a href="../Anti-Aliasing/">抗锯齿</a>配置进行测试。对于细小的几何体，抗锯齿方法的影响尤为显著，使用 TAA 抗锯齿效果尚可的头发，在 SMAA 抗锯齿下可能会出现闪烁。</li>
 </ul>
 <h2 id="groom">Groom</h2>
-<p>Groom is Epic's strand system, present in stock 4.27. It imports Alembic groom caches from Maya, Houdini or
-Blender via the Alembic Hair Importer, and renders through the <code>Hair</code> shading model with its <strong>Scatter</strong>
-(Metallic pin) and <strong>Backlit</strong> (Custom Data 0) parameters, plus <strong>Tangent</strong> on the Normal pin.</p>
-<p>Groom is the better-documented path and has more third-party tooling around it, since it is standard Unreal.
-TressFX is the better choice if you are coming from an AMD-oriented pipeline or need its specific
-simulation behaviour.</p>
-<h2 id="interaction-with-ray-tracing">Interaction with ray tracing</h2>
-<p>Hair and ray tracing interact poorly by default. Strand geometry generates enormous numbers of tiny
-primitives in the acceleration structure, and ray-traced <a href="../RT-Shadows-And-Ambient-Occlusion/">shadows</a> and
-<a href="../RT-Reflections/">reflections</a> against hair are both expensive and noisy.</p>
-<p>Consider excluding hair from ray tracing (via the primitive's <strong>Visible in Ray Tracing</strong> flag) and letting
-it receive raster shadows instead. The visual difference is usually small; the performance difference is
-not.</p>
-<h2 id="see-also">See also</h2>
+<p>Groom 是 Epic 的毛发系统，在 4.27 版本中已内置。它通过 Alembic Hair Importer 从 Maya、Houdini 或 Blender 导入 Alembic 毛发缓存，并使用毛发着色模型及其 <strong>Scatter</strong>（金属引脚）和 <strong>Backlit</strong>（自定义数据 0）参数进行渲染，同时法线引脚上还需启用 <strong>Tangent</strong> 属性。</p>
+<p>Groom 的文档更完善，并且拥有更多第三方工具支持，因为它基于 Unreal 引擎。如果您之前使用过面向 AMD 的渲染管线，或者需要 TressFX 的特定模拟行为，那么 TressFX 是更好的选择。</p>
+<h2 id="_5">与光线追踪的交互</h2>
+<p>默认情况下，毛发和光线追踪的交互效果不佳。毛发几何体会在加速结构中生成大量微小图元，而光线追踪的<a href="../RT-Shadows-And-Ambient-Occlusion/">阴影</a>和<a href="../RT-Reflections/">反射</a>在毛发上既耗费资源又会产生噪声。</p>
+<p>建议将毛发从光线追踪中排除（通过图元的<strong>在光线追踪中可见（Visible in Ray Tracing）</strong> 标志），并允许其接收光栅阴影。视觉效果上的差异通常很小，但性能差异却不容忽视。</p>
+<h2 id="_6">另请参阅</h2>
 <ul>
-<li><a href="../Shading-Models/">Shading Models</a></li>
-<li><a href="../Anti-Aliasing/">Anti-Aliasing</a></li>
-<li><a href="../../Plugins/Bundled-Plugins/">Bundled Plugins</a></li>
-<li><a href="../../EngineOverview/Performance-Targets/">Performance Targets</a></li>
+<li><a href="../Shading-Models/">着色模型</a></li>
+<li><a href="../Anti-Aliasing/">抗锯齿</a></li>
+<li><a href="../../Plugins/Bundled-Plugins/">已捆绑的插件</a></li>
+<li><a href="../../EngineOverview/Performance-Targets/">性能目标</a></li>
 </ul>
               
             </div>
