@@ -47,6 +47,6 @@ window is a hard case, and it is where SMAA's behaviour differs most visibly fro
 
 - [全局光照](../Rendering/Global-Illumination.md)
 - [静态 DDGI](../Rendering/DDGI-Static.md)
-- [颜色管理](../Rendering/Color-Management.md)
+- [色彩管理](../Rendering/Color-Management.md)
 - [抗锯齿](../Rendering/Anti-Aliasing.md)
 - [废弃的公寓场景](./Abandone-Apartment.md)

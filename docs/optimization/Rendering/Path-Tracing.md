@@ -1,95 +1,72 @@
-# Path Tracing
+# 路径追踪
 
-<tldr>
-<p>
-Vite includes NVIDIA's path tracing technology, related to the rendering stack featured in Black Myth: Wukong.
-The Editor Pathtracer is used for reference imagery, lighting validation, previsualisation and marketing captures &mdash; not as a
-runtime target.
-</p>
-<p>
-<b>Compiled out in a default build.</b> Requires rebuilding with
-<code>VITE_RT_PSO_DEBLOAT=0</code>.
-</p>
-</tldr>
+Vite 包含 NVIDIA 的路径追踪技术，该技术与《黑神话：悟空》中的渲染堆栈相关。编辑器路径追踪器用于参考图像、光照验证、预可视化和市场推广素材的采集，而非运行时目标。
 
-Path tracing produces a ground-truth image by tracing full light transport paths, accumulating samples over
-many frames until the result converges. It is the reference against which the real-time techniques in this
-section are approximations.
+默认版本中已编译移除。需要使用 `VITE_RT_PSO_DEBLOAT=0` 重新构建。
 
-## What it is for
+路径追踪通过追踪完整的光线传输路径来生成真实图像，并在多帧中累积样本直至结果收敛。本节中的实时技术均以此为参考进行近似计算。
 
-**Lighting validation.** Path tracing tells you what the scene *should* look like. When
-[DDGI](./DDGI-Dynamic.md) output looks wrong, and you cannot tell whether the problem is probe density, volume
-placement or the lighting rig itself, a converged path-traced frame from the same camera answers the
-question.
+## 用途
 
-**Reference imagery.** Marketing shots, key art and promotional captures where a converged still is
-acceptable and frame time is irrelevant.
+**光照验证。** 路径追踪可以告诉你场景**应该**是什么样子。当 [DDGI](./DDGI-Dynamic.md) 输出看起来不对劲，而你又无法判断问题是出在探针密度、体积位置还是灯光装置本身时，来自同一台摄像机的收敛路径追踪帧就能解答这个问题。
 
-**Pre-visualization.** Establishing a lighting target before building the real-time approximation of it.
+**参考图像。** 营销照片、主视觉图和宣传照，在这些场景中，收敛的静态图像即可接受，帧时间无关紧要。
 
-**Material authoring.** Verifying that a complex material behaves correctly under full light transport
-before checking how the real-time path approximates it.
+**预可视化。** 在构建实时近似模型之前，先确定一个光照目标。
 
-## What it is not for
+**材质创作。** 在检查实时路径追踪的近似效果之前，先验证复杂材质在完整光照传输下的表现是否正确。
 
-Path tracing is not a main shipping runtime configuration in Vite, and it is not one of the
-[performance targets](../EngineOverview/Performance-Targets.md). Convergence takes many frames; a camera cut restarts
-accumulation from scratch. *The Editor Path tracer path setup is not the same as what can be shipped for runtime title. 
+## 它不适用于什么？
 
-Black Myth: Wukong shipped a Path Tracing mode based on the same PT tech that's available in Vite; for this title 
-it is offered as a high-end PC option to be used with upscaling and frame generation, not as the console rendering path.
+路径追踪并非 Vite 的主要运行时配置，也不是[性能优化目标](../EngineOverview/Performance-Targets.md)之一。收敛需要大量帧；镜头切换会导致帧数重新累积。编辑器中的路径追踪器路径设置与运行时游戏的路径设置不同。
 
-## Using it
+《黑神话：悟空》基于与 Vite 相同的路径追踪技术，提供了路径追踪模式；对于这款游戏，它作为高端 PC 选项提供，用于图像放大和帧生成，而非作为主机渲染路径。
 
-Path tracing shaders are compiled out when `VITE_RT_PSO_DEBLOAT` is `1`, which is the default. Rebuild the
-engine with `VITE_RT_PSO_DEBLOAT=0` first &mdash; see [Compile-Time Switches](../Performance/Compile-Time-Switches.md).
+## 使用方法
 
-Because path tracing is a tool you use occasionally rather than something the game ships with, the cleanest
-arrangement is a separate editor target configuration with the debloat switch off, used for reference
-capture, while the game target keeps the default.
+当 `VITE_RT_PSO_DEBLOAT` 为 `1`（默认值）时，路径追踪着色器会被编译掉。请先使用 `VITE_RT_PSO_DEBLOAT=0` 重新构建引擎——参见[编译时开关](../Performance/Compile-Time-Switches.md)。
 
-Once enabled, path tracing is enabled through the standard Unreal Engine 4.27 controls:
+
+由于路径追踪是一个偶尔使用的工具，而不是游戏自带的功能，因此最简洁的方案是创建一个单独的编辑器目标配置，并关闭精简开关，用于参考捕获，而游戏目标则保持默认设置。
+
+启用后，即可通过标准的虚幻引擎 4.27 控件启用路径追踪：
 
 ```
 r.PathTracing 1
 ```
 
-The view mode can also be selected from the viewport's view mode dropdown. Accumulation restarts whenever
-the camera or scene changes, so let it converge before evaluating an image.
+您也可以从视口的视图模式下拉菜单中选择视图模式。每次相机或场景发生变化时，累积过程都会重新开始，因此在评估图像之前，请等待其收敛。
 
-Key considerations:
+关键注意事项：
 
-- **Sample count** determines convergence. More samples, less noise, longer wait.
-- **Maximum bounces** determines how much indirect light is captured. Interiors need more than exteriors.
-- **Movie Render Queue** is the right tool for producing converged sequences, since it can hold each frame
-  until it has accumulated the requested number of samples.
+- **采样数** 决定收敛程度。采样越多，噪声越少，等待时间越长。
+- **最大反射次数** 决定了捕获的间接光量。室内场景比室外场景需要更多反射次数。
+- **影片渲染队列** 是生成收敛序列的理想工具，因为它能够暂停每一帧，直到累积到所需的采样数。
 
-## Comparing against the real-time path
+## 与实时路径对比
 
-The most useful workflow is A/B comparison from a fixed camera.
+最有效的流程是从固定摄像机进行 A/B 对比。
 
-<procedure title="Validate real-time lighting against path tracing" id="validate-lighting">
-    <step>Place a camera at a representative viewpoint and lock it.</step>
-    <step>Capture the real-time image with your shipping rendering configuration.</step>
-    <step>Switch to path tracing and let the frame converge fully.</step>
-    <step>
-        Compare. Differences in overall brightness and bounce colour usually indicate DDGI probe density or
-        volume placement problems. Differences confined to contact areas indicate you need
-        <a href="./SSGI.md">SSGI</a> or stronger <a href="./Ambient-Occlusion.md">ambient occlusion</a>.
-        Differences in reflections point at <a href="./RT-Reflections.md">reflection</a> settings.
-    </step>
-    <step>Adjust the real-time configuration and repeat, rather than adjusting the lighting rig to compensate.</step>
-</procedure>
 
-That last step is the important one. If the real-time approximation is wrong, fix the approximation.
-Compensating by distorting the lighting rig produces a scene that only looks correct from one camera and
-under one configuration.
+### 验证实时光照与路径追踪的一致性
 
-## See also
+1. 将摄像机放置在具有代表性的视点并锁定。
 
-- [Ray Tracing](./Ray-Tracing.md)
-- [Global Illumination](./Global-Illumination.md)
-- [Dynamic DDGI](./DDGI-Dynamic.md)
-- [Compile-Time Switches](../Performance/Compile-Time-Switches.md)
-- [Colour Management](../Rendering/Color-Management.md)
+2. 使用最终渲染配置捕获实时图像。
+
+3. 切换到路径追踪，并等待帧完全收敛。
+
+4. 进行比较。整体亮度和反射颜色的差异通常表明 DDGI 探针密度或体积放置存在问题。仅限于接触区域的差异表明您需要 [SSGI](./SSGI.md) 或更强的[环境光遮蔽](./Ambient-Occlusion.md)。反射的差异指向[反射](./RT-Reflections.md)设置。
+
+5. 调整实时配置并重复上述步骤，而不是调整灯光装置进行补偿。
+
+最后一步至关重要。如果实时近似值有误，请修正该近似值。通过扭曲灯光装置进行补偿只能使场景在特定摄像机和特定配置下看起来正确。
+
+
+## 另请参阅
+
+- [光线追踪](./Ray-Tracing.md)
+- [全局光照](./Global-Illumination.md)
+- [动态 DDGI](./DDGI-Dynamic.md)
+- [编译时开关](../Performance/Compile-Time-Switches.md)
+- [色彩管理](../Rendering/Color-Management.md)

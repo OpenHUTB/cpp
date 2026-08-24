@@ -3,7 +3,7 @@
 
 适用于包含大量光源场景的光线追踪直接照明。这是独立的 RTXDI（RTX 直接光照，RTX Direct Illumination），而非 UE 5.1 及更高版本中集成的 Lumen 版本。它是 MegaLights 的一个噪声更低的替代方案。
 
-**默认构建版本中已编译移除。**需要使用 `VITE_RT_PSO_DEBLOAT=0` 重新构建，`r.RayTracing.SampledDirectLighting` 才能生效。
+**默认构建版本中已编译移除。** 需要使用 `VITE_RT_PSO_DEBLOAT=0` 重新构建，`r.RayTracing.SampledDirectLighting` 才能生效。
 
 RTX 直接照明解决了多光源问题：即使数百或数千个光源可能共同作用于一个像素，也能正确地对其进行着色，而无需评估所有光源。
 
@@ -29,59 +29,47 @@ UE 5.1 及更高版本的 NvRTX 分支将 RTXDI **集成到了** Lumen 中。Vit
 
 **警告：** 当 `VITE_RT_PSO_DEBLOAT` 为 `1`（默认值）时，RTXDI 的着色器排列组合会被编译掉。在这种情况下，`ShouldRenderRayTracingSampledLighting()` 会无条件返回 `false`：控制台变量会成功设置，但不会渲染任何内容。
 
-<procedure title="Enable RTXDI" id="enable-rtxdi">
-    <step>
-        Add <code>GlobalDefinitions.Add("VITE_RT_PSO_DEBLOAT=0");</code> to your target file and rebuild
-        the engine. See <a href="../Performance/Compile-Time-Switches.md">Compile-Time Switches</a>.
-    </step>
-    <step>
-        Set the console variable:
-        <code-block lang="ini">
+### 启用 RTXDI
+
+1. 将 `GlobalDefinitions.Add("VITE_RT_PSO_DEBLOAT=0");` 添加到目标文件中，然后重新构建引擎。请参阅[编译时开关](../Performance/Compile-Time-Switches.md)。
+
+2. 设置控制台变量：
+```json
 ; Config/DefaultEngine.ini
 [/Script/Engine.RendererSettings]
 r.RayTracing.SampledDirectLighting=1
-        </code-block>
-    </step>
-    <step>Confirm the target hardware supports DXR.</step>
-</procedure>
+```
+3. 确认目标硬件支持 DXR。
 
-Because turning the debloat switch off restores the full ray tracing permutation set &mdash; not just
-RTXDI's &mdash; weigh the shader compile time and package size cost against what RTXDI actually buys your
-scene. The next section is the test.
+由于关闭精简开关会恢复完整的光线追踪排列集（而不仅仅是 RTXDI 的排列集），因此请权衡着色器编译时间和软件包大小的成本与 RTXDI 实际为场景带来的性能提升。下一节是测试。
 
-## When it earns its cost
 
-RTXDI is a specialised tool. It is worth enabling when your scene has enough lights that conventional direct
-lighting becomes the bottleneck, and not otherwise.
+## 当它收回成本时
 
-| Scene | Verdict |
+RTXDI 是一个专用工具。只有当场景中存在足够多的光源，以至于传统的直接光照成为瓶颈时，才值得启用它；否则则不建议启用。
+
+| 场景 | 意见 |
 |---|---|
-| Neon-lit city street, hundreds of emissive signs and practicals | Strong fit |
-| Interior with many small practical lights | Strong fit |
-| Destructible or dynamic environments where light count varies unpredictably | Strong fit |
-| Outdoor daylight scene with a sun and a few fill lights | Not worth it |
-| Stylised scene with a deliberately small light rig | Not worth it |
+| 霓虹闪烁的城市街道，数百个发光标志和实用灯具 | 非常合适 |
+| 室内场景，包含许多小型实用灯具 | 非常合适 |
+| 可破坏或动态环境，灯光数量变化无常 | 非常合适 |
+| 户外日光场景，包含太阳和少量补光灯 | 不值得 |
+| 风格化场景，特意使用小型灯光装置 | 不值得 |
 
-For a scene with a handful of lights, conventional direct lighting is cheaper and produces an identical
-result. RTXDI has a fixed setup cost that only pays off once light count is high.
+对于只有少量光源的场景，传统的直接照明更经济，且效果相同。RTXDI 的设置成本固定，只有在光源数量较多时才能体现其优势。
 
-## Interaction with other systems
+## 与其他系统的交互
 
-**DDGI.** Complementary and designed to run together. RTXDI resolves what direct light reaches a surface;
-DDGI resolves what bounced light reaches it.
+**DDGI：** 两者互补，旨在协同运行。RTXDI 负责解析到达表面的直接光；DDGI 负责解析到达表面的反射光。
 
-**RT shadows.** RTXDI performs its own visibility testing as part of sampling, so the relationship with
-`r.RayTracing.Shadows` needs measuring in your specific scene rather than assuming. Enabling both is not
-automatically the right answer.
+**RT 阴影：** RTXDI 会在采样过程中进行自身的可见性测试，因此其与 `r.RayTracing.Shadows` 的关系需要根据具体场景进行测量，而非想当然。同时启用两者并非总是最佳方案。
 
-**Denoising.** RTXDI output is denoised. It is described as less noisy than MegaLights rather than noise-free
-&mdash; unlike [DDGI](./DDGI-Dynamic.md), which is noise-free by construction. Under fast motion in a scene
-with many small bright lights, expect to spend some time on denoiser settings.
+**降噪：** RTXDI 的输出经过降噪处理。与 [DDGI](./DDGI-Dynamic.md) 不同，RTXDI 的输出被描述为比 MegaLights 的噪声更小，而非完全无噪。DDGI 本身就是无噪的。在包含许多小型明亮光源的快速运动场景中，您可能需要花一些时间来调整降噪设置。
 
-## See also
+## 另请参阅
 
-- [Ray Tracing](./Ray-Tracing.md)
-- [RT Shadows and Ambient Occlusion](./RT-Shadows-And-Ambient-Occlusion.md)
-- [Dynamic DDGI](./DDGI-Dynamic.md)
-- [Compile-Time Switches](../Performance/Compile-Time-Switches.md)
-- [Performance Targets](../EngineOverview/Performance-Targets.md)
+- [光线追踪](./Ray-Tracing.md)
+- [RT 阴影和环境光遮蔽](./RT-Shadows-And-Ambient-Occlusion.md)
+- [动态 DDGI](./DDGI-Dynamic.md)
+- [编译时开关](../Performance/Compile-Time-Switches.md)
+- [性能目标](../EngineOverview/Performance-Targets.md)
