@@ -1,49 +1,33 @@
-# RTX 直接光照（RTX Direct Illumination, RTXDI）
+# RTXDI
 
 
-Ray-traced direct lighting for scenes with very many lights. This is the <b>standalone</b> RTXDI, not the
-Lumen-integrated version in UE 5.1+. A less noisy alternative to MegaLights.
+适用于包含大量光源场景的光线追踪直接照明。这是独立的 RTXDI（RTX 直接光照，RTX Direct Illumination），而非 UE 5.1 及更高版本中集成的 Lumen 版本。它是 MegaLights 的一个噪声更低的替代方案。
+
+**默认构建版本中已编译移除。**需要使用 `VITE_RT_PSO_DEBLOAT=0` 重新构建，`r.RayTracing.SampledDirectLighting` 才能生效。
+
+RTX 直接照明解决了多光源问题：即使数百或数千个光源可能共同作用于一个像素，也能正确地对其进行着色，而无需评估所有光源。
+
+## 它的作用
+
+传统的直接光照会评估每个像素的所有相关光源，因此成本会随着光源数量的增加而增加。一旦场景中有数百个光源，这种方法就变得难以承受，这也是为什么引擎历来会采取激进的剔除、限制投射阴影的光源或烘焙等措施的原因。
+
+RTXDI 使用基于储层的时空重要性重采样。每个像素维护一个包含候选光源样本的小型储层，这些样本会根据相邻像素和帧进行优化。最终结果相当于对所有光源进行采样，而实际评估的光源却只有少数几个，因此成本几乎与光源数量无关。
+
+实际效果是，光源数量不再是需要控制的预算。您可以根据场景实际拥有的光源数量来照明，而不是根据渲染器能够处理的数量。
 
 
-<b>Compiled out in a default build.</b> Requires rebuilding with
-<code>VITE_RT_PSO_DEBLOAT=0</code> before <code>r.RayTracing.SampledDirectLighting</code> does anything.
-</p>
-</tldr>
+## 独立实现方式的区别
 
-RTX Direct Illumination solves the many-lights problem: shading a pixel correctly when hundreds or thousands
-of lights could contribute to it, without evaluating all of them.
+这一点很重要，但很容易被忽略。
 
-## What it does
+UE 5.1 及更高版本的 NvRTX 分支将 RTXDI **集成到了** Lumen 中。Vite 提供的是独立实现，它独立于任何全局光照解决方案，处理场景的直接光照。
 
-Conventional direct lighting evaluates every relevant light per pixel, so cost scales with light count. Once
-a scene has hundreds of lights, that becomes untenable, which is why engines historically cull aggressively,
-limit shadow-casting lights, or bake.
+其结果是可组合性更强。RTXDI 处理直接光照；[DDGI](./DDGI-Dynamic.md) 处理间接反射；它们彼此无需了解。同时启用两者仍然比独立的硬件 Lumen 性能更好，同时生成的图像噪点比 MegaLights 更少。
 
-RTXDI uses reservoir-based spatiotemporal importance resampling. Each pixel maintains a small reservoir of
-candidate light samples, refined across neighbouring pixels and across frames. The result approximates
-sampling all lights while evaluating only a few, and the cost becomes roughly independent of light count.
 
-The practical effect is that light count stops being a budget you manage. You can light a scene with the
-number of emitters it physically has rather than the number the renderer can afford.
+## 启用
 
-## The standalone distinction
-
-This matters and is easy to miss.
-
-UE 5.1 and later NvRTX branches integrate RTXDI *into Lumen*. Vite ships the standalone implementation,
-which operates on the scene's direct lighting independently of any global illumination solution.
-
-The consequence is composability. RTXDI handles direct lighting; [DDGI](./DDGI-Dynamic.md) handles indirect
-bounce; they do not need to know about each other. Enabling both still results in better performance than
-standalone hardware Lumen, while producing a less noisy image than MegaLights.
-
-## Enabling
-
-<warning>
-RTXDI's shader permutations are compiled out when <code>VITE_RT_PSO_DEBLOAT</code> is <code>1</code>, which
-is the default. In such a build <code>ShouldRenderRayTracingSampledLighting()</code> returns
-<code>false</code> unconditionally: the console variable will set successfully and nothing will render.
-</warning>
+**警告：** 当 `VITE_RT_PSO_DEBLOAT` 为 `1`（默认值）时，RTXDI 的着色器排列组合会被编译掉。在这种情况下，`ShouldRenderRayTracingSampledLighting()` 会无条件返回 `false`：控制台变量会成功设置，但不会渲染任何内容。
 
 <procedure title="Enable RTXDI" id="enable-rtxdi">
     <step>
