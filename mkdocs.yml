@@ -43,7 +43,10 @@ plugins:
 extra:
   generator: false
 
-copyright: OpenHUTB 版权所有 &copy; 2025
+hooks:
+  - hooks.py
+
+copyright: OpenHUTB 版权所有 &copy; {year}
 
 nav:
 - 首页: 'index.md'
