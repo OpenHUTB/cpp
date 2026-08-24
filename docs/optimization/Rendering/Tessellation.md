@@ -1,114 +1,83 @@
-# Tessellation and Displacement
+# 细分曲面和置换
 
-<tldr>
-<p>
-Hardware tessellation with true world displacement, removed in Unreal Engine 5, is fully present in Vite.
-Set the material's <b>Tessellation Mode</b> and drive the <b>World Displacement</b> and
-<b>Tessellation Multiplier</b> pins.
-</p>
-</tldr>
 
-Tessellation subdivides geometry on the GPU and displaces the resulting vertices along a displacement map,
-producing real geometric detail: silhouettes change, surfaces self-occlude and self-shadow correctly, and
-ray-traced effects intersect the displaced surface rather than the flat one.
+虚幻引擎 5 中移除的硬件细分曲面（带有真实世界置换）功能在 Vite 中已完全实现。设置材质的**细分曲面模式（Tessellation Mode）**，并调整 **世界置换（World Displacement）** 和 **细分曲面乘数（Tessellation Multiplier）** 引脚。
 
-## Why this page exists
+细分曲面在 GPU 上细分几何体，并将生成的顶点沿置换贴图进行置换，从而产生真实的几何细节：轮廓会发生变化，表面会正确地自遮挡和自阴影，光线追踪效果会与置换后的表面相交，而不是与平面相交。
 
-Unreal Engine 5 removed hardware tessellation. Nanite is offered as the replacement, but Nanite solves a
-different problem: it renders extremely dense authored meshes efficiently. It does not let you take a
-moderate-density mesh and add procedural or texture-driven detail at runtime.
 
-The workflows that break without tessellation:
+## 本页面存在的意义
 
-- **Terrain and landscape displacement** driven by a heightmap, where the detail is procedural and
-  view-dependent rather than baked into a mesh.
-- **Runtime displacement** &mdash; snow accumulation, footprints, deformation, water surfaces &mdash; where
-  the displacement changes during play.
-- **Texture-driven detail on tiling surfaces**, where a single material adds real depth to brick, cobble or
-  bark across many meshes without authoring unique high-poly geometry for each.
-- **Memory-constrained detail**, where a heightmap is dramatically cheaper than the equivalent dense mesh.
+虚幻引擎 5 移除了硬件曲面细分。Nanite 作为替代方案被提出，但 Nanite 解决的是另一个问题：它能够高效地渲染极其密集的自定义网格。它不允许您在运行时为中等密度的网格添加程序化或纹理驱动的细节。
 
-Vite keeps the entire 4.27 tessellation pipeline intact, which means these workflows still work.
+以下工作流程在缺少曲面细分的情况下会失效：
 
-## Enabling tessellation on a material
+- 由高度图驱动的**地形和地貌位移**，其中细节是程序化的，并且与视角相关，而不是烘焙到网格中。
+- **运行时位移** ——积雪、脚印、变形、水面——位移在游戏过程中会发生变化。
+- **在平铺表面上添加纹理驱动的细节**，其中单个材质可以为多个网格上的砖块、鹅卵石或树皮添加真实的深度，而无需为每个网格创建独特的高多边形几何体。
+- **内存受限的细节**，其中高度图比等效的密集网格的开销要小得多。
 
-<procedure title="Set up a displaced material" id="setup-tessellation">
-    <step>
-        Open the material and set <b>Tessellation Mode</b> in the details panel:
-        <b>Flat Tessellation</b> subdivides without smoothing the base surface; <b>PN Triangles</b>
-        smooths the base surface as it subdivides. PN Triangles is usually what you want on organic
-        shapes; Flat is correct when the base silhouette should be preserved exactly.
-    </step>
-    <step>
-        Connect a scalar to <b>Tessellation Multiplier</b>. This controls how much subdivision the surface
-        receives. Drive it from distance so that far geometry is not subdivided.
-    </step>
-    <step>
-        Connect a vector to <b>World Displacement</b>. The usual form is your surface normal multiplied by
-        a heightmap sample multiplied by a displacement scale.
-    </step>
-    <step>
-        Enable <b>Adaptive Tessellation</b> on the material if you want the engine to scale subdivision by
-        screen-space triangle size.
-    </step>
-</procedure>
+Vite 保留了整个 4.27 曲面细分管线，这意味着这些工作流程仍然有效。
 
-## Global controls
 
-| CVar | Default | Effect |
+## 启用材质细分
+
+### 设置置换材质
+
+1. 打开材质并在详细信息面板中设置**细分模式（Tessellation Mode）**：**平面细分（Flat Tessellation）**会在不平滑基础表面的情况下进行细分；**PN 三角形细分（PN Triangles）** 会在细分的同时平滑基础表面。PN 三角形细分通常适用于有机形状；平面细分适用于需要精确保留基础轮廓的情况。
+
+2. 将标量连接到**细分乘数（Tessellation Multiplier）**。这控制表面接受的细分程度。根据距离驱动它，这样远处的几何体就不会被细分。
+
+3. 将向量连接到**世界置换（World Displacement）**。通常的格式是表面法线乘以高度图采样值再乘以置换比例。
+
+4. 如果您希望引擎根据屏幕空间三角形大小缩放细分，请在材质上启用**自适应细分（Adaptive Tessellation）**。
+
+
+## 全局控制
+
+| CVar | 默认值 | 效果 |
 |---|---|---|
-| `r.TessellationAdaptivePixelsPerTriangle` | `48.0` | Global tessellation factor multiplier. Target screen-space triangle size in pixels when adaptive tessellation is enabled. |
+| `r.TessellationAdaptivePixelsPerTriangle` | `48.0` | 全局细分因子乘数。启用自适应细分时，目标屏幕空间三角形大小（以像素为单位）。 |
 
-Lowering the value produces smaller triangles and more subdivision; raising it produces fewer. It is a
-useful global scalability lever: expose it through your scalability groups so that lower quality presets
-back off tessellation across the whole project without touching individual materials.
+降低此值会生成更小的三角形和更高的细分级别；提高此值会生成更少的三角形和更低的细分级别。这是一个有用的全局缩放控制：通过缩放组启用此控制，以便低质量预设可以降低整个项目的细分级别，而不会影响单个材质。
 
-## Cost and control
 
-Tessellation is not free, and the failure mode is severe: an unbounded tessellation multiplier on a large
-surface can generate millions of triangles and collapse frame rate.
+## 成本与控制
 
-**Always bound the multiplier by distance.** The standard pattern multiplies the tessellation factor by a
-distance falloff so that only nearby surfaces are subdivided:
+细分并非免费，而且一旦失败后果严重：在大面积表面上使用无限制的细分倍率会生成数百万个三角形，导致帧率骤降。
 
-- Sample `Camera Position` and the object or pixel world position.
-- Compute distance, remap it through a `Divide` and `Saturate` into a 0&ndash;1 falloff.
-- Multiply the falloff into the tessellation multiplier.
+**务必将倍率限制在距离范围内。** 标准模式是将细分因子乘以距离衰减系数，从而仅细分相邻的表面：
 
-**Watch triangle density directly.** The wireframe view mode and the `Shader Complexity` view mode both
-reveal runaway subdivision immediately. Add `stat rhi` to check triangle counts.
+- 采样**相机位置（Camera Position）** 和物体或像素的世界位置。
+- 计算距离，并通过`Divide`和`Saturate`操作将其重新映射到 0-1 的衰减值。
+- 将该衰减值乘以细分倍率。
 
-**Displacement cracks** appear at UV seams and mesh boundaries where adjacent vertices displace by
-different amounts. Fix them by making the heightmap continuous across the seam, or by masking displacement
-to zero at boundaries.
+**直接观察三角形密度。** 线框视图模式和**着色器复杂度（Shader Complexity）** 视图模式都能立即显示过度细分的情况。添加 `stat rhi` 以检查三角形数量。
 
-## Interaction with ray tracing
+**位移裂纹（Displacement cracks）** 出现在 UV 接缝和网格边界处，相邻顶点的位移量不同。可以通过使高度图在接缝处连续，或者将边界处的位移遮罩为零来修复它们。
 
-Displaced geometry participates in ray tracing correctly, which is a meaningful advantage over the
-parallax-mapping alternatives. A parallax-occlusion-mapped brick wall looks displaced from the primary view
-but is flat to every ray-traced [reflection](./RT-Reflections.md), [shadow](./RT-Shadows-And-Ambient-Occlusion.md)
-and [DDGI](./DDGI-Dynamic.md) probe ray. A tessellated and displaced one is genuinely displaced to all of
-them.
+## 与光线追踪的交互
 
-The cost is that ray tracing acceleration structures must be built for the displaced geometry, which
-increases BLAS build cost for dynamically tessellated surfaces. For large static displaced surfaces this is
-paid once; for surfaces whose displacement animates every frame it is paid continuously. Budget
-accordingly.
+位移几何体能够正确地参与光线追踪，这比视差贴图方案具有显著优势。视差遮蔽贴图的砖墙从主视图来看是位移的，但对于所有光线追踪的[反射](./RT-Reflections.md)、[阴影](./RT-Shadows-And-Ambient-Occlusion.md)和 [DDGI](./DDGI-Dynamic.md) 探测光线而言，它都是平坦的。而经过细分和位移处理的砖墙，对于所有这些情况来说，都是真正位移的。
 
-## Alternatives
+代价是必须为位移几何体构建光线追踪加速结构，这会增加动态细分曲面的 BLAS 构建成本。对于大型静态位移曲面，这只需支付一次；对于位移每帧都会变化的曲面，则需要持续支付。请据此进行预算。
 
-Tessellation is the right tool when you need real geometry. When you do not:
 
-| Technique | When it is enough |
+## 替代方案
+
+当您需要真实的几何体时，细分是合适的工具。当不需要时：
+
+
+| 技术 | 何时足够 |
 |---|---|
-| Normal mapping | Lighting detail only; silhouette and self-occlusion do not matter |
-| Parallax occlusion mapping | Convincing depth from the primary view, flat to rays, no geometry cost |
-| Authored high-poly meshes | Static detail, known in advance, memory budget allows it |
-| **Tessellation** | Silhouette matters, displacement is dynamic, or ray-traced effects must see the detail |
+| 法线贴图 | 仅用于光照细节；轮廓和自遮挡无关紧要 |
+| 视差遮挡贴图 | 从主视图即可获得逼真的深度，光线追踪时为平面，无需增加几何体 |
+| 精心制作的高多边形网格 | 静态细节，预先已知，内存预算允许 |
+| **细分曲面** | 轮廓至关重要，置换贴图是动态的，或者光线追踪效果必须能够捕捉到细节 |
 
-## See also
+## 另请参阅
 
-- [Rendering](./Rendering.md)
-- [Ray Tracing](./Ray-Tracing.md)
-- [UE4 versus UE5 Cost Analysis](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md)
-- [Shading Models](./Shading-Models.md)
+- [渲染](./Rendering.md)
+- [光线追踪](./Ray-Tracing.md)
+- [UE4 与 UE5 成本分析](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md)
+- [着色模型](./Shading-Models.md)
