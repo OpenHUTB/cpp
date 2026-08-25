@@ -1,8 +1,16 @@
 title: 主页
 
-# [引擎实现文档](https://github.com/OpenHUTB/cpp)
+# [引擎优化文档](https://github.com/OpenHUTB/cpp)
 
-欢迎引擎的 C++ 实现文档，沟通[引擎使用文档](https://openhutb.github.io/engine_doc)和[源代码实现](https://github.com/OpenHUTB/engine)。目标是让模拟的帧率达到稳定的 30 FPS（稳定流畅的底线）、60 FPS（游戏响应迅速）、90 FPS（VR 应用低帧率会导致眩晕）。
+<div align="center">
+过早优化是万恶之源。
+
+—— 高德纳
+</div>
+
+<p></p>
+
+欢迎模拟引擎的优化文档，沟通[引擎使用文档](https://openhutb.github.io/engine_doc)和[源代码实现](https://github.com/OpenHUTB/engine)。目标是让模拟的帧率达到稳定的 30 FPS（稳定流畅的底线）、60 FPS（游戏响应迅速）、90 FPS（VR 应用低帧率会导致眩晕）。
 
 
 * [__引擎 C++ 开发教程__](#dev)
@@ -30,11 +38,7 @@ title: 主页
 
 ## 引擎优化 <span id='optimization'></span>
 
-<div align="center">
-过早优化是万恶之源。
 
-—— 高德纳
-</div>
 
 * [引擎优化入门](./optimization/Default-topic.md)
 * [引擎概述](./optimization/EngineOverview/Engine-Overview.md)
