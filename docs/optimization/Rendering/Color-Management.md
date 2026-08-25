@@ -1,68 +1,51 @@
-# Colour Management
+# 色彩管理
+Vite 使用 Unreal Engine 4.27 的原生色调映射和色彩管线：ACES 电影色调映射器、后期体积调色、LUT 和 HDR 输出。本页涵盖了最常导致问题的控件和设置。
 
-<tldr>
-<p>
-Vite uses the stock Unreal Engine 4.27 tonemapping and colour pipeline: ACES film tonemapper, post process
-volume grading, LUTs and HDR output. This page covers the controls and the settings that most often cause
-problems.
-</p>
-</tldr>
+色彩管理是帧的最后一个阶段，它决定了[光照](./Global-Illumination.md)和[光线追踪](./Ray-Tracing.md)系统所做的所有工作最终能否正确呈现在显示器上。
 
-Colour management is the last stage of the frame and the one that determines whether all the work done by
-the [lighting](./Global-Illumination.md) and [ray tracing](./Ray-Tracing.md) systems actually reaches the
-display looking correct.
 
-## The pipeline
+## 管线
 
-The renderer works in linear HDR throughout. At the end of the frame:
+渲染器全程以线性 HDR 模式运行。在帧的末尾：
 
-1. **[SMAA](./Anti-Aliasing.md)** resolves edges, in linear space, before tonemapping.
-2. **Colour grading** applies the post process volume's exposure, white balance, saturation, contrast,
-   gain, gamma and offset controls, plus any colour grading LUT.
-3. **Tonemapping** maps the HDR range into the display range using the ACES filmic curve.
-4. **Output encoding** applies the transfer function for the target display, sRGB for SDR or PQ/ST-2084 for
-   HDR.
+1. **[SMAA](./Anti-Aliasing.md)** 在色调映射之前，以线性空间的方式解析边缘。
+2. **色彩分级** 应用后期处理模块的曝光、白平衡、饱和度、对比度、增益、伽玛和偏移控制，以及任何色彩分级 LUT。
+3. **色调映射** 映射使用 ACES 电影曲线将 HDR 范围映射到显示范围。
+4. **输出编码** 应用目标显示器的传输函数，SDR 使用 sRGB，HDR 使用 PQ/ST-2084。
 
-## Tonemapper controls
 
-| CVar | Default | Purpose |
+## 色调映射器控制
+
+| CVar | 默认值 | 用途 |
 |---|---|---|
-| `r.TonemapperFilm` | `1` | Use the ACES film tone mapper. `0` reverts to the legacy curve. |
-| `r.Tonemapper.Quality` | `5` | `0` basic only, `1` + film contrast, `2` + vignette, `3` + film shadow tint, `4` + grain, `5` + grain jitter (full quality) |
-| `r.Tonemapper.Sharpen` | `0` | Sharpening in the tonemapper, clamped at 10. `0.5` half strength, `1` full strength. |
-| `r.Tonemapper.GrainQuantization` | `1` | `1` adds a high-frequency pixel pattern to fight 8-bit colour quantisation. `0` is slightly faster. |
-| `r.TonemapperGamma` | `0.0` | `0` uses the default sRGB or Rec709 transform; any other value forces a fixed gamma. |
-| `r.Gamma` | `1.0` | Gamma applied on output |
+| `r.TonemapperFilm` | `1` | 使用 ACES 胶片色调映射器。`0` 恢复为传统曲线。 |
+| `r.Tonemapper.Quality` | `5` | `0` 仅基本设置，`1` + 胶片对比度，`2` + 暗角，`3` + 胶片阴影色调，`4` + 颗粒，`5` + 颗粒抖动（最高质量）。 |
+| `r.Tonemapper.Sharpen` | `0` | 色调映射器中的锐化，上限为 10。`0.5` 为半强度，`1` 为全强度。 |
+| `r.Tonemapper.GrainQuantization` | `1` | `1` 添加高频像素图案以对抗 8 位颜色量化。`0` 速度略快。 |
+| `r.TonemapperGamma` | `0.0` | `0` 使用默认的 sRGB 或 Rec709 转换；任何其他值都强制使用固定的伽玛值。 |
+| `r.Gamma` | `1.0` | Gamma 应用于输出 |
 
-`r.Tonemapper.Quality` is a genuine scalability lever. Each step down removes a feature from the tonemapper
-shader, producing a cheaper permutation. If your project does not use vignette, film shadow tint or grain,
-dropping the quality level costs nothing visually and saves both frame time and shader permutations.
+`r.Tonemapper.Quality` 是一个真正的可扩展性控制点。每降低一级，色调映射着色器就会移除一项功能，从而产生更经济的排列组合。如果您的项目不使用暗角、胶片阴影色调或颗粒效果，降低质量级别不会造成任何视觉损失，还能节省帧时间和着色器排列组合次数。
 
-`r.Tonemapper.Sharpen` deserves care. A small amount of tonemapper sharpening can compensate for perceived
-softness, but it operates after [anti-aliasing](./Anti-Aliasing.md) and will re-introduce aliasing on edges
-SMAA just resolved. If the image looks soft, first confirm that you are actually rendering at native
-resolution and that no upscaler is active.
+`r.Tonemapper.Sharpen` 需要谨慎使用。少量色调映射锐化可以补偿感知到的柔化，但它是在[抗锯齿](./Anti-Aliasing.md)之后进行的，会在 SMAA 刚刚解决的边缘重新引入锯齿。如果图像看起来柔和，请首先确认您确实以原生分辨率渲染，并且没有启用任何放大功能。
 
-## Colour grading
 
-All grading is done through post process volumes under **Color Grading**. The controls are organised into
-Temperature, Global, Shadows, Midtones and Highlights, each offering saturation, contrast, gamma, gain and
-offset.
+## 色彩分级
 
-Grading in Unreal is applied before tonemapping, in linear space. This is why grading values that look
-correct in a 2D image editor do not transfer directly &mdash; you are grading scene-referred linear data,
-not display-referred pixels.
+所有色彩分级均通过 **色彩分级（Color Grading）** 下的后期处理体积完成。控件分为“色温”、“全局”、“阴影”、“中间调”和“高光”五个部分，每个部分都提供饱和度、对比度、伽玛值、增益和偏移量等设置。
 
-**LUTs.** A colour grading LUT can be assigned in the post process volume with a blend weight. Author LUTs
-against a neutral capture of your scene rather than against an already-graded one, or the grades compound.
+在虚幻引擎中，色彩分级是在色调映射之前，以线性空间进行操作的。这就是为什么在二维图像编辑器中看起来正确的调色值无法直接应用到实际场景中的原因——您是在对场景相关的线性数据进行调色，而不是对显示器相关的像素进行调色。
 
-## HDR output
 
-| CVar | Purpose |
+**LUT（查找表）。** 可以在后期处理程序中指定一个调色 LUT，并设置混合权重。创建 LUT 时，应使用场景的原始中性图像，而不是使用已经调色过的图像，否则调色结果会叠加。
+
+## HDR 输出
+
+| CVar | 用途 |
 |---|---|
-| `r.AllowHDR` | Enables HDR output support for the project. Usually set per-project or per-platform in `DefaultEngine.ini`. |
-| `r.HDR.Display.OutputDevice` | Selects the output transfer function |
-| `r.HDR.Display.ColorGamut` | Selects the output colour gamut |
+| `r.AllowHDR` | 启用项目的 HDR 输出支持。通常在 `DefaultEngine.ini` 中针对每个项目或平台进行设置。 |
+| `r.HDR.Display.OutputDevice` | 选择输出传输函数 |
+| `r.HDR.Display.ColorGamut` | 选择输出色域 |
 
 ```ini
 ; Config/DefaultEngine.ini
@@ -70,40 +53,35 @@ against a neutral capture of your scene rather than against an already-graded on
 r.AllowHDR=1
 ```
 
-HDR output interacts with SMAA correctly because [SMAA runs before tonemapping](./Anti-Aliasing.md) in Vite.
-Anti-aliasing implementations that run after the tonemapper generally have to be reworked for HDR output;
-this one does not.
+HDR 输出与 SMAA 的交互正常，因为在 Vite 中，[SMAA 的运行先于色调映射](./Anti-Aliasing.md)。运行在色调映射之后的抗锯齿实现通常需要针对 HDR 输出进行重新调整；而 Vite 的实现则无需如此。
 
-Slate and UI are composited with knowledge of the output device via `r.TonemapperGamma`, but UI authored
-against an SDR reference will look wrong in HDR. Budget time to check your UI in HDR specifically rather
-than assuming it transfers.
 
-## Common problems
+Slate 和 UI 会根据输出设备信息（通过 `r.TonemapperGamma`）进行合成，但基于 SDR 参考创建的 UI 在 HDR 下会显示错误。请预留时间专门检查 UI 在 HDR 下的显示效果，而不是想当然地认为它会自动转换。
 
-<deflist>
-<def title="The scene looks washed out or milky">
-Usually excessive ambient or fog rather than a grading problem. Check whether
-<a href="./Ambient-Occlusion.md">AO</a> is being applied and whether your
-<a href="./Global-Illumination.md">GI</a> intensity is too high. Compare against a
-<a href="./Path-Tracing.md">path-traced</a> reference before reaching for contrast in the grade.
-</def>
-<def title="Colours shift between the editor viewport and packaged builds">
-Almost always a different output device or a post process volume that is not unbound. Confirm
-<code>r.HDR.Display.OutputDevice</code> matches in both, and check for editor-only post process volumes.
-</def>
-<def title="Banding in gradients and skies">
-Check <code>r.Tonemapper.GrainQuantization</code> is <code>1</code>. If banding persists on an HDR display,
-the source gradient itself may be quantised &mdash; check the sky texture or gradient material precision.
-</def>
-<def title="The image is sharp in the editor and soft in game">
-Confirm no upscaler is active. See <a href="./Upscalers.md">Upscalers and Frame Generation</a>. Vite renders
-at native resolution by default; an upscaler enabled in a game settings menu is the usual cause.
-</def>
-</deflist>
 
-## See also
+## 常见问题
 
-- [Anti-Aliasing](./Anti-Aliasing.md)
-- [Path Tracing](./Path-Tracing.md)
-- [Upscalers and Frame Generation](./Upscalers.md)
-- [Rendering](./Rendering.md)
+* 场景看起来发白或泛白
+
+   通常是环境光或雾气过大，而不是调色问题。检查是否应用了[环境光遮蔽 (AO)](./Ambient-Occlusion.md) 以及[全局光照 (GI)](./Global-Illumination.md) 强度是否过高。在调整对比度之前，请先与[路径追踪](./Path-Tracing.md)参考进行比较。
+
+* 编辑器视窗和打包版本之间的颜色存在差异
+
+   几乎总是由于输出设备不同或存在未解除绑定的后期处理体积造成的。确认两者中的 `r.HDR.Display.OutputDevice` 是否匹配，并检查是否存在仅在编辑器中显示的后期处理体积。
+
+* 渐变和天空出现条带
+
+   检查 `r.Tonemapper.GrainQuantization` 是否为 1。如果在 HDR 显示器上仍然存在条带，则可能是源渐变本身被量化了——请检查天空纹理或渐变材质的精度。
+
+
+* 图像在编辑器中清晰，但在游戏中模糊
+
+   确认没有启用任何放大器。请参阅[超分辨率和帧生成](./Upscalers.md)。Vite 默认以原生分辨率渲染；游戏设置菜单中启用的放大器通常是造成此问题的原因。
+
+
+## 另请参阅
+
+- [抗锯齿](./Anti-Aliasing.md)
+- [路径追踪](./Path-Tracing.md)
+- [超分辨率和帧生成](./Upscalers.md)
+- [渲染](./Rendering.md)
