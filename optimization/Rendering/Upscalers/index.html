@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Upscalers and Frame Generation - 引擎优化文档</title>
+    <title>超分辨率和帧生成 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Upscalers and Frame Generation";
+        var mkdocs_page_name = "\u8d85\u5206\u8fa8\u7387\u548c\u5e27\u751f\u6210";
         var mkdocs_page_input_path = "optimization/Rendering/Upscalers.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Upscalers and Frame Generation</li>
+      <li class="breadcrumb-item active">超分辨率和帧生成</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/Upscalers.md"> 编辑页面</a>
     </li>
@@ -120,203 +120,171 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="upscalers-and-frame-generation">Upscalers and Frame Generation</h1>
-<p><tldr></p>
-<p>
-Vite bundles DLSS 4.5, DLSS Frame Generation, FSR2, FSR 4, XeSS 3, NIS &mdash;. They are <b>optional headroom</b>, not the rendering plan. Vite's
-<a href="../EngineOverview/Performance-Targets.md">performance targets</a> are met at native resolution without any of them.
-</p>
-<p></tldr></p>
-<p>Check out the <a href="https://github.com/ViteStudio-Tech/ueVite-UpscalerTest">UpscalerTest Sample project</a></p>
-<p>Unreal Engine 5 treats upscaling as mandatory: the renderer is designed around rendering at a fraction of
-output resolution and reconstructing the rest. Vite takes the opposite position. The targets are native, and
-upscalers are available for users who want to spend the headroom on something else.</p>
-<p>That distinction changes how you should use the plugins on this page. If your project only hits its frame
-target with DLSS Performance enabled, the project is over budget &mdash; fix that first, then offer
-upscaling as an option on top.</p>
-<h2 id="bundled-plugins">Bundled plugins</h2>
-<p>All of these ship in the engine repository under <code>Engine/Plugins/Runtime</code>. None are enabled by default;
-enable the ones your project offers from <strong>Edit &gt; Plugins</strong>.</p>
+                <h1 id="_1">超分辨率和帧生成</h1>
+<p>Vite 捆绑了 DLSS 4.5（深度学习超采样，Deep Learning Super Sampling）、DLSS 帧生成、FSR2、FSR 4、XeSS 3 和 NIS 等功能。这些功能是可选的额外性能，并非渲染方案的核心。即使不启用任何这些功能，Vite 也能在原生分辨率下达到其<a href="../../EngineOverview/Performance-Targets/">性能目标</a>。
+请查看 <a href="https://github.com/ViteStudio-Tech/ueVite-UpscalerTest">UpscalerTest 示例项目</a>。</p>
+<p>虚幻 5 将超分辨率视为强制性功能：其渲染器的设计理念是先以部分输出分辨率进行渲染，然后重建剩余部分。Vite 则采取相反的做法。其目标是原生分辨率，而超分辨率功能仅供希望将性能提升空间用于其他用途的用户使用。</p>
+<p>这种区别会影响您使用此页面上插件的方式。如果您的项目只有在启用 DLSS Performance 后才能达到帧目标，则说明项目超出了预算——请先解决这个问题，然后再提供超分辨率选项。</p>
+<h2 id="_2">已捆绑的插件</h2>
+<p>所有这些插件都位于引擎仓库的 <code>Engine/Plugins/Runtime</code> 目录下。默认情况下均未启用；请在 <strong>编辑（Edit）&gt; 插件（Plugins）</strong> 中启用您的项目提供的插件。</p>
 <table>
 <thead>
 <tr>
-<th>Plugin</th>
-<th>Version</th>
-<th>What it provides</th>
-<th>Location</th>
+<th>插件</th>
+<th>版本</th>
+<th>功能</th>
+<th>位置</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>NVIDIA DLSS</td>
 <td>8.7.0-NGX310.7.0 (DLSS 4.5)</td>
-<td>Super Resolution, Ray Reconstruction, DLAA</td>
+<td>超分辨率、光线重建、DLAA</td>
 <td><code>Nvidia/DLSS</code></td>
 </tr>
 <tr>
-<td>NVIDIA DLSS Frame Generation</td>
+<td>NVIDIA DLSS 帧生成</td>
 <td>1.3.0-SL2.4.0 (Streamline)</td>
-<td>Frame Generation and Reflex</td>
+<td>帧生成和 Reflex</td>
 <td><code>Nvidia/Streamline</code></td>
 </tr>
 <tr>
 <td>NVIDIA DeepDVC</td>
 <td>Streamline</td>
-<td>Deep-learning dynamic vibrance</td>
+<td>深度学习动态增强</td>
 <td><code>Nvidia/StreamlineDeepDVC</code></td>
 </tr>
 <tr>
 <td>NVIDIA NIS</td>
 <td>&mdash;</td>
-<td>Image Scaling, spatial upscaling and sharpening</td>
+<td>图像缩放、空间放大和锐化</td>
 <td><code>Nvidia/NIS</code></td>
 </tr>
 <tr>
-<td>DLSS Movie Pipeline Support</td>
+<td>DLSS 影片渲染管线支持</td>
 <td>&mdash;</td>
-<td>DLSS integration for Movie Render Queue</td>
+<td>DLSS 集成到影片渲染队列</td>
 <td><code>Nvidia/DLSSMoviePipelineSupport</code></td>
 </tr>
 <tr>
 <td>AMD FSR 4</td>
 <td>4.1.1</td>
-<td>FidelityFX Super Resolution 4 and Frame Generation, DX12</td>
+<td>FidelityFX 超分辨率 4 和帧生成DX12</td>
 <td><code>VitePlugins/FSR4-427</code></td>
 </tr>
 <tr>
 <td>Intel XeSS</td>
 <td>3.0.5</td>
-<td>Xe Super Sampling</td>
+<td>Xe 超采样</td>
 <td><code>VitePlugins/XeSS_UE4.27_Plugin_v3.0.5</code></td>
 </tr>
 </tbody>
 </table>
-<p>FSR 4 and XeSS 3 are notable: both are backports that do not exist in stock 4.27. FSR 4 uses the native
-<code>ffx-api</code> and requires DirectX 12.</p>
-<h2 id="choosing-what-to-ship">Choosing what to ship</h2>
-<p>You do not need all of them. Each enabled upscaler adds shaders, binaries, package size and a settings menu
-entry that has to be tested.</p>
+<p>FSR 4 和 XeSS 3 值得注意：它们都是向后移植的，在 4.27 版本中并不存在。FSR 4 使用原生 <code>ffx-api</code>，需要 DirectX 12。</p>
+<h2 id="_3">选择要打包的内容</h2>
+<p>您不需要全部启用。每个启用的超分辨率工具都会增加着色器、二进制文件、软件包大小以及一个设置菜单项，这些都需要进行测试。</p>
 <table>
 <thead>
 <tr>
-<th>Situation</th>
-<th>Recommendation</th>
+<th>情况</th>
+<th>建议</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>PC release, broad hardware support</td>
-<td>DLSS + FSR 4. Covers NVIDIA and AMD; XeSS if Intel Arc matters to you.</td>
+<td>PC 发行版，广泛支持各种硬件</td>
+<td>DLSS + FSR 4。支持 NVIDIA 和 AMD 显卡；如果您需要 Intel Arc 功能，则支持 XeSS。</td>
 </tr>
 <tr>
-<td>NVIDIA-focused, ray tracing heavy</td>
-<td>DLSS with Ray Reconstruction</td>
+<td>专注于 NVIDIA 显卡，重度光线追踪</td>
+<td>DLSS 结合光线重建</td>
 </tr>
 <tr>
-<td>Anti-aliasing quality at native resolution</td>
-<td>DLAA (part of the DLSS plugin), or Vite's <a href="../Anti-Aliasing/">SMAA</a></td>
+<td>原生分辨率下的抗锯齿质量</td>
+<td>DLAA（DLSS 插件的一部分）或 Vite 的 <a href="../Anti-Aliasing/">SMAA</a></td>
 </tr>
 <tr>
-<td>No upscaling, native only</td>
-<td>Ship nothing from this page. This is a valid and supported configuration.</td>
+<td>不支持超分辨率，仅支持原生分辨率</td>
+<td>请勿从此页面下载任何内容。这是一个有效且受支持的配置。</td>
 </tr>
 </tbody>
 </table>
-<p>DLAA is worth calling out separately. It is DLSS's neural network applied at native resolution rather than
-as an upscaler, so it competes with SMAA rather than complementing it. It generally resolves finer detail
-than SMAA but reintroduces temporal accumulation, and therefore some of the artefacts SMAA avoids. Offer
-both and let the player choose.</p>
-<h2 id="ray-reconstruction">Ray Reconstruction</h2>
-<p>Ray Reconstruction replaces the hand-tuned denoisers for ray-traced effects with a neural denoiser. In a
-Vite project this interacts directly with the <a href="../Ray-Tracing/">ray tracing</a> configuration:</p>
+<p>DLAA 值得单独提及。它是将 DLSS 的神经网络应用于原生分辨率，而非作为超分辨率工具，因此它与 SMAA 竞争而非互补。它通常比 SMAA 解析出更精细的细节，但会重新引入时间累积效应，因此会产生一些 SMAA 避免的瑕疵。建议同时提供这两种方法，让玩家自行选择。</p>
+<h2 id="_4">光线重建</h2>
+<p>光线重建使用神经网络降噪器替换了手动调校的光线追踪效果降噪器。在 Vite 项目中，它会直接与<a href="../Ray-Tracing/">光线追踪</a>配置交互：</p>
 <ul>
-<li>It can substantially improve <a href="../RT-Reflections/">RT reflection</a> and <a href="../RTXDI/">RTXDI</a> quality under
-  motion, where hand-tuned denoisers struggle.</li>
-<li>It has no benefit for <a href="../DDGI-Dynamic/">DDGI</a>, which is noise-free by construction and has nothing to
-  denoise.</li>
+<li>它能显著提升<a href="../RT-Reflections/">光线追踪的反射率</a>和 <a href="../RTXDI/">RTXDI</a> 质量，而手动调校的降噪器往往难以胜任。 </li>
+<li>对于 <a href="../DDGI-Dynamic/">DDGI</a> 来说，它没有任何益处，因为 DDGI 本身就是无噪声的，无需降噪。</li>
 </ul>
-<p>If your ray tracing configuration is DDGI-led, Ray Reconstruction buys you less than it would in a
-Lumen-based project. Measure before shipping it.</p>
-<h2 id="frame-generation">Frame generation</h2>
-<p>DLSS Frame Generation (via Streamline) and FSR 4 Frame Generation both synthesise intermediate frames.</p>
-<p>Frame generation increases displayed frame rate without reducing input latency &mdash; it can make latency
-slightly worse, which is why Reflex ships alongside it in the Streamline plugin. Enable Reflex whenever you
-enable frame generation.</p>
-<blockquote>
-<p>Frame generation works best when the base frame rate is already high. Generating from 30&nbsp;fps to
-60&nbsp;fps produces visible artefacts around fast-moving UI and thin geometry; generating from
-60&nbsp;fps to 120&nbsp;fps is far more convincing. Since Vite targets high native frame rates to begin
-with, frame generation is well positioned here &mdash; as a way to push a 4K60 target toward a
-high-refresh display, not as a way to rescue a 30&nbsp;fps one.</p>
-<p>{style="note"}</p>
-</blockquote>
-<h2 id="the-dlss-translucency-patch">The DLSS translucency patch</h2>
-<p>Vite includes an optional compile-time patch that addresses a specific quality problem with upscaling:
-separate translucency and volumetric fog rendering at the internal render resolution and then being
-upscaled, which softens particles, glass and fog against an otherwise sharp reconstructed image.</p>
+<p>如果你的光线追踪配置是基于 DDGI 的，那么光线重建带来的提升远不如基于流明（Lumen）的方案。发货前请务必进行测量。</p>
+<h2 id="_5">帧生成</h2>
+<p>DLSS 帧生成（通过 Streamline）和 FSR 4 帧生成都会合成中间帧。</p>
+<p>帧生成可以提高显示的帧率，但不会降低输入延迟——它甚至可能会略微增加延迟，因此 Streamline 插件中同时包含了 Reflex。启用帧生成时，也请启用 Reflex。</p>
+<p><strong>注意：</strong> 帧生成在基础帧率已经很高的情况下效果最佳。从 30 fps 生成到 60 fps 会在快速移动的 UI 和细长几何体周围产生可见的伪影；而从 60 fps 生成到 120 fps 则效果更佳。由于 Vite 本身就以高原生帧率为目标，因此帧生成在这里非常适用——它是一种将 4K60 目标推向高刷新率显示器的方法，而不是一种拯救 30 fps 显示器的方法。</p>
+<h2 id="dlss">DLSS 半透明补丁</h2>
+<p>Vite 包含一个可选的编译时补丁，用于解决放大时的一个特定质量问题：在内部渲染分辨率下分别渲染半透明和体积雾，然后再进行放大，这会导致粒子、玻璃和雾在原本清晰的重建图像上显得模糊。</p>
 <table>
 <thead>
 <tr>
-<th>Switch</th>
-<th>Default</th>
-<th>Effect</th>
+<th>切换</th>
+<th>默认</th>
+<th>效果</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>VITE_DLSS_PATCH</code></td>
 <td><code>0</code></td>
-<td>Adds upscaled-resolution translucency passes and native-resolution volumetric fog</td>
+<td>添加超分辨率半透明效果和原生分辨率体积雾</td>
 </tr>
 </tbody>
 </table>
-<p>When enabled, the renderer gains two additional translucency passes,
-<code>TranslucencyAfterDOFUpscaledRT</code> and <code>TranslucencyAfterDOFModulateUpscaledRT</code>, which render selected
-translucent primitives at output resolution after upscaling. Primitives opt in through the
-<code>bRenderInTranslucencyUpscaledRTPass</code> relevance flag, and the passes are only used when a temporal upscaler
-is actually active.</p>
-<p>It also adds:</p>
+<p>启用后，渲染器将获得两个额外的半透明渲染通道：<code>TranslucencyAfterDOFUpscaledRT</code> 和 <code>TranslucencyAfterDOFModulateUpscaledRT</code>。这两个通道会在放大后以输出分辨率渲染选定的半透明图元。图元可以通过 <code>bRenderInTranslucencyUpscaledRTPass</code> 相关标志选择是否启用这些通道，并且这些通道仅在时间放大器实际处于活动状态时才会使用。</p>
+<p>此外，它还添加了：</p>
 <table>
 <thead>
 <tr>
 <th>CVar</th>
-<th>Default</th>
-<th>Effect</th>
+<th>默认值</th>
+<th>效果</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.VolumetricFog.UseUpScaledSizeVolumetricFog</code></td>
 <td><code>0</code></td>
-<td>Computes the volumetric fog grid from the output resolution rather than the internal render resolution</td>
+<td>使用输出分辨率而非内部渲染分辨率计算体积雾网格。</td>
 </tr>
 </tbody>
 </table>
-<p>The switch is defined in <code>Engine/Source/Runtime/Core/Public/Misc/CoreDefines.h</code> and defaults to off, since
-it costs frame time and only matters for projects that ship with upscaling enabled. See
-<a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a> for how to change it.</p>
-<h2 id="enabling-an-upscaler">Enabling an upscaler</h2>
-<p><procedure title="Add DLSS to a project" id="enable-dlss">
-    <step>Open <b>Edit &gt; Plugins</b>, find <b>NVIDIA DLSS Super Resolution/Ray Reconstruction/DLAA</b>, enable it and restart the editor.</step>
-    <step>For frame generation, also enable <b>NVIDIA DLSS Frame Generation</b>.</step>
-    <step>
-        Query support at runtime through the DLSS Blueprint library before exposing the option in your
-        settings menu. Hardware and driver support vary, and an option that silently does nothing is worse
-        than no option.
-    </step>
-    <step>Expose quality mode as a player setting rather than forcing one. Include an off state.</step>
-    <step>
-        Test the interaction with your <a href="./Anti-Aliasing.md">anti-aliasing</a> setting. DLSS replaces
-        the anti-aliasing pass; leaving SMAA enabled alongside it wastes frame time.
-    </step>
-</procedure></p>
-<h2 id="see-also">See also</h2>
+<p>该开关定义在 <a href="https://github.com/OpenHUTB/engine/blob/hutb/Engine/Source/Runtime/Core/Public/Misc/CoreDefines.h">Engine/Source/Runtime/Core/Public/Misc/CoreDefines.h</a> 中，默认关闭，因为它会消耗帧时间，并且仅对启用了超分辨率的项目有效。有关如何更改它，请参阅<a href="../../Performance/Compile-Time-Switches/">编译时开关</a>。</p>
+<h2 id="_6">启用超分辨率</h2>
+<h3 id="dlss_1">将 DLSS 添加到项目</h3>
+<ol>
+<li>
+<p>打开<strong>编辑（Edit）&gt; 插件（Plugins）</strong>，找到 <strong>NVIDIA DLSS 超分辨率/光线重建/DLAA（NVIDIA DLSS Super Resolution/Ray Reconstruction/DLAA）</strong>，启用它并重启编辑器。</p>
+</li>
+<li>
+<p>对于帧生成，也请启用 <strong>NVIDIA DLSS 帧生成（NVIDIA DLSS Frame Generation）</strong>。</p>
+</li>
+<li>
+<p>在设置菜单中显示该选项之前，请先通过 DLSS 蓝图库在运行时查询其支持情况。硬件和驱动程序的支持情况各不相同，一个默默无闻的选项还不如没有选项。</p>
+</li>
+<li>
+<p>将质量模式作为玩家设置公开，而不是强制启用。包含一个关闭状态。</p>
+</li>
+<li>
+<p>测试与<a href="../Anti-Aliasing/">抗锯齿</a>设置的交互。DLSS 会替换抗锯齿通道；同时启用 SMAA 会浪费帧时间。</p>
+</li>
+</ol>
+<h2 id="_7">另请参阅</h2>
 <ul>
-<li><a href="../Anti-Aliasing/">Anti-Aliasing</a></li>
-<li><a href="../../EngineOverview/Performance-Targets/">Performance Targets</a></li>
-<li><a href="../Ray-Tracing/">Ray Tracing</a></li>
-<li><a href="../../Plugins/Bundled-Plugins/">Bundled Plugins</a></li>
-<li><a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a></li>
+<li><a href="../Anti-Aliasing/">抗锯齿</a></li>
+<li><a href="../../EngineOverview/Performance-Targets/">性能目标</a></li>
+<li><a href="../Ray-Tracing/">光线追踪</a></li>
+<li><a href="../../Plugins/Bundled-Plugins/">已捆绑的插件</a></li>
+<li><a href="../../Performance/Compile-Time-Switches/">编译时开关</a></li>
 </ul>
               
             </div>
@@ -359,6 +327,7 @@ it costs frame time and only matters for projects that ship with upscaling enabl
       <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/js-sequence-diagrams/1.0.6/sequence-diagram-min.js"></script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/flowchart/1.6.5/flowchart.min.js"></script>
+      <script src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2777080357724781"></script>
       <script src="../../../js/umlconvert.js"></script>
       <script src="../../../search/main.js"></script>
     <script>
