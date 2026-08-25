@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Colour Management - 引擎优化文档</title>
+    <title>色彩管理 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Colour Management";
+        var mkdocs_page_name = "\u8272\u5f69\u7ba1\u7406";
         var mkdocs_page_input_path = "optimization/Rendering/Color-Management.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Colour Management</li>
+      <li class="breadcrumb-item active">色彩管理</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/Color-Management.md"> 编辑页面</a>
     </li>
@@ -120,105 +120,85 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="colour-management">Colour Management</h1>
-<p><tldr></p>
-<p>
-Vite uses the stock Unreal Engine 4.27 tonemapping and colour pipeline: ACES film tonemapper, post process
-volume grading, LUTs and HDR output. This page covers the controls and the settings that most often cause
-problems.
-</p>
-<p></tldr></p>
-<p>Colour management is the last stage of the frame and the one that determines whether all the work done by
-the <a href="../Global-Illumination/">lighting</a> and <a href="../Ray-Tracing/">ray tracing</a> systems actually reaches the
-display looking correct.</p>
-<h2 id="the-pipeline">The pipeline</h2>
-<p>The renderer works in linear HDR throughout. At the end of the frame:</p>
+                <h1 id="_1">色彩管理</h1>
+<p>Vite 使用 Unreal Engine 4.27 的原生色调映射和色彩管线：ACES 电影色调映射器、后期体积调色、LUT 和 HDR 输出。本页涵盖了最常导致问题的控件和设置。</p>
+<p>色彩管理是帧的最后一个阶段，它决定了<a href="../Global-Illumination/">光照</a>和<a href="../Ray-Tracing/">光线追踪</a>系统所做的所有工作最终能否正确呈现在显示器上。</p>
+<h2 id="_2">管线</h2>
+<p>渲染器全程以线性 HDR 模式运行。在帧的末尾：</p>
 <ol>
-<li><strong><a href="../Anti-Aliasing/">SMAA</a></strong> resolves edges, in linear space, before tonemapping.</li>
-<li><strong>Colour grading</strong> applies the post process volume's exposure, white balance, saturation, contrast,
-   gain, gamma and offset controls, plus any colour grading LUT.</li>
-<li><strong>Tonemapping</strong> maps the HDR range into the display range using the ACES filmic curve.</li>
-<li><strong>Output encoding</strong> applies the transfer function for the target display, sRGB for SDR or PQ/ST-2084 for
-   HDR.</li>
+<li><strong><a href="../Anti-Aliasing/">SMAA</a></strong> 在色调映射之前，以线性空间的方式解析边缘。</li>
+<li><strong>色彩分级</strong> 应用后期处理模块的曝光、白平衡、饱和度、对比度、增益、伽玛和偏移控制，以及任何色彩分级 LUT。</li>
+<li><strong>色调映射</strong> 映射使用 ACES 电影曲线将 HDR 范围映射到显示范围。</li>
+<li><strong>输出编码</strong> 应用目标显示器的传输函数，SDR 使用 sRGB，HDR 使用 PQ/ST-2084。</li>
 </ol>
-<h2 id="tonemapper-controls">Tonemapper controls</h2>
+<h2 id="_3">色调映射器控制</h2>
 <table>
 <thead>
 <tr>
 <th>CVar</th>
-<th>Default</th>
-<th>Purpose</th>
+<th>默认值</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.TonemapperFilm</code></td>
 <td><code>1</code></td>
-<td>Use the ACES film tone mapper. <code>0</code> reverts to the legacy curve.</td>
+<td>使用 ACES 胶片色调映射器。<code>0</code> 恢复为传统曲线。</td>
 </tr>
 <tr>
 <td><code>r.Tonemapper.Quality</code></td>
 <td><code>5</code></td>
-<td><code>0</code> basic only, <code>1</code> + film contrast, <code>2</code> + vignette, <code>3</code> + film shadow tint, <code>4</code> + grain, <code>5</code> + grain jitter (full quality)</td>
+<td><code>0</code> 仅基本设置，<code>1</code> + 胶片对比度，<code>2</code> + 暗角，<code>3</code> + 胶片阴影色调，<code>4</code> + 颗粒，<code>5</code> + 颗粒抖动（最高质量）。</td>
 </tr>
 <tr>
 <td><code>r.Tonemapper.Sharpen</code></td>
 <td><code>0</code></td>
-<td>Sharpening in the tonemapper, clamped at 10. <code>0.5</code> half strength, <code>1</code> full strength.</td>
+<td>色调映射器中的锐化，上限为 10。<code>0.5</code> 为半强度，<code>1</code> 为全强度。</td>
 </tr>
 <tr>
 <td><code>r.Tonemapper.GrainQuantization</code></td>
 <td><code>1</code></td>
-<td><code>1</code> adds a high-frequency pixel pattern to fight 8-bit colour quantisation. <code>0</code> is slightly faster.</td>
+<td><code>1</code> 添加高频像素图案以对抗 8 位颜色量化。<code>0</code> 速度略快。</td>
 </tr>
 <tr>
 <td><code>r.TonemapperGamma</code></td>
 <td><code>0.0</code></td>
-<td><code>0</code> uses the default sRGB or Rec709 transform; any other value forces a fixed gamma.</td>
+<td><code>0</code> 使用默认的 sRGB 或 Rec709 转换；任何其他值都强制使用固定的伽玛值。</td>
 </tr>
 <tr>
 <td><code>r.Gamma</code></td>
 <td><code>1.0</code></td>
-<td>Gamma applied on output</td>
+<td>Gamma 应用于输出</td>
 </tr>
 </tbody>
 </table>
-<p><code>r.Tonemapper.Quality</code> is a genuine scalability lever. Each step down removes a feature from the tonemapper
-shader, producing a cheaper permutation. If your project does not use vignette, film shadow tint or grain,
-dropping the quality level costs nothing visually and saves both frame time and shader permutations.</p>
-<p><code>r.Tonemapper.Sharpen</code> deserves care. A small amount of tonemapper sharpening can compensate for perceived
-softness, but it operates after <a href="../Anti-Aliasing/">anti-aliasing</a> and will re-introduce aliasing on edges
-SMAA just resolved. If the image looks soft, first confirm that you are actually rendering at native
-resolution and that no upscaler is active.</p>
-<h2 id="colour-grading">Colour grading</h2>
-<p>All grading is done through post process volumes under <strong>Color Grading</strong>. The controls are organised into
-Temperature, Global, Shadows, Midtones and Highlights, each offering saturation, contrast, gamma, gain and
-offset.</p>
-<p>Grading in Unreal is applied before tonemapping, in linear space. This is why grading values that look
-correct in a 2D image editor do not transfer directly &mdash; you are grading scene-referred linear data,
-not display-referred pixels.</p>
-<p><strong>LUTs.</strong> A colour grading LUT can be assigned in the post process volume with a blend weight. Author LUTs
-against a neutral capture of your scene rather than against an already-graded one, or the grades compound.</p>
-<h2 id="hdr-output">HDR output</h2>
+<p><code>r.Tonemapper.Quality</code> 是一个真正的可扩展性控制点。每降低一级，色调映射着色器就会移除一项功能，从而产生更经济的排列组合。如果您的项目不使用暗角、胶片阴影色调或颗粒效果，降低质量级别不会造成任何视觉损失，还能节省帧时间和着色器排列组合次数。</p>
+<p><code>r.Tonemapper.Sharpen</code> 需要谨慎使用。少量色调映射锐化可以补偿感知到的柔化，但它是在<a href="../Anti-Aliasing/">抗锯齿</a>之后进行的，会在 SMAA 刚刚解决的边缘重新引入锯齿。如果图像看起来柔和，请首先确认您确实以原生分辨率渲染，并且没有启用任何放大功能。</p>
+<h2 id="_4">色彩分级</h2>
+<p>所有色彩分级均通过 <strong>色彩分级（Color Grading）</strong> 下的后期处理体积完成。控件分为“色温”、“全局”、“阴影”、“中间调”和“高光”五个部分，每个部分都提供饱和度、对比度、伽玛值、增益和偏移量等设置。</p>
+<p>在虚幻引擎中，色彩分级是在色调映射之前，以线性空间进行操作的。这就是为什么在二维图像编辑器中看起来正确的调色值无法直接应用到实际场景中的原因——您是在对场景相关的线性数据进行调色，而不是对显示器相关的像素进行调色。</p>
+<p><strong>LUT（查找表）。</strong> 可以在后期处理程序中指定一个调色 LUT，并设置混合权重。创建 LUT 时，应使用场景的原始中性图像，而不是使用已经调色过的图像，否则调色结果会叠加。</p>
+<h2 id="hdr">HDR 输出</h2>
 <table>
 <thead>
 <tr>
 <th>CVar</th>
-<th>Purpose</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.AllowHDR</code></td>
-<td>Enables HDR output support for the project. Usually set per-project or per-platform in <code>DefaultEngine.ini</code>.</td>
+<td>启用项目的 HDR 输出支持。通常在 <code>DefaultEngine.ini</code> 中针对每个项目或平台进行设置。</td>
 </tr>
 <tr>
 <td><code>r.HDR.Display.OutputDevice</code></td>
-<td>Selects the output transfer function</td>
+<td>选择输出传输函数</td>
 </tr>
 <tr>
 <td><code>r.HDR.Display.ColorGamut</code></td>
-<td>Selects the output colour gamut</td>
+<td>选择输出色域</td>
 </tr>
 </tbody>
 </table>
@@ -226,39 +206,31 @@ against a neutral capture of your scene rather than against an already-graded on
 <span class="k">[/Script/Engine.RendererSettings]</span>
 <span class="na">r.AllowHDR</span><span class="o">=</span><span class="s">1</span>
 </code></pre></div>
-<p>HDR output interacts with SMAA correctly because <a href="../Anti-Aliasing/">SMAA runs before tonemapping</a> in Vite.
-Anti-aliasing implementations that run after the tonemapper generally have to be reworked for HDR output;
-this one does not.</p>
-<p>Slate and UI are composited with knowledge of the output device via <code>r.TonemapperGamma</code>, but UI authored
-against an SDR reference will look wrong in HDR. Budget time to check your UI in HDR specifically rather
-than assuming it transfers.</p>
-<h2 id="common-problems">Common problems</h2>
-<p><deflist>
-<def title="The scene looks washed out or milky">
-Usually excessive ambient or fog rather than a grading problem. Check whether
-<a href="./Ambient-Occlusion.md">AO</a> is being applied and whether your
-<a href="./Global-Illumination.md">GI</a> intensity is too high. Compare against a
-<a href="./Path-Tracing.md">path-traced</a> reference before reaching for contrast in the grade.
-</def>
-<def title="Colours shift between the editor viewport and packaged builds">
-Almost always a different output device or a post process volume that is not unbound. Confirm
-<code>r.HDR.Display.OutputDevice</code> matches in both, and check for editor-only post process volumes.
-</def>
-<def title="Banding in gradients and skies">
-Check <code>r.Tonemapper.GrainQuantization</code> is <code>1</code>. If banding persists on an HDR display,
-the source gradient itself may be quantised &mdash; check the sky texture or gradient material precision.
-</def>
-<def title="The image is sharp in the editor and soft in game">
-Confirm no upscaler is active. See <a href="./Upscalers.md">Upscalers and Frame Generation</a>. Vite renders
-at native resolution by default; an upscaler enabled in a game settings menu is the usual cause.
-</def>
-</deflist></p>
-<h2 id="see-also">See also</h2>
+<p>HDR 输出与 SMAA 的交互正常，因为在 Vite 中，<a href="../Anti-Aliasing/">SMAA 的运行先于色调映射</a>。运行在色调映射之后的抗锯齿实现通常需要针对 HDR 输出进行重新调整；而 Vite 的实现则无需如此。</p>
+<p>Slate 和 UI 会根据输出设备信息（通过 <code>r.TonemapperGamma</code>）进行合成，但基于 SDR 参考创建的 UI 在 HDR 下会显示错误。请预留时间专门检查 UI 在 HDR 下的显示效果，而不是想当然地认为它会自动转换。</p>
+<h2 id="_5">常见问题</h2>
 <ul>
-<li><a href="../Anti-Aliasing/">Anti-Aliasing</a></li>
-<li><a href="../Path-Tracing/">Path Tracing</a></li>
-<li><a href="../Upscalers/">Upscalers and Frame Generation</a></li>
-<li><a href="../Rendering/">Rendering</a></li>
+<li>场景看起来发白或泛白</li>
+</ul>
+<p>通常是环境光或雾气过大，而不是调色问题。检查是否应用了<a href="../Ambient-Occlusion/">环境光遮蔽 (AO)</a> 以及<a href="../Global-Illumination/">全局光照 (GI)</a> 强度是否过高。在调整对比度之前，请先与<a href="../Path-Tracing/">路径追踪</a>参考进行比较。</p>
+<ul>
+<li>编辑器视窗和打包版本之间的颜色存在差异</li>
+</ul>
+<p>几乎总是由于输出设备不同或存在未解除绑定的后期处理体积造成的。确认两者中的 <code>r.HDR.Display.OutputDevice</code> 是否匹配，并检查是否存在仅在编辑器中显示的后期处理体积。</p>
+<ul>
+<li>渐变和天空出现条带</li>
+</ul>
+<p>检查 <code>r.Tonemapper.GrainQuantization</code> 是否为 1。如果在 HDR 显示器上仍然存在条带，则可能是源渐变本身被量化了——请检查天空纹理或渐变材质的精度。</p>
+<ul>
+<li>图像在编辑器中清晰，但在游戏中模糊</li>
+</ul>
+<p>确认没有启用任何放大器。请参阅<a href="../Upscalers/">超分辨率和帧生成</a>。Vite 默认以原生分辨率渲染；游戏设置菜单中启用的放大器通常是造成此问题的原因。</p>
+<h2 id="_6">另请参阅</h2>
+<ul>
+<li><a href="../Anti-Aliasing/">抗锯齿</a></li>
+<li><a href="../Path-Tracing/">路径追踪</a></li>
+<li><a href="../Upscalers/">超分辨率和帧生成</a></li>
+<li><a href="../Rendering/">渲染</a></li>
 </ul>
               
             </div>

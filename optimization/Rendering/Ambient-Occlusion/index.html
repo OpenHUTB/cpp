@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Ambient Occlusion - 引擎优化文档</title>
+    <title>环境光遮蔽 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Ambient Occlusion";
+        var mkdocs_page_name = "\u73af\u5883\u5149\u906e\u853d";
         var mkdocs_page_input_path = "optimization/Rendering/Ambient-Occlusion.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Ambient Occlusion</li>
+      <li class="breadcrumb-item active">环境光遮蔽</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Rendering/Ambient-Occlusion.md"> 编辑页面</a>
     </li>
@@ -120,226 +120,192 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="ambient-occlusion">Ambient Occlusion</h1>
-<p><tldr></p>
-<p>
-Three options: Vite's <b>optimised SSAO</b> (on by default, free), <b>HBAO+</b> (higher quality,
-post-process volume controlled) and <b>RTAO</b> (ray traced, most accurate, most expensive).
-They compose &mdash; HBAO+ multiplies over the SSAO buffer.
-</p>
-<p></tldr></p>
-<p>Ambient occlusion darkens creases, contact points and enclosed areas that ambient light should not fully
-reach. It is one of the cheapest ways to make a scene read as grounded, and one of the most common places to
-overspend.</p>
-<h2 id="vite-optimised-ssao">Vite optimised SSAO</h2>
-<p>Vite rewrites the memory access pattern of the stock UE4.27 screen-space AO pass. It produces the same
-result as the stock path at lower cost, and is enabled by default.</p>
+                <h1 id="_1">环境光遮蔽</h1>
+<p>三种选项：Vite <strong>优化的 SSAO</strong>（默认开启，免费）、<strong>HBAO+</strong>（更高质量，后期处理体积控制）和 <strong>RTAO</strong>（光线追踪，最精确，也最昂贵）。它们相互叠加——HBAO+ 会叠加在 SSAO 缓冲区之上。</p>
+<p>环境光遮蔽会使褶皱、接触点和环境光无法完全照射到的封闭区域变暗。它是使场景看起来更逼真的最经济的方法之一，也是最容易过度投入的地方之一。</p>
+<h2 id="vite-ssao">Vite 优化的 SSAO</h2>
+<p>Vite 重写了 UE4.27 原生屏幕空间 AO 通道的内存访问模式。它以更低的成本产生与原生路径相同的效果，并且默认启用。</p>
 <table>
 <thead>
 <tr>
-<th>Control</th>
-<th>Default</th>
-<th>Notes</th>
+<th>控制</th>
+<th>默认值</th>
+<th>备注</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>VITE_O_SSAO</code> (compile-time)</td>
+<td><code>VITE_O_SSAO</code>（编译时）</td>
 <td><code>1</code></td>
-<td>Shipping builds are locked to this value</td>
+<td>最终发布的版本将锁定为该值</td>
 </tr>
 <tr>
-<td><code>r.Vite.SSAO</code> (runtime)</td>
+<td><code>r.Vite.SSAO</code>（运行时）</td>
 <td><code>VITE_O_SSAO</code></td>
-<td>Development builds only. <code>0</code> = stock UE path, <code>1</code> = optimised path</td>
+<td>仅限开发版本。<code>0</code> = 原始 UE 路径，<code>1</code> = 优化路径</td>
 </tr>
 </tbody>
 </table>
-<p>The runtime CVar exists so you can A/B the optimised path against stock during development, which is how the
-optimisation was validated. In Shipping the CVar does not exist at all &mdash; the path is compiled in.
-See <a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a>.</p>
-<p>Standard UE4.27 SSAO settings all still apply and are found under <strong>Rendering Features &gt; Ambient Occlusion</strong>
-in a post process volume: Intensity, Radius, Quality, Power, Bias, Fade Out Distance and the rest.</p>
+<p>运行时 CVar 的存在是为了方便您在开发过程中将优化后的路径与默认路径进行 A/B 对比，这也是优化验证的方式。在最终发布版本中，CVar 完全不存在——路径已编译到程序中。请参阅<a href="../../Performance/Compile-Time-Switches/">编译时开关</a>。</p>
+<p>UE4.27 的标准 SSAO 设置仍然适用，您可以在<strong>Rendering Features（渲染特性）&gt; 环境光遮蔽（Ambient Occlusion）</strong>的后处理体积中找到它们：强度、半径、质量、功率、偏移、淡出距离等。</p>
 <h2 id="hbao">HBAO+</h2>
-<p>Horizon-Based Ambient Occlusion is NVIDIA's higher-quality AO technique, inherited through the NvRTX
-branch. It samples the depth buffer along horizon directions rather than in a screen-space sphere, which
-produces more accurate occlusion in creases and less of SSAO's characteristic haloing around object
-silhouettes.</p>
-<p>HBAO+ <strong>multiplies over</strong> the screen-space AO buffer rather than replacing it, so both run when it is
-enabled.</p>
-<h3 id="enabling">Enabling</h3>
+<p>基于地平线的环境光遮蔽 (HBAO+) 是 NVIDIA 的高质量 AO 技术，继承自 NvRTX 分支。它沿地平线方向而非屏幕空间球体对深度缓冲区进行采样，从而在褶皱处产生更精确的遮蔽效果，并减少 SSAO 特有的物体轮廓周围的光晕。</p>
+<p>HBAO+ 会<strong>乘以</strong>屏幕空间 AO 缓冲区而不是替换它，因此启用后两者都会运行。</p>
+<h3 id="_2">启用</h3>
 <table>
 <thead>
 <tr>
 <th>CVar</th>
-<th>Default</th>
-<th>Effect</th>
+<th>默认值</th>
+<th>效果</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.HBAO.Enable</code></td>
 <td><code>0</code></td>
-<td>Master enable</td>
+<td>主启用</td>
 </tr>
 <tr>
 <td><code>r.HBAO.HighPrecisionDepth</code></td>
 <td><code>0</code></td>
-<td><code>0</code> = FP16 internal depth, <code>1</code> = FP32. Use FP32 to avoid self-occlusion banding on distant objects.</td>
+<td><code>0</code> = 使用 FP16 内部深度，<code>1</code> = 使用 FP32。使用 FP32 可避免远处物体出现自遮挡条带。</td>
 </tr>
 <tr>
 <td><code>r.HBAO.GBufferNormals</code></td>
 <td><code>1</code></td>
-<td><code>0</code> = reconstruct normals from depth, <code>1</code> = fetch GBuffer normals</td>
+<td><code>0</code> = 从深度重建法线，<code>1</code> = 获取 GBuffer 法线</td>
 </tr>
 </tbody>
 </table>
-<p><note>
-The CVar help text describes HBAO+ as DX11-only. Vite implements it on both D3D11 and D3D12; the help
-string is inherited from the original NVIDIA integration and has not been updated.
-</note></p>
-<h3 id="post-process-volume-settings">Post process volume settings</h3>
-<p>Once enabled, HBAO+ is tuned per post process volume under the <strong>HBAO+</strong> category. These are Blueprint
-read/write, so they can be driven at runtime.</p>
+<p><strong>注意：</strong> CVar 帮助文本将 HBAO+ 描述为仅适用于 DX11。Vite 同时在 D3D11 和 D3D12 上实现了它；帮助字符串继承自最初的 NVIDIA 集成，尚未更新。</p>
+<h3 id="_3">后处理体积设置</h3>
+<p>启用后，HBAO+ 将在 <strong>HBAO+</strong> 类别下针对每个后处理体积进行调整。这些设置支持蓝图读/写，因此可以在运行时进行控制。</p>
 <table>
 <thead>
 <tr>
-<th>Setting</th>
-<th>Default</th>
-<th>Range</th>
-<th>Purpose</th>
+<th>设置</th>
+<th>默认值</th>
+<th>范围</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Power Exponent</td>
+<td>幂指数</td>
 <td><code>2.0</code></td>
 <td>0&ndash;4</td>
-<td>Darkening curve applied to the AO result. Higher is more contrasty.</td>
+<td>应用于 AO 结果的暗化曲线。数值越高，对比度越强。</td>
 </tr>
 <tr>
-<td>Radius</td>
+<td>半径</td>
 <td><code>2.0</code></td>
 <td>0.1&ndash;2</td>
-<td>World-space sampling radius in metres</td>
+<td>世界空间采样半径（米）</td>
 </tr>
 <tr>
-<td>Bias</td>
+<td>偏差</td>
 <td><code>0.1</code></td>
 <td>0&ndash;0.2</td>
-<td>Rejects samples below this angle. Raise to remove self-occlusion on flat surfaces.</td>
+<td>拒绝低于此角度的采样。提高此值可消除平面上的自遮挡。</td>
 </tr>
 <tr>
 <td>SmallScale AO</td>
 <td><code>1.0</code></td>
 <td>0&ndash;1</td>
-<td>Weight of fine-detail occlusion</td>
+<td>精细细节遮挡的权重</td>
 </tr>
 <tr>
-<td>Blur Radius</td>
-<td>2 pixels</td>
-<td>Disabled / 2px / 4px</td>
-<td>Noise reduction blur</td>
+<td>模糊半径</td>
+<td>2 像素</td>
+<td>禁用 / 2px / 4px</td>
+<td>降噪模糊</td>
 </tr>
 <tr>
-<td>Blur Sharpness</td>
+<td>模糊锐度</td>
 <td><code>16.0</code></td>
 <td>0&ndash;32</td>
-<td>Edge preservation during blur. Higher preserves more edges.</td>
+<td>模糊过程中边缘保留程度。数值越高，保留的边缘越多。</td>
 </tr>
 <tr>
-<td>Max Depth</td>
+<td>最大深度（Max Depth）</td>
 <td><code>9500.0</code></td>
 <td>0&ndash;400+</td>
-<td>View depth beyond which HBAO+ stops being computed</td>
+<td>超过此深度后，HBAO+ 将停止计算</td>
 </tr>
 <tr>
-<td>Depth Sharpness</td>
+<td>深度锐度（Depth Sharpness）</td>
 <td><code>50.0</code></td>
 <td>0&ndash;100</td>
-<td>Depth discontinuity sensitivity</td>
+<td>深度不连续性敏感度</td>
 </tr>
 <tr>
-<td>Clamp Foreground AO</td>
-<td>off</td>
+<td>前景 AO 钳制（Clamp Foreground AO）</td>
+<td>关闭</td>
 <td>&mdash;</td>
-<td>Limits AO on near geometry</td>
+<td>限制近处几何体的 AO 效果</td>
 </tr>
 <tr>
-<td>Foreground AO Distance</td>
+<td>前景 AO 距离</td>
 <td><code>100.0</code></td>
 <td>0&ndash;1000</td>
-<td>Distance used by the foreground clamp</td>
+<td>前景钳制使用的距离</td>
 </tr>
 <tr>
-<td>Clamp Background AO</td>
-<td>off</td>
+<td>背景 AO 钳制（Clamp Background AO）</td>
+<td>关闭</td>
 <td>&mdash;</td>
-<td>Limits AO on distant geometry</td>
+<td>限制远处几何体的 AO 效果</td>
 </tr>
 <tr>
-<td>Background AO Distance</td>
+<td>背景 AO 距离（Background AO Distance）</td>
 <td><code>1000.0</code></td>
 <td>0&ndash;10000</td>
-<td>Distance used by the background clamp</td>
+<td>背景钳制使用的距离</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Radius</strong> is the setting that matters most and is most often wrong. It is in metres, and the correct value
-depends entirely on scene scale. An interior with human-scale props wants a small radius; a large exterior
-wants a larger one. Too large produces soft grey wash across everything; too small produces occlusion only
-in the tightest creases.</p>
-<p><strong>Max Depth</strong> is a straightforward performance lever. Distant geometry contributes very little visible AO,
-so lowering this value reduces cost with minimal visual change. Check the result against a fly-through
-before committing to an aggressive value.</p>
-<h2 id="ray-traced-ambient-occlusion">Ray-traced ambient occlusion</h2>
-<p>RTAO is covered in detail in <a href="../RT-Shadows-And-Ambient-Occlusion/">RT Shadows and Ambient Occlusion</a>. In
-brief: it traces actual occlusion rays, so it handles off-screen occluders correctly and does not suffer
-from screen-space AO's fundamental limitation of only knowing about what is visible.</p>
-<p>It is also the most expensive of the three, and requires DXR.</p>
-<h2 id="choosing">Choosing</h2>
+<p><strong>半径（Radius）</strong> 是最重要也是最容易出错的设置。它的单位是米，正确的数值完全取决于场景比例。室内场景（包含真人大小的道具）需要较小的半径；大型室外场景则需要较大的半径。半径过大会导致所有物体都笼罩在一层柔和的灰色光晕中；半径过小则只会在最细微的缝隙处产生遮挡效果。</p>
+<p><strong>最大深度（Max Depth）</strong> 是一个简单的性能控制选项。远处的几何体对可见的环境光遮蔽贡献很小，因此降低此值可以在视觉效果变化最小的情况下降低性能消耗。在确定一个较大的值之前，请先通过飞行模拟来检查结果。</p>
+<h2 id="_4">光线追踪环境光遮蔽</h2>
+<p>光线追踪环境光遮蔽（Ray-traced ambient occlusion, RTAO）在<a href="../RT-Shadows-And-Ambient-Occlusion/">光线追踪阴影和环境光遮蔽</a>一文中有详细介绍。简而言之：它追踪实际的遮蔽光线，因此可以正确处理屏幕外的遮挡物，并且不会像屏幕空间 AO 那样受限于只能识别可见物体的根本局限性。</p>
+<p>它也是三种方法中最昂贵的，并且需要 DXR。</p>
+<h2 id="_5">选择</h2>
 <table>
 <thead>
 <tr>
-<th>Target</th>
-<th>Recommended configuration</th>
+<th>目标</th>
+<th>推荐配置</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Stylised 4K120</td>
-<td>Vite SSAO only</td>
+<td>风格化 4K120</td>
+<td>仅启用 Vite SSAO</td>
 </tr>
 <tr>
-<td>Performance High End 4K60</td>
-<td>Vite SSAO, HBAO+ if there is headroom</td>
+<td>性能卓越 4K60</td>
+<td>启用 Vite SSAO，如有余量，启用 HBAO+</td>
 </tr>
 <tr>
-<td>Fidelity High End 4K30</td>
-<td>Vite SSAO + HBAO+</td>
+<td>保真卓越 4K30</td>
+<td>启用 Vite SSAO + HBAO+</td>
 </tr>
 <tr>
-<td>Fidelity Full RT 1440p30</td>
+<td>保真全光线追踪 1440p30</td>
 <td>RTAO</td>
 </tr>
 </tbody>
 </table>
-<p>The general rule is that AO should be the cheapest thing in your frame that produces its result. If
-<a href="../DDGI-Dynamic/">DDGI</a> is already resolving the indirect lighting in a space correctly, heavy AO on top of
-it is double-darkening &mdash; you are subtracting light that the GI solution never added.</p>
-<p><warning>
-Watch for AO stacking. Enabling material AO, SSAO, HBAO+ and RTAO simultaneously produces a scene that is
-much darker in contact areas than it should be. Each layer multiplies. Compare against a
-<a href="../Rendering/Path-Tracing.md">path-traced</a> reference if you are unsure whether your contact shadows are
-physically plausible or just dark.
-</warning></p>
-<h2 id="see-also">See also</h2>
+<p>一般而言，AO（环境光遮蔽）应该是帧中产生效果的最省资源的组件。如果 <a href="../DDGI-Dynamic/">DDGI</a>（动态全局光照）已经正确解析了空间中的间接光照，那么在其基础上叠加高强度的 AO 就会导致双重变暗——你实际上是在减去 GI 解决方案从未添加的光照。</p>
+<p><strong>注意</strong> AO 叠加的问题。同时启用材质 AO、SSAO（屏幕阴影环境光遮蔽）、HBAO+（高亮度环境光遮蔽增强）和 RTAO（实时环境光遮蔽）会导致场景中接触区域的亮度远低于预期。每一层都会叠加。如果你不确定接触阴影是否符合物理规律，或者只是单纯的暗，可以将其与<a href="../Path-Tracing/">路径追踪</a>的参考图像进行比较。</p>
+<h2 id="_6">另请参阅</h2>
 <ul>
-<li><a href="../RT-Shadows-And-Ambient-Occlusion/">RT Shadows and Ambient Occlusion</a></li>
-<li><a href="../Global-Illumination/">Global Illumination</a></li>
-<li><a href="../SSGI/">SSGI</a></li>
-<li><a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a></li>
-<li><a href="../../EngineOverview/Performance-Targets/">Performance Targets</a></li>
+<li><a href="../RT-Shadows-And-Ambient-Occlusion/">光线追踪阴影和环境光遮蔽</a></li>
+<li><a href="../Global-Illumination/">全局光照</a></li>
+<li><a href="../SSGI/">屏幕空间全局光照（SSGI）</a></li>
+<li><a href="../../Performance/Compile-Time-Switches/">编译时开关</a></li>
+<li><a href="../../EngineOverview/Performance-Targets/">性能目标</a></li>
 </ul>
               
             </div>
