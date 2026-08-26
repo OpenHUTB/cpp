@@ -5,7 +5,7 @@
 本页面记录了虚幻引擎 4.27 和现代 UE5 之间实际性能差异的来源。之所以要记录，是因为仅仅说“UE5 更慢”是不够的；只有了解是**哪个**子系统出现了退步以及退步的程度，才能决定是否值得维护一个分支版本。相关测量数据已收集在一个[公开的电子表格](https://docs.google.com/spreadsheets/d/1TabQV7UTDLMHI9GVFCbMzXohax2Agm2qzET7tOOXN7w/edit?usp=sharing)中。
 
 
-## Materials and shaders
+## 材质和着色器
 
 从虚幻引擎 5.1 开始，着色器模型 6 (Shader Model 6) 成为首选渲染路径，SM5 和 SM6 路径的着色器指令总数均显著增加。后续版本进一步扩展了指令总数和排列组合数。
 
