@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>PhysX Instanced Subsystem Demo - 引擎优化文档</title>
+    <title>PhysX 实例化子系统演示 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "PhysX Instanced Subsystem Demo";
+        var mkdocs_page_name = "PhysX \u5b9e\u4f8b\u5316\u5b50\u7cfb\u7edf\u6f14\u793a";
         var mkdocs_page_input_path = "optimization/ProjectsAndDemos/PhysX-Instanced-Subsystem.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">PhysX Instanced Subsystem Demo</li>
+      <li class="breadcrumb-item active">PhysX 实例化子系统演示</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/ProjectsAndDemos/PhysX-Instanced-Subsystem.md"> 编辑页面</a>
     </li>
@@ -120,76 +120,61 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="physx-instanced-subsystem-demo">PhysX Instanced Subsystem Demo</h1>
-<p><tldr></p>
-<p>
-Demonstrates rigid body counts that conventional actor-per-body simulation cannot reach, by backing
-instanced mesh transforms with PhysX bodies managed from a world subsystem.
-</p>
-<p></tldr></p>
-<h2 id="download">Download</h2>
-<p><a href="https://drive.google.com/file/d/1NulunBP2Qre5vLyYnkiqywovsycNuWdQ/view">Demo project</a> ·
-<a href="https://github.com/Dragomirson/PhysXInstancedSubsystem">Plugin repository</a></p>
+                <h1 id="physx">PhysX 实例化子系统演示</h1>
+<p>通过使用由世界子系统管理的 PhysX 刚体来支持实例化的网格变换，实现了传统逐个物体模拟无法达到的刚体数量。</p>
+<h2 id="_1">下载</h2>
+<p><a href="https://drive.google.com/file/d/1NulunBP2Qre5vLyYnkiqywovsycNuWdQ/view">演示项目</a> ·
+<a href="https://github.com/Dragomirson/PhysXInstancedSubsystem">插件库</a></p>
 <p><img alt="" src="../../../img/optimization/PhysXInstancedSubsystem.png" /></p>
-<p><em>PhysX实例化子系统模拟了大量实例化的刚体。</em></p>
-<p><em>采用实例化渲染，每个实例都使用真实的 PhysX 物理体。在相同预算下，这里的物理体数量远远超过每个角色一个物理体的模拟方式。</em></p>
-<h2 id="what-it-demonstrates">What it demonstrates</h2>
-<p>Conventional Unreal physics spawns an <code>AActor</code> with a <code>UPrimitiveComponent</code> per body. That works to a few
-thousand bodies and then the actor and component overhead, not the solver, becomes the limit &mdash; as the <a href="../Physics-Cube-Bench/">Physics Cube Bench</a> shows.</p>
-<p>The subsystem keeps one or a few instanced mesh actors for rendering, creates per-instance PhysX rigid
-bodies, and writes their poses back into ISM/HISM instance transforms. Rendering is instanced, simulation
-is real, and the actor overhead is gone.</p>
-<p>Run this alongside the Physics Cube Bench for the comparison that makes the difference concrete.</p>
-<h2 id="what-to-look-at">What to look at</h2>
+<p><em>PhysX实例化子系统模拟了大量实例化的刚体。采用实例化渲染，每个实例都使用真实的 PhysX 物理体。在相同预算下，这里的物理体数量远远超过每个角色一个物理体的模拟方式。</em></p>
+<h2 id="_2">它展示了什么</h2>
+<p>传统的虚幻物理引擎会为每个物体生成一个带有 <code>UPrimitiveComponent</code> 的 <code>AActor</code>。这种方法可以处理几千个物体，但之后，限制因素就变成了 Actor 和组件的开销，而不是求解器本身——正如<a href="../Physics-Cube-Bench/">物理立方体基准测试</a>所显示的那样。</p>
+<p>该子系统保留一个或几个用于渲染的实例化网格 Actor，为每个实例创建 PhysX 刚体，并将它们的姿态写回 ISM/HISM 实例变换。渲染是实例化的，模拟是真实的，并且消除了 Actor 的开销。</p>
+<p>运行此子系统并同时运行物理立方体基准测试，即可直观地比较两者的区别。</p>
+<h2 id="_3">需要关注的内容</h2>
 <table>
 <thead>
 <tr>
-<th>Feature</th>
-<th>Where it shows</th>
+<th>特性</th>
+<th>显示位置</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Per-frame budgets</td>
-<td>Spawn and simulation work is capped per frame rather than spiking</td>
+<td>逐帧预算</td>
+<td>生成和模拟工作量按帧限制，而非峰值波动</td>
 </tr>
 <tr>
-<td>Auto-stop conditions</td>
-<td>Settled instances stop simulating and convert to storage</td>
+<td>自动停止条件</td>
+<td>已完成的实例停止模拟并转换为存储</td>
 </tr>
 <tr>
-<td>Dynamic versus storage instances</td>
-<td>Only what needs simulating is simulated</td>
+<td>动态实例与存储实例</td>
+<td>仅模拟需要模拟的内容</td>
 </tr>
 <tr>
-<td>Lifetime management</td>
-<td>Instances expire without leaving actors behind</td>
+<td>生命周期管理</td>
+<td>实例过期时不会留下任何 Actor</td>
 </tr>
 <tr>
-<td>CCD modes</td>
-<td>Fast-moving bodies without tunnelling</td>
+<td>CCD 模式</td>
+<td>快速移动的物体不会出现隧道效应</td>
 </tr>
 </tbody>
 </table>
-<p>The budget and auto-stop behaviour is the part worth understanding. Large body counts are affordable
-because most bodies are asleep most of the time; the subsystem makes that automatic rather than something
-you manage.</p>
-<p>Full API and configuration detail in <a href="../../Physics/Instanced-Physics/">Instanced Physics</a>.</p>
-<h2 id="when-to-use-it">When to use it</h2>
-<p>Debris, rubble, shell casings, foliage knocked loose, destruction fallout &mdash; anything where you want
-many physically simulated objects that do not each need their own actor identity, gameplay logic or
-replication.</p>
-<p>It is not a replacement for actor-based physics where you need per-object gameplay behaviour. It is for the
-case where the objects are scenery that happens to move.</p>
-<h2 id="status">Status</h2>
-<p>Bundled at version 1.11 in <code>Engine\Plugins\Runtime\VitePlugins\PhysXInstancedSubsystem</code>. See
-<a href="../../Plugins/Bundled-Plugins/">Bundled Plugins</a>.</p>
-<h2 id="see-also">See also</h2>
+<p>预算和自动停止机制是值得理解的部分。大量物体之所以能够承受，是因为大多数物体大部分时间都处于休眠状态；子系统实现了这一点，无需人工管理。</p>
+<p>完整的 API 和配置详情请参见<a href="../../Physics/Instanced-Physics/">实例化物理</a>。</p>
+<h2 id="_4">何时使用？</h2>
+<p>碎片、瓦砾、弹壳、脱落的树叶、爆炸产生的尘埃——任何需要大量物理模拟物体，但每个物体无需拥有独立的参与者标识、游戏逻辑或复制机制的场景。</p>
+<p>它不能替代基于参与者的物理，后者需要每个物体拥有独立的游戏行为。它适用于物体本身是场景，并且恰好会移动的情况。</p>
+<h2 id="_5">状态</h2>
+<p>版本 1.11 已捆绑在 <code>Engine\Plugins\Runtime\VitePlugins\PhysXInstancedSubsystem</code>。请参阅<a href="../../Plugins/Bundled-Plugins/">已捆绑的插件</a>。</p>
+<h2 id="_6">另请参阅</h2>
 <ul>
-<li><a href="../../Physics/Instanced-Physics/">Instanced Physics</a></li>
-<li><a href="../Physics-Cube-Bench/">Physics Cube Bench</a></li>
+<li><a href="../../Physics/Instanced-Physics/">实例化物理</a></li>
+<li><a href="../Physics-Cube-Bench/">物理立方体测试台</a></li>
 <li><a href="../Plugins/PhysX.md">PhysX</a></li>
-<li><a href="../../Plugins/Bundled-Plugins/">Bundled Plugins</a></li>
+<li><a href="../../Plugins/Bundled-Plugins/">已捆绑的插件</a></li>
 </ul>
               
             </div>

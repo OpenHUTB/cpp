@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Physics Cube Bench - 引擎优化文档</title>
+    <title>物理立方体基准测试 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Physics Cube Bench";
+        var mkdocs_page_name = "\u7269\u7406\u7acb\u65b9\u4f53\u57fa\u51c6\u6d4b\u8bd5";
         var mkdocs_page_input_path = "optimization/ProjectsAndDemos/Physics-Cube-Bench.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Physics Cube Bench</li>
+      <li class="breadcrumb-item active">物理立方体基准测试</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/ProjectsAndDemos/Physics-Cube-Bench.md"> 编辑页面</a>
     </li>
@@ -120,83 +120,68 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="physics-cube-bench">Physics Cube Bench</h1>
-<p><tldr></p>
-<p>
-Rigid body throughput test using conventional PhysX actors. The baseline that the
-<a href="../Physics/Instanced-Physics.md">instanced subsystem</a> is measured against.
-</p>
-<p></tldr></p>
-<p><img alt="" src="../../../img/optimization/PhysicsCubeBench.png" /></p>
-<p><em>并排捕捉 1400 个模拟立方体，Chaos 的帧率为 75.45 FPS，而 PhysX 3.4 的帧率为 148.44 FPS。</em></p>
-<p><em>1400 个模拟立方体，相同场景。Chaos（左）帧率为 75.45 FPS，帧率为 13.25 毫秒；PhysX 3.4（右）帧率为 148.44 FPS，帧率为 6.74 毫秒。</em></p>
-<h2 id="download">Download</h2>
-<p><a href="https://drive.google.com/file/d/1WVsC8cp2fx8eiM56Ueek-mJbO_EdPKOR/view?usp=sharing">Physics Cube Bench</a></p>
-<h2 id="what-it-measures">What it measures</h2>
-<p>Simple rigid bodies simulated conventionally: one actor per body, each with its own component, transform
-and tick. It establishes how many PhysX bodies you can simulate before the frame budget runs out using the
-standard workflow.</p>
-<p>The interesting part is not the number, it is where it stops scaling and why. Two costs grow with body
-count and they grow differently:</p>
+                <h1 id="_1">物理立方体基准测试</h1>
+<p>使用传统 PhysX Actor 进行刚体吞吐量测试。这是用于衡量<a href="../../Physics/Instanced-Physics/">实例化子系统</a>的基准。
+<img alt="" src="../../../img/optimization/PhysicsCubeBench.png" /></p>
+<p><em>相同场景，并排捕捉 1400 个模拟立方体，Chaos（左）的帧率为 75.45 FPS，帧率为 13.25 毫秒；而 PhysX 3.4 的帧率为 148.44 FPS，帧率为 6.74 毫秒。</em></p>
+<h2 id="_2">下载</h2>
+<p><a href="https://drive.google.com/file/d/1WVsC8cp2fx8eiM56Ueek-mJbO_EdPKOR/view?usp=sharing">物理立方体基准测试</a></p>
+<h2 id="_3">测试内容</h2>
+<p>简单的刚体以常规方式进行模拟：每个刚体对应一个 Actor，每个 Actor 都有自己的组件、变换和节拍。它确定在标准工作流程下，帧预算耗尽之前可以模拟多少个 PhysX 刚体。</p>
+<p>有趣的地方不在于这个数字，而在于它何时停止扩展以及原因。有两个成本会随着刚体数量的增加而增加，但它们的增长方式不同：</p>
 <table>
 <thead>
 <tr>
-<th>Cost</th>
-<th>Grows with</th>
+<th>成本</th>
+<th>随以下因素增加</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>PhysX solver</td>
-<td>Bodies actually in contact and awake</td>
+<td>PhysX 求解器</td>
+<td>实际接触且处于清醒状态的物体</td>
 </tr>
 <tr>
-<td>Actor and component overhead</td>
-<td>Total body count, whether or not anything is moving</td>
+<td>参与者和组件开销</td>
+<td>物体总数（无论物体是否移动）</td>
 </tr>
 </tbody>
 </table>
-<p>The second one is what the <a href="../../Physics/Instanced-Physics/">PhysX Instanced Subsystem</a> eliminates. Comparing this
-benchmark against the <a href="../PhysX-Instanced-Subsystem/">instanced subsystem demo</a> shows the difference
-directly.</p>
-<h2 id="running-it">Running it</h2>
-<p><code>stat unit</code> first, then:</p>
+<p>第二个问题是 <a href="../../Physics/Instanced-Physics/">PhysX 实例子系统</a>所消除的。将此基准测试与<a href="../PhysX-Instanced-Subsystem/">实例子系统演示</a>进行比较，即可直接看出差异。</p>
+<h2 id="_4">运行它</h2>
+<p>首先 <code>stat unit</code>，然后：</p>
 <table>
 <thead>
 <tr>
-<th>Command</th>
-<th>Shows</th>
+<th>命令</th>
+<th>显示</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>stat physics</code></td>
-<td>Solver time</td>
+<td>求解器运行时间</td>
 </tr>
 <tr>
 <td><code>stat game</code></td>
-<td>Actor tick and component overhead</td>
+<td>参与者帧数和组件开销</td>
 </tr>
 <tr>
 <td><code>p.showConstraints 1</code></td>
-<td>Constraint visualisation</td>
+<td>约束可视化</td>
 </tr>
 </tbody>
 </table>
-<p>If <strong>Game</strong> exceeds <strong>Physics</strong> by a wide margin, actor overhead rather than the solver is your limit,
-and the instanced path is the answer.</p>
-<h2 id="physx-versus-chaos">PhysX versus Chaos</h2>
-<p>Vite retains PhysX rather than migrating to Chaos. On this class of workload PhysX is the faster and more
-predictable solver, which is part of why. See <a href="../../Physics/PhysX/">PhysX</a>.</p>
-<p>If you need frame-rate-independent determinism from this kind of simulation, Vite's optional
-<a href="../../Physics/Fixed-Timestep/">fixed timestep</a> applies &mdash; it requires rebuilding with
-<code>VITE_PHYSX_FIXED_TIMESTEP=1</code>.</p>
+<p>如果<strong>游戏</strong>开销远超<strong>物理</strong>开销，那么限制因素就在于参与者开销而非求解器本身，而实例化路径正是解决方案。</p>
+<h2 id="physx-chaos">PhysX 与 Chaos</h2>
+<p>Vite 保留了 PhysX，而非迁移到 Chaos。在这种工作负载下，PhysX 速度更快、更可预测，这也是原因之一。请参阅 <a href="../../Physics/PhysX/">PhysX</a> 文档。</p>
+<p>如果您需要此类模拟具有与帧率无关的确定性，则可以使用 Vite 的可选<a href="../../Physics/Fixed-Timestep/">固定时间步长</a>功能——这需要使用 <code>VITE_PHYSX_FIXED_TIMESTEP=1</code> 重新构建。</p>
 <h2 id="see-also">See also</h2>
 <ul>
 <li><a href="../../Physics/PhysX/">PhysX</a></li>
-<li><a href="../../Physics/Instanced-Physics/">Instanced Physics</a></li>
-<li><a href="../../Physics/Fixed-Timestep/">Fixed Timestep</a></li>
-<li><a href="../../Performance/Profiling/">Profiling</a></li>
+<li><a href="../../Physics/Instanced-Physics/">实例化物理</a></li>
+<li><a href="../../Physics/Fixed-Timestep/">固定时间步长</a></li>
+<li><a href="../../Performance/Profiling/">性能分析</a></li>
 </ul>
               
             </div>
