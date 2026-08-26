@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Console Variables - 引擎优化文档</title>
+    <title>控制台变量 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Console Variables";
+        var mkdocs_page_name = "\u63a7\u5236\u53f0\u53d8\u91cf";
         var mkdocs_page_input_path = "optimization/Reference/Console-Variables.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Console Variables</li>
+      <li class="breadcrumb-item active">控制台变量</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Reference/Console-Variables.md"> 编辑页面</a>
     </li>
@@ -120,556 +120,526 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="console-variables">Console Variables</h1>
-<p><tldr></p>
-<p>
-Vite-specific console variables and the stock ones you most often need, grouped by subsystem. This is a
-curated list, not an exhaustive dump &mdash; use <code>help</code> or the console's autocomplete for the
-full set.
-</p>
-<p></tldr></p>
-<p><warning>
-Several ray tracing variables in this list are <b>compiled out</b> in a default build. They will set
-successfully and render nothing. Availability is noted per variable; see
-<a href="../Performance/Compile-Time-Switches.md">Compile-Time Switches</a>.
-</warning></p>
-<p>Set variables at runtime in the console, or persistently in <code>Config\DefaultEngine.ini</code>:</p>
+                <h1 id="_1">控制台变量</h1>
+<p>此列表包含 Vite 特有的控制台变量以及您最常用的默认变量，并按子系统分组。这是一个精选列表，并非完整列表——如需查看完整列表，请使用<code>help</code>或控制台的自动补全功能。</p>
+<p><strong>警告</strong>：此列表中的几个光线追踪变量在默认构建中会<strong>被编译掉</strong>。它们会成功设置，但不会渲染任何内容。每个变量的可用性都有说明；请参阅<a href="../../Performance/Compile-Time-Switches/">编译时开关</a>。</p>
+<p>您可以在运行时通过控制台设置变量，也可以在 <code>Config\DefaultEngine.ini</code> 文件中永久设置这些变量：</p>
 <div class="highlight"><pre><span></span><code><span class="k">[/Script/Engine.RendererSettings]</span>
 <span class="na">r.Vite.SMAA.Mode</span><span class="o">=</span><span class="s">1</span>
 <span class="na">r.HBAO.Enable</span><span class="o">=</span><span class="s">1</span>
 </code></pre></div>
-<h2 id="vite-specific">Vite-specific</h2>
-<p>These do not exist in stock UE 4.27.</p>
+<h2 id="vite">Vite 特有的</h2>
+<p>这些在 UE 4.27 版本中不存在。</p>
 <table>
 <thead>
 <tr>
-<th>Variable</th>
-<th>Default</th>
-<th>Purpose</th>
+<th>变量</th>
+<th>默认值</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.Vite.SMAA.Mode</code></td>
 <td>1</td>
-<td>SMAA quality. 0 = Low, 1 = High. See <a href="../../Rendering/Anti-Aliasing/">Anti-Aliasing</a>.</td>
+<td>SMAA 抗锯齿质量。<code>0</code> = 低，<code>1</code> = 高。参见<a href="../../Rendering/Anti-Aliasing/">抗锯齿</a>。</td>
 </tr>
 <tr>
 <td><code>r.Vite.SSAO</code></td>
 <td>&mdash;</td>
-<td>Vite's optimised SSAO path. See <a href="../../Rendering/Ambient-Occlusion/">Ambient Occlusion</a>.</td>
+<td>Vite 的优化 SSAO 路径。参见<a href="../../Rendering/Ambient-Occlusion/">环境光遮蔽</a>。</td>
 </tr>
 <tr>
 <td><code>r.AntiAliasing.SMAA.Debug</code></td>
 <td>&mdash;</td>
-<td>SMAA debug visualisation</td>
+<td>SMAA 调试可视化</td>
 </tr>
 <tr>
 <td><code>p.VitePhysXFixedTimestep.Enabled</code></td>
 <td>0</td>
-<td>Enable fixed timestep physics</td>
+<td>启用固定时间步长物理效果</td>
 </tr>
 <tr>
 <td><code>p.VitePhysXFixedTimestep.DeltaTime</code></td>
 <td>1/60</td>
-<td>Fixed step duration in seconds</td>
+<td>固定步长持续时间（秒）</td>
 </tr>
 <tr>
 <td><code>p.VitePhysXFixedTimestep.MaxTimesteps</code></td>
 <td>&mdash;</td>
-<td>Maximum steps per frame</td>
+<td>每帧最大步数</td>
 </tr>
 <tr>
 <td><code>p.VitePhysXFixedTimestep.MaxCumulativeExtraSteps</code></td>
 <td>&mdash;</td>
-<td>Cap on accumulated catch-up steps</td>
+<td>累积追赶步数上限</td>
 </tr>
 <tr>
 <td><code>p.VitePhysXFixedTimestep.LimitType</code></td>
 <td>&mdash;</td>
-<td>How overload is handled</td>
+<td>过载处理方式</td>
 </tr>
 <tr>
 <td><code>p.VitePhysXFixedTimestep.InterpolationMode</code></td>
 <td>&mdash;</td>
-<td>Render interpolation between fixed steps</td>
+<td>固定步长之间的渲染插值</td>
 </tr>
 </tbody>
 </table>
-<p><note>
-The <code>p.VitePhysXFixedTimestep.*</code> variables require a build with
-<code>VITE_PHYSX_FIXED_TIMESTEP=1</code>. See <a href="../Physics/Fixed-Timestep.md">Fixed Timestep</a>.
-</note></p>
-<h2 id="ray-tracing">Ray tracing</h2>
+<p><strong>注意：</strong> <code>p.VitePhysXFixedTimestep.*</code> 变量需要使用 <code>VITE_PHYSX_FIXED_TIMESTEP=1</code> 进行构建。请参阅<a href="../../Physics/Fixed-Timestep/">固定时间步长</a>。</p>
+<h2 id="_2">光线追踪</h2>
 <table>
 <thead>
 <tr>
-<th>Variable</th>
-<th>Default</th>
-<th>Availability</th>
-<th>Page</th>
+<th>变量</th>
+<th>默认值</th>
+<th>可用性</th>
+<th>页面</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.RayTracing.Reflections</code></td>
 <td>0</td>
-<td>Available</td>
-<td><a href="../../Rendering/RT-Reflections/">RT Reflections</a></td>
+<td>可用</td>
+<td><a href="../../Rendering/RT-Reflections/">RT 反射</a></td>
 </tr>
 <tr>
 <td><code>r.RayTracing.Shadows</code></td>
 <td>0</td>
-<td>Available</td>
-<td><a href="../../Rendering/RT-Shadows-And-Ambient-Occlusion/">RT Shadows and AO</a></td>
+<td>可用</td>
+<td><a href="../../Rendering/RT-Shadows-And-Ambient-Occlusion/">RT 阴影和 AO</a></td>
 </tr>
 <tr>
 <td><code>r.RayTracing.AmbientOcclusion</code></td>
 <td>0</td>
-<td>Available</td>
-<td><a href="../../Rendering/Ambient-Occlusion/">Ambient Occlusion</a></td>
+<td>可用</td>
+<td><a href="../../Rendering/Ambient-Occlusion/">环境光遮蔽</a></td>
 </tr>
 <tr>
 <td><code>r.RayTracing.SkyLight</code></td>
 <td>&mdash;</td>
-<td>Available</td>
-<td><a href="../../Rendering/Ray-Tracing/">Ray Tracing</a></td>
+<td>可用</td>
+<td><a href="../../Rendering/Ray-Tracing/">光线追踪</a></td>
 </tr>
 <tr>
 <td><code>r.RayTracing.GlobalIllumination</code></td>
 <td>-1</td>
-<td><strong>Compiled out</strong></td>
-<td><a href="../../Rendering/Global-Illumination/">Global Illumination</a></td>
+<td><strong>已编译移除</strong></td>
+<td><a href="../../Rendering/Global-Illumination/">全局光照</a></td>
 </tr>
 <tr>
 <td><code>r.RayTracing.Translucency</code></td>
 <td>0</td>
-<td><strong>Compiled out</strong></td>
-<td><a href="../../Rendering/RT-Translucency-And-Caustics/">RT Translucency and Caustics</a></td>
+<td><strong>已编译移除</strong></td>
+<td><a href="../../Rendering/RT-Translucency-And-Caustics/">RT 半透明和焦散</a></td>
 </tr>
 <tr>
 <td><code>r.RayTracing.SampledDirectLighting</code></td>
 <td>0</td>
-<td><strong>Compiled out</strong></td>
+<td><strong>已编译移除</strong></td>
 <td><a href="../../Rendering/RTXDI/">RTXDI</a></td>
 </tr>
 </tbody>
 </table>
-<p>A value of <code>-1</code> means the setting is driven by the post-process volume rather than the console variable.</p>
-<h3 id="culling-and-scene-setup">Culling and scene setup</h3>
+<p>值为 <code>-1</code> 表示该设置由后期处理体积驱动，而非控制台变量。</p>
+<h3 id="_3">剔除和场景设置</h3>
 <table>
 <thead>
 <tr>
-<th>Variable</th>
-<th>Purpose</th>
+<th>变量</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.RayTracing.Culling</code></td>
-<td>Ray tracing instance culling mode</td>
+<td>光线追踪实例剔除模式</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.Culling.Radius</code></td>
-<td>Culling distance</td>
+<td>剔除距离</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.Culling.Angle</code></td>
-<td>Angular culling threshold</td>
+<td>角度剔除阈值</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.SceneCaptures</code></td>
-<td>Whether scene captures build ray tracing scenes</td>
+<td>是否使用场景捕获构建光线追踪场景</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.PreGather</code></td>
-<td>Pre-gather pass control</td>
+<td>预收集通道控制</td>
 </tr>
 </tbody>
 </table>
-<p>Culling settings are among the most effective ray tracing performance levers, and Vite changes some of
-their defaults &mdash; see <a href="../../Performance/Engine-Defaults/">Engine Defaults</a>.</p>
-<h3 id="sky-light">Sky light</h3>
+<p>剔除设置是光线追踪性能最有效的调节手段之一，Vite 修改了其中一些默认设置——请参阅<a href="../../Performance/Engine-Defaults/">引擎默认设置</a>。</p>
+<h3 id="_4">天空光照</h3>
 <table>
 <thead>
 <tr>
-<th>Variable</th>
-<th>Purpose</th>
+<th>变量</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.RayTracing.SkyLight.SamplesPerPixel</code></td>
-<td>Sample count</td>
+<td>采样数</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.SkyLight.MaxRayDistance</code></td>
-<td>Ray length limit</td>
+<td>光线长度限制</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.SkyLight.ScreenPercentage</code></td>
-<td>Resolution scale for the sky light pass</td>
+<td>天空光通道的分辨率比例</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.SkyLight.Denoiser</code></td>
-<td>Denoiser selection</td>
+<td>降噪器选择</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.SkyLight.EnableMaterials</code></td>
-<td>Evaluate materials on hit</td>
+<td>命中时评估材质</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.SkyLight.EnableTwoSidedGeometry</code></td>
-<td>Two-sided geometry handling</td>
+<td>双面几何体处理</td>
 </tr>
 </tbody>
 </table>
-<p><code>ScreenPercentage</code> and <code>SamplesPerPixel</code> are the two to reach for when the sky light pass is too expensive.</p>
-<h3 id="translucency">Translucency</h3>
-<p>Compiled out by default.</p>
+<p>当天空光通道的计算量过大时，可以考虑使用 <code>ScreenPercentage</code> 和 <code>SamplesPerPixel</code> 这两个参数。</p>
+<h3 id="_5">半透明效果</h3>
+<p>默认情况下已编译关闭。</p>
 <table>
 <thead>
 <tr>
-<th>Variable</th>
-<th>Purpose</th>
+<th>变量</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.RayTracing.Translucency.HalfRes</code></td>
-<td>Half-resolution translucency</td>
+<td>半分辨率半透明效果</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.Translucency.HybridDepthThreshold</code></td>
-<td>Hybrid translucency depth threshold</td>
+<td>混合半透明深度阈值</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.Translucency.HybridDepthBias</code></td>
-<td>Hybrid translucency depth bias</td>
+<td>混合半透明深度偏差</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.PrimaryRays.IncludeDOF</code></td>
-<td>Include depth of field in primary rays</td>
+<td>在主光线中包含景深</td>
 </tr>
 </tbody>
 </table>
-<h3 id="rtxdi-sampled-lighting">RTXDI (sampled lighting)</h3>
-<p>Compiled out by default. <code>r.RayTracing.SampledDirectLighting</code> is the master switch; the
-<code>r.RayTracing.SampledLighting.*</code> family &mdash; over sixty variables covering reservoir counts, spatial and
-temporal resampling, ReGIR cell configuration and per-light-type toggles &mdash; tunes it.</p>
-<p>The ones worth knowing first:</p>
+<h3 id="rtxdi">RTXDI（采样直接光照）</h3>
+<p>默认情况下已编译关闭。<code>r.RayTracing.SampledDirectLighting</code> 是主开关；<code>r.RayTracing.SampledLighting.*</code> 系列（包含 60 多个变量，涵盖储层计数、空间和时间重采样、ReGIR 单元配置以及每种光照类型的切换）对其进行微调。</p>
+<p>首先需要了解的是：</p>
 <table>
 <thead>
 <tr>
-<th>Variable</th>
-<th>Default</th>
-<th>Purpose</th>
+<th>变量</th>
+<th>默认值</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.RayTracing.SampledLighting.Mode</code></td>
 <td>1</td>
-<td>Sampling mode</td>
+<td>采样模式</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.SampledLighting.InitialSamples</code></td>
 <td>8</td>
-<td>Initial candidate samples</td>
+<td>初始候选样本数</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.SampledLighting.Spatial</code></td>
 <td>1</td>
-<td>Spatial resampling</td>
+<td>空间重采样</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.SampledLighting.Temporal</code></td>
 <td>1</td>
-<td>Temporal resampling</td>
+<td>时间重采样</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.SampledLighting.NumReservoirs</code></td>
 <td>-1</td>
-<td>Reservoir count, -1 for automatic</td>
+<td>储层数量，-1 表示自动</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.SampledLighting.Denoiser</code></td>
 <td>&mdash;</td>
-<td>Denoiser selection</td>
+<td>降噪器选择</td>
 </tr>
 <tr>
 <td><code>r.RayTracing.SampledLighting.DebugMode</code></td>
 <td>&mdash;</td>
-<td>Debug visualisation</td>
+<td>调试可视化</td>
 </tr>
 </tbody>
 </table>
-<p>See <a href="../../Rendering/RTXDI/">RTXDI</a>.</p>
-<h3 id="caustics">Caustics</h3>
-<p>Mesh and water caustics are driven primarily by post-process volume settings rather than console variables,
-and both are compiled out by default. Related variables:</p>
+<p>参见 <a href="../../Rendering/RTXDI/">RTXDI</a>。</p>
+<h3 id="_6">焦散效果</h3>
+<p>网格和水体的焦散效果主要由后期处理体积设置驱动，而非控制台变量，并且默认情况下两者都会被编译掉。相关变量：</p>
 <table>
 <thead>
 <tr>
-<th>Variable</th>
-<th>Purpose</th>
+<th>变量</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.RayTracing.BuildRayTracingMeshForCaustics</code></td>
-<td>Build caustics-capable ray tracing geometry</td>
+<td>构建支持焦散效果的光线追踪几何体</td>
 </tr>
 <tr>
 <td><code>r.ParallelCausticsMap</code></td>
-<td>Parallel caustics map rendering</td>
+<td>并行焦散贴图渲染</td>
 </tr>
 <tr>
 <td><code>r.PathTracing.ApproximateCaustics</code></td>
-<td>Approximate caustics in the path tracer</td>
+<td>在路径追踪器中实现近似焦散效果</td>
 </tr>
 </tbody>
 </table>
-<p>See <a href="../../Rendering/RT-Translucency-And-Caustics/">RT Translucency and Caustics</a>.</p>
-<h2 id="global-illumination">Global illumination</h2>
+<p>参见 <a href="../../Rendering/RT-Translucency-And-Caustics/">光线追踪半透明和焦散</a>。</p>
+<h2 id="_7">全局光照</h2>
 <table>
 <thead>
 <tr>
-<th>Variable</th>
-<th>Purpose</th>
+<th>变量</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.RTXGI.DDGI</code></td>
-<td>Master DDGI toggle</td>
+<td>主 DDGI 开关</td>
 </tr>
 <tr>
 <td><code>r.RTXGI.DDGI.LightingPass.Scale</code></td>
-<td>Lighting pass resolution scale</td>
+<td>光照通道分辨率缩放</td>
 </tr>
 <tr>
 <td><code>r.RTXGI.DDGI.LightingPass.RelativeDistanceThreshold</code></td>
-<td>Distance rejection threshold</td>
+<td>距离拒绝阈值</td>
 </tr>
 <tr>
 <td><code>r.RTXGI.DDGI.LightingPass.NormalPower</code></td>
-<td>Normal weighting</td>
+<td>法线权重</td>
 </tr>
 <tr>
 <td><code>r.RTXGI.DDGI.ProbesTextureVis</code></td>
-<td>Probe texture visualisation</td>
+<td>探针纹理可视化</td>
 </tr>
 <tr>
 <td><code>r.RTXGI.DDGI.ProbesTextureVis.IrradianceScalar</code></td>
-<td>Visualisation scaling</td>
+<td>可视化缩放</td>
 </tr>
 <tr>
 <td><code>r.RTXGI.DDGI.StatVolume</code></td>
-<td>Per-volume statistics</td>
+<td>每个体积的统计信息</td>
 </tr>
 <tr>
 <td><code>r.RTXGI.MemoryUsed</code></td>
-<td>Report DDGI memory usage</td>
+<td>报告 DDGI 内存使用情况</td>
 </tr>
 </tbody>
 </table>
-<p>The RTXGI plugin is enabled by default. See <a href="../../Rendering/DDGI-Dynamic/">Dynamic DDGI</a> and
-<a href="../../Rendering/Global-Illumination/">Global Illumination</a>.</p>
-<h2 id="ambient-occlusion">Ambient occlusion</h2>
+<p>RTXGI 插件默认启用。请参阅<a href="../../Rendering/DDGI-Dynamic/">动态 DDGI</a> 和<a href="../../Rendering/Global-Illumination/">全局光照</a>。</p>
+<h2 id="_8">环境光遮蔽</h2>
 <table>
 <thead>
 <tr>
-<th>Variable</th>
-<th>Default</th>
-<th>Purpose</th>
+<th>变量</th>
+<th>默认值</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.HBAO.Enable</code></td>
 <td>0</td>
-<td>Enable HBAO+. Multiplies over the screen-space AO buffer.</td>
+<td>启用 HBAO+。乘以屏幕空间 AO 缓冲区。</td>
 </tr>
 <tr>
 <td><code>r.HBAO.HighPrecisionDepth</code></td>
 <td>0</td>
-<td>0 = FP16 internal depth, 1 = FP32. Use FP32 to avoid self-occlusion banding on distant objects.</td>
+<td>0 = FP16 内部深度，1 = FP32。使用 FP32 可避免远处物体出现自遮挡条带。</td>
 </tr>
 <tr>
 <td><code>r.HBAO.GBufferNormals</code></td>
 <td>1</td>
-<td>0 = reconstruct normals from depth, 1 = fetch GBuffer normals</td>
+<td>0 = 从深度重建法线，1 = 获取 GBuffer 法线</td>
 </tr>
 </tbody>
 </table>
-<p>HBAO+ has additional per-volume settings in the post-process volume: power exponent (default 2.0), radius
-(2.0), bias (0.1), small-scale AO (1.0), blur radius (2 pixels), blur sharpness (16.0), max view depth
-(9500), depth sharpness (50.0), and foreground and background AO distances.</p>
-<p><note>
-The <code>r.HBAO.Enable</code> help text describes HBAO+ as DX11-only. This is out of date; there is a
-working D3D12 implementation. See <a href="../Rendering/Ambient-Occlusion.md">Ambient Occlusion</a>.
-</note></p>
-<h2 id="tessellation">Tessellation</h2>
+<p>HBAO+ 在后处理体积中提供了额外的体积级设置：幂指数（默认值 2.0）、半径（2.0）、偏移量（0.1）、小尺度 AO（1.0）、模糊半径（2 像素）、模糊锐度（16.0）、最大视深（9500）、深度锐度（50.0）以及前景和背景 AO 距离。</p>
+<p><strong>注意：</strong> <code>r.HBAO.Enable</code> 帮助文本将 HBAO+ 描述为仅适用于 DX11。此信息已过时；目前已有可用的 D3D12 实现。请参阅<a href="../../Rendering/Ambient-Occlusion/">环境光遮蔽 (Ambient Occlusion)</a>。</p>
+<h2 id="_9">曲面细分</h2>
 <table>
 <thead>
 <tr>
-<th>Variable</th>
-<th>Default</th>
-<th>Purpose</th>
+<th>变量</th>
+<th>默认值</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.TessellationAdaptivePixelsPerTriangle</code></td>
 <td>48.0</td>
-<td>Global tessellation factor multiplier. Lower means more triangles.</td>
+<td>全局细分因子乘数。数值越低，三角形越多。</td>
 </tr>
 </tbody>
 </table>
-<p>See <a href="../../Rendering/Tessellation/">Tessellation</a>.</p>
-<h2 id="hair">Hair</h2>
+<p>参见<a href="../../Rendering/Tessellation/">细分曲面</a>.</p>
+<h2 id="_10">头发</h2>
 <table>
 <thead>
 <tr>
-<th>Variable</th>
-<th>Purpose</th>
+<th>变量</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.TressFX.StrandsMode</code></td>
-<td>Debug render mode. 0 = off, 1 = simulation strands, 2 = render strands with simulation influence, 3 = hair UV, 4 = root UV, 5 = seed, 6 = dimensions</td>
+<td>调试渲染模式。0 = 关闭，1 = 模拟发丝，2 = 渲染发丝并受模拟影响，3 = 头发 UV，4 = 根部 UV，5 = 种子，6 = 尺寸</td>
 </tr>
 <tr>
 <td><code>r.TressFX.Interoplation.FrustumCulling</code></td>
-<td>Frustum culling for interpolation. Default 1.</td>
+<td>用于插值的视锥体剔除。默认值为 1。</td>
 </tr>
 <tr>
 <td><code>r.TressFX.MorphTargetMeshVisualization</code></td>
-<td>Morph target mesh visualisation</td>
+<td>变形目标网格可视化</td>
 </tr>
 </tbody>
 </table>
-<p>See <a href="../../Rendering/Hair-Rendering/">Hair Rendering</a>.</p>
-<h2 id="volumetric-fog">Volumetric fog</h2>
+<p>参见 <a href="../../Rendering/Hair-Rendering/">头发渲染</a>。</p>
+<h2 id="_11">体积雾</h2>
 <table>
 <thead>
 <tr>
-<th>Variable</th>
-<th>Purpose</th>
+<th>变量</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.RayTracing.VolumeFogMode</code></td>
-<td>Ray traced volumetric fog mode</td>
+<td>光线追踪体积雾模式</td>
 </tr>
 <tr>
 <td><code>r.VolumetricFog.UseUpScaledSizeVolumetricFog</code></td>
-<td>Render volumetric fog at output rather than internal resolution</td>
+<td>以输出分辨率而非内部分辨率渲染体积雾</td>
 </tr>
 </tbody>
 </table>
-<p><note>
-<code>r.VolumetricFog.UseUpScaledSizeVolumetricFog</code> only exists in builds with
-<code>VITE_DLSS_PATCH=1</code>. It exists to fix volumetric fog resolution when upscaling. See
-<a href="../Rendering/Upscalers.md">Upscalers</a>.
-</note></p>
-<h2 id="profiling">Profiling</h2>
-<p>Standard Unreal, but worth having in one place:</p>
+<p><strong>注意：</strong> <code>r.VolumetricFog.UseUpScaledSizeVolumetricFog</code> 仅在 <code>VITE_DLSS_PATCH=1</code> 的版本中存在。它的作用是在放大时修复体积雾的分辨率。请参阅<a href="../../Rendering/Upscalers/">超分辨率</a>部分。</p>
+<h2 id="_12">性能分析</h2>
+<p>标准的虚幻引擎，但值得集中展示：</p>
 <table>
 <thead>
 <tr>
-<th>Command</th>
-<th>Shows</th>
+<th>命令</th>
+<th>显示</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>stat unit</code></td>
-<td>Frame, Game, Draw, GPU and RHIT timings. Start here.</td>
+<td>帧、游戏、绘制、GPU 和 RHIT 的计时。从这里开始。</td>
 </tr>
 <tr>
 <td><code>stat unitgraph</code></td>
-<td>The same over time</td>
+<td>随时间变化的相同数据</td>
 </tr>
 <tr>
 <td><code>stat game</code></td>
-<td>Game thread breakdown</td>
+<td>游戏线程细分</td>
 </tr>
 <tr>
 <td><code>stat scenerendering</code></td>
-<td>Render thread breakdown</td>
+<td>渲染线程细分</td>
 </tr>
 <tr>
 <td><code>stat gpu</code></td>
-<td>GPU pass breakdown</td>
+<td>GPU 通道细分</td>
 </tr>
 <tr>
 <td><code>stat physics</code></td>
-<td>Physics solver time</td>
+<td>物理求解器时间</td>
 </tr>
 <tr>
 <td><code>stat rhi</code></td>
-<td>RHI resource statistics</td>
+<td>RHI 资源统计信息</td>
 </tr>
 <tr>
 <td><code>stat memory</code></td>
-<td>Memory usage</td>
+<td>内存使用情况</td>
 </tr>
 <tr>
 <td><code>profilegpu</code></td>
-<td>Single-frame GPU capture</td>
+<td>单帧 GPU 捕获</td>
 </tr>
 <tr>
 <td><code>recompileshaders changed</code></td>
-<td>Recompile modified shaders</td>
+<td>重新编译已修改的着色器</td>
 </tr>
 <tr>
 <td><code>recompileshaders global</code></td>
-<td>Recompile global shaders</td>
+<td>重新编译全局着色器</td>
 </tr>
 </tbody>
 </table>
-<p>See <a href="../../Performance/Profiling/">Profiling</a>.</p>
-<h2 id="finding-variables-yourself">Finding variables yourself</h2>
+<p>参见<a href="../../Performance/Profiling/">性能分析</a>。</p>
+<h2 id="_13">自行查找变量</h2>
 <table>
 <thead>
 <tr>
-<th>Command</th>
-<th>Effect</th>
+<th>命令</th>
+<th>效果</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>help</code></td>
-<td>Dumps all console variables and commands to the log</td>
+<td>将所有控制台变量和命令输出到日志</td>
 </tr>
 <tr>
-<td><code>&lt;partial name&gt;</code> then Tab</td>
-<td>Autocomplete in the console</td>
+<td><code>&lt;partial name&gt;</code> 然后按 Tab 键</td>
+<td>控制台自动补全</td>
 </tr>
 <tr>
-<td><code>&lt;variable&gt;</code> with no value</td>
-<td>Prints the current value and help text</td>
+<td><code>&lt;variable&gt;</code> 不带值</td>
+<td>打印当前值和帮助文本</td>
 </tr>
 <tr>
 <td><code>DumpConsoleCommands</code></td>
-<td>Lists commands</td>
+<td>列出命令</td>
 </tr>
 </tbody>
 </table>
-<p><warning>
-Help text in the engine is occasionally stale &mdash; HBAO+'s DX11-only claim is one example. When
-behaviour and help text disagree, the source is authoritative.
-</warning></p>
-<h2 id="see-also">See also</h2>
+<p><strong>警告：</strong> 引擎中的帮助文本有时会过时——例如，HBAO+ 声称仅支持 DX11。当行为与帮助文本不一致时，以源代码为准。</p>
+<h2 id="_14">另请参阅</h2>
 <ul>
-<li><a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a></li>
-<li><a href="../../Performance/Engine-Defaults/">Engine Defaults</a></li>
-<li><a href="../../Performance/Profiling/">Profiling</a></li>
-<li><a href="../Glossary/">Glossary</a></li>
+<li><a href="../../Performance/Compile-Time-Switches/">编译时开关</a></li>
+<li><a href="../../Performance/Engine-Defaults/">引擎默认设置</a></li>
+<li><a href="../../Performance/Profiling/">性能分析</a></li>
+<li><a href="../Glossary/">术语表</a></li>
 </ul>
               
             </div>
