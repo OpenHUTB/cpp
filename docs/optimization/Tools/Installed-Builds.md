@@ -10,7 +10,7 @@ A source build requires a full toolchain, a long compile and a lot of disk. An i
 
 `RunUAT.bat` at the engine root drives the BuildGraph installed-build target:
 
-```
+```shell
 Engine\Build\BatchFiles\RunUAT.bat BuildGraph
     -script="Engine\Build\InstalledEngineBuild.xml"
     -target="Make Installed Build Win64"

@@ -1,174 +1,144 @@
 # 编译时开关
 
-Five <code>VITE_*</code> macros in
-<code>Engine/Source/Runtime/Core/Public/Misc/CoreDefines.h</code> control features that are decided at
-compile time rather than by console variable. <b><code>VITE_RT_PSO_DEBLOAT</code> defaults to
-<code>1</code> and compiles out several ray tracing effects entirely</b> &mdash; read that section before
-concluding a feature is broken.
+[Engine/Source/Runtime/Core/Public/Misc/CoreDefines.h](https://github.com/OpenHUTB/engine/blob/hutb/Engine/Source/Runtime/Core/Public/Misc/CoreDefines.h) 中的五个 `VITE_*` 宏控制的功能是在编译时决定的，而不是通过控制台变量。`VITE_RT_PSO_DEBLOAT` **默认值为 1，会完全编译掉一些光线追踪效果**——在确定某个功能坏掉之前，先看看那一节。
 
-Some Vite features cannot be console variables. Either they change shader permutation sets, which are
-decided when shaders are compiled, or they alter hot code paths where a runtime branch would cost more than
-the feature saves.
+有些 Vite 功能不能用控制台变量。要么它们会改变着色器的排列集，而这些是在编译着色器时决定的，要么它们会修改关键的运行时代码路径，在这些路径上运行时判断分支的开销比功能本身节省的还要大。
 
-## The switches
 
-| Macro | Default | Effect when enabled |
+## 开关
+
+| 宏 | 默认 | 启用时的效果 |
 |---|---|---|
-| `VITE_RT_PSO_DEBLOAT` | `1` | Compiles out a large set of ray tracing shader permutations |
-| `VITE_O_SSAO` | `1` | Vite's optimised SSAO memory access path |
-| `VITE_PHYSX_FIXED_TIMESTEP` | `0` | Deterministic fixed-step PhysX with render interpolation |
-| `VITE_DLSS_PATCH` | `0` | Output-resolution translucency and volumetric fog when upscaling |
-| `VITE_NVRTX_TRANSLUCENCY_DEPTH` | `0` | Separate translucency depth texture from the NvRTX branch |
+| `VITE_RT_PSO_DEBLOAT` | `1` | 确定性的固定步长 PhysX 渲染插值 |
+| `VITE_O_SSAO` | `1` | Vite 优化过的 SSAO 内存访问路径 |
+| `VITE_PHYSX_FIXED_TIMESTEP` | `0` | 确定性的固定步长PhysX，带渲染插值 |
+| `VITE_DLSS_PATCH` | `0` | 在放大时实现输出分辨率的半透明效果和体积雾 |
+| `VITE_NVRTX_TRANSLUCENCY_DEPTH` | `0` | 把 NvRTX 分支里的半透明深度纹理分离出来 |
 
-Each is defined with an `#ifndef` guard, so any of them can be overridden from the build system without
-editing the header.
+每个都用 `#ifndef` 守护定义，所以可以在不修改头文件的情况下从构建系统中重写它们。
 
-## Overriding a switch
 
-<procedure title="Change a compile-time switch" id="override-switch">
-    <step>
-        Open your project's <code>Source/&lt;Project&gt;.Target.cs</code>, or the engine target file if
-        you are changing it engine-wide.
-    </step>
-    <step>
-        Add the definition to <code>GlobalDefinitions</code>:
-        <code-block lang="c#">
+## 重写一个开关
+
+### 更改编译时开关
+
+1. 打开你项目的 `Source/<Project>.Target.cs` 文件，或者如果你要在整个引擎中修改，就打开引擎的 target 文件。
+
+2. 将定义添加到 `GlobalDefinitions` 中：
+
+```C#
 public MyGameTarget(TargetInfo Target) : base(Target)
 {
     Type = TargetType.Game;
     DefaultBuildSettings = BuildSettingsVersion.V2;
     ExtraModuleNames.Add("MyGame");
 
-    GlobalDefinitions.Add("VITE_RT_PSO_DEBLOAT=0");
-}
-        </code-block>
-    </step>
-    <step>Regenerate project files.</step>
-    <step>
-        Rebuild the engine, and wipe the shader cache if you changed
-        <code>VITE_RT_PSO_DEBLOAT</code> or any switch that affects shader permutations. See
-        <a href="../Tools/Cache-Management.md">Cache Management</a>.
-    </step>
-</procedure>
+GlobalDefinitions.Add("VITE_RT_PSO_DEBLOAT=0");
 
-Prefer `GlobalDefinitions` in a target file over editing `CoreDefines.h`. Editing the header changes the
-value for every target and creates a diff against the engine repository that you will have to carry through
-every merge.
+}
+```
+
+3. 重新生成项目文件。
+
+4. 如果更改了 `VITE_RT_PSO_DEBLOAT` 或影响着色器排列的任何开关，则重建引擎，并擦除着色器缓存。请参见[缓存管理](../Tools/Cache-Management.md)。
+
+在目标文件中首选 `GlobalDefinitions`，而不是编辑 [CoreDefines.h](https://github.com/OpenHUTB/engine/blob/hutb/Engine/Source/Runtime/Core/Public/Misc/CoreDefines.h)。编辑标头会更改每个目标的值，并创建与引擎存储库的差异，您将必须执行每次合并。
+
 
 ## VITE_RT_PSO_DEBLOAT
 
-This is the switch that surprises people, so it gets the most detail.
+这是让人惊讶的开关，所以细节最丰富。
 
-Ray tracing pipeline state objects are expensive in a way that is easy to miss. Every ray generation shader
-permutation that *could* be used has to be compiled, packaged and bound into the ray tracing pipeline, even
-if the effect it belongs to is disabled at runtime by a console variable. A CVar set to `0` does not stop
-its shaders existing. The result is long shader compile times, large packaged builds, high PSO counts and
-slow ray tracing pipeline creation at runtime.
+光线追踪流水线状态对象的代价高昂，容易被忽视。每一个可能使用的光线生成着色器置换都必须编译、打包并绑定到光线追踪流水线中，即使其所属的效果在运行时被控制台变量禁用。将 CVar 设置为 0 并不会阻止其着色器存在。结果是着色器编译时间过长，打包构建体积庞大，PSO 数量高，以及运行时光线追踪流水线创建变慢。
 
-`VITE_RT_PSO_DEBLOAT` cuts the permutation set down to the effects Vite actually ships, by returning `false`
-from `ShouldCompilePermutation` for everything else.
+`VITE_RT_PSO_DEBLOAT` 通过从 `ShouldCompilePermutation` 返回 `false`，将置换设置简化为 Vite 实际发布的效果。
 
-### What is compiled out at the default value
 
-With `VITE_RT_PSO_DEBLOAT=1`, these effects are **unavailable regardless of their console variables**:
+### 默认值下会编译掉什么
 
-| Effect | Normally controlled by |
+当 `VITE_RT_PSO_DEBLOAT=1` 时，这些效果**无论控制台变量如何都无法使用**：
+
+
+| 效果 | 通常由以下控制 |
 |---|---|
-| Per-pixel ray-traced global illumination | `r.RayTracing.GlobalIllumination` |
-| RTXDI sampled direct lighting | `r.RayTracing.SampledDirectLighting` |
-| Path tracing | `r.PathTracing`, path tracing view mode |
-| Ray-traced translucency | `r.RayTracing.Translucency` |
-| Mesh caustics | NvRTX caustics CVars |
-| Water caustics | NvRTX water caustics CVars |
-| Single layer water ray-traced reflections | `r.Water.SingleLayer.RTR` |
-| Ray-traced reflection captures and reflection probes | `r.RayTracing.Reflections.RayTraceEnvironmentCaptures` |
+| 每像素光线追踪全局光照 | `r.RayTracing.GlobalIllumination` |
+| RTXDI 采样直接光照 | `r.RayTracing.SampledDirectLighting` |
+| 路径追踪 | `r.PathTracing`，路径追踪视图模式 |
+| 光线追踪半透明 | `r.RayTracing.Translucency` |
+| 网格焦散 | NvRTX 焦散控制台变量（Console Variables, CVars） |
+| 水体焦散 | NvRTX 水体焦散 CVars |
+| 单层水面光线追踪反射 | `r.Water.SingleLayer.RTR` |
+| 光线追踪反射捕捉和反射探针 | `r.RayTracing.Reflections.RayTraceEnvironmentCaptures` |
 
-Setting the console variable will appear to succeed and the effect will not render.
+设置控制台变量看起来会成功，但效果不会生效。
 
-### What still works
+### 仍然有效的功能
 
-| Effect | Notes |
+| 效果 | 说明 |
 |---|---|
-| Ray-traced reflections | Forced to the sorted deferred algorithm. The older non-deferred path is compiled out. |
-| Ray-traced shadows | Unaffected |
-| Ray-traced ambient occlusion | Unaffected |
-| Ray-traced sky light | Unaffected |
-| DDGI | Unaffected. DDGI is a plugin and does not go through these permutations. |
+| 光线追踪反射 | 被迫使用排序后的延迟算法。旧的非延迟路径已经被编译出去。 |
+| 光线追踪阴影 | 不受影响 |
+| 光线追踪环境遮蔽 | 不受影响 |
+| 光线追踪天空光 | 不受影响 |
+| DDGI | 不受影响。DDGI 是一个插件，不会经过这些排列组合。 |
 
-The set that remains is exactly Vite's recommended configuration: [DDGI](../Rendering/DDGI-Dynamic.md) for indirect
-lighting, [RT reflections](../Rendering/RT-Reflections.md) via the deferred path, and
-[RT shadows and AO](../Rendering/RT-Shadows-And-Ambient-Occlusion.md). See
-[Global Illumination](../Rendering/Global-Illumination.md) for why DDGI is preferred over per-pixel ray-traced GI in the
-first place &mdash; the debloat switch encodes that recommendation into the build.
+剩下的配置正好是 Vite 推荐的设置：用 [DDGI](../Rendering/DDGI-Dynamic.md) 处理间接光照，通过延迟路径实现 [RT 反射](../Rendering/RT-Reflections.md)，以及 [RT 阴影和环境光遮蔽](../Rendering/RT-Shadows-And-Ambient-Occlusion.md)。查看[全局光照](../Rendering/Global-Illumination.md)了解为什么 DDGI 比每像素光线追踪全局光照更受推荐——精简开关会将这个推荐编码进构建中。
 
-### Turning it off
 
-Set `VITE_RT_PSO_DEBLOAT=0` and rebuild if you need path tracing for
-[reference imagery](../Rendering/Path-Tracing.md), RTXDI for a many-lights scene, or ray-traced translucency and
-caustics.
+### 关闭它
 
-<warning>
-Turning this off substantially increases shader compilation time, packaged build size and ray tracing PSO
-count. Consider maintaining a separate target configuration &mdash; debloat off for an internal
-reference-rendering build, debloat on for the shipping build &mdash; rather than turning it off globally.
-</warning>
+如果你需要用于[参考图像](../Rendering/Path-Tracing.md)的路径追踪、多光源场景的 RTXDI，或者光线追踪的半透明和焦散效果，请设置 `VITE_RT_PSO_DEBLOAT=0` 并重新构建。
+
+
+**警告：** 关闭这个选项会显著增加着色器编译时间、打包后的构建大小和光线追踪 PSO 数量。考虑保持一个单独的目标配置——内部参考渲染构建关闭减肥，发布构建开启减肥——而不是全局关闭它。
+
 
 ## VITE_O_SSAO
 
-Enables Vite's rewritten memory access pattern for the screen-space ambient occlusion pass. Same visual
-result as stock, lower cost.
+启用 Vite 为屏幕空间环境光遮蔽通道重写的内存访问模式。视觉效果与原版相同，但成本更低。
 
-Unusually among these switches, it also has a runtime CVar &mdash; but only in development builds:
+在这些开关中比较少见的是，它还有一个运行时 CVar —— 但仅在开发版本中有：
 
 ```
-r.Vite.SSAO 0   // stock UE path
-r.Vite.SSAO 1   // optimised path
+r.Vite.SSAO 0   // 库存 UE 的路径
+r.Vite.SSAO 1   // 优化路径
 ```
 
-Shipping builds are locked to the compile-time value; the CVar does not exist. The runtime toggle exists so
-the two paths can be A/B compared during development, which is how the optimisation was validated. There is
-no reason to turn the compile-time switch off. See [Ambient Occlusion](../Rendering/Ambient-Occlusion.md).
+发布版本的构建锁定在编译时的值；该 CVar 不存在。运行时开关存在是为了在开发过程中可以对两条路径进行 A/B 比较，这也是优化验证的方法。没有理由关闭编译时开关。参见[环境光遮蔽](../Rendering/Ambient-Occlusion.md)。
+
 
 ## VITE_PHYSX_FIXED_TIMESTEP
 
-Off by default. Enables deterministic fixed-step PhysX simulation with render interpolation, plus the
-`p.VitePhysXFixedTimestep.*` console variables.
+默认关闭。启用确定性的固定步长 PhysX 模拟，并配合渲染插值，还有 `p.VitePhysXFixedTimestep.*` 控制台变量。
 
-The compile-time gate exists because the feature adds branches and double-buffered transform storage to the
-physics scene, substep task and animation physics blend. Projects with no determinism requirement should
-not pay for it. Full documentation is in [Fixed Timestep](../Physics/Fixed-Timestep.md).
+这个编译时开关存在的原因是该功能会给物理场景、子步骤任务和动画物理混合添加分支和双缓冲变换存储。没有确定性需求的项目不需要为此付出代价。完整文档在[固定步长](../Physics/Fixed-Timestep.md)中。
+
 
 ## VITE_DLSS_PATCH
 
-Off by default. Adds `TranslucencyAfterDOFUpscaledRT` and `TranslucencyAfterDOFModulateUpscaledRT` mesh
-passes so selected translucent primitives render at output resolution after upscaling, and adds
-`r.VolumetricFog.UseUpScaledSizeVolumetricFog` so the fog grid can be computed from output resolution.
+默认关闭。添加了 `TranslucencyAfterDOFUpscaledRT` 和 `TranslucencyAfterDOFModulateUpscaledRT` 网格通道，使选中的半透明物体在放大后以输出分辨率渲染，同时添加了 `r.VolumetricFog.UseUpScaledSizeVolumetricFog`，使雾网格可以从输出分辨率计算。
 
-Only relevant to projects shipping with an upscaler enabled. See
-[Upscalers and Frame Generation](../Rendering/Upscalers.md).
+仅与启用超分辨率的项目相关。请参见[超分辨率和帧生成](../Rendering/Upscalers.md)。
+
 
 ## VITE_NVRTX_TRANSLUCENCY_DEPTH
 
-Off by default. Allocates and writes a separate translucency depth texture alongside separate translucency
-colour, inherited from the NvRTX branch. Required by some NvRTX effects that need translucent depth; costs
-an extra render target when enabled.
+默认关闭。此功能会分配并写入一个独立的半透明深度纹理，以及一个独立的半透明颜色纹理，继承自 NvRTX 分支。某些需要半透明深度的 NvRTX 特效需要此功能；启用后会占用额外的渲染目标。
 
-## Checking what a build has
 
-Compile-time switches are invisible at runtime, which makes "is this feature even compiled in?" a real
-question when debugging.
+## 检查构建版本包含的内容
 
-The most reliable check is to set the relevant CVar and see whether the effect appears. If
-`r.RayTracing.SampledDirectLighting 1` produces no change in a scene with hundreds of lights,
-`VITE_RT_PSO_DEBLOAT` is on.
+编译时开关在运行时是不可见的，这使得“这个功能是否编译进去了？”成为调试时一个实际存在的问题。
 
-For the switches with runtime CVars, checking whether the CVar exists at all is a direct test: in a Shipping
-build, `r.Vite.SSAO` will not be found because it is compiled out.
+最可靠的检查方法是设置相关的 CVar 并查看效果是否出现。如果在包含数百个光源的场景中，`r.RayTracing.SampledDirectLighting 1` 没有产生任何变化，则 `VITE_RT_PSO_DEBLOAT` 已启用。
 
-## See also
+对于带有运行时 CVar 的开关，检查 CVar 是否存在是一种直接的测试方法：在正式发布版本中，由于 `r.Vite.SSAO` 已被编译掉，因此找不到它。
 
-- [Shader Compilation and PSO](Shader-Compilation-And-PSO.md)
-- [Ray Tracing](../Rendering/Ray-Tracing.md)
-- [Fixed Timestep](../Physics/Fixed-Timestep.md)
-- [Cache Management](../Tools/Cache-Management.md)
-- [Build from Source](../GettingStarted/Build-From-Source.md)
+
+## 另请参阅
+
+- [着色器编译和 PSO](Shader-Compilation-And-PSO.md)
+- [光线追踪](../Rendering/Ray-Tracing.md)
+- [固定时间步长](../Physics/Fixed-Timestep.md)
+- [缓存管理](../Tools/Cache-Management.md)
+- [从源代码构建](../GettingStarted/Build-From-Source.md)
