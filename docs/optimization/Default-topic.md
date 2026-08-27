@@ -85,9 +85,9 @@ Vite针对的是活跃生产中的团队。它不是一个研究分支或技术�
     针对新版 Clang 重建了库，新增了 Blast 支持，并支持跨平台 GPU 加速粒子效果。在相同工作负载下，速度明显优于 Chaos。另请参阅[PhysX](./Physics/PhysX.md)。
 
 
-* Apex 破损和布料
+* Apex 破坏和布料
 
-    这两个功能在 UE5 中均已被弃用并移除，现有资源没有迁移方案。但在 Vite 中它们仍然可以正常工作。请参阅[破损和布料](./Physics/Destruction-And-Cloth.md)部分。
+    这两个功能在 UE5 中均已被弃用并移除，现有资源没有迁移方案。但在 Vite 中它们仍然可以正常工作。请参阅[破坏和布料](./Physics/Destruction-And-Cloth.md)部分。
 
 
 * RTXDI
@@ -128,7 +128,7 @@ Vite针对的是活跃生产中的团队。它不是一个研究分支或技术�
 
 * 物理
 
-    PhysX 3.4 作为发布版本的物理引擎后端：支持快速路径、固定时间步长、Apex 破损、Apex 布料、爆炸以及大规模实例化刚体。另请参阅[物理](./Physics/Physics.md)部分。
+    PhysX 3.4 作为发布版本的物理引擎后端：支持快速路径、固定时间步长、Apex 破坏、Apex 布料、爆炸以及大规模实例化刚体。另请参阅[物理](./Physics/Physics.md)部分。
 
 * 性能与优化
 

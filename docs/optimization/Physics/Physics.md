@@ -10,7 +10,7 @@ Vite 将物理视为帧时间关键的引擎系统。仿真成本不仅仅包括
 |---|---|
 | [PhysX](PhysX.md) | PhysX 3.4 特性、Vite 扩展、配置和性能分析 |
 | [固定时间步长](Fixed-Timestep.md) | 使用渲染插值的固定步长模拟 |
-| [破损与布料](Destruction-And-Cloth.md) | APEX 破损、APEX 布料和 NVIDIA Blast |
+| [破坏与布料](Destruction-And-Cloth.md) | APEX 破坏、APEX 布料和 NVIDIA Blast |
 | [实例化物理子系统](Instanced-Physics.md) | 通过实例化网格模拟大型刚体集合 |
 
 ## 物理 CPU 架构
