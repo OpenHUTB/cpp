@@ -121,10 +121,10 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="_1">缓存管理</h1>
-<p><code>WipeShaderCache.bat</code> at the engine root deletes the engine's derived data cache, intermediate shaders and shader debug info. Reach for it when the editor's behaviour stops matching your source changes.</p>
-<p>Unreal caches aggressively. That is what makes iteration bearable, but it also means a stale cache can make a correct change appear not to work &mdash; or an incorrect one appear to.</p>
+<p>引擎根目录下的 <code>WipeShaderCache.bat</code> 文件会删除引擎的派生数据缓存、中间着色器和着色器调试信息。当编辑器的行为与你的源代码更改不符时，就可以使用它。</p>
+<p>虚幻引擎会积极地进行缓存。这使得迭代变得容易，但也意味着过时的缓存会导致正确的更改看起来不起作用，或者错误的更改看起来起作用。</p>
 <h2 id="_2">脚本清除了什么</h2>
-<p><code>WipeShaderCache.bat</code> deletes three directories relative to the engine root:</p>
+<p><code>WipeShaderCache.bat</code> 会删除引擎根目录下的三个目录：</p>
 <table>
 <thead>
 <tr>
@@ -135,63 +135,53 @@
 <tbody>
 <tr>
 <td><code>Engine\DerivedDataCache</code></td>
-<td>Compiled shaders, cooked textures, built meshes and every other derived artefact</td>
+<td>编译后的着色器、生成的纹理、构建的网格以及所有其他衍生产物</td>
 </tr>
 <tr>
 <td><code>Engine\Intermediate\Shaders</code></td>
-<td>Intermediate shader compilation output</td>
+<td>中间着色器编译输出</td>
 </tr>
 <tr>
 <td><code>Engine\Saved\ShaderDebugInfo</code></td>
-<td>Shader debug symbols and preprocessed source dumps</td>
+<td>着色器调试符号和预处理后的源代码转储</td>
 </tr>
 </tbody>
 </table>
-<p>It reports each directory as deleted, not found, or failed. A failure almost always means something still
-holds a file handle.</p>
-<p><warning>
-Close the editor and all <code>ShaderCompileWorker.exe</code> processes before running the script. Shader
-compile workers can outlive the editor; check Task Manager if a deletion fails.
-</warning></p>
-<p>After wiping, the next editor launch recompiles everything it needs. On a large project this can be tens of
-minutes or more. Do not do it casually.</p>
+<p>它会将每个目录报告为已删除、未找到或失败。失败几乎总是意味着某个程序仍然持有该文件句柄。</p>
+<p><strong>警告：</strong> 运行脚本前，请关闭编辑器和所有 <code>ShaderCompileWorker.exe</code> 进程。着色器编译工作进程的生命周期可能比编辑器更长；如果删除失败，请检查任务管理器。</p>
+<p>清除后，下次启动编辑器时会重新编译所有需要的文件。对于大型项目，这可能需要几十分钟甚至更长时间。请勿随意操作。</p>
 <h2 id="_3">什么时候清除</h2>
-<p><deflist>
-<def title="You changed a .usf or .ush file and nothing happened">
-Shader source changes are usually picked up, but engine-level global shader changes sometimes are not.
-Try <code>recompileshaders global</code> or <code>recompileshaders changed</code> in the console first
-&mdash; it is far faster than a full wipe.
-</def>
-<def title="You changed a compile-time switch">
-Changing <a href="../Performance/Compile-Time-Switches.md">VITE_RT_PSO_DEBLOAT</a>, <code>VITE_O_SSAO</code> or any other
-<code>VITE_*</code> switch changes which shader permutations exist. The engine rebuild handles the C++,
-but cached shaders from the old configuration can linger. Wipe after switching.
-</def>
-<def title="You pulled engine changes that touched the renderer">
-A merge that changes shader code or the shader map keying can leave a cache the engine misreads.
-</def>
-<def title="You are getting shader compilation errors that do not match the source">
-A classic stale-cache symptom: the reported error line does not exist in the file you are looking at.
-</def>
-<def title="The editor crashes on startup after an engine change">
-Worth trying before deeper investigation, since it is cheap to rule out.
-</def>
-</deflist></p>
-<h2 id="_4">什么时候不清除</h2>
-<p>Wiping the DDC is a heavy hammer and is frequently applied to problems it cannot solve.</p>
 <ul>
-<li><strong>Project-level problems.</strong> The script clears the <em>engine</em> DDC. Your project has its own
-  <code>DerivedDataCache</code> folder and its own <code>Intermediate</code> and <code>Saved</code> directories. Engine-level wiping does
-  not touch them.</li>
-<li><strong>运行时渲染问题。</strong> If an effect renders wrongly but consistently, that is a code or
-  configuration problem, not a cache problem. Check the
-  <a href="../../Rendering/Ray-Tracing/">compile-time switch availability table</a> first &mdash; many ray tracing features are
-  compiled out by default and their console variables silently do nothing.</li>
-<li><strong>长渲染编译时间。</strong> Wiping makes this worse, not better. See
-  <a href="../../Performance/Shader-Compilation-And-PSO/">着色器编译和 PSO</a>.</li>
+<li>
+<p>您修改了 .usf 或 .ush 文件，但没有任何效果。</p>
+<p>着色器源文件的更改通常会被识别，但引擎级别的全局着色器更改有时不会被识别。请先尝试在控制台中运行 <code>recompileshaders global</code> 或 <code>recompileshaders changed</code> 命令——这比完全清除着色器要快得多。</p>
+</li>
+<li>
+<p>您更改了编译时开关。</p>
+<p>更改 <a href="../../Performance/Compile-Time-Switches/">VITE_RT_PSO_DEBLOAT</a>、<code>VITE_O_SSAO</code> 或任何其他 <code>VITE_*</code> 开关会改变着色器排列组合。引擎重建会处理 C++ 代码，但旧配置中缓存的着色器可能会残留。切换后请清除缓存。</p>
+</li>
+<li>
+<p>你拉取了修改渲染器的引擎更改。</p>
+<p>合并操作如果更改了着色器代码或着色器贴图键控，可能会留下引擎无法正确读取的缓存。</p>
+</li>
+<li>
+<p>您遇到的着色器编译错误与源代码不符。</p>
+<p>这是典型的缓存过期症状：报告的错误行在您查看的文件中不存在。</p>
+</li>
+<li>
+<p>更换引擎后，编辑器启动时崩溃。</p>
+<p>在进行更深入的调查之前，值得一试，因为排除故障的成本不高。</p>
+</li>
+</ul>
+<h2 id="_4">什么时候不清除</h2>
+<p>清除 DDC 缓存是一种过于激进的做法，而且经常被用于解决一些它无法解决的问题。</p>
+<ul>
+<li><strong>项目级问题。</strong> 该脚本会清除引擎的 DDC 缓存。您的项目拥有自己的 <code>DerivedDataCache</code> 文件夹以及 <code>Intermediate</code> 和 <code>Saved</code> 目录。引擎级清除操作不会影响这些目录。</li>
+<li><strong>运行时渲染问题。</strong> 如果某个特效渲染错误但始终存在，那么这是代码或配置问题，而不是缓存问题。请先检查<a href="../../Rendering/Ray-Tracing/">编译时开关可用性表</a>——许多光线追踪功能默认会被编译掉，它们的控制台变量也不会产生任何作用。</li>
+<li><strong>着色器编译时间过长。</strong> 清除缓存只会让情况变得更糟，而不是更好。请参阅<a href="../../Performance/Shader-Compilation-And-PSO/">着色器编译和 PSO</a>。 </li>
 </ul>
 <h2 id="_5">更轻量级的选择</h2>
-<p>Try these before a full wipe:</p>
+<p>在彻底清除之前，请尝试以下方法：</p>
 <table>
 <thead>
 <tr>
@@ -209,28 +199,26 @@ Worth trying before deeper investigation, since it is cheap to rule out.
 <tr>
 <td><code>recompileshaders global</code></td>
 <td>全局着色器</td>
-<td>Under a minute</td>
+<td>不到一分钟</td>
 </tr>
 <tr>
 <td><code>recompileshaders material &lt;name&gt;</code></td>
-<td>One material</td>
-<td>Seconds</td>
+<td>单个材质</td>
+<td>秒</td>
 </tr>
 <tr>
 <td>Delete the project's <code>Intermediate\</code></td>
-<td>Project build intermediates</td>
-<td>Project rebuild</td>
+<td>项目构建中间文件</td>
+<td>项目重建</td>
 </tr>
 <tr>
-<td>Delete <code>Engine\Intermediate\Shaders</code> only</td>
-<td>Intermediate shader output, keeping the DDC</td>
-<td>Partial recompile</td>
+<td>仅删除 <code>Engine\Intermediate\Shaders</code></td>
+<td>中间着色器输出，保留 DDC</td>
+<td>部分重新编译</td>
 </tr>
 </tbody>
 </table>
-<p>The last one is worth knowing: the DDC is the expensive part to rebuild. If you only need to clear
-intermediate shader state, deleting that one directory by hand is much cheaper than running the full
-script.</p>
+<p>最后一点值得注意：DDC 是重建过程中开销最大的部分。如果您只需要清除中间着色器状态，手动删除该目录比运行整个脚本要便宜得多。</p>
 <h2 id="_6">缓存位置</h2>
 <table>
 <thead>
@@ -242,54 +230,47 @@ script.</p>
 </thead>
 <tbody>
 <tr>
-<td>Engine DDC</td>
+<td>引擎 DDC</td>
 <td><code>Engine\DerivedDataCache</code></td>
 <td>是</td>
 </tr>
 <tr>
-<td>Engine intermediate shaders</td>
+<td>引擎中间着色器</td>
 <td><code>Engine\Intermediate\Shaders</code></td>
 <td>是</td>
 </tr>
 <tr>
-<td>Shader debug info</td>
+<td>着色器调试信息</td>
 <td><code>Engine\Saved\ShaderDebugInfo</code></td>
 <td>是</td>
 </tr>
 <tr>
-<td>Project DDC</td>
+<td>项目 DDC</td>
 <td><code>&lt;Project&gt;\DerivedDataCache</code></td>
 <td>否</td>
 </tr>
 <tr>
-<td>Project intermediates</td>
+<td>项目中间文件</td>
 <td><code>&lt;Project&gt;\Intermediate</code></td>
 <td>否</td>
 </tr>
 <tr>
-<td>Shared / network DDC</td>
-<td>Per <code>BaseEngine.ini</code> DDC configuration</td>
+<td>共享/网络 DDC</td>
+<td>根据 <code>BaseEngine.ini</code> 配置</td>
 <td>否</td>
 </tr>
 <tr>
-<td>Local user DDC</td>
+<td>本地用户 DDC</td>
 <td><code>%LOCALAPPDATA%\UnrealEngine\Common\DerivedDataCache</code></td>
 <td>否</td>
 </tr>
 </tbody>
 </table>
-<p><note>
-If your team uses a shared network DDC, wiping locally is usually pointless: the local cache repopulates
-from the share, including whatever stale entries prompted the wipe. Confirm the shared DDC's state before
-concluding your local cache was the problem.
-</note></p>
-<h2 id="disk-footprint">Disk footprint</h2>
-<p>The engine DDC grows without bound during development. On a project that exercises many material and
-ray-tracing permutations it can reach tens of gigabytes. Periodically wiping it is a legitimate way to
-reclaim disk space, accepting the recompile cost.</p>
-<p>If disk space is the actual concern, the <a href="../../Performance/Debloat-Guide/">Debloat Guide</a> covers larger and more permanent
-savings.</p>
-<h2 id="_7">另请参见</h2>
+<p><strong>注意：</strong> 如果您的团队使用共享网络 DDC，则清除本地缓存通常是徒劳的：本地缓存会从共享 DDC 重新填充，包括导致清除的过期条目。在断定是本地缓存的问题之前，请先确认共享 DDC 的状态。</p>
+<h2 id="_7">磁盘占用空间</h2>
+<p>在开发过程中，引擎的 DDC 文件会无限增长。对于使用多种材质和光线追踪方案的项目，它的大小可能达到数十 GB。定期清除 DDC 文件是回收磁盘空间的合理方法，但需要重新编译。</p>
+<p>如果磁盘空间是您真正关心的问题，请参阅<a href="../../Performance/Debloat-Guide/">精简指南</a>，其中介绍了更大、更持久的节省方法。</p>
+<h2 id="_8">另请参见</h2>
 <ul>
 <li><a href="../../Performance/Shader-Compilation-And-PSO/">着色器编译和 PSO</a></li>
 <li><a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a></li>

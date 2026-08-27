@@ -125,21 +125,21 @@
 <p>A source build requires a full toolchain, a long compile and a lot of disk. An installed build does not: artists, designers and anyone who does not modify engine C++ can use one directly.</p>
 <h2 id="_2">构建</h2>
 <p><code>RunUAT.bat</code> at the engine root drives the BuildGraph installed-build target:</p>
-<div class="highlight"><pre><span></span><code>Engine\Build\BatchFiles\RunUAT.bat BuildGraph
-    -script=&quot;Engine\Build\InstalledEngineBuild.xml&quot;
-    -target=&quot;Make Installed Build Win64&quot;
-    -nosign
-    -set:GameConfigurations=Development;Shipping
-    -set:WithWin64=true
-    -set:WithWin32=false
-    -set:WithMac=false
-    -set:WithAndroid=false
-    -set:WithIOS=false
-    -set:WithTVOS=false
-    -set:WithLinux=false
-    -set:WithLinuxAArch64=false
-    -set:WithDDC=false
-    -clean
+<div class="highlight"><pre><span></span><code>Engine<span class="se">\B</span>uild<span class="se">\B</span>atchFiles<span class="se">\R</span>unUAT.bat<span class="w"> </span>BuildGraph
+<span class="w">    </span>-script<span class="o">=</span><span class="s2">&quot;Engine\Build\InstalledEngineBuild.xml&quot;</span>
+<span class="w">    </span>-target<span class="o">=</span><span class="s2">&quot;Make Installed Build Win64&quot;</span>
+<span class="w">    </span>-nosign
+<span class="w">    </span>-set:GameConfigurations<span class="o">=</span>Development<span class="p">;</span>Shipping
+<span class="w">    </span>-set:WithWin64<span class="o">=</span><span class="nb">true</span>
+<span class="w">    </span>-set:WithWin32<span class="o">=</span><span class="nb">false</span>
+<span class="w">    </span>-set:WithMac<span class="o">=</span><span class="nb">false</span>
+<span class="w">    </span>-set:WithAndroid<span class="o">=</span><span class="nb">false</span>
+<span class="w">    </span>-set:WithIOS<span class="o">=</span><span class="nb">false</span>
+<span class="w">    </span>-set:WithTVOS<span class="o">=</span><span class="nb">false</span>
+<span class="w">    </span>-set:WithLinux<span class="o">=</span><span class="nb">false</span>
+<span class="w">    </span>-set:WithLinuxAArch64<span class="o">=</span><span class="nb">false</span>
+<span class="w">    </span>-set:WithDDC<span class="o">=</span><span class="nb">false</span>
+<span class="w">    </span>-clean
 </code></pre></div>
 <p>The configuration is Win64-only with Development and Shipping game configurations, matching Vite's <a href="../../Platforms/Platforms/">platform focus</a>. <code>WithDDC=false</code> skips derived data cache generation, which shortens the build considerably at the cost of first-launch shader compilation for the end user.</p>
 <p>You can also reach this through <a href="../ViteSetup/">ViteSetup</a> &mdash; step 4, binary option, or menu option 8.
