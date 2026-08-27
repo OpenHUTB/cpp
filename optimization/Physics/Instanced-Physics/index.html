@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Instanced Physics Subsystem - 引擎优化文档</title>
+    <title>实例化物理子系统 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Instanced Physics Subsystem";
+        var mkdocs_page_name = "\u5b9e\u4f8b\u5316\u7269\u7406\u5b50\u7cfb\u7edf";
         var mkdocs_page_input_path = "optimization/Physics/Instanced-Physics.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Instanced Physics Subsystem</li>
+      <li class="breadcrumb-item active">实例化物理子系统</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Physics/Instanced-Physics.md"> 编辑页面</a>
     </li>
@@ -120,227 +120,192 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="instanced-physics-subsystem">Instanced Physics Subsystem</h1>
-<p><tldr></p>
-<p>
-A Vite plugin that gives individual instances of an Instanced Static Mesh component their own PhysX
-rigid bodies, controlled through stable numeric handles. Built for simulating thousands of objects
-where one actor per object would be unaffordable.
-</p>
-<p></tldr></p>
-<p>The standard way to simulate many objects in Unreal is one actor per object, each with a primitive
-component and a body instance. That works up to a few hundred objects and then falls apart: actor overhead,
-component ticking, transform propagation and scene graph updates cost more than the physics itself.</p>
-<p>The PhysX Instanced Subsystem separates the two concerns. Rendering goes through a single Instanced Static
-Mesh component; physics goes through PhysX bodies the subsystem owns directly. There are no per-object
-actors and no per-object components.</p>
+                <h1 id="_1">实例化物理子系统</h1>
+<p>Vite 插件，它为实例化静态网格组件的每个实例赋予独立的 PhysX 刚体，并通过稳定的数值控制柄进行控制。该插件专为模拟数千个物体而设计，避免了为每个物体使用一个 Actor 所带来的成本负担。</p>
+<p>在虚幻引擎中模拟多个物体的标准方法是为每个物体使用一个 Actor，每个 Actor 包含一个基本组件和一个刚体实例。这种方法在处理几百个物体时效果不错，但之后就会出现问题：Actor 的开销、组件的触发、变换传播和场景图更新的成本甚至超过了物理本身的计算量。</p>
+<p>PhysX 实例化子系统将渲染和物理计算分离。渲染通过单个实例化静态网格组件进行；物理计算则通过子系统直接拥有的 PhysX 刚体进行。没有每个物体的 Actor，也没有每个物体的组件。</p>
 <table>
 <thead>
 <tr>
-<th>Detail</th>
+<th>详情</th>
 <th></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Plugin</td>
+<td>插件</td>
 <td><code>Engine/Plugins/Runtime/VitePlugins/PhysXInstancedSubsystem</code></td>
 </tr>
 <tr>
-<td>Module</td>
+<td>模块</td>
 <td><code>PhysXInstancedSubsystem</code></td>
 </tr>
 <tr>
-<td>Subsystem</td>
-<td><code>UPhysXInstancedWorldSubsystem</code> (tickable world subsystem)</td>
+<td>子系统</td>
+<td><code>UPhysXInstancedWorldSubsystem</code>（可更新的世界子系统）</td>
 </tr>
 <tr>
-<td>Actor</td>
+<td>参与者</td>
 <td><code>APhysXInstancedMeshActor</code></td>
 </tr>
 <tr>
-<td>Component</td>
+<td>组件</td>
 <td><code>UPhysXInstancedStaticMeshComponent</code></td>
 </tr>
 <tr>
-<td>Author</td>
+<td>作者</td>
 <td>NordVader Inc.</td>
 </tr>
 </tbody>
 </table>
-<p>See the <a href="../../ProjectsAndDemos/PhysX-Instanced-Subsystem/">PhysX Instanced Subsystem demo</a> for a working project.</p>
-<h2 id="core-concepts">Core concepts</h2>
-<p><strong>Instances are addressed by handle, not pointer.</strong> <code>FPhysXInstanceID</code> wraps a <code>uint32</code>, where <code>0</code> means
-invalid. Handles stay stable even when instances move between actors, which matters because ISM instance
-indices shift when instances are removed. Gameplay code holds handles; the subsystem maintains the mapping
-from handle to component and index.</p>
-<p><strong>Dynamic and storage instances are different states of the same instance.</strong> A dynamic instance has a
-PhysX body and simulates. A storage instance lives on a separate storage actor with no PhysX body at all.
-Converting between the two preserves the handle. This is the central performance mechanism: debris that has
-come to rest converts to storage, costs nothing to simulate, and stays visible.</p>
-<p><strong>Work is budgeted per frame.</strong> Creating PhysX bodies, applying forces and expiring lifetimes are all
-queued and processed against per-frame limits, so spawning ten thousand instances in one frame does not
-produce a ten-thousand-body hitch.</p>
-<h2 id="setting-up-an-actor">Setting up an actor</h2>
-<p>Place an <code>APhysXInstancedMeshActor</code> in the level and configure it in the details panel under
-<strong>Phys X Instance</strong>.</p>
-<p><procedure title="Configure an instanced physics actor" id="setup-instanced-actor">
-    <step>Set <b>Static Mesh</b>, and override materials if needed.</step>
-    <step>
-        Choose a <b>Spawn Mode</b>. <b>Manual</b> uses the <b>Instance Relative Transforms</b> array;
-        <b>Grid</b> generates a rows &times; columns &times; layers grid from the spacing settings, which
-        is convenient for benchmarks and test scenes.
-    </step>
-    <step>
-        Set <b>Instance Shape Type</b>. Box, Sphere and Capsule are cheapest; <b>Convex Mesh</b> is
-        accurate and moderately priced; <b>Triangle Mesh</b> is static or kinematic only.
-    </step>
-    <step>
-        Set <b>Simulate Instances</b> and <b>Instances Use Gravity</b>, plus mass override and damping if
-        the defaults are wrong for your object.
-    </step>
-    <step>
-        Leave <b>Disable ISM Physics</b> enabled so the render component does not create its own collision
-        alongside the subsystem's bodies.
-    </step>
-    <step>
-        Enable <b>Auto Register On Begin Play</b>, or call <code>BuildAndRegisterInstances</code>, which is
-        also callable from the editor.
-    </step>
-</procedure></p>
-<p>If no collision mesh is specified for Convex or Triangle shapes, the render mesh is used. Mass is computed
-from the physical material's density on the collision mesh, converted from g/cm³ to kg/m³, and scaled by the
-component's mass scale.</p>
-<h2 id="auto-stop">Auto-stop</h2>
-<p>Auto-stop is what makes large-scale simulation affordable. It detects instances that have effectively
-stopped moving and does something cheaper with them.</p>
-<p>Configure it in <strong>Phys X Instance &gt; Runtime &gt; Auto Stop Config</strong>:</p>
+<p>请参阅 <a href="../../ProjectsAndDemos/PhysX-Instanced-Subsystem/">PhysX 实例子系统演示</a>以获取可运行的项目。</p>
+<h2 id="_2">核心概念</h2>
+<p><strong>实例通过句柄而非指针进行寻址。</strong> <code>FPhysXInstanceID</code> 封装了一个 <code>uint32</code> 类型，其中 <code>0</code> 表示无效。即使实例在不同 Actor 之间移动，句柄也保持稳定，这一点至关重要，因为实例被移除时 ISM 实例索引会发生改变。游戏代码持有句柄；子系统维护从句柄到组件和索引的映射关系。</p>
+<p><strong>动态实例和存储实例是同一实例的不同状态。</strong> 动态实例拥有 PhysX 实体并进行模拟。存储实例存在于一个独立的存储 Actor 中，完全没有 PhysX 实体。两者之间的转换会保留句柄。这是核心的性能机制：静止的碎片会转换为存储，无需模拟即可保持可见。</p>
+<p><strong>工作量按帧分配。</strong> 创建 PhysX 物体、施加力和使物体寿命到期等操作都会排队并根据每帧的限制进行处理，因此在一帧中生成一万个实例不会产生一万个物体的卡顿。</p>
+<h2 id="_3">设置参与者</h2>
+<p>将<code>APhysXInstancedMeshActor</code>放置在关卡中，并在 <strong>Phys X 实例</strong> 下的详细信息面板中配置它。</p>
+<h3 id="_4">配置实例化物理参与者</h3>
+<ol>
+<li>
+<p>设置<strong>静态网格（Static Mesh）</strong>，并根据需要覆盖材质。</p>
+</li>
+<li>
+<p>选择<strong>生成模式（Spawn Mode）</strong>。<strong>手动</strong> 使用 <strong>Instance Relative Transforms</strong> 数组；<strong>网格（Grid）</strong> 根据间距设置生成“行×列×层”的网格，方便基准测试场景。</p>
+</li>
+<li>
+<p>设置<strong>实例形状类型（Instance Shape Type）</strong>。包围盒、球体和胶囊最便宜；<strong>凸面网格（Convex Mesh）</strong>准确且成本适中；<strong>三角形网格（Triangle Mesh）</strong>仅为静态或动态网格。</p>
+</li>
+<li>
+<p>设置 <strong>模拟实例（Simulate Instances）</strong> 和 <strong>实例使用重力（Instances Use Gravity）</strong>，如果对象的默认值错误，则设置质量替代和阻尼。</p>
+</li>
+<li>
+<p>使<strong>禁用 ISM 物理（Disable ISM Physics）</strong> 处于启用状态，以便渲染组件不会在子系统的实体旁边创建自己的碰撞。</p>
+</li>
+<li>
+<p>启用<strong>在开始播放时自动注册（Auto Register On Begin Play）</strong>，或调用 <code>BuildAndRegisterInstances</code>，这也可以从编辑器中调用。</p>
+</li>
+</ol>
+<p>如果没有为凸面或三角形指定碰撞网格，则使用渲染网格。质量是根据碰撞网格上物理材质的密度计算的，从 g/cm³ 转换为 kg/m³，并按组件的质量按比例进行缩放。</p>
+<h2 id="_5">自动停止</h2>
+<p>自动停止是使大规模模拟承担得起的因素。它检测有效停止移动的实例，并对它们执行消耗更小的操作。</p>
+<p>在 <strong>Phys X实例（Phys X Instance）&gt;运行时（Runtime）&gt;自动停止配置（Auto Stop Config）</strong> 中配置：</p>
 <table>
 <thead>
 <tr>
-<th>Setting</th>
-<th>Default</th>
-<th>Purpose</th>
+<th>设置</th>
+<th>默认</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Enable Auto Stop</td>
+<td>启用自动停止</td>
 <td><code>false</code></td>
-<td>Master enable</td>
+<td>主开关</td>
 </tr>
 <tr>
-<td>Condition</td>
-<td>PhysX sleep flag</td>
-<td>How "stopped" is determined</td>
+<td>条件</td>
+<td>PhysX 休眠标志</td>
+<td>“停止”的判定方式</td>
 </tr>
 <tr>
-<td>Linear Speed Threshold</td>
-<td><code>5.0</code> cm/s</td>
-<td>Used by velocity-based conditions</td>
+<td>线速度阈值</td>
+<td><code>5.0</code> 厘米/秒</td>
+<td>用于基于速度的条件</td>
 </tr>
 <tr>
-<td>Angular Speed Threshold</td>
-<td><code>5.0</code> deg/s</td>
-<td>Used by velocity-based conditions</td>
+<td>角速度阈值</td>
+<td><code>5.0</code> 度/秒</td>
+<td>用于基于速度的条件</td>
 </tr>
 <tr>
-<td>Min Stopped Time</td>
-<td><code>0.5</code> s</td>
-<td>How long the condition must hold before acting</td>
+<td>最小停止时间</td>
+<td><code>0.5</code> 秒</td>
+<td>条件在执行前必须保持的时间</td>
 </tr>
 <tr>
-<td>Action</td>
-<td>Destroy Body</td>
-<td>What happens when it fires</td>
+<td>动作</td>
+<td>销毁刚体</td>
+<td>触发时发生的情况</td>
 </tr>
 </tbody>
 </table>
-<p>Conditions are <strong>PhysX sleep flag only</strong>, <strong>velocity thresholds only</strong>, <strong>sleep OR velocity</strong>, or
-<strong>sleep AND velocity</strong>. The sleep flag is cheapest and usually sufficient; velocity thresholds catch bodies
-that are drifting slowly enough to be visually stopped but not sleeping.</p>
-<p>Actions, in ascending order of aggressiveness:</p>
+<p>条件<strong>仅限于 PhysX 睡眠标志</strong>、<strong>仅限速度阈值</strong>、<strong>睡眠或速度</strong>，或<strong>睡眠和速度</strong>。睡眠标志开销最小且通常足够；速度阈值可以捕捉那些漂移足够慢以至于视觉上已经停止但尚未进入睡眠的物体。</p>
+<p>动作，按攻击性递增顺序：</p>
 <table>
 <thead>
 <tr>
-<th>Action</th>
-<th>Effect</th>
+<th>动作</th>
+<th>效果</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Do nothing</td>
-<td>Track state only</td>
+<td>不执行任何动作</td>
+<td>仅跟踪状态</td>
 </tr>
 <tr>
-<td>Disable simulation (keep body)</td>
-<td>Body stays but stops simulating</td>
+<td>禁用模拟（保留实体）</td>
+<td>实体保持，但停止模拟</td>
 </tr>
 <tr>
-<td>Destroy body (keep instance)</td>
-<td>PhysX body freed, visual instance remains in place</td>
+<td>销毁实体（保留实例）</td>
+<td>PhysX 实体释放，视觉实例保持在原位</td>
 </tr>
 <tr>
-<td>Destroy body and remove instance</td>
-<td>Both freed. Shifts ISM indices &mdash; use handles, not indices.</td>
+<td>销毁实体并移除实例</td>
+<td>二者均释放。会改变 ISM 索引 — 使用句柄，不要使用索引。</td>
 </tr>
 <tr>
-<td>Convert to storage</td>
-<td>Instance moves to a storage actor, body freed, handle preserved</td>
+<td>转换为存储</td>
+<td>实例移至存储 Actor，实体释放，句柄保留</td>
 </tr>
 </tbody>
 </table>
-<p><strong>Convert to storage</strong> is usually the right choice for debris you want to keep visible. <strong>Destroy body</strong> is
-right when you want the object to remain but never move again.</p>
-<h3 id="safety-rules">Safety rules</h3>
-<p>Two additional rules catch instances that will never stop on their own:</p>
+<p><strong>转换为存储</strong>通常是保留可见碎片的正确选择。<strong>销毁主体</strong>则适用于希望对象保留但永不再移动的情况。</p>
+<h3 id="_6">安全规则</h3>
+<p>另外两条规则用于捕捉那些永远不会自行停止的实例：</p>
 <ul>
-<li><strong>Max Fall Time</strong> fires the stop action after an instance has been falling continuously for longer than
-  the threshold. Catches objects that fell through world geometry.</li>
-<li><strong>Max Distance From Actor</strong> fires when an instance travels further than the threshold from its owner.
-  Catches objects launched by a bad impulse.</li>
+<li><strong>最大下落时间（Max Fall Time）</strong> 在实例连续下落超过阈值时间后触发停止动作。用于捕捉穿透世界几何体而下落的物体。</li>
+<li><strong>与参与者最大距离（Max Distance From Actor）</strong> 在实例距离其所有者超过阈值时触发。用于捕捉由于不良冲力而被发射的物体。</li>
 </ul>
-<p>Separately, <strong>Use Custom Kill Z</strong> with a <strong>Custom Kill Z</strong> height and a <strong>Lost Instance Action</strong> handles
-instances that fall below a world Z threshold.</p>
-<h2 id="lifetime">Lifetime</h2>
-<p>Instances can expire on a timer. Set <strong>Enable Lifetime</strong>, a <strong>Default Life Time Seconds</strong> and a
-<strong>Default Lifetime Action</strong> on the actor, or override per spawn through the spawn request.</p>
-<p>Expirations are held in a min-heap keyed on expiry time, so the per-frame cost is proportional to the number
-of instances actually expiring rather than the total instance count.</p>
-<h2 id="continuous-collision-detection">Continuous collision detection</h2>
-<p>CCD prevents fast bodies tunnelling through thin geometry, and it is not free. <strong>CCD Config</strong> offers four
-modes:</p>
+<p>另外，<strong>自定义 Kill Z（Use Custom Kill Z）</strong> 配合 <strong>自定义 Kill Z</strong> 高度和 <strong>丢失实例操作（Lost Instance Action）</strong> 处理那些下落到世界 Z 阈值以下的实例。</p>
+<h2 id="_7">生命周期</h2>
+<p>实例可以在定时器上到期。可以在 Actor 上设置<strong>启用生命周期（Enable Lifetime）</strong>、<strong>默认生命周期秒数（Default Life Time Seconds）</strong>和<strong>默认生命周期动作（Default Lifetime Action）</strong>，或者通过生成请求按生成覆盖这些设置。</p>
+<p>到期事件存储在以到期时间为键的最小堆中，因此每帧的开销与实际到期的实例数量成正比，而不是与实例总数成正比。</p>
+<h2 id="_8">连续碰撞检测</h2>
+<p>连续碰撞检测（Continuous collision detection, CCD）可以防止高速物体穿透薄几何体，但它并非无开销。CCD 配置提供四种模式：</p>
 <table>
 <thead>
 <tr>
-<th>Mode</th>
-<th>Behaviour</th>
+<th>模式</th>
+<th>行为</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Off</td>
-<td>Never</td>
+<td>关闭（Off）</td>
+<td>从不</td>
 </tr>
 <tr>
-<td>Simulating bodies only</td>
-<td>Only bodies that are actually dynamic</td>
+<td>仅模拟实体</td>
+<td>仅实际动态的物体</td>
 </tr>
 <tr>
-<td>Auto (by velocity)</td>
-<td>Enabled above <strong>Min CCD Velocity</strong> (default 2000 cm/s), optionally capped by <strong>Max CCD Velocity</strong></td>
+<td>自动（按速度）</td>
+<td>在超过 <strong>最小 CCD 速度</strong> 时启用（默认2000厘米/秒），可选择由最大CCD速度限制</td>
 </tr>
 <tr>
-<td>All bodies</td>
-<td>Always</td>
+<td>所有实体</td>
+<td>始终</td>
 </tr>
 </tbody>
 </table>
-<p>Auto by velocity is the right default for debris: slow-moving chunks skip CCD entirely, and only the fast
-ones pay for it.</p>
-<h2 id="runtime-api">Runtime API</h2>
-<p>Everything is Blueprint-callable. Get the subsystem from the world, then work through handles.</p>
-<h3 id="spawning">Spawning</h3>
+<p>按速度自动选择是碎片的正确默认设置：移动缓慢的碎片完全跳过 CCD，只有快速的碎片才需要处理。</p>
+<h2 id="api">运行时 API</h2>
+<p>所有内容都可以通过蓝图调用。从世界中获取子系统，然后通过句柄进行操作。</p>
+<h3 id="_9">生成</h3>
 <div class="highlight"><pre><span></span><code><span class="n">FPhysXSpawnInstanceRequest</span><span class="w"> </span><span class="n">Request</span><span class="p">;</span>
 <span class="n">Request</span><span class="p">.</span><span class="n">ActorMode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">EPhysXInstanceActorMode</span><span class="o">::</span><span class="n">FindOrCreateByMeshAndMats</span><span class="p">;</span>
 <span class="n">Request</span><span class="p">.</span><span class="n">StaticMesh</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DebrisMesh</span><span class="p">;</span>
@@ -353,17 +318,10 @@ ones pay for it.</p>
 
 <span class="k">const</span><span class="w"> </span><span class="n">FPhysXSpawnInstanceResult</span><span class="w"> </span><span class="n">Result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Subsystem</span><span class="o">-&gt;</span><span class="n">SpawnPhysicsInstance</span><span class="p">(</span><span class="n">Request</span><span class="p">);</span>
 </code></pre></div>
-<p><strong>Actor Mode</strong> decides where the instance lands: <code>AlwaysCreateNew</code> spawns a fresh actor,
-<code>FindOrCreateByMeshAndMats</code> reuses an existing actor with matching mesh and materials, and
-<code>UseExplicitActor</code> targets an actor you supply. <code>FindOrCreateByMeshAndMats</code> is the usual choice &mdash; it
-keeps instance counts consolidated into as few ISM components as possible, which is what makes the rendering
-side efficient.</p>
-<p>For bulk registration of instances that already exist on a component, <code>RegisterInstancesBatch</code> spreads the
-work across frames.</p>
-<h3 id="forces-and-queries">Forces and queries</h3>
-<p>Force and impulse functions come in plain and Advanced variants. The Advanced versions take
-<code>bIncludeStorage</code> and <code>bConvertStorageToDynamic</code>, which control whether a storage instance is woken back
-into a dynamic body by the call &mdash; that is how a settled debris field reacts to a later explosion.</p>
+<p><strong>参与者模式（Actor Mode）</strong> 决定实例的落点：<code>AlwaysCreateNew</code> 会生成一个新的参与者，<code>FindOrCreateByMeshAndMats</code> 会重用具有匹配网格和材质的现有参与者，而 <code>UseExplicitActor</code> 则针对您提供的参与者。通常选择 <code>FindOrCreateByMeshAndMats</code> —— 它将实例数量尽可能集中在少数 ISM 组件中，从而提高渲染效率。</p>
+<p>对于已存在于组件上的大量实例的批量注册，<code>RegisterInstancesBatch</code> 会将工作分散到多个帧中进行。</p>
+<h3 id="_10">力和查询</h3>
+<p>力和冲量函数有普通版和高级版。高级版本具有 <code>bIncludeStorage</code> 和 <code>bConvertStorageToDynamic</code> 参数，这些参数控制调用是否会将存储实例唤醒回动态物体——这就是已静止的碎片场对后续爆炸的反应方式。</p>
 <div class="highlight"><pre><span></span><code><span class="n">Subsystem</span><span class="o">-&gt;</span><span class="n">AddRadialImpulse</span><span class="p">(</span>
 <span class="w">    </span><span class="n">ExplosionOrigin</span><span class="p">,</span><span class="w"> </span><span class="cm">/*Radius=*/</span><span class="mf">500.0f</span><span class="p">,</span><span class="w"> </span><span class="cm">/*Strength=*/</span><span class="mf">80000.0f</span><span class="p">,</span>
 <span class="w">    </span><span class="cm">/*bVelChange=*/</span><span class="nb">false</span><span class="p">,</span>
@@ -371,67 +329,51 @@ into a dynamic body by the call &mdash; that is how a settled debris field react
 <span class="w">    </span><span class="cm">/*bConvertStorageToDynamic=*/</span><span class="nb">true</span><span class="p">,</span>
 <span class="w">    </span><span class="cm">/*bLinearFalloff=*/</span><span class="nb">true</span><span class="p">);</span>
 </code></pre></div>
-<p>Spatial queries return handles rather than hit results: <code>RaycastInstanceID</code>, <code>SweepSphereInstanceID</code>,
-<code>OverlapSphereInstanceIDs</code>, <code>FindNearestInstance</code> and <code>FindNearestInstanceAdvanced</code>. Each takes an optional
-debug mode (<code>None</code>, <code>Basic</code>, <code>Detailed</code>) and draw duration, which is the fastest way to understand why a
-query is not hitting what you expect.</p>
-<h3 id="events">Events</h3>
-<p><code>APhysXInstancedMeshActor</code> exposes six multicast delegates: <code>OnInstancePreRemove</code>, <code>OnInstancePostRemove</code>,
-<code>OnInstancePreConvert</code>, <code>OnInstancePostConvert</code>, <code>OnInstancePrePhysics</code> and <code>OnInstancePostPhysics</code>.</p>
-<p>Events are gated by the <strong>Instance Event Mask</strong> bitmask on the actor. Leave the mask empty unless you are
-actually binding, since broadcasting to nothing across thousands of instances is wasted work. Remove and
-convert events carry a reason (<code>Explicit</code>, <code>Expired</code>, <code>AutoStop</code>, <code>KillZ</code>, <code>Lost</code>) and the world transform
-at the time, which is what you need to spawn a particle effect or play a sound as debris settles.</p>
-<h2 id="performance-tuning">Performance tuning</h2>
+<p>空间查询返回的是句柄而非碰撞结果：<code>RaycastInstanceID</code>、<code>SweepSphereInstanceID</code>、<code>OverlapSphereInstanceIDs</code>、<code>FindNearestInstance</code> 和 <code>FindNearestInstanceAdvanced</code>。每个方法都可以选择可选的调试模式（<code>None</code>、<code>Basic</code>、<code>Detailed</code>）和绘制持续时间，这是理解查询未命中预期目标的最快方式。</p>
+<h3 id="_11">事件</h3>
+<p><code>APhysXInstancedMeshActor</code> 暴露了六个多播委托：<code>OnInstancePreRemove</code>、<code>OnInstancePostRemove</code>、<code>OnInstancePreConvert</code>、<code>OnInstancePostConvert</code>、<code>OnInstancePrePhysics</code> 和 <code>OnInstancePostPhysics</code>.</p>
+<p>事件由 Actor 的 <strong>实例事件掩码（Instance Event Mask）</strong> 位掩码控制。除非你确实绑定了事件，否则请将掩码留空，因为在数千个实例中向无效目标广播是浪费工作。移除和转换事件会携带一个原因（<code>Explicit</code>、<code>Expired</code>、<code>AutoStop</code>、<code>KillZ</code>、<code>Lost</code>）以及事件发生时的世界变换，这正是你生成粒子效果或在碎片沉降时播放声音所需的信息。</p>
+<h2 id="_12">性能调优</h2>
 <table>
 <thead>
 <tr>
-<th>Setting</th>
-<th>Default</th>
-<th>Effect</th>
+<th>设置</th>
+<th>默认值</th>
+<th>效果</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><code>MaxAddActorsPerFrame</code></td>
+<td>每帧最大添加参与者数 <code>MaxAddActorsPerFrame</code></td>
 <td><code>64</code></td>
-<td>Bodies added to the PhysX scene per frame. <code>0</code> means no limit.</td>
+<td>每帧添加到 PhysX 场景中的实体数量。<code>0</code> 表示无限制。</td>
 </tr>
 <tr>
-<td><code>MaxInstanceTasksPerFrame</code></td>
+<td>每帧最大实例任务数 <code>MaxInstanceTasksPerFrame</code></td>
 <td><code>4096</code></td>
-<td>Queued force/impulse/sleep/wake operations per frame. <code>0</code> means no limit.</td>
+<td>每帧排队的力/冲击/睡眠/唤醒操作数量。<code>0</code> 表示无限制。</td>
 </tr>
 <tr>
-<td><code>MaxLifetimeExpirationsPerTick</code></td>
+<td>每节拍最大生命周期到期处理数量 <code>MaxLifetimeExpirationsPerTick</code></td>
 <td><code>4096</code></td>
-<td>Lifetime expirations processed per tick. <code>0</code> means no limit.</td>
+<td>每节拍处理的生命周期到期数量。<code>0</code> 表示无限制。</td>
 </tr>
 </tbody>
 </table>
-<p>All three are config properties on the subsystem, so they can be set in <code>DefaultGame.ini</code> and tuned per
-platform.</p>
-<p><code>MaxAddActorsPerFrame</code> is the one to adjust first. Adding a PhysX body to a scene is not cheap, and a burst
-of spawns is the most likely source of a hitch. Lowering it spreads the cost; raising it reduces the delay
-before newly spawned debris starts moving.</p>
-<p>The subsystem evaluates instances in parallel where it can. Worker threads read PhysX state and actor
-configuration through copied snapshots and never touch UObjects; the game thread applies results back as
-batched transform updates per component.</p>
-<h2 id="guidance">Guidance</h2>
-<p><strong>Use this for</strong> debris, shell casings, destructible fragments after they detach, knocked-over props,
-scattered clutter, and anything where you want hundreds or thousands of simulated objects.</p>
-<p><strong>Do not use it for</strong> objects that need their own gameplay logic, components, replication or Blueprint
-behaviour. Those are actors, and they should stay actors.</p>
-<p><strong>Watch out for</strong> ISM index shifting. Removing a visual instance changes the indices of instances after it.
-The subsystem repairs its own mapping, but any index you cached in your own code is now wrong. Cache
-handles.</p>
-<h2 id="see-also">See also</h2>
+<p>这三者都是子系统的配置属性，因此可以在 <code>DefaultGame.ini</code> 中设置，并可针对每个平台进行调整。</p>
+<p>首先应调整的是 <code>MaxAddActorsPerFrame</code>。向场景中添加一个 PhysX 物体开销不小，而一阵突然的生成最可能导致卡顿。降低该值可以分散开销；提高该值则可以减少新生成碎片开始移动之前的延迟。</p>
+<p>子系统会尽可能并行评估实例。工作线程通过复制的快照读取 PhysX 状态和物体配置，从不直接操作 UObject；游戏线程则将结果以按组件批量变换更新的方式应用回去。</p>
+<h2 id="_13">指南</h2>
+<p><strong>使用此方法处理</strong> 碎片、弹壳、脱离后的可破坏碎片、被撞倒的道具、散落的杂物，以及任何你希望有数百甚至数千个模拟对象的情况。</p>
+<p><strong>不要将其用于</strong> 需要自身游戏逻辑、组件、复制或蓝图行为的对象。那些是参与者（Actors），应保持为参与者。 </p>
+<p><strong>注意</strong> ISM索引的变化。移除一个可视实例会改变之后实例的索引。子系统会修复自身的映射，但你在自己代码中缓存的任何索引现在都是错误的。请缓存句柄。</p>
+<h2 id="_14">另请参见</h2>
 <ul>
 <li><a href="../PhysX/">PhysX</a></li>
-<li><a href="../../ProjectsAndDemos/PhysX-Instanced-Subsystem/">PhysX Instanced Subsystem demo</a></li>
-<li><a href="../Destruction-And-Cloth/">Destruction and Cloth</a></li>
-<li><a href="../../ProjectsAndDemos/Physics-Cube-Bench/">Physics Cube Bench</a></li>
-<li><a href="../../Performance/Profiling/">Profiling</a></li>
+<li><a href="../../ProjectsAndDemos/PhysX-Instanced-Subsystem/">PhysX 实例化子系统演示</a></li>
+<li><a href="../Destruction-And-Cloth/">破坏与布料</a></li>
+<li><a href="../../ProjectsAndDemos/Physics-Cube-Bench/">物理立方体基准测试</a></li>
+<li><a href="../../Performance/Profiling/">性能分析</a></li>
 </ul>
               
             </div>
