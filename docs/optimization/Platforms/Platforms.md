@@ -1,36 +1,32 @@
 # 平台
 
-Vite main target is Windows 64-bit on DirectX 12. Other platforms inherit 4.27 support.
+Vite 主要针对的是基于 DirectX 12 的 Windows 64 位平台；其他平台则沿用 4.27 版本的支持。
 
-Vite is a focused fork. The features that distinguish it &mdash; the NvRTX ray tracing suite, DDGI, RTXDI,
-DLSS and its alternatives, HBAO+, hardware tessellation &mdash; are Deferred Path GPU features. Mean mainly for Desktop and 9th Gen Consoles
+Vite 是一个专注于特定方向的分支版本。其核心特色功能——包括 NvRTX 光线追踪套件、DDGI、RTXDI、DLSS 及其替代技术、HBAO+ 以及硬件曲面细分（Hardware Tessellation）——均属于延迟渲染管线（Deferred Path）下的 GPU 特性，主要面向桌面平台及第九世代主机。
 
 ## 支持层次
 
 | 平台 | 层次 | 说明                                                                  |
 |---|---|------------------------------------------------------------------------|
-| Windows 64-bit | **主要** | What everything is built and measured against                          |
-| Windows 32-bit | Support files only | Required by Win64 tooling; not a shipping target                       |
-| Linux | 已继承 | Stock 4.27 support. Ray tracing suite untested.                        |
-| Mac | 已继承 | Stock 4.27 support. No DXR, so the ray tracing suite does not apply.   |
-| Android | 已继承 | Inherits Vite updates to Forward Path.                                 |
-| iOS / tvOS | 已继承 | Inherits Vite updates to Forward Path.                                 |
-| HTML5 | 已继承 | Stock 4.27 support, long deprecated upstream                           |
-| 控制台 | 未处理 | Requires platform SDKs Vite cannot make console related changes public |
+| Windows 64 位 | **主要平台** | 构建与评估的基准平台                          |
+| Windows 32 位 | 仅支持文件 | Win64工具链所需；非最终发布目标                       |
+| Linux | 继承支持 | 支持原生4.27功能。光线追踪套件未经测试。                        |
+| Mac | 继承支持 | 支持原生 4.27 功能。不支持 DXR，因此光线追踪套件不适用。   |
+| Android | 继承支持 | 继承了针对前向渲染路径（Forward Path）的Vite更新。                                 |
+| iOS / tvOS | 继承支持 | 继承了针对前向渲染路径（Forward Path）的Vite更新。                                 |
+| HTML5 | 继承支持 | 支持原生 4.27 功能；上游版本早已弃用                           |
+| 控制台 | 未处理 | 需要平台 SDK 支持 Vite |
 
-"Inherited" means the stock 4.27 code is present and has not been deliberately broken, but Vite does not
-test it and the fork's rendering features are unavailable or unvalidated there.
+“继承支持”（Inherited）意味着保留了原有的 4.27 代码且未被刻意破坏，但 Vite 不会对其进行测试，且该分支特有的渲染功能在其中无法使用或未经验证。
 
 
 ## 启用其他平台
 
-Platform dependencies are opt-in at setup time.
+平台依赖项可在设置时选择性启用。
 
-Through [ViteSetup](../Tools/ViteSetup.md), choose the **Win64 + Android** or **Win64 + Linux** profile, or use the
-step-by-step assistant to toggle platforms individually. **Full setup** passes no `-exclude` argument to
-`Setup.bat` and downloads everything.
+通过 [ViteSetup](../Tools/ViteSetup.md)，您可以选择 **Win64 + Android** 或 **Win64 + Linux** 配置方案，也可以使用分步向导单独切换平台。若选择**完整设置**，程序将不会向 `Setup.bat` 传递 `-exclude` 参数，从而下载所有内容。
 
-For the debloat scripts, uncomment the relevant line in `devops\config.txt`:
+对于精简脚本（debloat scripts），请取消 `devops\config.txt` 中相关行的注释：
 
 ```ini
 # Win64 is always kept. Uncomment a platform to ALSO download and keep
@@ -42,60 +38,58 @@ For the debloat scripts, uncomment the relevant line in `devops\config.txt`:
 #KEEP_PLATFORM=HTML5
 ```
 
-<warning>
-Adding a platform after the fact requires re-running dependency setup and rebuilding. Decide before your
-first build if you can.
-</warning>
+**警告：** 如果事后才添加平台，就需要重新进行依赖项设置并重新构建。如果可能，请在首次构建之前就确定好。
+
 
 ## 图形 API
 
 | API | 状态 | 笔记 |
 |---|---|---|
-| DirectX 12 | **主要** | Required for DXR, and therefore for everything ray-traced |
-| DirectX 11 | 已支持 | HBAO+ works here; ray tracing does not |
-| Vulkan | 已继承 | Stock 4.27 support; Vite's ray tracing suite is DXR-based |
-| Metal | 已继承 | 仅 Mac |
-| OpenGL ES | 已继承 | Mobile |
+| DirectX 12 | **主要** | DXR（以及所有光线追踪功能）运行所必需 |
+| DirectX 11 | 已支持 | 支持 HBAO+；不支持光线追踪 |
+| Vulkan | 继承支持 | 原生支持 4.27 版本；Vite 的光线追踪套件基于 DXR |
+| Metal | 继承支持 | 仅限 Mac |
+| OpenGL ES | 继承支持 | 移动平台 |
 
 ### 需要 DX12 什么
 
-Everything ray-traced needs DXR, which in Vite means DirectX 12:
+所有光线追踪功能都需要 DXR 支持，在 Vite 中这意味着必须使用 DirectX 12：
 
-- [Ray-traced reflections](../Rendering/RT-Reflections.md), shadows, ambient occlusion and sky light
-- [动态 DDGI](../Rendering/DDGI-Dynamic.md) and per-pixel ray-traced GI
-- [RTXDI](../Rendering/RTXDI.md) and [path tracing](../Rendering/Path-Tracing.md), if you rebuild with `VITE_RT_PSO_DEBLOAT=0`
-- [Translucency and caustics](../Rendering/RT-Translucency-And-Caustics.md), same condition
+- [光线追踪反射](../Rendering/RT-Reflections.md)、阴影、环境光遮蔽（AO）和天光（Sky Light）
+- [动态 DDGI](../Rendering/DDGI-Dynamic.md) 和逐像素光线追踪全局光照（GI）
+- [RTXDI](../Rendering/RTXDI.md) 和 [路径追踪](../Rendering/Path-Tracing.md) ——前提是使用 `VITE_RT_PSO_DEBLOAT=0` 重新构建
+- [半透明效果和焦散](../Rendering/RT-Translucency-And-Caustics.md) ——同样需要上述条件
 
-[FSR 4](../Rendering/Upscalers.md) is also DX12-only, independently of ray tracing.
+[FSR 4](../Rendering/Upscalers.md) 也仅支持 DX12，与光线追踪功能无关。
 
-### What works on DX11
+### 可在 DX11 下运行的功能
 
-- [HBAO4+](../Rendering/Ambient-Occlusion.md) &mdash; despite the console variable help text claiming DX11-only, it has a
-  D3D12 implementation too
+- [HBAO4+](../Rendering/Ambient-Occlusion.md) —— 尽管控制台变量的帮助文本提示其仅支持 DX11，但它实际上也有 D3D12 实现版本
 - [SMAA](../Rendering/Anti-Aliasing.md)
 - [SSGI](SSGI.md)
-- [Hardware tessellation](../Rendering/Tessellation.md)
-- The [Callisto BRDF and Toon shading models](../Rendering/Shading-Models.md)
+- [硬件曲面细分](../Rendering/Tessellation.md)
+- [Callisto BRDF 和卡通渲染（Toon shading）模型](../Rendering/Shading-Models.md)
 
-A DX11 target is viable if you are willing to give up ray tracing. It is the right choice for a project
-whose [performance targets](../EngineOverview/Performance-Targets.md) do not leave budget for DXR.
+如果愿意放弃光线追踪，选择 DX11 目标是可行的。对于那些[性能](../EngineOverview/Performance-Targets.md)预算无法支撑 DXR 开销的项目来说，这是一个合适的选择。
+
 
 ## 硬件
 
-See [System Requirements](../GettingStarted/System-Requirements.md) for development and runtime hardware.
+请参阅[系统要求](../GettingStarted/System-Requirements.md)以了解开发和运行时所需的硬件。
 
 
 ## 打包
 
-The [installed build](../Tools/Installed-Builds.md) is produced with Development and Shipping game configurations
-for Win64. If you need other configurations or platforms, edit the `RunUAT.bat` BuildGraph arguments:
+[安装版构建](../Tools/Installed-Builds.md)是针对 Win64 平台，使用“开发（Development）”和“发布（Shipping）”游戏配置生成的。如需其他配置或平台，请编辑 `RunUAT.bat` 的 BuildGraph 参数：
+
 
 ```
 -set:WithLinux=true
 -set:GameConfigurations=Development;Test;Shipping
 ```
 
-Each additional platform and configuration lengthens an already long build considerably.
+每增加一个平台或配置，都会使原本就很漫长的构建过程耗时大幅增加。
+
 
 ## 另请参阅
 

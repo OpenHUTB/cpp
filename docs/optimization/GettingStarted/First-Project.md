@@ -1,58 +1,39 @@
-# Creating Your First Project
+# 创建您的第一个项目
 
-<tldr>
-<p>
-Create a project as you normally would, then decide which ray tracing effects you actually want &mdash;
-Vite enables most of them by default. Enable <a href="../Rendering/DDGI-Dynamic.md">DDGI</a> with
-<code>r.GlobalIllumination.ExperimentalPlugin 1</code> and pair it with
-<code>r.SSGI.Enable 1</code>.
-</p>
-</tldr>
+请按常规方式创建项目，然后确定您实际需要哪些光线追踪效果——Vite 默认启用了其中大部分效果。请使用 `r.GlobalIllumination.ExperimentalPlugin 1` 启用 [DDGI](../Rendering/DDGI-Dynamic.md)，并配合 `r.SSGI.Enable 1` 使用。
 
-Project creation in Vite works exactly as it does in stock Unreal Engine 4.27. What differs is the default
-rendering configuration, so this page focuses on what to do immediately after the project opens.
+在 Vite 中创建项目的流程与在标准版 Unreal Engine 4.27 中完全相同。两者的区别在于默认渲染配置，因此本页面将重点介绍项目打开后应立即进行的操作。
 
-<note>
-This manual documents what Vite changes, not Unreal Engine itself. For the parts that are unchanged
-&mdash; project structure, templates, content browser, Blueprints, materials, packaging &mdash; Epic's
-4.27 documentation applies directly and remains the reference:
-<a href="https://dev.epicgames.com/documentation/unreal-engine/working-with-unreal-projects-and-templates?application_version=4.27">Working with Unreal Projects and Templates (4.27)</a>.
-</note>
+**注意：** 本手册仅说明 Vite 所做的更改，而非 Unreal Engine 本身的功能。对于未更改的部分（如项目结构、模板、内容浏览器、蓝图、材质、打包等），[模拟引擎的文档](https://openhutb.github.io/engine_doc/zh-CN/index.html)依然适用并可作为参考。
 
-## Create the project
 
-<procedure title="Create a new Vite project" id="create-project">
-    <step>Launch the editor from your desktop shortcut or <code>Engine\Binaries\Win64\UE4Editor.exe</code>.</step>
-    <step>Choose a template. The Third Person template is the one kept by the debloat presets and is the safest starting point.</step>
-    <step>Pick C++ rather than Blueprint if you intend to drive rendering features from code, which most of the examples in this manual assume.</step>
-    <step>Create the project and wait for the initial shader compile. On a first run this takes a while, because the engine is building its shader cache from scratch.</step>
-</procedure>
+## 创建项目
 
-If you are opening an existing project instead, right-click the `.uproject`, choose
-**Switch Unreal Engine version**, and select `UE_ViteFork`.
 
-## Understand the defaults before you build content
+### 创建一个新的 Vite 项目
 
-> Vite ships with the full ray tracing suite enabled by default &mdash; shadows, reflections, translucency
-> and ambient occlusion. This is deliberate, so that new users discover the features immediately, but it
-> means an empty project costs more than a stock 4.27 one.
->
-{style="warning"}
+1. 通过桌面快捷方式或 `Engine\Binaries\Win64\UE4Editor.exe` 启动编辑器。
 
-Decide early which effects your project actually needs, because the answer shapes your entire art and
-performance budget. A stylised competitive title targeting 4K120 will typically run DDGI alone. A fidelity
-title targeting 4K60 might add ray-traced reflections and tessellation. See
-[Performance Targets](../EngineOverview/Performance-Targets.md) for the four reference configurations Vite is tuned around.
+2. 选择一个模板。“第三人称”（Third Person）模板是精简预设（debloat presets）所保留的模板，也是最稳妥的起点。
 
-The other set of defaults worth reading before you build much content is
-[Engine Default Changes](../Performance/Engine-Defaults.md). Several of them change behaviour rather than just cost &mdash;
-most notably, overlap events are disabled by default on primitive components, and lightmap UV generation is
-off by default on import.
+3. 如果你打算通过代码来驱动渲染功能（本手册中的大多数示例均基于此方式），请选择 C++ 而非蓝图（Blueprint）。
 
-## Turning features on from code
 
-The conventional place to set these up in a sample project is the character class constructor or
-`BeginPlay`. This is what the Vite sample projects do.
+如果您要打开现有项目，请右键点击 `.uproject` 文件，选择**Switch Unreal Engine version（切换虚幻引擎版本）**，然后选择 `UE_ViteFork`。
+
+
+## 在构建内容前，请先了解默认设置
+
+**警告：** Vite 默认启用了全套光线追踪功能——包括阴影、反射、半透明效果和环境光遮蔽（Ambient Occlusion, AO）。这样设计是为了让新用户能立即体验这些功能，但也意味着相比标准的 4.27 版本，空项目会消耗更多性能资源。
+
+请尽早确定项目实际需要哪些效果，因为这将决定您的美术制作与性能预算规划。一款目标为 4K120 帧的风格化竞技游戏通常仅启用 DDGI；而一款追求高画质、目标为 4K60 帧的游戏，则可能会额外加入光线追踪反射和曲面细分（Tessellation）技术。请参阅[性能目标](../EngineOverview/Performance-Targets.md)部分，了解 Vite 针对优化的四种参考配置。
+
+在着手构建大量内容之前，另一组值得了解的默认设置是[引擎默认设置变更](../Performance/Engine-Defaults.md)。其中几项更改不仅影响性能开销，还会改变功能行为——最显著的例子包括：图元组件（primitive components）上的重叠事件（overlap events）默认处于禁用状态，且导入资源时默认关闭光照贴图 UV 生成功能。
+
+
+## 通过代码启用功能
+
+在示例项目中，设置这些功能的常规位置是角色类的构造函数或 `BeginPlay` 方法。Vite 示例项目正是这样做的。
 
 ```c++
 // Global illumination
@@ -68,12 +49,9 @@ IConsoleManager::Get().FindConsoleVariable(TEXT("r.RayTracing.SampledDirectLight
 IConsoleManager::Get().FindConsoleVariable(TEXT("r.RayTracing.MeshCaustics.Enable"))->Set(1);
 ```
 
-`r.GlobalIllumination.ExperimentalPlugin 1` enables DDGI. Running SSGI alongside it is recommended rather
-than optional: DDGI resolves world-scale bounce, SSGI fills in high-frequency contact detail that probe
-volumes are too coarse to capture. See [DDGI and SSGI Together](../Rendering/SSGI.md).
+设置 `r.GlobalIllumination.ExperimentalPlugin 1` 可启用 DDGI。建议同时运行 SSGI，而非将其视为可选项：DDGI 负责处理全局尺度的光线反弹，而 SSGI 则用于补充高频接触细节——这些细节往往因探针体积（probe volumes）的精度限制而难以捕捉。请参阅[DDGI 与 SSGI 结合使用](../Rendering/SSGI.md)相关内容。
 
-For production, prefer setting these in configuration files rather than code, so they participate in
-scalability and can be overridden per platform:
+在生产环境中，建议在配置文件而非代码中设置这些参数，以便利用其可扩展性，并支持针对不同平台进行覆盖设置：
 
 ```ini
 ; Config/DefaultEngine.ini
@@ -83,39 +61,36 @@ r.SSGI.Enable=1
 r.RayTracing.Reflections=1
 ```
 
-`r.RayTracing.ForceAllRayTracingEffects 1` turns everything on at once. It is useful for a quick look at
-what the engine can do, and a poor idea in a shipping configuration.
+设置 `r.RayTracing.ForceAllRayTracingEffects 1` 可同时启用所有光线追踪效果。这有助于快速预览引擎的能力，但不适合用于最终发布的配置。
 
-## Verify it is working
 
-Open the console with the tilde key and check a few things:
+## 验证其是否生效
 
-- `stat unit` &mdash; frame, game, draw and GPU times. If GPU time dominates after enabling RT effects, that
-  is expected; start turning effects off from there.
-- `stat gpu` &mdash; per-pass GPU cost, which is how you find out whether reflections or GI is the expensive
-  one.
-- `r.RayTracing.Reflections 0` &mdash; toggle an effect at runtime and watch the delta.
+按下波浪号（~）键打开控制台，并检查以下内容：
 
-Vite also bundles ImGui-based benchmarking tools for in-editor and in-game profiling. See
-[Profiling and Benchmarking](../Performance/Profiling.md).
+- `stat unit` —— 查看帧（frame）、游戏（game）、绘制（draw）和 GPU 的耗时。启用光线追踪效果后，如果 GPU 耗时占主导地位，这是正常现象；此时可尝试逐一关闭各项效果以进行排查。
+- `stat gpu` —— 查看各渲染通道（pass）的 GPU 开销；通过此命令可判断反射（reflections）或全局光照（GI）哪一项更耗费资源。
+- `r.RayTracing.Reflections 0` —— 在运行时切换效果，观察性能数据的变化。
 
-## Sample projects worth opening
+Vite 还集成了基于 ImGui 的基准测试工具，用于编辑器内及游戏运行时的性能分析。请参阅[性能分析与基准测试](../Performance/Profiling.md)相关内容。
 
-Rather than building a test scene from scratch, start from one that already demonstrates the features:
 
-- [Tech Demo Project](../ProjectsAndDemos/Tech-Demo-Project.md) &mdash; DDGI Cornell Box, Apex Destruction test bed, Apex Cloth
-  sample and a high-end DDGI plus SSGI cave scene.
-- [Abandoned Apartment](../ProjectsAndDemos/Abandone-Apartment.md) and [Attic Scene](../ProjectsAndDemos/Attic-Scene.md) &mdash; NVIDIA's original
-  RTGI showcase scenes.
-- [Physics Cube Bench](../ProjectsAndDemos/Physics-Cube-Bench.md) and [400 Characters CMC Bench](../ProjectsAndDemos/400-Characters-CMC-Bench.md)
-  &mdash; the benchmark scenes behind the numbers quoted in this manual.
+## 值得打开的示例项目
 
-The full list is in [Projects and Demos](../ProjectsAndDemos.md).
+与其从零开始构建测试场景，不如直接使用那些已展示相关功能的现有场景：
 
-## See also
+- [技术演示项目](../ProjectsAndDemos/Tech-Demo-Project.md) —— 包含 DDGI 康奈尔盒 (Cornell Box)、Apex 破坏测试平台、Apex 布料示例以及结合 DDGI 与 SSGI 的高端洞穴场景。
+- [废弃公寓](../ProjectsAndDemos/Abandone-Apartment.md) 与 [阁楼场景](../ProjectsAndDemos/Attic-Scene.md) —— NVIDIA 原创的 RTGI 展示场景。
+- [物理立方体基准测试](../ProjectsAndDemos/Physics-Cube-Bench.md) 与 [400 角色 CMC 基准测试](../ProjectsAndDemos/400-Characters-CMC-Bench.md)
+  —— 本手册中所引用数据对应的基准测试场景。
 
-- [Global Illumination](../Rendering/Global-Illumination.md)
-- [Ray Tracing](../Rendering/Ray-Tracing.md)
-- [Engine Default Changes](../Performance/Engine-Defaults.md)
-- [Console Variable Reference](../Reference/Console-Variables.md)
-- [Migrating from Unreal Engine 5](Migrating-From-UE5.md)
+完整列表请参阅[项目与演示](../ProjectsAndDemos.md)部分。
+
+
+## 另请参阅
+
+- [全局光照](../Rendering/Global-Illumination.md)
+- [光线追踪](../Rendering/Ray-Tracing.md)
+- [引擎默认设置变更](../Performance/Engine-Defaults.md)
+- [控制台变量参考](../Reference/Console-Variables.md)
+- [从 Unreal Engine 5 迁移](Migrating-From-UE5.md)

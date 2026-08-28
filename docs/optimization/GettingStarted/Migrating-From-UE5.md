@@ -1,8 +1,10 @@
 # 从虚幻引擎 5 迁移
 
 
-使用[UE Downgrader](../Plugins/Proposed-Plugins.md)插件将资源向下移动，该插件支持 UE 5.8 及更低版本，直至回到 4.27。代码移动比原生 4.27 更容易，因为 Vite 向后移植了许多 UE5 容器、游戏框架和 GAS API。 4.27 中不存在的功能（Nanite、Lumen、VSM、World Partition）没有等效项，需要设计决策，而不是转换。
-
+使用[UE Downgrader](../Plugins/Proposed-Plugins.md)插件将资源向下移动，该插件支持 UE 5.8 及更低版本，直至回到 UE4。代码移动比原生 UE4 更容易，因为 Vite 向后移植了许多 UE5 容器、游戏框架和 GAS API。UE4 中不存在的功能（Nanite、Lumen、VSM、World Partition）没有等效项，需要设计决策，而不是转换。
+![](../../img/optimization/UE_Downgrader_1.jpg)
+![](../../img/optimization/UE_Downgrader_1.jpg)
+![](../../img/optimization/UE_Downgrader_1.jpg)
 
 将项目从虚幻引擎 5 迁移到 Vite 是真正的迁移，而不是版本升级。本页列出了哪些内容可以干净地迁移，哪些内容需要替换，以及按什么顺序进行。
 
@@ -67,12 +69,9 @@ UE Downgrader 插件可将 UE 5.8 及更低版本的资源转换回 4.27 和 4.2
 
 ## 混合版本工作流程
 
-
 您不必立即移动所有人。一种常见的安排是程序员在 Vite 中工作，而美术师和内容创作者则继续使用 Epic Games Launcher 4.27 的库存安装，内容以单向流动。为此，启动器端用户需要独立的 [DDGI 1.1.5 插件](https://github.com/GapingPixel/UE4-RTXGI-1.1.5-Latest-Official)，以便照明看起来大致正确。这正是我们在 Vite Studio 所做的，到目前为止，建模、动画和声音设计工作没有出现任何问题。
 
-!!! 警告
-
-    不要在 Vite 项目中使用启动器 DDGI 插件。 Vite 已经将 DDGI 作为引擎的一部分提供，两者会发生冲突。 Vite 中的 DDGI 比 Launcher 版本的 DDGI 插件处理得更好。 （由于引擎端/DDGI插件端均发生变化）
+**警告：** 不要在 Vite 项目中使用启动器 DDGI 插件。 Vite 已经将 DDGI 作为引擎的一部分提供，两者会发生冲突。 Vite 中的 DDGI 比 Launcher 版本的 DDGI 插件处理得更好（由于引擎端/DDGI插件端均发生变化）。
 
 
 ## 另请参阅
