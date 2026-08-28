@@ -83,7 +83,7 @@
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#dx12">需要 DX12 什么</a>
     </li>
-    <li class="toctree-l3"><a class="reference internal" href="#what-works-on-dx11">What works on DX11</a>
+    <li class="toctree-l3"><a class="reference internal" href="#dx11">可在 DX11 下运行的功能</a>
     </li>
         </ul>
     </li>
@@ -141,9 +141,8 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="_1">平台</h1>
-<p>Vite main target is Windows 64-bit on DirectX 12. Other platforms inherit 4.27 support.</p>
-<p>Vite is a focused fork. The features that distinguish it &mdash; the NvRTX ray tracing suite, DDGI, RTXDI,
-DLSS and its alternatives, HBAO+, hardware tessellation &mdash; are Deferred Path GPU features. Mean mainly for Desktop and 9th Gen Consoles</p>
+<p>Vite 主要针对的是基于 DirectX 12 的 Windows 64 位平台；其他平台则沿用 4.27 版本的支持。</p>
+<p>Vite 是一个专注于特定方向的分支版本。其核心特色功能——包括 NvRTX 光线追踪套件、DDGI、RTXDI、DLSS 及其替代技术、HBAO+ 以及硬件曲面细分（Hardware Tessellation）——均属于延迟渲染管线（Deferred Path）下的 GPU 特性，主要面向桌面平台及第九世代主机。</p>
 <h2 id="_2">支持层次</h2>
 <table>
 <thead>
@@ -155,55 +154,52 @@ DLSS and its alternatives, HBAO+, hardware tessellation &mdash; are Deferred Pat
 </thead>
 <tbody>
 <tr>
-<td>Windows 64-bit</td>
-<td><strong>主要</strong></td>
-<td>What everything is built and measured against</td>
+<td>Windows 64 位</td>
+<td><strong>主要平台</strong></td>
+<td>构建与评估的基准平台</td>
 </tr>
 <tr>
-<td>Windows 32-bit</td>
-<td>Support files only</td>
-<td>Required by Win64 tooling; not a shipping target</td>
+<td>Windows 32 位</td>
+<td>仅支持文件</td>
+<td>Win64工具链所需；非最终发布目标</td>
 </tr>
 <tr>
 <td>Linux</td>
-<td>已继承</td>
-<td>Stock 4.27 support. Ray tracing suite untested.</td>
+<td>继承支持</td>
+<td>支持原生4.27功能。光线追踪套件未经测试。</td>
 </tr>
 <tr>
 <td>Mac</td>
-<td>已继承</td>
-<td>Stock 4.27 support. No DXR, so the ray tracing suite does not apply.</td>
+<td>继承支持</td>
+<td>支持原生 4.27 功能。不支持 DXR，因此光线追踪套件不适用。</td>
 </tr>
 <tr>
 <td>Android</td>
-<td>已继承</td>
-<td>Inherits Vite updates to Forward Path.</td>
+<td>继承支持</td>
+<td>继承了针对前向渲染路径（Forward Path）的Vite更新。</td>
 </tr>
 <tr>
 <td>iOS / tvOS</td>
-<td>已继承</td>
-<td>Inherits Vite updates to Forward Path.</td>
+<td>继承支持</td>
+<td>继承了针对前向渲染路径（Forward Path）的Vite更新。</td>
 </tr>
 <tr>
 <td>HTML5</td>
-<td>已继承</td>
-<td>Stock 4.27 support, long deprecated upstream</td>
+<td>继承支持</td>
+<td>支持原生 4.27 功能；上游版本早已弃用</td>
 </tr>
 <tr>
 <td>控制台</td>
 <td>未处理</td>
-<td>Requires platform SDKs Vite cannot make console related changes public</td>
+<td>需要平台 SDK 支持 Vite</td>
 </tr>
 </tbody>
 </table>
-<p>"Inherited" means the stock 4.27 code is present and has not been deliberately broken, but Vite does not
-test it and the fork's rendering features are unavailable or unvalidated there.</p>
+<p>“继承支持”（Inherited）意味着保留了原有的 4.27 代码且未被刻意破坏，但 Vite 不会对其进行测试，且该分支特有的渲染功能在其中无法使用或未经验证。</p>
 <h2 id="_3">启用其他平台</h2>
-<p>Platform dependencies are opt-in at setup time.</p>
-<p>Through <a href="../../Tools/ViteSetup/">ViteSetup</a>, choose the <strong>Win64 + Android</strong> or <strong>Win64 + Linux</strong> profile, or use the
-step-by-step assistant to toggle platforms individually. <strong>Full setup</strong> passes no <code>-exclude</code> argument to
-<code>Setup.bat</code> and downloads everything.</p>
-<p>For the debloat scripts, uncomment the relevant line in <code>devops\config.txt</code>:</p>
+<p>平台依赖项可在设置时选择性启用。</p>
+<p>通过 <a href="../../Tools/ViteSetup/">ViteSetup</a>，您可以选择 <strong>Win64 + Android</strong> 或 <strong>Win64 + Linux</strong> 配置方案，也可以使用分步向导单独切换平台。若选择<strong>完整设置</strong>，程序将不会向 <code>Setup.bat</code> 传递 <code>-exclude</code> 参数，从而下载所有内容。</p>
+<p>对于精简脚本（debloat scripts），请取消 <code>devops\config.txt</code> 中相关行的注释：</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># Win64 is always kept. Uncomment a platform to ALSO download and keep</span>
 <span class="c1"># its dependencies during setup.</span>
 <span class="c1">#KEEP_PLATFORM=Android</span>
@@ -212,10 +208,7 @@ step-by-step assistant to toggle platforms individually. <strong>Full setup</str
 <span class="c1">#KEEP_PLATFORM=Mac</span>
 <span class="c1">#KEEP_PLATFORM=HTML5</span>
 </code></pre></div>
-<p><warning>
-Adding a platform after the fact requires re-running dependency setup and rebuilding. Decide before your
-first build if you can.
-</warning></p>
+<p><strong>警告：</strong> 如果事后才添加平台，就需要重新进行依赖项设置并重新构建。如果可能，请在首次构建之前就确定好。</p>
 <h2 id="api">图形 API</h2>
 <table>
 <thead>
@@ -229,59 +222,56 @@ first build if you can.
 <tr>
 <td>DirectX 12</td>
 <td><strong>主要</strong></td>
-<td>Required for DXR, and therefore for everything ray-traced</td>
+<td>DXR（以及所有光线追踪功能）运行所必需</td>
 </tr>
 <tr>
 <td>DirectX 11</td>
 <td>已支持</td>
-<td>HBAO+ works here; ray tracing does not</td>
+<td>支持 HBAO+；不支持光线追踪</td>
 </tr>
 <tr>
 <td>Vulkan</td>
-<td>已继承</td>
-<td>Stock 4.27 support; Vite's ray tracing suite is DXR-based</td>
+<td>继承支持</td>
+<td>原生支持 4.27 版本；Vite 的光线追踪套件基于 DXR</td>
 </tr>
 <tr>
 <td>Metal</td>
-<td>已继承</td>
-<td>仅 Mac</td>
+<td>继承支持</td>
+<td>仅限 Mac</td>
 </tr>
 <tr>
 <td>OpenGL ES</td>
-<td>已继承</td>
-<td>Mobile</td>
+<td>继承支持</td>
+<td>移动平台</td>
 </tr>
 </tbody>
 </table>
 <h3 id="dx12">需要 DX12 什么</h3>
-<p>Everything ray-traced needs DXR, which in Vite means DirectX 12:</p>
+<p>所有光线追踪功能都需要 DXR 支持，在 Vite 中这意味着必须使用 DirectX 12：</p>
 <ul>
-<li><a href="../../Rendering/RT-Reflections/">Ray-traced reflections</a>, shadows, ambient occlusion and sky light</li>
-<li><a href="../../Rendering/DDGI-Dynamic/">动态 DDGI</a> and per-pixel ray-traced GI</li>
-<li><a href="../../Rendering/RTXDI/">RTXDI</a> and <a href="../../Rendering/Path-Tracing/">path tracing</a>, if you rebuild with <code>VITE_RT_PSO_DEBLOAT=0</code></li>
-<li><a href="../../Rendering/RT-Translucency-And-Caustics/">Translucency and caustics</a>, same condition</li>
+<li><a href="../../Rendering/RT-Reflections/">光线追踪反射</a>、阴影、环境光遮蔽（AO）和天光（Sky Light）</li>
+<li><a href="../../Rendering/DDGI-Dynamic/">动态 DDGI</a> 和逐像素光线追踪全局光照（GI）</li>
+<li><a href="../../Rendering/RTXDI/">RTXDI</a> 和 <a href="../../Rendering/Path-Tracing/">路径追踪</a> ——前提是使用 <code>VITE_RT_PSO_DEBLOAT=0</code> 重新构建</li>
+<li><a href="../../Rendering/RT-Translucency-And-Caustics/">半透明效果和焦散</a> ——同样需要上述条件</li>
 </ul>
-<p><a href="../../Rendering/Upscalers/">FSR 4</a> is also DX12-only, independently of ray tracing.</p>
-<h3 id="what-works-on-dx11">What works on DX11</h3>
+<p><a href="../../Rendering/Upscalers/">FSR 4</a> 也仅支持 DX12，与光线追踪功能无关。</p>
+<h3 id="dx11">可在 DX11 下运行的功能</h3>
 <ul>
-<li><a href="../../Rendering/Ambient-Occlusion/">HBAO4+</a> &mdash; despite the console variable help text claiming DX11-only, it has a
-  D3D12 implementation too</li>
+<li><a href="../../Rendering/Ambient-Occlusion/">HBAO4+</a> —— 尽管控制台变量的帮助文本提示其仅支持 DX11，但它实际上也有 D3D12 实现版本</li>
 <li><a href="../../Rendering/Anti-Aliasing/">SMAA</a></li>
 <li><a href="SSGI.md">SSGI</a></li>
-<li><a href="../../Rendering/Tessellation/">Hardware tessellation</a></li>
-<li>The <a href="../../Rendering/Shading-Models/">Callisto BRDF and Toon shading models</a></li>
+<li><a href="../../Rendering/Tessellation/">硬件曲面细分</a></li>
+<li><a href="../../Rendering/Shading-Models/">Callisto BRDF 和卡通渲染（Toon shading）模型</a></li>
 </ul>
-<p>A DX11 target is viable if you are willing to give up ray tracing. It is the right choice for a project
-whose <a href="../../EngineOverview/Performance-Targets/">performance targets</a> do not leave budget for DXR.</p>
+<p>如果愿意放弃光线追踪，选择 DX11 目标是可行的。对于那些<a href="../../EngineOverview/Performance-Targets/">性能</a>预算无法支撑 DXR 开销的项目来说，这是一个合适的选择。</p>
 <h2 id="_4">硬件</h2>
-<p>See <a href="../../GettingStarted/System-Requirements/">System Requirements</a> for development and runtime hardware.</p>
+<p>请参阅<a href="../../GettingStarted/System-Requirements/">系统要求</a>以了解开发和运行时所需的硬件。</p>
 <h2 id="_5">打包</h2>
-<p>The <a href="../../Tools/Installed-Builds/">installed build</a> is produced with Development and Shipping game configurations
-for Win64. If you need other configurations or platforms, edit the <code>RunUAT.bat</code> BuildGraph arguments:</p>
+<p><a href="../../Tools/Installed-Builds/">安装版构建</a>是针对 Win64 平台，使用“开发（Development）”和“发布（Shipping）”游戏配置生成的。如需其他配置或平台，请编辑 <code>RunUAT.bat</code> 的 BuildGraph 参数：</p>
 <div class="highlight"><pre><span></span><code>-set:WithLinux=true
 -set:GameConfigurations=Development;Test;Shipping
 </code></pre></div>
-<p>Each additional platform and configuration lengthens an already long build considerably.</p>
+<p>每增加一个平台或配置，都会使原本就很漫长的构建过程耗时大幅增加。</p>
 <h2 id="_6">另请参阅</h2>
 <ul>
 <li><a href="../../GettingStarted/System-Requirements/">系统要求</a></li>

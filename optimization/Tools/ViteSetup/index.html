@@ -121,72 +121,64 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="vitesetup-assistant">ViteSetup Assistant</h1>
-<p><tldr></p>
-<p>
-<code>ViteSetup.bat</code> at the engine root runs a nine-step guided setup from environment check to a
-launched editor. <code>ViteSetup.bat menu</code> gives you the individual operations instead.
-</p>
-<p></tldr></p>
-<p>The assistant exists because setting up an Unreal source build has many steps, each with failure modes that
-produce unhelpful errors when you get them wrong. It checks the environment first, so a missing toolchain
-component fails at step 1 with a clear message rather than at step 5 with a linker error.</p>
-<h2 id="guided-mode">Guided mode</h2>
-<p>Run <code>ViteSetup.bat</code> with no arguments.</p>
+<p>位于引擎根目录的 <code>ViteSetup.bat</code> 脚本提供了一个包含九个步骤的引导式设置流程，涵盖了从环境检查到启动编辑器的全过程。此外，<code>ViteSetup.bat</code> 的菜单也允许用户单独执行其中的各项操作。</p>
+<p>之所以提供这一辅助工具，是因为构建 Unreal 源码版本涉及多个步骤，且每个步骤都可能因操作不当而导致失败；若不使用该工具，这些失败往往会引发难以排查的错误信息。该工具会预先检查环境，因此如果缺少某个工具链组件，系统会在第一步就给出明确提示，从而避免等到第五步才因链接器错误而导致构建失败。</p>
+<h2 id="_1">引导模式</h2>
+<p>直接运行 <code>ViteSetup.bat</code>（不带任何参数）。</p>
 <table>
 <thead>
 <tr>
-<th>Step</th>
-<th>Action</th>
+<th>步骤</th>
+<th>操作</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>1</td>
-<td>Check the environment and enforce the toolchain</td>
+<td>检查环境并指定工具链</td>
 </tr>
 <tr>
 <td>2</td>
-<td>Set up dependencies, with platform selection</td>
+<td>配置依赖项（包含平台选择）</td>
 </tr>
 <tr>
 <td>3</td>
-<td>Generate Visual Studio project files</td>
+<td>生成 Visual Studio 项目文件</td>
 </tr>
 <tr>
 <td>4</td>
-<td>Choose source or binary build</td>
+<td>选择源码构建或二进制构建</td>
 </tr>
 <tr>
 <td>5</td>
-<td>Build the selected target</td>
+<td>构建选定目标</td>
 </tr>
 <tr>
 <td>6</td>
-<td>Register the selected build</td>
+<td>注册选定的构建版本</td>
 </tr>
 <tr>
 <td>7</td>
-<td>Create <code>UEViteFork.lnk</code> on the desktop</td>
+<td>在桌面上创建 <code>UEViteFork.lnk</code> 快捷方式</td>
 </tr>
 <tr>
 <td>8</td>
-<td>Optional engine debloat</td>
+<td>可选：精简引擎（移除冗余组件）</td>
 </tr>
 <tr>
 <td>9</td>
-<td>Finish; source builds launch the editor, binary builds do not</td>
+<td>完成；源码构建版本将启动编辑器，二进制构建版本则不会</td>
 </tr>
 </tbody>
 </table>
-<p>Each step pauses so you can read the output before continuing. Failures stop the assistant and report an
-error code rather than pushing on.</p>
-<h2 id="step-1-environment-check">Step 1 &mdash; environment check</h2>
-<p>The assistant enforces a specific toolchain and will not proceed without it:</p>
+<p>每个步骤执行后都会暂停，以便您在继续之前查看输出结果。如果遇到失败，助手会停止运行并报告错误代码，而不会继续执行后续步骤。</p>
+<h2 id="1">步骤 1 — 环境检查</h2>
+<p>该助手强制要求使用特定的工具链，若缺少该工具链，则无法继续执行：</p>
 <table>
 <thead>
 <tr>
-<th>Requirement</th>
-<th>Enforced value</th>
+<th>要求</th>
+<th>强制值</th>
 </tr>
 </thead>
 <tbody>
@@ -200,211 +192,195 @@ error code rather than pushing on.</p>
 </tr>
 <tr>
 <td>Windows SDK</td>
-<td>10.0.26100, subversion .7705 or higher, major pinned to 26100</td>
+<td>10.0.26100，子版本 .7705 或更高，主版本固定为 26100</td>
 </tr>
 <tr>
-<td>.NET Framework reference assemblies</td>
-<td>v4.6.2 and v4.5</td>
+<td>.NET Framework 引用程序集</td>
+<td>v4.6.2 和 v4.5</td>
 </tr>
 </tbody>
 </table>
-<p><warning>
-The enforced toolchain is not the same as the toolchain Vite is currently developed against, which is
-Visual Studio 2026 with MSVC 14.50 and Windows SDK 10.0.26100. The assistant's check has not been updated.</p>
-<p>
-If you are on the newer toolchain, the check will fail. Build through
-<a href="../GettingStarted/Build-From-Source.md">the manual path</a> or use the individual menu options rather than the
-guided flow. See <a href="../GettingStarted/Toolchain-Requirements.md">Toolchain Requirements</a>.
-</p>
-<p></warning></p>
-<p>The .NET Framework 4.5 reference assemblies are the component people most often lack, since recent Visual
-Studio installers no longer offer them by default. See
-<a href="../../GettingStarted/Build-Troubleshooting/">Build Troubleshooting</a>.</p>
-<h2 id="step-2-dependency-setup">Step 2 &mdash; dependency setup</h2>
-<p>Rather than running <code>Setup.bat</code> with everything, the assistant offers setup profiles:</p>
+<p><strong>警告：</strong> 强制使用的工具链与 Vite 当前开发所用的工具链（即 Visual Studio 2026 配合 MSVC 14.50 和 Windows SDK 10.0.26100）不一致，而辅助检查程序尚未针对此变化进行更新。
+如果您使用的是较新的工具链，该检查将会失败。请改用<a href="../../GettingStarted/Build-From-Source/">手动构建方式</a>或直接选择菜单中的各项操作，而不要使用引导式流程。详情请参阅<a href="../../GettingStarted/Toolchain-Requirements/">工具链要求</a>。</p>
+<p>.NET Framework 4.5 引用程序集（reference assemblies）是用户最常缺失的组件，因为较新的 Visual Studio 安装程序已不再默认包含它们。详情请参阅<a href="../../GettingStarted/Build-Troubleshooting/">构建故障排查</a>。</p>
+<h2 id="2">步骤 2 — 依赖项设置</h2>
+<p>该向导不直接运行包含所有内容的 <code>Setup.bat</code>，而是提供了多种设置配置：</p>
 <table>
 <thead>
 <tr>
-<th>Profile</th>
-<th>What it does</th>
+<th>配置概览</th>
+<th>功能说明</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Step-by-step assistant</td>
-<td>Choose platforms and optional content individually, then review</td>
+<td>分步向导</td>
+<td>逐项选择平台及可选内容，随后进行确认</td>
 </tr>
 <tr>
-<td>Recommended Win64</td>
-<td>Win64 only. Excludes non-Windows platforms, samples, templates, feature packs, docs, XR and consoles.</td>
+<td>推荐配置 (Win64)</td>
+<td>仅限 Win64。不包含非 Windows 平台、示例、模板、功能包、文档、XR 及主机平台相关内容。</td>
 </tr>
 <tr>
-<td>Win64 ultra compact</td>
-<td>As recommended, with the smallest optional content set</td>
+<td>Win64 超精简版</td>
+<td>基于推荐配置，但仅包含最少量的可选内容</td>
 </tr>
 <tr>
-<td>Win64 + templates / feature packs</td>
-<td>Keeps project templates and starter content</td>
+<td>Win64 + 模板/功能包</td>
+<td>保留项目模板及入门资源</td>
 </tr>
 <tr>
 <td>Win64 + Android</td>
-<td>Adds Android dependencies</td>
+<td>增加 Android 相关依赖</td>
 </tr>
 <tr>
 <td>Win64 + Linux</td>
-<td>Adds Linux and cross-compile dependencies</td>
+<td>增加 Linux 及交叉编译相关依赖</td>
 </tr>
 <tr>
-<td>Full setup</td>
-<td>Passes no <code>-exclude</code> argument to <code>Setup.bat</code></td>
+<td>完整安装</td>
+<td>运行 <code>Setup.bat</code> 时不使用 <code>-exclude</code> 参数</td>
 </tr>
 </tbody>
 </table>
-<p>The step-by-step assistant exposes individual platform toggles for Android, iOS/tvOS, Mac, Linux, WinRT,
-HTML5 and consoles. Win32 support files are always included, since Win64 requires them.</p>
-<p><strong>Recommended Win64 is the right choice for most people.</strong> Downloading dependencies you will never use
-costs bandwidth, disk space and setup time. If you later need a platform, re-run setup with it enabled.</p>
-<h2 id="step-4-source-or-binary">Step 4 &mdash; source or binary</h2>
+<p>分步安装向导提供了针对 Android、iOS/tvOS、Mac、Linux、WinRT、HTML5 和游戏主机平台的独立选项开关。Win32 支持文件会默认包含在内，因为 Win64 运行需要这些文件。</p>
+<p><strong>对于大多数用户而言，推荐选择 Win64 版本</strong>。下载永远不会用到的依赖项会浪费带宽、磁盘空间和安装时间。如果日后需要某个平台，只需重新运行安装程序并勾选相应选项即可。</p>
+<h2 id="4">步骤 4 —— 源码或二进制文件</h2>
 <table>
 <thead>
 <tr>
-<th>Option</th>
-<th>Result</th>
+<th>选项</th>
+<th>结果</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Source build</td>
-<td>Builds <code>UE4Editor</code>, <code>ShaderCompileWorker</code> and <code>UnrealLightmass</code> in the source tree, Win64 Development</td>
+<td>源码构建</td>
+<td>在源码树中构建 <code>UE4Editor</code>、<code>ShaderCompileWorker</code> 和 <code>UnrealLightmass</code>（Win64 Development 配置）</td>
 </tr>
 <tr>
-<td>Binary Installed Build</td>
-<td>Incremental BuildGraph run producing <code>LocalBuilds\Engine\Windows</code> plus <code>UE_ViteFork.7z</code></td>
+<td>二进制安装版本构建</td>
+<td>运行增量 BuildGraph，生成 <code>LocalBuilds\Engine\Windows</code> 及 <code>UE_ViteFork.7z</code></td>
 </tr>
 </tbody>
 </table>
-<p>Choose source if you are working on the engine or want to modify
-<a href="../../Performance/Compile-Time-Switches/">compile-time switches</a>. Choose binary if you want a redistributable engine to
-hand to people who do not need to compile it. See <a href="../Installed-Builds/">Installed Builds</a>.</p>
-<h2 id="steps-6-and-7-registration-and-shortcut">Steps 6 and 7 &mdash; registration and shortcut</h2>
-<p>Registration writes the engine path under
-<code>HKCU\Software\Epic Games\Unreal Engine\Builds</code> as <code>UEViteFork</code>, which is what makes the build selectable in
-a <code>.uproject</code> file's engine association. The engine association identifier is <code>UE_ViteFork</code>.</p>
-<p>The shortcut step creates <code>UEViteFork.lnk</code> pointing at <code>UE4Editor.exe</code>.</p>
-<p>Both are also available standalone as <code>LocalBuilds\RegistryAdd.bat</code> and <code>LocalBuilds\MakeShortcut.bat</code>.</p>
-<h2 id="step-8-debloat">Step 8 &mdash; debloat</h2>
-<p>Optionally runs the debloat assistant, offering:</p>
+<p>如果您正在开发引擎本身，或者需要修改<a href="../../Performance/Compile-Time-Switches/">编译时开关</a>，请选择源码版本。如果您需要一个可分发的引擎版本，以便提供给无需自行编译的用户，请选择“二进制”版本。详情请参阅<a href="../Installed-Builds/">已安装构建</a>版本相关内容。</p>
+<h2 id="6-7">步骤 6 和 7 —— 注册与创建快捷方式</h2>
+<p>注册操作会将引擎路径写入注册表项 <code>HKCU\Software\Epic Games\Unreal Engine\Builds</code> 下，键名为 <code>UEViteFork</code>；这使得该构建版本能够在 <code>.uproject</code> 文件的引擎关联选项中被选中。其引擎关联标识符为 <code>UE_ViteFork</code>。</p>
+<p>创建快捷方式的步骤会生成一个指向 <code>UE4Editor.exe</code> 的快捷方式文件 <code>UEViteFork.lnk</code>。</p>
+<p>这两个步骤对应的操作也可作为独立脚本运行，分别为 <code>LocalBuilds\RegistryAdd.bat</code> 和 <code>LocalBuilds\MakeShortcut.bat</code>。</p>
+<h2 id="8">步骤 8 — 精简系统</h2>
+<p>可选择运行精简助手，提供以下功能：</p>
 <table>
 <thead>
 <tr>
-<th>Option</th>
-<th>Behaviour</th>
+<th>选项</th>
+<th>行为</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Move to a recovery folder</td>
-<td>Restorable later. Destination is <code>ViteDebloat_Moved</code> next to the engine folder. Recommended.</td>
+<td>移至恢复文件夹</td>
+<td>稍后可恢复。目标位置为引擎文件夹旁的 <code>ViteDebloat_Moved</code> 文件夹。推荐。</td>
 </tr>
 <tr>
-<td>Delete permanently</td>
-<td>Smallest footprint, not reversible</td>
+<td>永久删除</td>
+<td>占用空间最小，不可撤销</td>
 </tr>
 </tbody>
 </table>
-<p>Full detail in the <a href="../../Performance/Debloat-Guide/">Debloat Guide</a>.</p>
-<h2 id="menu-mode">Menu mode</h2>
-<p><code>ViteSetup.bat menu</code> skips the guided flow and presents the operations individually:</p>
+<p>完整详情请参阅<a href="../../Performance/Debloat-Guide/">精简指南</a>。</p>
+<h2 id="_2">菜单模式</h2>
+<p><code>ViteSetup.bat</code> 的菜单模式会跳过引导式流程，直接列出各项操作供选择：</p>
 <table>
 <thead>
 <tr>
-<th>Option</th>
-<th>Action</th>
+<th>选项</th>
+<th>操作</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>1</td>
-<td>Check the environment</td>
+<td>检查环境</td>
 </tr>
 <tr>
 <td>2</td>
-<td>Set up dependencies (assistant)</td>
+<td>设置依赖项（向导）</td>
 </tr>
 <tr>
 <td>3</td>
-<td>Generate Visual Studio files</td>
+<td>生成 Visual Studio 文件</td>
 </tr>
 <tr>
 <td>4</td>
-<td>Build Unreal Engine source</td>
+<td>编译 Unreal Engine 源码</td>
 </tr>
 <tr>
 <td>5</td>
-<td>Setup, then generate Visual Studio files</td>
+<td>设置并生成 Visual Studio 文件</td>
 </tr>
 <tr>
 <td>6</td>
-<td>Open <code>UE4.sln</code></td>
+<td>打开 <code>UE4.sln</code></td>
 </tr>
 <tr>
 <td>7</td>
-<td>Show setup profiles</td>
+<td>显示设置配置</td>
 </tr>
 <tr>
 <td>8</td>
-<td>Build installed binary</td>
+<td>构建已安装的二进制文件</td>
 </tr>
 <tr>
 <td>9</td>
-<td>Debloat engine (assistant)</td>
+<td>精简引擎（向导）</td>
 </tr>
 <tr>
 <td>0</td>
-<td>Exit</td>
+<td>退出</td>
 </tr>
 </tbody>
 </table>
-<p>Menu mode is what you want for day-to-day work. Regenerating project files after adding a module, or
-rebuilding after a pull, does not need the whole nine-step flow.</p>
-<h2 id="key-paths">Key paths</h2>
+<p>日常工作中，您需要使用的是菜单模式。在添加模块后重新生成项目文件，或者在执行 pull 操作后进行重新构建，并不需要走完完整的九步流程。</p>
+<h2 id="_3">关键路径</h2>
 <table>
 <thead>
 <tr>
-<th>Variable</th>
-<th>Path</th>
+<th>变量</th>
+<th>路径</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Editor executable</td>
+<td>编辑器可执行文件</td>
 <td><code>Engine\Binaries\Win64\UE4Editor.exe</code></td>
 </tr>
 <tr>
-<td>Installed build staging</td>
+<td>已安装构建暂存</td>
 <td><code>LocalBuilds\Engine\Windows</code></td>
 </tr>
 <tr>
-<td>Installed build archive</td>
+<td>已安装构建归档</td>
 <td><code>LocalBuilds\Engine\UE_ViteFork.7z</code></td>
 </tr>
 <tr>
-<td>Source cache</td>
+<td>源码缓存</td>
 <td><code>UE4_Source_Cache</code></td>
 </tr>
 <tr>
-<td>Engine association</td>
+<td>引擎关联</td>
 <td><code>UE_ViteFork</code></td>
 </tr>
 </tbody>
 </table>
-<h2 id="see-also">See also</h2>
+<h2 id="_4">另请参见</h2>
 <ul>
-<li><a href="../../GettingStarted/Build-From-Source/">Build from Source</a></li>
-<li><a href="../../GettingStarted/Toolchain-Requirements/">Toolchain Requirements</a></li>
-<li><a href="../Installed-Builds/">Installed Builds</a></li>
-<li><a href="../../GettingStarted/Build-Troubleshooting/">Build Troubleshooting</a></li>
-<li><a href="../../Performance/Debloat-Guide/">Debloat Guide</a></li>
+<li><a href="../../GettingStarted/Build-From-Source/">从源码构建</a></li>
+<li><a href="../../GettingStarted/Toolchain-Requirements/">工具链要求</a></li>
+<li><a href="../Installed-Builds/">已安装构建</a></li>
+<li><a href="../../GettingStarted/Build-Troubleshooting/">构建故障排查</a></li>
+<li><a href="../../Performance/Debloat-Guide/">精简指南</a></li>
 </ul>
               
             </div>

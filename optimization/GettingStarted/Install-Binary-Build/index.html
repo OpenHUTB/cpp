@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Installing a Binary Build - 引擎优化文档</title>
+    <title>安装二进制构建 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Installing a Binary Build";
+        var mkdocs_page_name = "\u5b89\u88c5\u4e8c\u8fdb\u5236\u6784\u5efa";
         var mkdocs_page_input_path = "optimization/GettingStarted/Install-Binary-Build.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Installing a Binary Build</li>
+      <li class="breadcrumb-item active">安装二进制构建</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/GettingStarted/Install-Binary-Build.md"> 编辑页面</a>
     </li>
@@ -120,93 +120,73 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="installing-a-binary-build">Installing a Binary Build</h1>
-<p><tldr></p>
-<p>
-Extract <code>UE_ViteFork.7z</code>, run <code>RegistryAdd.bat</code> to register the engine, run
-<code>MakeShortcut.bat</code> for a desktop launcher, then set
-<code>"EngineAssociation": "UE_ViteFork"</code> in your <code>.uproject</code>.
-</p>
-<p></tldr></p>
-<p>An installed build is a precompiled, redistributable copy of the editor. It behaves like an
-Epic Games Launcher installation: you can open and cook projects, but you cannot modify or debug into
-engine source. This is the right choice for artists, designers and anyone evaluating the fork.</p>
-<p>Installed builds are produced from a source build by the team. If you need to make one yourself, see
-<a href="../../Tools/Installed-Builds/">Installed Builds</a>.</p>
-<h2 id="contents-of-a-build-archive">Contents of a build archive</h2>
-<p>A packaged Vite build extracts to a folder containing:</p>
+                <h1 id="_1">安装二进制构建</h1>
+<p>解压 <code>UE_ViteFork.7z</code>，运行 <code>RegistryAdd.bat</code> 注册引擎，运行 <code>MakeShortcut.bat</code> 创建桌面启动快捷方式，然后在您的 <code>.uproject</code> 文件中设置 <code>"EngineAssociation": "UE_ViteFork"</code>。</p>
+<p>“已安装版本”是指编辑器的一种预编译、可分发的副本。它的运行方式与通过 Epic Games Launcher 安装的版本相同：您可以打开并打包（Cook）项目，但无法修改引擎源码或进行源码级调试。对于美术师、设计师以及任何想要评估此分支版本的人员来说，这是理想的选择。</p>
+<p>“已安装版本”是由团队基于源码构建版本生成的。如果您需要自行制作，请参阅<a href="../../Tools/Installed-Builds/">已安装版本</a>相关文档。</p>
+<h2 id="_2">构建归档文件的内容</h2>
+<p>打包后的 Vite 构建文件解压到一个包含以下内容的文件夹中：</p>
 <table>
 <thead>
 <tr>
-<th>Item</th>
-<th>Purpose</th>
+<th>项</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>Engine\</code></td>
-<td>The engine itself, including <code>Engine\Binaries\Win64\UE4Editor.exe</code></td>
+<td>引擎本身，包括 <code>Engine\Binaries\Win64\UE4Editor.exe</code></td>
 </tr>
 <tr>
 <td><code>MakeShortcut.bat</code></td>
-<td>Creates <code>UEViteFork.lnk</code> pointing at the editor executable</td>
+<td>创建指向编辑器可执行文件的 <code>UEViteFork.lnk</code> 文件</td>
 </tr>
 <tr>
 <td><code>RegistryAdd.bat</code></td>
-<td>Registers the folder as the <code>UEViteFork</code> engine association</td>
+<td>将该文件夹注册为 <code>UEViteFork</code> 引擎关联文件</td>
 </tr>
 <tr>
 <td><code>RegistryRemove.bat</code></td>
-<td>Removes that registration</td>
+<td>移除该注册</td>
 </tr>
 <tr>
 <td><code>Templates\</code></td>
-<td>Project templates, if the build was packaged with them</td>
+<td>项目模板（如果构建版本包含模板）</td>
 </tr>
 <tr>
 <td><code>FeaturePacks\</code></td>
-<td>Feature packs, if the build was packaged with them</td>
+<td>功能包（如果构建版本包含功能包）</td>
 </tr>
 <tr>
 <td><code>Samples\</code></td>
-<td>Sample content, if the build was packaged with them</td>
+<td>示例内容（如果构建版本包含示例内容）</td>
 </tr>
 </tbody>
 </table>
-<p>Lean builds omit templates, feature packs, samples and debug symbols. Some builds ship an accompanying
-<code>ExcludedPlugins.7z</code> containing plugins that were split out of the main archive to keep it small; extract
-it over the same folder if you need those plugins.</p>
-<h2 id="installation">Installation</h2>
-<p><procedure title="Install and register an installed build" id="install-binary">
-    <step>
-        Extract <code>UE_ViteFork.7z</code> to a path with no spaces or non-ASCII characters, for example
-        <code>D:\Engines\UE_ViteFork</code>. Avoid <code>Program Files</code>; the editor writes to its own
-        directory and the permission prompts are not worth it.
-    </step>
-    <step>
-        If the build shipped a separate <code>ExcludedPlugins.7z</code> and you need those plugins, extract
-        it into the same folder now.
-    </step>
-    <step>
-        Run <code>RegistryAdd.bat</code>. This writes the engine path to
-        <code>HKCU\Software\Epic Games\Unreal Engine\Builds</code> under the name <code>UE_ViteFork</code>,
-        and removes stale GUID-keyed entries that pointed at the same folder.
-    </step>
-    <step>
-        Run <code>MakeShortcut.bat</code> to create <code>UEViteFork.lnk</code> next to the engine folder.
-    </step>
-    <step>
-        Launch the editor through the shortcut, or directly via
-        <code>Engine\Binaries\Win64\UE4Editor.exe</code>.
-    </step>
-</procedure></p>
-<blockquote>
-<p>Registration is per-user, written under <code>HKCU</code>. Each Windows user account that needs the engine must run
-<code>RegistryAdd.bat</code> once.</p>
-<p>{style="note"}</p>
-</blockquote>
-<h2 id="pointing-a-project-at-the-build">Pointing a project at the build</h2>
-<p>Open your <code>.uproject</code> file in a text editor and set the engine association:</p>
+<p>精简版构建会省略模板、功能包、示例和调试符号。部分构建会附带一个名为 <code>ExcludedPlugins.7z</code> 的文件，其中包含为了保持主压缩包体积较小而从主压缩包中分离出来的插件；如果您需要这些插件，请将其解压到同一文件夹。</p>
+<h2 id="_3">安装</h2>
+<h3 id="_4">安装并注册已安装的构建</h3>
+<ol>
+<li>
+<p>将 <code>UE_ViteFork.7z</code> 解压到不包含空格或非 ASCII 字符的路径，例如 <code>D:\Engines\UE_ViteFork</code>。避免解压到 <code>Program Files</code> 文件夹；编辑器会写入到它自己的目录，而且权限提示很麻烦。</p>
+</li>
+<li>
+<p>如果构建版本中包含单独的 <code>ExcludedPlugins.7z</code> 文件，并且您需要这些插件，请将其解压到同一文件夹。</p>
+</li>
+<li>
+<p>运行 <code>RegistryAdd.bat</code>。此操作会将引擎路径写入 <code>HKCU\Software\Epic Games\Unreal Engine\Builds</code>，并命名为 <code>UE_ViteFork</code>，同时删除指向同一文件夹的过时 GUID 键值条目。</p>
+</li>
+<li>
+<p>运行 <code>MakeShortcut.bat</code> 在引擎文件夹旁边创建 <code>UEViteFork.lnk</code> 文件。</p>
+</li>
+<li>
+<p>通过快捷方式启动编辑器，或直接运行 <code>Engine\Binaries\Win64\UE4Editor.exe</code>。</p>
+</li>
+</ol>
+<p><strong>警告：</strong> 注册是按用户进行的，使用 HKCU 注册表。每个需要引擎的 Windows 用户帐户都必须运行一次 <code>RegistryAdd.bat</code> 文件。</p>
+<h2 id="_5">将项目指向构建</h2>
+<p>在文本编辑器中打开您的 <code>.uproject</code> 文件并设置引擎关联：</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
 <span class="w">    </span><span class="nt">&quot;FileVersion&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
 <span class="w">    </span><span class="nt">&quot;EngineAssociation&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;UE_ViteFork&quot;</span><span class="p">,</span>
@@ -214,30 +194,29 @@ it over the same folder if you need those plugins.</p>
 <span class="w">    </span><span class="nt">&quot;Description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;&quot;</span>
 <span class="p">}</span>
 </code></pre></div>
-<p>Projects packaged inside an installed build archive already have this set. If you right-click a <code>.uproject</code>
-and choose <strong>Switch Unreal Engine version</strong>, <code>UE_ViteFork</code> will appear in the list once the build is
-registered.</p>
-<h2 id="moving-or-removing-a-build">Moving or removing a build</h2>
-<p>The registry entry stores an absolute path, so moving the engine folder breaks it. If you relocate a build:</p>
+<p>已安装的构建归档文件中打包的项目已设置此项。如果您右键单击 <code>.uproject</code> 文件并选择<strong>Switch Unreal Engine version（切换虚幻引擎版本）</strong>，则在构建注册后，UE_ViteFork 将出现在列表中。</p>
+<h2 id="_6">移动或删除构建</h2>
+<p>注册表项存储的是绝对路径，因此移动引擎文件夹会破坏它。如果您移动构建：</p>
 <ol>
-<li>Run <code>RegistryRemove.bat</code> from the old location, or delete the <code>UE_ViteFork</code> value manually.</li>
-<li>Move the folder.</li>
-<li>Run <code>RegistryAdd.bat</code> from the new location.</li>
+<li>
+<p>从原位置运行 <code>RegistryRemove.bat</code>，或手动删除 <code>UE_ViteFork</code> 值。</p>
+</li>
+<li>
+<p>移动文件夹。</p>
+</li>
+<li>
+<p>从新位置运行 <code>RegistryAdd.bat</code>。</p>
+</li>
 </ol>
-<p>To uninstall entirely, run <code>RegistryRemove.bat</code> and then delete the folder. Nothing is written outside the
-engine directory and the single <code>HKCU</code> registry value, apart from the usual per-user Unreal directories
-under <code>%LOCALAPPDATA%\UnrealEngine</code> and <code>%APPDATA%\Unreal Engine</code>.</p>
-<h2 id="running-source-and-binary-builds-side-by-side">Running source and binary builds side by side</h2>
-<p>You can have both installed. They are separate engine associations as long as they register under different
-names, so if you want a source build and an installed build available at the same time, change the
-<code>ENGINE_ASSOCIATION</code> value in one of them before registering. Note that both builds share the per-user
-Unreal directories, so editor layout and some settings will be common between them.</p>
-<h2 id="see-also">See also</h2>
+<p>要彻底卸载，请运行 <code>RegistryRemove.bat</code>，然后删除文件夹。除了 <code>%LOCALAPPDATA%\UnrealEngine</code> 和 <code>%APPDATA%\Unreal Engine</code> 下的用户专属 Unreal 目录之外，引擎目录和单个 HKCU 注册表值之外不会写入任何内容。</p>
+<h2 id="_7">同时运行源码构建版本与安装版构建版本</h2>
+<p>你可以同时安装这两个版本。只要它们以不同的名称进行注册，便属于独立的引擎关联；因此，如果你希望同时使用源码构建版本和已安装版本，请在注册前修改其中一个版本的 <code>ENGINE_ASSOCIATION</code> 值。请注意，这两个版本共用同一用户级的 Unreal 目录，因此编辑器布局及部分设置将在两者间通用。</p>
+<h2 id="_8">另请参阅</h2>
 <ul>
-<li><a href="../Getting-Started/">Getting Started</a></li>
-<li><a href="../../Tools/Installed-Builds/">Installed Builds</a></li>
-<li><a href="../../Tools/Installed-Builds/">Packaging and Distribution</a></li>
-<li><a href="../First-Project/">Creating Your First Project</a></li>
+<li><a href="../Getting-Started/">入门指南</a></li>
+<li><a href="../../Tools/Installed-Builds/">已安装版本</a></li>
+<li><a href="../../Tools/Installed-Builds/">打包与分发</a></li>
+<li><a href="../First-Project/">创建您的第一个项目</a></li>
 </ul>
               
             </div>
