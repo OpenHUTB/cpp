@@ -113,10 +113,11 @@ RunUAT.bat
 
 查看[已安装的构建](../Tools/Installed-Builds.md)以获取完整的选项集，以及查看[打包和分发](../Tools/Installed-Builds.md)以获取压缩脚本。
 
+
 ## 另请参阅
 
 - [工具链要求](Toolchain-Requirements.md)
 - [构建故障排除](Build-Troubleshooting.md)
-- [Vite 设置助手](ViteSetup.md)
-- [已安装的构建](Installed-Builds.md)
-- [缓存管理](Cache-Management.md)
+- [Vite 设置助手](../Tools/ViteSetup.md)
+- [已安装的构建](../Tools/Installed-Builds.md)
+- [缓存管理](../Tools/Cache-Management.md)

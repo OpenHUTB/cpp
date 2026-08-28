@@ -1,31 +1,24 @@
 # 构建故障排除
 
-<tldr>
-<p>
-Most build failures on Vite are toolchain failures wearing a disguise. Before investigating anything else,
-confirm you have exactly one MSVC toolset and one Windows SDK installed, matching
-<a href="Toolchain-Requirements.md">Toolchain Requirements</a>.
-</p>
-</tldr>
+Vite 中的大多数构建失败，其实都是伪装成其他问题的工具链故障。在排查其他问题之前，请务必确认你安装了且仅安装了一套 MSVC 工具集和一套 Windows SDK，且均符合[工具链要求](Toolchain-Requirements.md)。
 
-This page collects the errors that come up most often, what they actually mean, and how to clear them.
+本页面汇总了最常见的错误、它们的实际含义以及解决方法。
 
-## Toolchain errors
+
+## 工具链错误
 
 ### `error C4668: '__has_feature' is not defined as a preprocessor macro`
 
-This is the signature error of a toolchain mismatch. Unreal Engine 4.27 predates the MSVC version you have
-installed, and UBT has selected a toolset whose preprocessor behaviour the engine's headers do not expect.
+这是工具链不匹配导致的典型错误。Unreal Engine 4.27 的发布时间早于你当前安装的 MSVC 版本，而 UBT 选用的工具集其预处理器行为与引擎头文件预期的不符。
 
-**Fix.** Install a supported MSVC version, remove the others, and pin the SDK in `BuildConfiguration.xml`.
-See [Toolchain Requirements](Toolchain-Requirements.md). Regenerate project files after changing anything.
+**解决方法：** 安装受支持的 MSVC 版本，卸载其他版本，并在 `BuildConfiguration.xml` 中指定（锁定）SDK 版本。请参阅[工具链要求（Toolchain Requirements）](Toolchain-Requirements.md)。进行任何更改后，请重新生成项目文件。
 
-### UnrealBuildTool picks the wrong compiler or SDK
 
-UBT autodetects by scanning installed toolsets and generally prefers the newest. When you have several
-installed, that is often not the one you want.
+### UnrealBuildTool 选择了错误的编译器或 SDK
 
-**Fix.** Pin both explicitly in `%APPDATA%\Unreal Engine\UnrealBuildTool\BuildConfiguration.xml`:
+UBT 通过扫描已安装的工具集进行自动检测，通常会优先选择最新版本。如果系统中安装了多个版本，自动选定的往往并非你想要的版本。
+
+**解决方法：** 在 `%APPDATA%\Unreal Engine\UnrealBuildTool\BuildConfiguration.xml` 中显式指定（锁定）两者：
 
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
@@ -37,56 +30,48 @@ installed, that is often not the one you want.
 </Configuration>
 ```
 
-Then run `GenerateProjectFiles.bat` again. Watch the build log just before linking to confirm the toolchain
-UBT reports is the one you intended.
+随后再次运行 `GenerateProjectFiles.bat`。请留意链接（linking）步骤之前的构建日志，确认 UBT 报告的工具链正是您预期的版本。
 
-### `ViteSetup.bat` refuses to continue with a `[FAIL]` line
 
-The assistant enforces its toolchain requirements deliberately and offers no bypass. The failing line names
-the missing component. Note that the assistant currently pins Visual Studio 2022, MSVC 14.44 and Windows SDK
-10.0.26100.7705 or higher; if you are on the newer VS 2026 / MSVC 14.50 toolchain, either build manually as
-described in [Building from Source](Build-From-Source.md), or update the `REQUIRED_*` variables at the top
-of the script.
+### `ViteSetup.bat` 停止运行，并显示一行 `[FAIL]` 提示。
 
-### C# tool projects fail to build (SwarmAgent, NetworkProfiler, UnrealControls)
+该辅助脚本严格执行其工具链要求，且不提供绕过机制。报错信息会指出缺失的组件。请注意，该脚本目前指定使用 Visual Studio 2022、MSVC 14.44 以及 Windows SDK 10.0.26100.7705 或更高版本；如果您使用的是更新的 VS 2026 / MSVC 14.50 工具链，请选择以下任一方案：按照[从源码构建](Build-From-Source.md)部分的说明手动构建，或者更新脚本顶部的 `REQUIRED_*` 变量。
 
-These target .NET Framework 4.5, whose targeting pack modern Visual Studio installers no longer ship.
 
-**Fix.** Install it, as described in [Toolchain Requirements](Toolchain-Requirements.md). A `v4.5` folder
-containing only XML files is a runtime stub, not a targeting pack &mdash; check for
-`v4.5\RedistList\FrameworkList.xml`.
+### C# 工具项目构建失败（SwarmAgent、NetworkProfiler、UnrealControls）
 
-## Dependency and setup errors
+这些项目针对的是 .NET Framework 4.5，而现代 Visual Studio 安装程序已不再附带该版本的目标包（targeting pack）。
 
-### `Setup.bat` fails to download dependencies
+**解决方法：** 按照[工具链要求](Toolchain-Requirements.md)部分的说明进行安装。如果 v4.5 文件夹中仅包含 XML 文件，则该文件夹属于运行时存根（runtime stub）而非目标包——请检查是否存在 `v4.5\RedistList\FrameworkList.xml` 文件。
 
-In stock Unreal Engine 4.27 this happens because the GitDeps endpoints have moved. **Vite already ships the
-fix**, so if you are seeing download failures on this fork, the cause is environmental: a proxy, a firewall,
-or an interrupted earlier run leaving a corrupt cache.
 
-**Fix.** Delete the `UE4_Source_Cache` folder in the repository root and run `Setup.bat` again.
-`ViteSetup.bat` removes this cache automatically after a successful setup.
+## 依赖项与设置错误
 
-### `Setup.bat` asks to overwrite local changes
+###  `Setup.bat` 无法下载依赖项
 
-Answer `N`. Answering `Y` reverts fork-specific files to their upstream state and will break the build.
+在原版 Unreal Engine 4.27 中，出现此问题是因为 GitDeps 的端点地址已变更。**Vite 版本已包含修复方案**，因此如果您在此分支（fork）上遇到下载失败，原因通常在于环境因素：例如代理设置、防火墙拦截，或是之前的运行过程意外中断导致缓存损坏。
 
-### Missing `astcenc.exe` or other third-party tools in a Win64 build
+解决方法：删除仓库根目录下的 `UE4_Source_Cache` 文件夹，然后重新运行 `Setup.bat`。`ViteSetup.bat` 会在设置成功后自动清理该缓存。
 
-You excluded the Win32 folders during setup. Win64 installed builds depend on tools that live under Win32,
-including `ARM\Win32\astcenc.exe`.
 
-**Fix.** Re-run `Setup.bat` without any `-exclude=Win32` argument. The `ViteSetup.bat` presets never exclude
-Win32 for this reason.
+### `Setup.bat` 提示覆盖本地更改
 
-## Compile and link errors
+请选择“N”（否）。如果选择“Y”（是），会将该分支特有的文件还原为上游（upstream）状态，从而导致构建失败。
 
-### Out of memory or heap exhaustion during compilation
+### Win64 构建中缺少 `astcenc.exe` 或其他第三方工具
 
-Unreal's unity build system compiles very large translation units and parallelises aggressively. On machines
-with high core counts and modest RAM, the default parallelism can exhaust memory.
+您在安装过程中排除了 Win32 文件夹。Win64 版本的构建依赖于位于 Win32 目录下的工具，其中包括 `ARM\Win32\astcenc.exe`。
 
-**Fix.** Limit parallel actions in `BuildConfiguration.xml`:
+**解决方法：** 重新运行 `Setup.bat`，且不要带任何 `-exclude=Win32` 参数。正因如此，`ViteSetup.bat` 的预设配置从不排除 Win32。
+
+
+## 编译与链接错误
+
+### 编译期间内存不足或堆耗尽
+
+Unreal 的 Unity 构建系统会编译极大的翻译单元，并采用激进的并行处理策略。在核心数较多但内存容量有限的机器上，默认的并行度可能会导致内存耗尽。
+
+**解决方法：** 在 `BuildConfiguration.xml` 中限制并行操作：
 
 ```xml
 <?xml version="1.0" encoding="utf-8" ?>
@@ -97,54 +82,46 @@ with high core counts and modest RAM, the default parallelism can exhaust memory
 </Configuration>
 ```
 
-### The editor builds but fails to launch
+### 编辑器构建成功，但无法启动
 
-Confirm all three targets were built: `UE4Editor`, `ShaderCompileWorker` and `UnrealLightmass`. Building
-only the editor target produces a binary that starts and then fails as soon as it needs to compile a shader.
+请确认以下三个目标（Target）均已构建：`UE4Editor`、`ShaderCompileWorker` 和 `UnrealLightmass`。如果仅构建编辑器目标，生成的二进制文件虽然能启动，但一旦需要编译着色器（shader）就会失败。
 
-### Stale shaders or derived data after pulling engine changes
+### 拉取引擎更改后，着色器或派生数据变得陈旧
 
-Rendering changes invalidate the shader cache. If you see shader compilation errors, missing materials or
-visual corruption after a pull, wipe the engine-level caches:
+渲染方面的更改会导致着色器缓存失效。如果在执行拉取（pull）操作后遇到着色器编译错误、材质缺失或画面显示异常，请清除引擎层级的缓存：
 
 ```batch
 WipeShaderCache.bat
 ```
 
-This removes `Engine\DerivedDataCache`, `Engine\Intermediate\Shaders` and `Engine\Saved\ShaderDebugInfo`.
-The engine rebuilds them on the next launch, which will take a while. Close the editor and any
-`ShaderCompileWorker` processes first, or the deletion will fail. See
-[Cache Management](../Tools/Cache-Management.md).
+此操作会删除 `Engine\DerivedDataCache`、`Engine\Intermediate\Shaders` 和 `Engine\Saved\ShaderDebugInfo`。引擎会在下次启动时重新构建这些文件，这一过程需要一些时间。请务必先关闭编辑器及所有 `ShaderCompileWorker` 进程，否则删除操作将会失败。请参阅[缓存管理](../Tools/Cache-Management.md)相关内容。
 
-## Runtime issues after a successful build
 
-### A new project runs much slower than expected
+## 构建成功后的运行时问题
 
-Ray tracing is enabled by default in Vite, including shadows, reflections, translucency and ambient
-occlusion. This is intentional so that the features are discoverable, but it means an empty project is
-heavier than a stock 4.27 one.
+### 新项目的运行速度远低于预期
 
-**Fix.** Disable the effects you do not need. See [Ray Tracing](../Rendering/Ray-Tracing.md) for the console variables.
+Vite 默认启用了光线追踪功能（包括阴影、反射、半透明效果和环境光遮蔽）。这样设计是为了让用户能够发现这些功能，但也意味着空项目比标准的 4.27 版本项目更“重”（资源开销更大）。
 
-### Gameplay behaves differently from stock 4.27
+**解决方法：** 禁用不需要的效果。请参阅[光线追踪](../Rendering/Ray-Tracing.md)部分以了解相关的控制台变量。
 
-Vite changes several engine defaults for performance, and some of them affect behaviour rather than just
-frame time &mdash; overlap events are disabled by default on primitive components, for instance.
 
-**Fix.** Read [Engine Default Changes](../Performance/Engine-Defaults.md) in full. Every changed default is listed there
-with a link to the commit that changed it.
+### 游戏逻辑（Gameplay）表现与标准 4.27 版本不同
 
-## Getting help
+为了提升性能，Vite 修改了引擎的若干默认设置；其中一些设置不仅影响帧时间，还会改变功能行为——例如，Primitive Component（图元组件）上的重叠事件（overlap events）默认处于禁用状态。
 
-If none of the above applies, the `#support` channels on the
-[community Discord](https://discord.gg/n9zQrYFhMb) are the fastest route. Include your Visual Studio
-version, MSVC toolset version, Windows SDK version, the branch you are building, and the first error in the
-log rather than the last &mdash; Unreal's build output cascades, and the final error is rarely the useful
-one.
 
-## See also
+**解决方法：** 请完整阅读[引擎默认设置变更](../Performance/Engine-Defaults.md)文档。文中列出了每一项变更，并附有指向对应提交记录的链接。
 
-- [Toolchain Requirements](Toolchain-Requirements.md)
-- [Building from Source](Build-From-Source.md)
-- [Cache Management](../Tools/Cache-Management.md)
-- [Engine Default Changes](../Performance/Engine-Defaults.md)
+
+## 获取帮助
+
+如果上述情况均不适用，通过[社区 Discord](https://discord.gg/n9zQrYFhMb) 上的 `#support` 频道寻求帮助是最快的途径。请提供以下信息：Visual Studio 版本、MSVC 工具集版本、Windows SDK 版本、正在构建的分支，以及日志中的**第一个**错误（而非最后一个）——因为 Unreal 的构建输出往往呈连锁反应，最后的错误通常并非问题的关键所在。
+
+
+## 另请参阅
+
+- [工具链要求](Toolchain-Requirements.md)
+- [从源码构建](Build-From-Source.md)
+- [缓存管理](../Tools/Cache-Management.md)
+- [引擎默认设置变更](../Performance/Engine-Defaults.md)
