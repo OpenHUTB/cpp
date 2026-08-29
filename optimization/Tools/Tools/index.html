@@ -83,13 +83,13 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href="#">工具和自动化</a>
     <ul class="current">
-    <li class="toctree-l2"><a class="reference internal" href="#_2">在这部分</a>
+    <li class="toctree-l2"><a class="reference internal" href="#_2">本节内容</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#the-tools-at-a-glance">The tools at a glance</a>
+    <li class="toctree-l2"><a class="reference internal" href="#_3">工具概览</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#_3">你想要哪个</a>
+    <li class="toctree-l2"><a class="reference internal" href="#_4">你想要哪个</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#see-also">See also</a>
+    <li class="toctree-l2"><a class="reference internal" href="#_5">另请参阅</a>
     </li>
     </ul>
                 </li>
@@ -131,114 +131,112 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="_1">工具和自动化</h1>
-<p>Vite ships batch tooling for the whole engine lifecycle: <code>ViteSetup.bat</code> for setup and building,
-<code>RunUAT.bat</code> for installed builds, the <code>LocalBuilds\</code> scripts for packaging and
-registration, and <code>WipeShaderCache.bat</code> for when caches go stale.</p>
-<p>Building Unreal from source involves a long sequence of steps, each with its own failure modes. Vite wraps
-that sequence in tooling so the common paths do not require remembering the exact command lines.</p>
-<h2 id="_2">在这部分</h2>
+<p>Vite 提供了涵盖整个引擎生命周期的批处理工具：用于设置与构建的 <code>ViteSetup.bat</code>，用于已安装构建版本的 <code>RunUAT.bat</code>，用于打包与注册的 <code>LocalBuilds</code> 脚本，以及用于处理缓存失效情况的 <code>WipeShaderCache.bat</code>。</p>
+<p>从源码构建 Unreal 涉及一系列漫长的步骤，且每个步骤都可能出现各种故障。Vite 将这一系列流程封装在工具中，使得在执行常规操作时，无需记忆具体的命令行指令。</p>
+<h2 id="_2">本节内容</h2>
 <table>
 <thead>
 <tr>
-<th>Topic</th>
-<th>Covers</th>
+<th>主题</th>
+<th>涵盖内容</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td><a href="../ViteSetup/">ViteSetup Assistant</a></td>
-<td>The guided setup and build assistant, and its menu mode</td>
+<td><a href="../ViteSetup/">ViteSetup 助手</a></td>
+<td>引导式设置与构建助手及其菜单模式</td>
 </tr>
 <tr>
-<td><a href="../Installed-Builds/">Installed Builds</a></td>
-<td>Producing and packaging a redistributable binary engine</td>
+<td><a href="../Installed-Builds/">已安装的构建版本</a></td>
+<td>生成并打包可分发的二进制引擎</td>
 </tr>
 <tr>
-<td><a href="../Cache-Management/">Cache Management</a></td>
-<td>Wiping shader and DDC caches when things go wrong</td>
+<td><a href="../Cache-Management/">缓存管理</a></td>
+<td>在出现问题时清除着色器（Shader）和 DDC 缓存</td>
 </tr>
 </tbody>
 </table>
-<h2 id="the-tools-at-a-glance">The tools at a glance</h2>
+<h2 id="_3">工具概览</h2>
 <table>
 <thead>
 <tr>
-<th>Tool</th>
-<th>Location</th>
-<th>Purpose</th>
+<th>工具</th>
+<th>位置</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>ViteSetup.bat</code></td>
-<td>Engine root</td>
-<td>Guided nine-step setup, or a menu of individual operations</td>
+<td>引擎根目录</td>
+<td>引导式九步设置，或包含各项独立操作的菜单</td>
 </tr>
 <tr>
 <td><code>RunUAT.bat</code></td>
-<td>Engine root</td>
-<td>Installed engine build via BuildGraph</td>
+<td>引擎根目录</td>
+<td>通过 BuildGraph 构建已安装版本的引擎</td>
 </tr>
 <tr>
 <td><code>WipeShaderCache.bat</code></td>
-<td>Engine root</td>
-<td>Clears engine-level shader and DDC caches</td>
+<td>引擎根目录</td>
+<td>清除引擎级的着色器（shader）和 DDC 缓存</td>
 </tr>
 <tr>
 <td><code>LocalBuilds\CompressBuild*.bat</code></td>
 <td><code>LocalBuilds\</code></td>
-<td>Packages a staged installed build into a 7z archive</td>
+<td>将已暂存（staged）的安装版构建打包为 7z 压缩包</td>
 </tr>
 <tr>
 <td><code>LocalBuilds\RegistryAdd.bat</code></td>
 <td><code>LocalBuilds\</code></td>
-<td>Registers the build as <code>UEViteFork</code></td>
+<td>将该构建版本注册为 <code>UEViteFork</code></td>
 </tr>
 <tr>
 <td><code>LocalBuilds\RegistryRemove.bat</code></td>
 <td><code>LocalBuilds\</code></td>
-<td>Unregisters it</td>
+<td>取消注册该构建版本</td>
 </tr>
 <tr>
 <td><code>LocalBuilds\MakeShortcut.bat</code></td>
 <td><code>LocalBuilds\</code></td>
-<td>Creates <code>UEViteFork.lnk</code></td>
+<td>创建 <code>UEViteFork.lnk</code> 快捷方式</td>
 </tr>
 <tr>
 <td><code>devops\ueVite-debloat-*.bat</code></td>
 <td><code>devops\</code></td>
-<td>Engine debloat suite &mdash; see <a href="../../Performance/Debloat-Guide/">Debloat Guide</a></td>
+<td>引擎精简工具集 —— 参阅<a href="../../Performance/Debloat-Guide/">精简指南</a></td>
 </tr>
 </tbody>
 </table>
-<h2 id="_3">你想要哪个</h2>
-<p><deflist>
-<def title="I just cloned the repository">
-Run <code>ViteSetup.bat</code>. It walks the whole sequence from environment check to a launched editor.
-See <a href="./ViteSetup.md">ViteSetup Assistant</a>.
-</def>
-<def title="I want a binary engine to hand to artists">
-Run <code>ViteSetup.bat</code> and choose the binary build option at step 4, or drive
-<code>RunUAT.bat</code> and the <code>LocalBuilds\</code> scripts directly. See
-<a href="./Installed-Builds.md">Installed Builds</a>.
-</def>
-<def title="Shaders are behaving strangely after a change">
-Run <code>WipeShaderCache.bat</code>. See <a href="./Cache-Management.md">Cache Management</a>.
-</def>
-<def title="The engine is taking too much disk space">
-Run the <code>devops\</code> debloat suite. See <a href="../Performance/Debloat-Guide.md">Debloat Guide</a>.
-</def>
-<def title="I only need to regenerate project files">
-<code>ViteSetup.bat menu</code> and choose option 3, or run <code>GenerateProjectFiles.bat</code>
-directly.
-</def>
-</deflist></p>
-<h2 id="see-also">See also</h2>
+<h2 id="_4">你想要哪个</h2>
 <ul>
-<li><a href="../../GettingStarted/Build-From-Source/">Build from Source</a></li>
-<li><a href="../../GettingStarted/Toolchain-Requirements/">Toolchain Requirements</a></li>
-<li><a href="../../GettingStarted/Build-Troubleshooting/">Build Troubleshooting</a></li>
-<li><a href="../../Performance/Debloat-Guide/">Debloat Guide</a></li>
+<li>
+<p>我刚克隆了该仓库。</p>
+<p>请运行 <code>ViteSetup.bat</code>。它会引导你完成从环境检查到启动编辑器的全过程。请参阅 <a href="../ViteSetup/">ViteSetup 助手</a>。</p>
+</li>
+<li>
+<p>我需要一个可交付给美术人员使用的二进制版本引擎。</p>
+<p>运行 <code>ViteSetup.bat</code> 并在第 4 步选择二进制构建选项，或者直接运行 <code>RunUAT.bat</code> 及 <code>LocalBuilds\</code> 目录下的脚本。请参阅<a href="../Installed-Builds/">已安装构建版本</a>相关说明。</p>
+</li>
+<li>
+<p>修改后着色器表现异常</p>
+<p>运行 <code>WipeShaderCache.bat</code>。请参阅<a href="../Cache-Management/">缓存管理</a>。</p>
+</li>
+<li>
+<p>该引擎占用了过多磁盘空间。</p>
+<p>运行 <code>devops\debloat</code> 套件。请参阅 <a href="../../Performance/Debloat-Guide/">精简指南</a>。</p>
+</li>
+<li>
+<p>我只需要重新生成项目文件。</p>
+<p>在 <code>ViteSetup.bat</code> 菜单中选择选项 3，或者直接运行 <code>GenerateProjectFiles.bat</code>。</p>
+</li>
+</ul>
+<h2 id="_5">另请参阅</h2>
+<ul>
+<li><a href="../../GettingStarted/Build-From-Source/">从源码构建</a></li>
+<li><a href="../../GettingStarted/Toolchain-Requirements/">工具链要求</a></li>
+<li><a href="../../GettingStarted/Build-Troubleshooting/">构建故障排查</a></li>
+<li><a href="../../Performance/Debloat-Guide/">精简指南</a></li>
 </ul>
               
             </div>
