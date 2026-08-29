@@ -121,66 +121,51 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="_1">技术演示项目</h1>
-<p><tldr></p>
-<p>
-Vite's main showcase package. Four scenes covering dynamic global illumination, Apex Destruction and Apex
-Cloth. The reference project for verifying that a build works correctly.
-</p>
-<p></tldr></p>
-<p><img alt="" src="../../../img/optimization/TechDemo.png" /></p>
-<p><em>技术演示项目场景在虚幻引擎 Vite 中渲染</em></p>
-<p><em>技术演示包是用于验证新构建版本是否能够正确渲染和模拟的参考项目。</em></p>
-<h2 id="contents">Contents</h2>
+<p>Vite 的主要演示项目。包含四个场景，涵盖了动态全局光照、Apex 破坏（Apex Destruction）和 Apex 布料（Apex Cloth）技术。这是用于验证构建版本是否正常运行的参考项目。
+<img alt="" src="../../../img/optimization/TechDemo.png" />
+<em>技术演示项目场景在虚幻引擎 Vite 中渲染，用于验证新构建版本是否能够正确渲染和模拟的参考项目。</em></p>
+<h2 id="_2">内容</h2>
 <table>
 <thead>
 <tr>
-<th>Scene</th>
-<th>Demonstrates</th>
+<th>场景</th>
+<th>演示</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>NVIDIA DDGI Cornell Box office sample</td>
-<td><a href="../../Rendering/DDGI-Dynamic/">Dynamic DDGI</a> in a controlled reference setting</td>
+<td>NVIDIA DDGI Cornell Box 办公室样本</td>
+<td>受控参考环境下的<a href="../../Rendering/DDGI-Dynamic/">动态 DDGI</a></td>
 </tr>
 <tr>
-<td>PhysX Apex Destruction test bed</td>
+<td>PhysX Apex Destruction 测试平台</td>
 <td><a href="../../Physics/Destruction-And-Cloth/">Apex Destruction</a></td>
 </tr>
 <tr>
-<td>PhysX Apex Cloth sample</td>
+<td>PhysX Apex Cloth 示例</td>
 <td><a href="../../Physics/Destruction-And-Cloth/">Apex Cloth</a></td>
 </tr>
 <tr>
-<td>"High End" DDGI + SSGI Deep Elder Caves</td>
-<td><a href="../../Rendering/DDGI-Dynamic/">DDGI</a> combined with <a href="../../Rendering/SSGI/">SSGI</a> in production-scale content</td>
+<td>“高端” DDGI + SSGI Deep Elder Caves</td>
+<td>生产级场景中 <a href="../../Rendering/DDGI-Dynamic/">DDGI</a> 与 <a href="../../Rendering/SSGI/">SSGI</a> 的结合应用</td>
 </tr>
 </tbody>
 </table>
-<p>The Cornell Box is the useful one for understanding DDGI. It is the standard global illumination reference
-scene precisely because the correct answer is known, so probe placement, leaking and response time are all
-visible against a ground truth.</p>
-<p>The Deep Elder Caves scene is the opposite case: production-scale geometry where DDGI and SSGI are layered.
-DDGI supplies the low-frequency bounce and SSGI adds the contact-scale detail DDGI's probe grid cannot
-resolve. See <a href="../../Rendering/Global-Illumination/">Global Illumination</a> for why both are used together.</p>
-<h2 id="download">Download</h2>
-<p><a href="https://drive.google.com/file/d/1SuHlT4KC3nTQrB2rwVcwBpNgWa_r6yKh/view">Tech Demo Project</a></p>
-<h2 id="using-it-as-a-verification-project">Using it as a verification project</h2>
-<p>Vite's <a href="../../Contributing/Coding-Guidelines/">contribution guidelines</a> name this project specifically: engine changes must
-produce no crashes on startup, shutdown or on the Tech Showcase project. If you are modifying the engine,
-run this before opening a pull request.</p>
-<p>It exercises a useful cross-section: dynamic GI, ray tracing, PhysX destruction and cloth. A change that
-breaks any of those tends to break it here.</p>
-<h2 id="requirements">Requirements</h2>
-<p>Dynamic DDGI requires a DXR-capable GPU on DirectX 12. Apex Destruction and Apex Cloth require their
-plugins, which are stock 4.27 plugins Vite retains. See <a href="../../Platforms/Platforms/">Platforms</a> and
-<a href="../../GettingStarted/System-Requirements/">System Requirements</a>.</p>
-<h2 id="see-also">See also</h2>
+<p>“康奈尔盒”（Cornell Box）是理解 DDGI 的有力工具。它之所以成为标准的全局光照参考场景，正是因为其正确结果已知；这使得人们能够对照“基准真值”（ground truth），直观地评估探针布局、漏光现象以及响应时间等表现。</p>
+<p>“Deep Elder Caves”场景则代表了另一种情况：这是一个具有生产级规模的几何场景，采用了 DDGI 与 SSGI 叠加使用的方案。其中，DDGI 负责提供低频的间接光反射（bounce），而 SSGI 则补充了 DDGI 探针网格无法解析的接触级细节。关于为何将两者结合使用，请参阅<a href="../../Rendering/Global-Illumination/">全局光照</a>相关内容。</p>
+<h2 id="_3">下载</h2>
+<p><a href="https://drive.google.com/file/d/1SuHlT4KC3nTQrB2rwVcwBpNgWa_r6yKh/view">技术演示项目</a></p>
+<h2 id="_4">用作验证项目</h2>
+<p>Vite 的<a href="../../Contributing/Coding-Guidelines/">贡献指南</a>明确提及了该项目：对引擎的修改不得导致启动、关闭或运行“技术展示”项目时发生崩溃。如果您正在修改引擎，请在提交 Pull Request 之前先运行此项目。</p>
+<p>它涵盖了具有代表性的关键功能：动态全局光照（GI）、光线追踪、PhysX 破坏效果以及布料模拟。任何导致上述功能失效的改动，通常都会在此项目中引发问题。</p>
+<h2 id="_5">要求</h2>
+<p>动态 DDGI 需要支持 DXR 的 GPU 以及 DirectX 12 环境。Apex Destruction 和 Apex Cloth 需要相应的插件，这些是 4.27 版本内置并由 Vite 保留的插件。请参阅<a href="../../Platforms/Platforms/">平台</a>与<a href="../../GettingStarted/System-Requirements/">系统要求</a>。</p>
+<h2 id="_6">另请参阅</h2>
 <ul>
-<li><a href="../../Rendering/DDGI-Dynamic/">Dynamic DDGI</a></li>
-<li><a href="../../Rendering/Global-Illumination/">Global Illumination</a></li>
-<li><a href="../../Physics/Destruction-And-Cloth/">Destruction and Cloth</a></li>
-<li><a href="../">Projects and Demos</a></li>
+<li><a href="../../Rendering/DDGI-Dynamic/">动态 DDGI</a></li>
+<li><a href="../../Rendering/Global-Illumination/">全局光照</a></li>
+<li><a href="../../Physics/Destruction-And-Cloth/">破坏与布料</a></li>
+<li><a href="../">项目与演示</a></li>
 </ul>
               
             </div>
