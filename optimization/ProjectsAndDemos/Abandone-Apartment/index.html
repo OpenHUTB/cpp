@@ -121,15 +121,14 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="_1">废弃的公寓场景</h1>
-<p>Interior lighting scene. Interiors are the hardest case for global illumination, which makes them the most useful place to evaluate it.</p>
-<p><img alt="" src="../../../img/optimization/AbandonedAppartment.png" /></p>
-<p><em>废弃公寓内部几乎所有可见的表面都是通过反射光而非阳光直射照明的。正因如此，室内环境才是检验整体照明解决方案是否真正有效的试金石。</em></p>
+<p>室内照明场景。室内是全局光照最难处理的情况，这使其成为评估全局光照的最有用场所。
+<img alt="" src="../../../img/optimization/AbandonedAppartment.png" />
+<em>废弃公寓内部几乎所有可见的表面都是通过反射光而非阳光直射照明的。正因如此，室内环境才是检验整体照明解决方案是否真正有效的试金石。</em></p>
 <h2 id="_2">下载</h2>
 <p><a href="https://drive.google.com/file/d/1OCb9sW9xH3FsFUza0ZG1tKWOPMMus5XA/view?usp=sharing">废弃的公寓场景</a></p>
 <h2 id="_3">为什么选用室内场景</h2>
-<p>An interior is almost entirely indirect light. Sun enters through a small number of openings and everything else the eye sees is bounce. Get the GI wrong and the scene reads as flat or as leaking; there is no direct lighting to hide behind.</p>
-<p>That makes scenes like this the right place to evaluate the practical differences between Vite's GI
-options:</p>
+<p>室内几乎完全依靠间接光照。阳光通过少量开口进入，而眼睛看到的其他一切都是反射光。全局光照（GI）设置错误的话，场景会显得平淡或有光泄露；没有直接光源可以掩盖。</p>
+<p>这使得像这样的场景成为评估 Vite 全局光照选项实际差异的合适场所：</p>
 <table>
 <thead>
 <tr>
@@ -140,7 +139,7 @@ options:</p>
 <tbody>
 <tr>
 <td><a href="../../Rendering/DDGI-Static/">静态 DDGI</a></td>
-<td>Baked probe data. Cheapest, and correct if nothing moves.</td>
+<td>烘焙探针数据。成本最低，如果没有物体移动，则是正确的。</td>
 </tr>
 <tr>
 <td><a href="../../Rendering/DDGI-Dynamic/">动态 DDGI</a></td>
@@ -148,29 +147,23 @@ options:</p>
 </tr>
 <tr>
 <td><a href="../../Rendering/SSGI/">SSGI</a></td>
-<td>Adds contact-scale detail the probe grid cannot resolve</td>
+<td>添加探针网格无法解析的接触尺度细节。</td>
 </tr>
 <tr>
-<td>Per-pixel ray-traced GI</td>
-<td>Reference quality, unaffordable at frame rate, and compiled out by default</td>
+<td>逐像素光线追踪全局光照 (GI)</td>
+<td>参考级质量，帧速率下成本过高，默认情况下会被编译禁用。</td>
 </tr>
 </tbody>
 </table>
-<p>The realistic answer for most interiors is DDGI plus SSGI. DDGI supplies the low-frequency bounce and SSGI
-fills in the detail near contacts and in corners. See
-<a href="../../Rendering/Global-Illumination/">Global Illumination</a>.</p>
-<h2 id="what-to-look-at">What to look at</h2>
+<p>对于大多数室内场景来说，比较实际的解决方案是采用 DDGI 加 SSGI。DDGI 提供低频反射光，而 SSGI 则用于填充接触点附近和角落的细节。参见<a href="../../Rendering/Global-Illumination/">全局照明</a>。</p>
+<h2 id="_4">需要注意的事项</h2>
 <ul>
-<li><strong>Light leaking.</strong> Probe-based GI leaks through thin geometry when probe spacing is too coarse relative
-  to wall thickness. Interiors are full of thin walls, so this is where to tune probe density.</li>
-<li><strong>Corner darkening.</strong> Compare DDGI alone against DDGI with SSGI enabled. The difference concentrates in
-  corners and at contacts.</li>
-<li><strong>Ambient occlusion choice.</strong> <a href="../../Rendering/Ambient-Occlusion/">HBAO+ versus the optimised SSAO path</a> is most
-  visible in cluttered interiors.</li>
-<li><strong>Ray-traced reflections.</strong> Interior surfaces reflect a great deal of off-screen geometry, which is
-  exactly the case screen-space reflections cannot handle.</li>
+<li><strong>漏光。</strong> 当探针间距相对于壁厚过大时，基于探针的全局光照 (GI) 会透过薄壁几何体漏光。室内场景中有很多薄壁，因此需要在此处调整探针密度。</li>
+<li><strong>角落暗化。</strong> 比较单独使用动态 DDGI 和启用 SSGI 的 DDGI。差异主要集中在角落和接触点。</li>
+<li><strong>环境光遮蔽选择。</strong> 在杂乱的室内场景中，<a href="../../Rendering/Ambient-Occlusion/">HBAO+ 与优化的 SSAO 路径</a>之间的差异最为明显。</li>
+<li><strong>光线追踪反射。</strong> 室内表面会反射大量屏幕外的几何体，而这正是屏幕空间反射无法处理的情况。</li>
 </ul>
-<h2 id="_4">另请参阅</h2>
+<h2 id="_5">另请参阅</h2>
 <ul>
 <li><a href="../../Rendering/Global-Illumination/">全局光照</a></li>
 <li><a href="../../Rendering/DDGI-Dynamic/">动态 DDGI</a></li>
