@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Contributing to the Documentation - 引擎优化文档</title>
+    <title>文档贡献 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Contributing to the Documentation";
+        var mkdocs_page_name = "\u6587\u6863\u8d21\u732e";
         var mkdocs_page_input_path = "optimization/Contributing/Documentation-Contributions.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Contributing to the Documentation</li>
+      <li class="breadcrumb-item active">文档贡献</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Contributing/Documentation-Contributions.md"> 编辑页面</a>
     </li>
@@ -120,196 +120,172 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="contributing-to-the-documentation">Contributing to the Documentation</h1>
-<p><tldr></p>
-<p>
-These docs are a JetBrains Writerside project. Add a Markdown file under
-<code>Writerside\topics\</code>, register it in <code>Writerside\hi.tree</code>, and push to
-<code>main</code> &mdash; GitHub Actions builds and deploys to GitHub Pages.
-</p>
-<p></tldr></p>
-<p>Documentation that lags the engine is worse than no documentation, because people trust it. If you change
-a default, add a console variable or compile out a feature, the page describing it needs to change in the
-same pass.</p>
-<h2 id="repository-layout">Repository layout</h2>
+                <h1 id="_1">文档贡献</h1>
+<p>这些文档是 JetBrains Writerside 项目的一部分。请在 <code>Writerside\topics\</code> 目录下添加一个 Markdown 文件，将其注册到 <code>Writerside\hi.tree</code> 文件中，然后推送到 <code>main</code> 分支——GitHub Actions 会构建并部署到 GitHub Pages。</p>
+<p>文档滞后于引擎更新比没有文档更糟糕，因为用户会信任文档。如果您更改了默认值、添加了控制台变量或编译了某个功能，则描述该功能的页面也需要在同一过程中进行更改。</p>
+<h2 id="_2">仓库布局</h2>
 <table>
 <thead>
 <tr>
-<th>Path</th>
-<th>Contents</th>
+<th>路径</th>
+<th>内容</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>Writerside\topics\</code></td>
-<td>All topic Markdown files, organised in subfolders by section</td>
+<td>所有主题 Markdown 文件，按章节分类整理在子文件夹中</td>
 </tr>
 <tr>
 <td><code>Writerside\images\</code></td>
-<td>Images, referenced by filename alone</td>
+<td>图片，仅通过文件名引用</td>
 </tr>
 <tr>
 <td><code>Writerside\hi.tree</code></td>
-<td>Navigation tree; a topic not listed here is not published</td>
+<td>导航树；未在此处列出的主题将不会发布</td>
 </tr>
 <tr>
 <td><code>Writerside\writerside.cfg</code></td>
-<td>Project configuration</td>
+<td>项目配置</td>
 </tr>
 <tr>
 <td><code>Writerside\v.list</code></td>
-<td>Variables</td>
+<td>变量</td>
 </tr>
 <tr>
 <td><code>Writerside\c.list</code></td>
-<td>Categories</td>
+<td>分类</td>
 </tr>
 <tr>
 <td><code>.github\workflows\DocsBuild.yml</code></td>
-<td>Build and deploy pipeline</td>
+<td>构建和部署流程</td>
 </tr>
 </tbody>
 </table>
-<h2 id="adding-a-topic">Adding a topic</h2>
-<p><procedure title="Add a documentation page" id="add-topic">
-    <step>
-        Create the Markdown file in the appropriate <code>Writerside\topics\</code> subfolder. Use
-        <code>Title-Case-With-Hyphens.md</code>.
-    </step>
-    <step>
-        Add a <code>&lt;toc-element topic="Your-File.md"/&gt;</code> entry to
-        <code>Writerside\hi.tree</code> in the right section.
-    </step>
-    <step>
-        Cross-link it. Add it to the parent section page's topic table and to the
-        <b>See also</b> lists of related pages.
-    </step>
-    <step>Push to <code>main</code>. The workflow builds and deploys automatically.</step>
-</procedure></p>
-<p><note>
-Writerside resolves topic links by filename, not by path, so <code><a href="Ray-Tracing.md">Ray Tracing</a></code>
-works regardless of which folder either file is in. Filenames must therefore be unique across the whole
-project.
-</note></p>
-<h2 id="writing-conventions">Writing conventions</h2>
-<h3 id="structure">Structure</h3>
-<p>Most pages follow the same shape:</p>
+<h2 id="_3">添加主题</h2>
+<h3 id="_4">添加文档页面</h3>
 <ol>
-<li><code># Title</code></li>
-<li>A <code>&lt;tldr&gt;</code> block giving the answer in two or three sentences</li>
-<li>Body sections</li>
-<li>A <code>## See also</code> list</li>
+<li>
+<p>在相应的 <code>Writerside\topics\</code> 子文件夹中创建 Markdown 文件。使用 <code>Title-Case-With-Hyphens.md</code>。</p>
+</li>
+<li>
+<p>在 <code>Writerside\hi.tree</code> 的右侧部分添加一个 <code>&lt;toc-element topic="Your-File.md"/&gt;</code> 条目。</p>
+</li>
+<li>
+<p>添加交叉链接。将其添加到父级部分页面的主题表以及相关页面的<code>另请参阅</code>列表中。</p>
+</li>
+<li>
+<p>推送到<code>main</code>分支。工作流将自动构建和部署。</p>
+</li>
 </ol>
-<p>The <code>&lt;tldr&gt;</code> is not optional on substantial pages. Readers arriving from search need to know within a
-sentence whether they are in the right place.</p>
-<h3 id="writerside-elements">Writerside elements</h3>
+<p><strong>注意：</strong> Writerside 通过文件名而非路径解析主题链接，因此<a href="../../Rendering/Ray-Tracing/">光线追踪</a>可以正常工作，无论文件位于哪个文件夹中。因此，文件名在整个项目中必须唯一。</p>
+<h2 id="_5">写作规范</h2>
+<h3 id="_6">结构</h3>
+<p>大多数页面遵循相同的结构：</p>
+<ol>
+<li><code># 标题</code></li>
+<li>一个 <code>&lt;tldr&gt;</code> 块，用两三句话概括答案</li>
+<li>正文部分</li>
+<li>一个 <code>## 另请参阅</code> 列表</li>
+</ol>
+<p>在篇幅较长的页面上，<code>&lt;tldr&gt;</code> 块必不可少。通过搜索找到该页面的读者需要在一句话内确认自己是否找到了正确的内容。</p>
+<h3 id="writerside">Writerside 元素</h3>
 <table>
 <thead>
 <tr>
-<th>Element</th>
-<th>Use</th>
+<th>元素</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>&lt;tldr&gt;</code></td>
-<td>The summary at the top</td>
+<td>顶部摘要</td>
 </tr>
 <tr>
 <td><code>&lt;note&gt;</code></td>
-<td>Useful context that is not a hazard</td>
+<td>有用的上下文信息，不会造成危害</td>
 </tr>
 <tr>
 <td><code>&lt;warning&gt;</code></td>
-<td>Something that will cost the reader time or break their build</td>
+<td>会浪费读者时间或导致构建失败的内容</td>
 </tr>
 <tr>
 <td><code>&lt;procedure&gt;</code></td>
-<td>Numbered steps with an <code>id</code> attribute</td>
+<td>带有 id 属性的编号步骤</td>
 </tr>
 <tr>
 <td><code>&lt;deflist&gt;</code> / <code>&lt;def&gt;</code></td>
-<td>Term-and-explanation lists</td>
+<td>术语和解释列表</td>
 </tr>
 <tr>
 <td><code>&lt;code-block lang="ini"&gt;</code></td>
-<td>Code inside an HTML-like element, where fenced blocks do not work</td>
+<td>类似 HTML 元素内的代码，其中围栏式代码块不起作用</td>
 </tr>
 </tbody>
 </table>
-<p>Inside <code>&lt;tldr&gt;</code>, <code>&lt;note&gt;</code>, <code>&lt;warning&gt;</code> and <code>&lt;def&gt;</code>, use HTML rather than Markdown &mdash; <code>&lt;b&gt;</code>, <code>&lt;code&gt;</code>,
-<code>&lt;a href="Page.md"&gt;</code>, <code>&lt;p&gt;</code>. Markdown syntax is not processed there.</p>
-<h3 id="tone">Tone</h3>
+<p>在 <code>&lt;tldr&gt;</code>、<code>&lt;note&gt;</code>、<code>&lt;warning&gt;</code> 和 <code>&lt;def&gt;</code> 标签内，请使用 HTML 而不是 Markdown，例如 <code>&lt;b&gt;</code>、<code>&lt;code&gt;</code>、<code>&lt;a href="Page.md"&gt;</code> 和 <code>&lt;p&gt;</code>。这些标签内不会处理 Markdown 语法。</p>
+<h3 id="_7">语气</h3>
 <ul>
-<li>State the answer, then the reasoning. Not the reverse.</li>
-<li>Say what something costs, not only what it does.</li>
-<li>Where a feature is unavailable by default, say so at the top of the page, not in a footnote. The
-  <a href="../../Rendering/RTXDI/">RTXDI</a> and <a href="../../Rendering/Path-Tracing/">path tracing</a> pages are the pattern to follow.</li>
-<li>Tables for enumerable facts, prose for explanation. Do not put explanations in table cells.</li>
+<li>先陈述答案，再解释原因。不要反过来。</li>
+<li>说明某项功能的成本，而不仅仅是它的功能。</li>
+<li>如果某项功能默认情况下不可用，请在页面顶部说明，而不是在脚注中。<a href="../../Rendering/RTXDI/">RTXDI</a> 和<a href="../../Rendering/Path-Tracing/">路径追踪</a>页面是可遵循的模式。</li>
+<li>用表格列出可列举的事实，用散文进行解释。不要在表格单元格中编写解释。</li>
 </ul>
-<h3 id="accuracy">Accuracy</h3>
-<p>Ground claims in the engine source. Console variable names, defaults and help text should be checked
-against their definition rather than remembered:</p>
+<h3 id="_8">准确性</h3>
+<p>在引擎源代码中查找依据。控制台变量名、默认值和帮助文本应对照其定义进行检查，而不是死记硬背。</p>
 <div class="highlight"><pre><span></span><code>Engine\Source\Runtime\Renderer\Private\        renderer CVars
 Engine\Source\Runtime\Engine\Classes\Engine\Scene.h    post-process settings
 Engine\Source\Runtime\Core\Public\Misc\CoreDefines.h   VITE_* compile switches
 </code></pre></div>
-<p><warning>
-Console variable help text in the engine is sometimes out of date. HBAO+ describes itself as DX11-only in
-its help string but has a working D3D12 implementation. When source and help text disagree, trust the
-source and document the discrepancy.
-</warning></p>
-<h2 id="building-locally">Building locally</h2>
-<p>Install the Writerside plugin for a JetBrains IDE, or Writerside standalone, and open the repository root.
-The instance ID is <code>hi</code>.</p>
-<p>Writerside's own inspections catch broken topic links, unreferenced topics and missing images, which is
-faster than discovering them after a deploy.</p>
-<h2 id="the-build-pipeline">The build pipeline</h2>
-<p><code>.github\workflows\DocsBuild.yml</code> runs on every push to <code>main</code> and on manual dispatch. It builds the <code>hi</code>
-instance with the Writerside Docker builder, uploads the artifact, then deploys to GitHub Pages.</p>
-<p>A build failure usually means a topic referenced in <code>hi.tree</code> does not exist, or a topic exists but is not
-referenced. Both are reported by name in the workflow log.</p>
-<h2 id="documenting-engine-changes">Documenting engine changes</h2>
-<p>If your engine change affects any of the following, update the documentation in the same pull request:</p>
+<p><strong>警告：</strong> 引擎中的控制台变量帮助文本有时会过时。HBAO+ 在其帮助字符串中将自身描述为仅支持 DX11，但实际上它有一个可用的 D3D12 实现。当源代码和帮助文本不一致时，请以源代码为准，并记录差异。</p>
+<h2 id="_9">本地构建</h2>
+<p>为 JetBrains IDE 安装 Writerside 插件，或安装 Writerside 独立版，然后打开仓库根目录。实例 ID 为 <code>hi</code>。</p>
+<p>Writerside 自身的检查功能可以捕获损坏的主题链接、未引用的主题和缺失的图像，这比部署后再发现这些问题要快得多。</p>
+<h2 id="_10">构建流水线</h2>
+<p><code>.github\workflows\DocsBuild.yml</code> 文件会在每次推送到主分支以及手动分发时运行。它使用 Writerside Docker 构建器构建 hi 实例，上传构建产物，然后部署到 GitHub Pages。</p>
+<p>构建失败通常意味着 <code>hi.tree</code> 中引用的主题不存在，或者主题存在但未被引用。这两种情况都会在工作流日志中按名称报告。</p>
+<h2 id="_11">记录引擎变更</h2>
+<p>如果您的引擎变更影响到以下任何内容，请在同一拉取请求中更新文档：</p>
 <table>
 <thead>
 <tr>
-<th>Change</th>
-<th>Page to update</th>
+<th>更改</th>
+<th>待更新页面</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>New or changed console variable</td>
-<td>The relevant feature page</td>
+<td>新增或已更改的控制台变量</td>
+<td>相关功能页面</td>
 </tr>
 <tr>
-<td>New <code>VITE_*</code> switch</td>
-<td><a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a></td>
+<td>新增 <code>VITE_*</code> 开关</td>
+<td><a href="../../Performance/Compile-Time-Switches/">编译时开关</a></td>
 </tr>
 <tr>
-<td>Changed engine default</td>
-<td><a href="../../Performance/Engine-Defaults/">Engine Defaults</a></td>
+<td>已更改的引擎默认值</td>
+<td><a href="../../Performance/Engine-Defaults/">引擎默认值</a></td>
 </tr>
 <tr>
-<td>New or updated plugin</td>
-<td><a href="../../Plugins/Bundled-Plugins/">Bundled Plugins</a></td>
+<td>新增或已更新的插件</td>
+<td><a href="../../Plugins/Bundled-Plugins/">已捆绑的插件</a></td>
 </tr>
 <tr>
-<td>New tool or script</td>
-<td>The <a href="../../Tools/Tools/">Tools</a> section</td>
+<td>新增工具或脚本</td>
+<td><a href="../../Tools/Tools/">工具部分</a> section</td>
 </tr>
 <tr>
-<td>A feature becoming unavailable in default builds</td>
-<td>The feature's page, and <a href="../../Rendering/Ray-Tracing/">Ray Tracing</a> if applicable</td>
+<td>默认版本中不再提供的功能</td>
+<td>该功能的页面，以及<a href="../../Rendering/Ray-Tracing/">光线追踪</a>（如适用）</td>
 </tr>
 </tbody>
 </table>
-<h2 id="see-also">See also</h2>
+<h2 id="_12">另请参阅</h2>
 <ul>
-<li><a href="../Contributing/">Contributing</a></li>
-<li><a href="../Coding-Guidelines/">Coding Guidelines</a></li>
-<li><a href="../Commit-Conventions/">Commit Conventions</a></li>
+<li><a href="../Contributing/">贡献指南</a></li>
+<li><a href="../Coding-Guidelines/">编码规范</a></li>
+<li><a href="../Commit-Conventions/">提交约定</a></li>
 </ul>
               
             </div>

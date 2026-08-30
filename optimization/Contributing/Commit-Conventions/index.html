@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Commit Conventions - 引擎优化文档</title>
+    <title>提交约定 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Commit Conventions";
+        var mkdocs_page_name = "\u63d0\u4ea4\u7ea6\u5b9a";
         var mkdocs_page_input_path = "optimization/Contributing/Commit-Conventions.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Commit Conventions</li>
+      <li class="breadcrumb-item active">提交约定</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Contributing/Commit-Conventions.md"> 编辑页面</a>
     </li>
@@ -120,138 +120,123 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="commit-conventions">Commit Conventions</h1>
-<p><tldr></p>
-<p>
-Prefix every commit subject with one or more category tags. Stack them from broad to specific. Backports
-and plugin additions must link to the original commit or repository.
-</p>
-<p></tldr></p>
-<p>A fork that tracks an upstream engine accumulates a long history of changes from many sources. Being able
-to scan that history and tell an optimisation from a rendering feature from a backport is what makes future
-merges tractable.</p>
-<h2 id="prefixes">Prefixes</h2>
-<p>Use one of the following at the start of the commit subject.</p>
+                <h1 id="_1">提交约定</h1>
+<p>在每个提交主题前添加一个或多个类别标签。标签的排列顺序应从宽泛到具体。向后移植和插件添加必须链接到原始提交或仓库。</p>
+<p>跟踪上游引擎的分支会积累来自多个来源的大量变更历史记录。能够扫描这些历史记录，区分优化、渲染功能和向后移植，是未来合并易于管理的关键。</p>
+<h2 id="_2">前缀</h2>
+<p>在提交主题的开头使用以下前缀之一。</p>
 <table>
 <thead>
 <tr>
-<th>Prefix</th>
-<th>Use for</th>
+<th>前缀</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>[Rendering]</code></td>
-<td>Renderer work generally &mdash; the most used tag in the tree</td>
+<td>渲染器相关工作 — 标签树中最常用的标签</td>
 </tr>
 <tr>
 <td><code>[Rendering Feature]</code></td>
-<td>New or changed rendering functionality specifically</td>
+<td>新增或变更的渲染功能</td>
 </tr>
 <tr>
 <td><code>[RT]</code></td>
-<td>Ray tracing</td>
+<td>光线追踪</td>
 </tr>
 <tr>
 <td><code>[Forward]</code></td>
-<td>Forward renderer path</td>
+<td>前向渲染器路径</td>
 </tr>
 <tr>
 <td><code>[Optimization]</code></td>
-<td>Performance work with no behaviour change</td>
+<td>性能优化，不改变引擎行为</td>
 </tr>
 <tr>
 <td><code>[Backport]</code></td>
-<td>A change cherry-picked from a later engine version</td>
+<td>从后续引擎版本中移植的更改</td>
 </tr>
 <tr>
 <td><code>[Animation]</code></td>
-<td>Animation systems</td>
+<td>动画系统</td>
 </tr>
 <tr>
 <td><code>[GameplayFramework]</code></td>
-<td>Cameras, Character Movement, AI and the rest of the gameplay framework</td>
+<td>相机、角色移动、AI 以及其他游戏框架组件</td>
 </tr>
 <tr>
 <td><code>[Memory]</code></td>
-<td>The UObject memory subsystem</td>
+<td>UObject 内存子系统</td>
 </tr>
 <tr>
 <td><code>[DOP]</code></td>
-<td>Data-oriented work, including ECS</td>
+<td>面向数据的工作，包括 ECS</td>
 </tr>
 <tr>
 <td><code>[PhysX]</code></td>
-<td>Physics</td>
+<td>物理引擎</td>
 </tr>
 <tr>
 <td><code>[Plugin]</code></td>
-<td>Adding, updating or removing a plugin</td>
+<td>添加、更新或移除插件</td>
 </tr>
 <tr>
 <td><code>[Lib]</code></td>
-<td>Third-party library updates</td>
+<td>第三方库更新</td>
 </tr>
 <tr>
 <td><code>[Toolchain]</code></td>
-<td>Compiler, SDK and build environment</td>
+<td>编译器、SDK 和构建环境</td>
 </tr>
 <tr>
 <td><code>[Defaults]</code></td>
-<td>Changes to shipped engine defaults</td>
+<td>对已发布引擎的更改默认设置</td>
 </tr>
 <tr>
 <td><code>[Debloat]</code></td>
-<td>Removing or gating cost from a default build</td>
+<td>移除或限制默认配置中的某些功能或配置成本</td>
 </tr>
 <tr>
 <td><code>[Mobile]</code></td>
-<td>Mobile-specific work</td>
+<td>移动端专属功能</td>
 </tr>
 <tr>
 <td><code>[VR]</code></td>
-<td>VR-specific work</td>
+<td>VR 专属功能</td>
 </tr>
 <tr>
 <td><code>[AMD]</code></td>
-<td>AMD-specific work</td>
+<td>AMD 专属功能</td>
 </tr>
 <tr>
 <td><code>[NVIDIA]</code></td>
-<td>NVIDIA-specific work</td>
+<td>NVIDIA 专属功能</td>
 </tr>
 <tr>
 <td><code>[Fix]</code></td>
-<td>Bug fixes</td>
+<td>错误修复</td>
 </tr>
 </tbody>
 </table>
-<h3 id="stacking-prefixes">Stacking prefixes</h3>
-<p>Most non-trivial changes carry more than one tag. Order them broad to specific, and put the backport marker
-last so the origin of the change reads at the end:</p>
+<h3 id="_3">堆叠前缀</h3>
+<p>大多数重要的变更都会带有多个标签。请按照从宽泛到具体的顺序排列这些标签，并将向后移植标记放在最后，以便变更的来源显示在末尾：</p>
 <div class="highlight"><pre><span></span><code>[Rendering][RT][Optimization][Adapted Backport 5.3] Exclude raygen shaders from RTPSOs
 unless the corresponding feature is enabled
 [Rendering][Forward][Backport 5.6] Fix incorrect alpha from MSAA resolve with explicit fmask
 [Rendering][Shading Models] Remove unnecessary branch for the Toon shading model
 </code></pre></div>
-<p><code>Adapted Backport</code> rather than <code>Backport</code> signals that the upstream change did not apply cleanly and was
-rewritten against the Vite codebase. That distinction matters later, when someone is working out whether an
-upstream fix to the original commit also applies here.</p>
-<p>Single-tag commits are fine when the change genuinely is one thing:</p>
+<p>使用 <code>Adapted Backport</code> 而不是 <code>Backport</code> 表示上游更改未能正确应用，而是针对 Vite 代码库进行了重写。这一点很重要，因为之后有人需要判断上游对原始提交的修复是否也适用于此处。</p>
+<p>当更改确实只涉及一项内容时，使用单标签提交是可以接受的：</p>
 <div class="highlight"><pre><span></span><code>[Toolchain] Compiling on VS 18.8.2 (_MSC_VER 1950) and Windows SDK 10.0.26100
 [Plugin] PhysX Blast + engine-side changes for proper support
 [Gating] RT translucency guard
 [Fix] Guard RTXDI CVar behind ShouldRenderRayTracingSampledLighting
 </code></pre></div>
-<p>If a change spans genuinely unrelated areas, split it rather than stacking every tag in the table onto one
-commit.</p>
-<h2 id="attribution">Attribution</h2>
-<p><warning>
-When making backports or adding a plugin, include the correct links to the original commits or
-repositories in the commit body.
-</warning></p>
-<p>This is not a courtesy, it is a practical requirement. Without the link, nobody can determine what version
-was integrated, whether upstream has since fixed a bug in it, or whether the licence permits redistribution.</p>
+<p>如果一项更改涉及完全不相关的领域，请将其拆分，而不是将表格中的所有标签都堆到一个提交中。</p>
+<h2 id="_4">归属信息</h2>
+<p><strong>警告：</strong> 在进行向后移植或添加插件时，请在提交正文中包含指向原始提交或仓库的正确链接。</p>
+<p>这并非出于礼貌，而是一项实际要求。如果没有链接，任何人都无法确定集成的是哪个版本，上游是否已修复其中的错误，或者许可证是否允许重新分发。</p>
 <div class="highlight"><pre><span></span><code>[Plugin] Add Kawaii Physics 1.18.0, backported from UE5
 
 Source: https://github.com/pafuhana1213/KawaiiPhysics
@@ -259,85 +244,79 @@ Upstream tag: v1.18.0
 Changes: UE5 API calls replaced with 4.27 equivalents in
 KawaiiPhysicsEditMode.cpp and AnimNode_KawaiiPhysics.cpp
 </code></pre></div>
-<p>For backports of individual upstream commits, link the commit itself, not just the repository. See
-<a href="../Backporting/">Backporting</a>.</p>
-<h2 id="commit-body">Commit body</h2>
-<p>The subject line says what changed. The body should say why, and what a reviewer needs to know:</p>
+<p>对于单个上游提交的反向移植，请链接提交本身，而不仅仅是代码仓库。请参阅<a href="../Backporting/">反向移植</a>部分。</p>
+<h2 id="_5">提交正文</h2>
+<p>主题行说明更改的内容。正文应说明更改的原因以及审阅者需要了解的信息：</p>
 <ul>
-<li>What problem the change solves</li>
-<li>Measured impact, for anything claiming to be an optimisation</li>
-<li>Any console variable or <a href="Compile-Time-Switches.md">compile-time switch</a> added, with its default</li>
-<li>Anything deliberately left undone</li>
+<li>更改解决的问题</li>
+<li>任何声称是优化的更改，都应说明其影响程度</li>
+<li>任何添加的控制台变量或<a href="Compile-Time-Switches.md">编译时开关</a>及其默认值</li>
+<li>任何故意未完成的操作</li>
 </ul>
-<p>Measured impact matters. A commit prefixed <code>[Optimization]</code> with no numbers is an assertion, not a result.
-See <a href="../../Performance/Profiling/">Profiling</a> for how to produce a credible before-and-after.</p>
-<h2 id="branches">Branches</h2>
+<p>影响程度至关重要。以<code>[Optimization]</code>为前缀且没有具体数值的提交仅是一种断言，而非结果。请参阅<a href="../../Performance/Profiling/">性能分析</a>部分，了解如何生成可信的更改前后对比。</p>
+<h2 id="_6">分支</h2>
 <table>
 <thead>
 <tr>
-<th>Rule</th>
+<th>规则</th>
 <th></th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Work in progress goes on alternative branches</td>
-<td>Do not push half-finished work to shared branches</td>
+<td>未完成的工作应放在单独的分支上</td>
+<td>不要将未完成的工作推送到共享分支</td>
 </tr>
 <tr>
-<td>Note what remains</td>
-<td>A brief comment on the branch or in the commit body</td>
+<td>记录剩余工作</td>
+<td>在分支或提交正文中添加简短注释</td>
 </tr>
 <tr>
-<td>Delete temporary branches</td>
-<td>Once merged or abandoned</td>
+<td>删除临时分支</td>
+<td>一旦合并或放弃</td>
 </tr>
 <tr>
-<td>Tell other forkers</td>
-<td>So parallel effort is not wasted</td>
+<td>告知其他 fork 用户</td>
+<td>以免浪费并行工作</td>
 </tr>
 </tbody>
 </table>
-<h2 id="console-variables-and-switches">Console variables and switches</h2>
-<p>New console variables follow the engine's existing naming. Vite-specific ones are prefixed with the
-subsystem, then <code>Vite</code>:</p>
+<h2 id="_7">控制台变量和开关</h2>
+<p>新的控制台变量遵循引擎现有的命名规则。Vite 特有的变量以子系统名称为前缀，后跟 <code>Vite</code>：</p>
 <table>
 <thead>
 <tr>
-<th>Example</th>
-<th>Subsystem</th>
+<th>示例</th>
+<th>子系统</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>r.Vite.SMAA.Mode</code></td>
-<td>Renderer</td>
+<td>渲染器</td>
 </tr>
 <tr>
 <td><code>r.Vite.SSAO</code></td>
-<td>Renderer</td>
+<td>渲染器</td>
 </tr>
 <tr>
 <td><code>p.VitePhysXFixedTimestep.Enabled</code></td>
-<td>Physics</td>
+<td>物理引擎</td>
 </tr>
 </tbody>
 </table>
-<p>Compile-time switches use the <code>VITE_</code> prefix and must be defined with a default in
-<code>Engine\Source\Runtime\Core\Public\Misc\CoreDefines.h</code>:</p>
+<p>编译时开关使用 <code>VITE_</code> 前缀，并且必须在 <code>Engine\Source\Runtime\Core\Public\Misc\CoreDefines.h</code> 中定义默认值：</p>
 <div class="highlight"><pre><span></span><code><span class="cp">#ifndef VITE_MY_FEATURE</span>
 <span class="w">    </span><span class="cp">#define VITE_MY_FEATURE 0</span>
 <span class="cp">#endif</span>
 </code></pre></div>
-<p>Document any new switch in <a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a> in the same change. A switch
-that is not documented will be discovered by someone debugging a console variable that silently does
-nothing &mdash; which is exactly the failure mode <code>VITE_RT_PSO_DEBLOAT</code> caused before it was written up.</p>
-<h2 id="see-also">See also</h2>
+<p>在同一变更中，请将任何新的开关记录在<a href="../../Performance/Compile-Time-Switches/">编译时开关</a>部分。未记录的开关可能会被调试控制台变量的用户发现，而该变量实际上没有任何作用——这正是 <code>VITE_RT_PSO_DEBLOAT</code> 之前导致的故障模式。</p>
+<h2 id="_8">另请参阅</h2>
 <ul>
-<li><a href="../Contributing/">Contributing</a></li>
-<li><a href="../Coding-Guidelines/">Coding Guidelines</a></li>
-<li><a href="../Backporting/">Backporting</a></li>
-<li><a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a></li>
+<li><a href="../Contributing/">贡献</a></li>
+<li><a href="../Coding-Guidelines/">编码指南</a></li>
+<li><a href="../Backporting/">向后移植</a></li>
+<li><a href="../../Performance/Compile-Time-Switches/">编译时开关</a></li>
 </ul>
               
             </div>
