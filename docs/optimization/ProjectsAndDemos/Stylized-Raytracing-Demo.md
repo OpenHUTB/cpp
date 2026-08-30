@@ -1,64 +1,46 @@
 ﻿# 风格化光线追踪演示
 
-<tldr>
-<p>
-Ray tracing applied to non-photorealistic art direction. A counterexample to the assumption that ray
-tracing only serves photorealism.
-</p>
-</tldr>
-
+应用于非写实艺术风格的光线追踪技术——这一案例反驳了“光线追踪仅服务于照片级写实效果”的既有观念。
 ![](../../img/optimization/StylizedRTDemo.png)
-
 *风格化的户外场景，采用动态DDGI照明，动态 DDGI，无烘焙光照。在 RTX 4080 Super 显卡上，1440p 原生分辨率下，帧率显示为 811 FPS。*
 
-## Download
+## 下载
 
-[Stylized Raytracing Demo](https://drive.google.com/file/d/1M0H60ESNuvUltF9eePO-CHrlUuBzvFHh/view)
+[风格化光线追踪演示](https://drive.google.com/file/d/1M0H60ESNuvUltF9eePO-CHrlUuBzvFHh/view)
 
-## Why stylized ray tracing
+## 为何采用风格化光线追踪？
 
-Ray tracing is usually presented as a photorealism feature, which leads stylized projects to skip it. That
-is a mistake. What ray tracing actually provides is correct light transport, and stylized rendering
-benefits from correct light transport just as much &mdash; arguably more, because stylized art tends to use
-strong, deliberate lighting where screen-space artefacts are conspicuous.
+光线追踪通常被视为实现照片级真实感的技术，这导致许多风格化项目将其拒之门外。这其实是个误区。光线追踪的核心优势在于能够实现正确的光线传输，而风格化渲染同样能从中获益——甚至可以说获益更多，因为风格化美术往往采用强烈且刻意设计的布光，在这种情况下，屏幕空间技术产生的伪影会显得格外刺眼。
 
-Specifically:
+具体而言：
 
-| Ray-traced feature | What it gives stylized work |
+| 光线追踪特性 | 为风格化作品带来的效果 |
 |---|---|
-| [Reflections](../Rendering/RT-Reflections.md) | Reflections of off-screen geometry, which screen-space reflections cannot produce |
-| [Shadows](../Rendering/RT-Shadows-And-Ambient-Occlusion.md) | Contact-accurate shadows without shadow map resolution and bias tuning |
-| [DDGI](../Rendering/DDGI-Dynamic.md) | Colour bleed that reinforces a limited palette rather than fighting it |
-| [Ambient occlusion](../Rendering/Ambient-Occlusion.md) | Grounded contact without the halos screen-space AO produces |
+| [反射](../Rendering/RT-Reflections.md) | 呈现屏幕外几何体的反射（这是屏幕空间反射无法实现的） |
+| [阴影](../Rendering/RT-Shadows-And-Ambient-Occlusion.md) | 接触精准的阴影，无需调整阴影贴图分辨率或偏差值 |
+| [DDGI](../Rendering/DDGI-Dynamic.md) | 色彩溢出（Color Bleed）效果，能强化而非破坏有限的调色板风格 |
+| [环境光遮蔽](../Rendering/Ambient-Occlusion.md) | 扎实的接触感，且不会产生屏幕空间环境光遮蔽（SSAO）常见的晕轮伪影 |
 
-Combining ray-traced lighting with the [Toon shading model](../Rendering/Shading-Models.md) is well supported in Vite
-&mdash; Toon is one of the custom shading models the fork adds.
+Vite 很好地支持将光线追踪光照与[卡通（Toon）着色模型](../Rendering/Shading-Models.md)相结合——“Toon”正是该分支版本（fork）新增的自定义着色模型之一。
 
-## What to look at
 
-Turn ray-traced reflections off and on in the demo. The difference is largest exactly where screen-space
-reflections fail: reflections of things outside the frame, at grazing angles, and behind the camera.
+## 观察重点
 
-Then look at how the stylized materials respond to the ray-traced lighting rather than to a baked
-approximation of it. The lighting is doing work the art direction can rely on being consistent as the
-camera moves.
+在演示中切换光线追踪反射的开启与关闭状态。差异最显著之处恰好是屏幕空间反射（screen-space reflections, SSR）失效的场景：例如画面之外的物体、处于掠射角（grazing angles）的表面，以及位于摄像机后方的物体所产生的反射。
 
-## Availability caveat
+接着观察风格化材质如何响应光线追踪光照，而非预烘焙的近似光照。这种光照效果表现稳定，美术设计在摄像机移动时可完全信赖其一致性。
 
-<warning>
-Reflections, shadows, ambient occlusion and sky light are available in a default Vite build. Translucency,
-caustics, RTXDI, path tracing and per-pixel ray-traced GI are <b>compiled out</b> by
-<code>VITE_RT_PSO_DEBLOAT</code>, which defaults to <code>1</code>.
-<p>
-If a console variable from that second group appears to do nothing, this is why. See
-<a href="../Rendering/Ray-Tracing.md">Ray Tracing</a> and
-<a href="../Performance/Compile-Time-Switches.md">Compile-Time Switches</a>.
-</p>
-</warning>
 
-## See also
+## 可用性说明
 
-- [Ray Tracing](../Rendering/Ray-Tracing.md)
-- [Shading Models](../Rendering/Shading-Models.md)
-- [Dynamic DDGI](../Rendering/DDGI-Dynamic.md)
-- [Compile-Time Switches](../Performance/Compile-Time-Switches.md)
+**警告：** 默认的 Vite 构建版本支持反射、阴影、环境光遮蔽（AO）和天光（sky light）。而半透明效果、焦散（caustics）、RTXDI、路径追踪以及逐像素光线追踪全局光照（GI）则通过 `VITE_RT_PSO_DEBLOAT` 宏在**编译时被剔除**（该宏默认值为 `1`）。
+
+如果你发现属于后一组功能的控制台变量似乎不起作用，原因就在于此。请参阅[光线追踪](../Rendering/Ray-Tracing.md)与[编译时开关](../Performance/Compile-Time-Switches.md)相关章节。
+
+
+## 另请参阅
+
+- [光线追踪](../Rendering/Ray-Tracing.md)
+- [着色模型](../Rendering/Shading-Models.md)
+- [动态 DDGI](../Rendering/DDGI-Dynamic.md)
+- [编译时开关](../Performance/Compile-Time-Switches.md)
