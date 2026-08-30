@@ -149,63 +149,51 @@
 <p class="admonition-title">笔记</p>
 <p><strong>终止线</strong>是指物体表面从“被照亮”区域过渡到“阴影”区域的那条分界线。在现实世界中，这条线往往是柔和、平滑的（因为光线有衍射和散射）。但在实时渲染的3D游戏中，由于计算精度的限制，这条线可能会变得非常生硬、锯齿状，甚至在模型表面断裂。</p>
 </div>
-<h2 id="what-callisto-brdf-does">What Callisto BRDF does</h2>
-<p>Unreal's default lit model is a good general-purpose BRDF and a mediocre skin and character model. Callisto
-BRDF is a Vite addition that gives you direct control over the terms that matter for character rendering,
-by repurposing existing material pins rather than adding new ones:</p>
+<h2 id="callisto-brdf_1">Callisto BRDF 的作用</h2>
+<p>Unreal 默认的光照模型是一种优秀的通用型 BRDF，但在处理皮肤和角色渲染时表现平平。Callisto BRDF 是一项 Vite 扩展功能，它通过复用现有的材质引脚（而非新增引脚）来赋予你对角色渲染关键参数的直接控制权：</p>
 <table>
 <thead>
 <tr>
-<th>Standard pin</th>
-<th>Becomes</th>
+<th>标准引脚</th>
+<th>变为</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Opacity</td>
-<td>Retroreflection</td>
+<td>不透明度（Opacity）</td>
+<td>逆反射（Retroreflection）</td>
 </tr>
 <tr>
-<td>Anisotropy</td>
-<td>Diffuse Fresnel</td>
+<td>各向异性（Anisotropy）</td>
+<td>漫反射菲涅尔（Diffuse Fresnel）</td>
 </tr>
 <tr>
-<td>Custom Data 0</td>
-<td>Smooth Terminator</td>
+<td>自定义数据 0（Custom Data 0）</td>
+<td>平滑明暗交界线（Smooth Terminator）</td>
 </tr>
 <tr>
-<td>Custom Data 1</td>
-<td>Diffuse Fresnel Falloff</td>
+<td>自定义数据 1（Custom Data 1）</td>
+<td>漫反射菲涅尔衰减（Diffuse Fresnel Falloff）</td>
 </tr>
 <tr>
-<td>Ambient Occlusion</td>
-<td>Retroreflection Falloff</td>
+<td>环境光遮蔽（Ambient Occlusion）</td>
+<td>逆反射衰减（Retroreflection Falloff）</td>
 </tr>
 </tbody>
 </table>
-<p>Smooth Terminator is the one to look at first. The hard shadow terminator on curved surfaces is one of the
-most obvious tells of a real-time character, and controlling it directly is cheaper and more predictable
-than working around it with normal map or lighting tricks.</p>
-<p>Full pin reference and authoring notes in <a href="../../Rendering/Shading-Models/">Shading Models</a>.</p>
-<h2 id="using-the-demos">Using the demos</h2>
-<p>Open the character material and change one pin at a time. The remapped pins interact, and the effect of
-each is much clearer in isolation than in the shipped combination.</p>
-<p>Pay attention to how the model responds to grazing light. Retroreflection and diffuse Fresnel both act
-strongest there, and that is where the difference from the default lit model is most visible.</p>
-<h2 id="porting-the-setup">Porting the setup</h2>
-<p>The material graph is the useful part of these demos. Callisto BRDF is a shading model selection, so
-adopting it is a matter of switching the model and rewiring the affected pins &mdash; there is no plugin to
-enable and no compile-time switch involved.</p>
-<p><note>
-Each additional shading model in use adds shader permutations. If you only need Callisto on characters,
-use it only on characters. See
-<a href="../Performance/Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a>.
-</note></p>
-<h2 id="see-also">See also</h2>
+<p>首先需要关注的是平滑终结线。曲面上的硬阴影终结线是实时角色最明显的特征之一，直接控制它比通过法线贴图或光照技巧来处理更为经济且更可预测。</p>
+<p>完整的引用和创作说明见<a href="../../Rendering/Shading-Models/">着色模型</a>。</p>
+<h2 id="_1">使用演示</h2>
+<p>打开角色材质，一个一个地更改引脚。重新映射的引脚会相互作用，每个引脚的效果在单独查看时比在默认组合中更清晰。</p>
+<p>注意模型对掠射光的反应。逆向反射和漫反射菲涅尔在这里最强烈，这也是和默认点亮模型最明显的区别所在。</p>
+<h2 id="_2">移植设置</h2>
+<p>这些演示中有用的部分是材质图。Callisto BRDF 是一种着色模型选择，所以采用它只是更换模型并重新连接受影响的引脚——没有需要启用的插件，也没有编译时开关。</p>
+<p>每增加一个着色模型，就会增加着色器的组合。如果你只需要在角色上使用 Callisto，就只在角色上使用。参见<a href="../../Performance/Shader-Compilation-And-PSO/">着色器编译和 PSO</a>。</p>
+<h2 id="_3">另请参见</h2>
 <ul>
-<li><a href="../../Rendering/Shading-Models/">Shading Models</a></li>
-<li><a href="../../Rendering/Color-Management/">Color Management</a></li>
-<li><a href="../../Rendering/Hair-Rendering/">Hair Rendering</a></li>
+<li><a href="../../Rendering/Shading-Models/">阴影模型</a></li>
+<li><a href="../../Rendering/Color-Management/">颜色管理</a></li>
+<li><a href="../../Rendering/Hair-Rendering/">头发渲染</a></li>
 </ul>
               
             </div>
