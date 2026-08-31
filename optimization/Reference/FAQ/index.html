@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Frequently Asked Questions - 引擎优化文档</title>
+    <title>常见问题解答 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Frequently Asked Questions";
+        var mkdocs_page_name = "\u5e38\u89c1\u95ee\u9898\u89e3\u7b54";
         var mkdocs_page_input_path = "optimization/Reference/FAQ.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Frequently Asked Questions</li>
+      <li class="breadcrumb-item active">常见问题解答</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Reference/FAQ.md"> 编辑页面</a>
     </li>
@@ -120,149 +120,89 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="frequently-asked-questions">Frequently Asked Questions</h1>
-<p><tldr></p>
-<p>
-The questions that come up most often, with short answers and links to the full explanation.
-</p>
-<p></tldr></p>
-<h2 id="about-the-fork">About the fork</h2>
-<h3 id="why-427-and-not-ue5">Why 4.27 and not UE5?</h3>
-<p>Because for a large class of projects UE5's headline features cost more than they return. Nanite, Lumen and
-Chaos each carry a base cost whether or not you exploit them, and UE5's core class and tick overhead is
-higher. Vite takes 4.27's lower baseline and adds the rendering technology that was actually worth having.</p>
-<p>The detailed argument, with numbers, is in <a href="../../EngineOverview/Why-NvRTX-427/">Why NvRTX 4.27</a> and
-<a href="../../EngineOverview/UE4-Versus-UE5-Cost-Analysis/">UE4 versus UE5 Cost Analysis</a>.</p>
-<h3 id="is-vite-a-drop-in-replacement-for-stock-427">Is Vite a drop-in replacement for stock 4.27?</h3>
-<p>Close, but not exactly. Vite changes a number of engine defaults for performance &mdash; overlap event
-handling, scalability settings, tick behaviour, ray tracing culling and others. A project moving from stock
-4.27 will mostly work, but should read <a href="../../Performance/Engine-Defaults/">Engine Defaults</a> to understand what changed.</p>
-<h3 id="can-i-use-ue5-marketplace-assets">Can I use UE5 marketplace assets?</h3>
-<p>Not directly. The Asset Downgrader plugin converts UE5 assets to 4.27, stripping data that has no 4.27
-equivalent such as Nanite geometry. Features that do not exist in 4.27 cannot be ported, only removed. See
-<a href="../../GettingStarted/Migrating-From-UE5/">Migrating from UE5</a>.</p>
-<h3 id="what-platforms-does-vite-support">What platforms does Vite support?</h3>
-<p>Windows 64-bit, primarily on DirectX 12. Other platforms inherit stock 4.27 support but are neither tested
-nor tuned. See <a href="../../Platforms/Platforms/">Platforms</a>.</p>
-<h2 id="setup-and-building">Setup and building</h2>
-<h3 id="what-toolchain-do-i-need">What toolchain do I need?</h3>
-<p>Vite is currently developed against Visual Studio 2026 with MSVC 14.50 and Windows SDK 10.0.26100.</p>
-<p><warning>
-<code>ViteSetup.bat</code>'s environment check still enforces Visual Studio 2022 with MSVC 14.44 and SDK
-10.0.26100.7705, and will fail on the newer toolchain. Build through the manual path or the individual
-menu options if you hit this. See <a href="../GettingStarted/Toolchain-Requirements.md">Toolchain Requirements</a>.
-</warning></p>
-<h3 id="the-build-fails-immediately-on-a-fresh-clone">The build fails immediately on a fresh clone</h3>
-<p>Most often missing .NET Framework 4.5 reference assemblies, which recent Visual Studio installers no longer
-include by default. See <a href="../../GettingStarted/Build-Troubleshooting/">Build Troubleshooting</a>.</p>
-<h3 id="do-i-need-to-build-from-source">Do I need to build from source?</h3>
-<p>Only if you need to modify engine C++ or change a <a href="../../Performance/Compile-Time-Switches/">compile-time switch</a>. For
-everything else an <a href="../../GettingStarted/Install-Binary-Build/">installed build</a> is faster to get running and needs far less disk.</p>
-<h3 id="how-long-does-a-build-take">How long does a build take?</h3>
-<p>A source build is hours on typical hardware, and an installed build is longer. Shader compilation dominates
-the first launch afterwards. See <a href="../../Performance/Shader-Compilation-And-PSO/">Shader Compilation and PSO</a>.</p>
-<h3 id="the-engine-takes-too-much-disk-space">The engine takes too much disk space</h3>
-<p>Run the debloat suite in <code>devops\</code>. It moves platform binaries, templates, samples and optionally plugins
-out of the tree, with a dry-run mode and a recovery folder rather than deletion. See
-<a href="../../Performance/Debloat-Guide/">Debloat Guide</a>.</p>
-<h2 id="rendering">Rendering</h2>
-<h3 id="i-set-a-ray-tracing-console-variable-and-nothing-happened">I set a ray tracing console variable and nothing happened</h3>
-<p>This is the single most common question, and the answer is almost always
-<code>VITE_RT_PSO_DEBLOAT</code>. It defaults to <code>1</code>, which compiles out the shader permutations for:</p>
+                <h1 id="_1">常见问题解答</h1>
+<p>以下是常见问题，附有简短解答和完整解释的链接。</p>
+<h2 id="_2">关于分支</h2>
+<h3 id="427-ue5">为什么选择 4.27 而不是 UE5？</h3>
+<p>因为对于很多项目来说，UE5 的主要功能带来的收益远大于成本。Nanite、Lumen 和 Chaos 本身都有基础成本，无论是否使用，而且 UE5 的核心类和 tick 开销也更高。Vite 以 4.27 较低的基准成本为基础，并添加了真正值得拥有的渲染技术。</p>
+<p>详细的论证（包含数据）请参见<a href="../../EngineOverview/Why-NvRTX-427/">为什么选择 NvRTX 4.27</a> 以及 <a href="../../EngineOverview/UE4-Versus-UE5-Cost-Analysis/">UE4 与 UE5 的成本分析</a>。</p>
+<h3 id="vite-ue5-427">Vite 可以直接替代 UE5 4.27 吗？</h3>
+<p>差不多，但并不完全一样。Vite 为了提升性能，修改了一些引擎默认设置，例如重叠事件处理、可缩放性设置、帧刷新行为、光线追踪剔除等等。从 UE5 4.27 迁移过来的项目大部分都能正常运行，但建议阅读<a href="(../Performance/Engine-Defaults.md)">引擎默认设置</a>以了解具体更改。</p>
+<h3 id="ue5">我可以使用 UE5 商城资源吗？</h3>
+<p>不能直接使用。资源降级插件会将 UE5 资源转换为 UE5 4.27 版本，并移除 UE5 4.27 版本中不存在的数据，例如 Nanite 几何体。UE5 4.27 版本中不存在的功能无法移植，只能移除。请参阅<a href="../../GettingStarted/Migrating-From-UE5/">从 UE5 迁移</a>。</p>
+<h3 id="vite">Vite 支持哪些平台？</h3>
+<p>Windows 64 位系统，主要支持 DirectX 12。其他平台继承了 UE5 4.27 的支持，但未经测试和优化。请参阅<a href="../../Platforms/Platforms/">平台</a>部分。</p>
+<h2 id="_3">安装和构建</h2>
+<h3 id="_4">我需要什么工具链？</h3>
+<p>Vite 目前基于 Visual Studio 2026、MSVC 14.50 和 Windows SDK 10.0.26100 开发。</p>
+<p><strong>警告：</strong> <code>ViteSetup.bat</code> 的环境检查仍然强制要求使用 Visual Studio 2022、MSVC 14.44 和 SDK 10.0.26100.7705，因此在新工具链上会失败。如果遇到此问题，请通过手动路径或单独的菜单选项进行构建。请参阅<a href="../../GettingStarted/Toolchain-Requirements/">工具链要求</a>。</p>
+<h3 id="_5">在全新克隆的环境中，构建立即失败。</h3>
+<p>最常见的原因是缺少 .NET Framework 4.5 引用程序集，而最新的 Visual Studio 安装程序默认情况下不再包含这些程序集。请参阅<a href="../../GettingStarted/Build-Troubleshooting/">构建故障排除</a>。</p>
+<h3 id="_6">我需要从源代码构建吗？</h3>
+<p>仅当您需要修改引擎 C++ 代码或更改<a href="../../Performance/Compile-Time-Switches/">编译时开关</a>时才需要从源代码构建。对于其他所有情况，<a href="../../GettingStarted/Install-Binary-Build/">安装构建</a>启动速度更快，并且占用磁盘空间更少。</p>
+<h3 id="_7">构建需要多长时间？</h3>
+<p>在典型的硬件上，从源代码构建需要几个小时，而安装构建则需要更长时间。着色器编译在之后的首次启动中占据主导地位。请参阅<a href="../../Performance/Shader-Compilation-And-PSO/">着色器编译和 PSO</a>。</p>
+<h3 id="_8">引擎占用过多磁盘空间。</h3>
+<p>在 <code>devops\</code> 目录下运行精简套件。它会将平台二进制文件、模板、示例以及（可选的）插件从代码树中移出，并提供试运行模式和恢复文件夹，而不是直接删除。请参阅<a href="../../Performance/Debloat-Guide/">精简指南</a>。</p>
+<h2 id="_9">渲染</h2>
+<h3 id="_10">我设置了一个光线追踪控制台变量，但没有任何反应。</h3>
+<p>这是最常见的问题，答案几乎总是 <code>VITE_RT_PSO_DEBLOAT</code>。它的默认值为 <code>1</code>，会编译掉以下着色器排列组合：</p>
 <ul>
 <li>RTXDI (<code>r.RayTracing.SampledDirectLighting</code>)</li>
-<li>Path tracing</li>
-<li>Ray-traced translucency and both caustics systems</li>
-<li>Per-pixel ray-traced global illumination</li>
-<li>The non-deferred reflection path, and with it reflected translucency and RT reflection captures</li>
+<li>路径追踪</li>
+<li>光线追踪半透明效果和焦散系统</li>
+<li>逐像素光线追踪全局光照</li>
+<li>非延迟反射路径，以及由此产生的反射半透明效果和光线追踪反射捕获</li>
 </ul>
-<p>The console variables still exist and still set. Nothing renders. Rebuild the engine with
-<code>VITE_RT_PSO_DEBLOAT=0</code> to use them. See <a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a> and
-<a href="../../Rendering/Ray-Tracing/">Ray Tracing</a>.</p>
-<h3 id="which-ray-tracing-features-work-out-of-the-box">Which ray tracing features work out of the box?</h3>
-<p>Reflections, shadows, ambient occlusion and sky light. Those four are available in a default build; the
-rest are compiled out. Full table in <a href="../../Rendering/Ray-Tracing/">Ray Tracing</a>.</p>
-<h3 id="which-gi-should-i-use">Which GI should I use?</h3>
-<p>For most projects, DDGI plus SSGI. DDGI provides the low-frequency indirect bounce and SSGI adds
-contact-scale detail its probe grid cannot resolve. Static DDGI is cheaper and correct if nothing moves.
-Per-pixel ray-traced GI is reference-only and compiled out by default. See
-<a href="../../Rendering/Global-Illumination/">Global Illumination</a>.</p>
-<h3 id="why-smaa-instead-of-taa">Why SMAA instead of TAA?</h3>
-<p>TAA's ghosting, smearing and motion softness are structural, not tuning problems. SMAA is spatial and does
-not have them. It is Vite's recommended default and is enabled with <code>r.Vite.SMAA.Mode</code>. See
-<a href="../../Rendering/Anti-Aliasing/">Anti-Aliasing</a>.</p>
-<h3 id="which-upscaler-should-i-use">Which upscaler should I use?</h3>
-<p>DLSS if you are on NVIDIA hardware and shipping to NVIDIA users. FSR or XeSS for cross-vendor coverage. NIS
-as a cheap fallback with no temporal component. Most projects should offer more than one. See
-<a href="../../Rendering/Upscalers/">Upscalers</a>.</p>
-<h3 id="volumetric-fog-looks-wrong-with-upscaling-enabled">Volumetric fog looks wrong with upscaling enabled</h3>
-<p>That is what <code>VITE_DLSS_PATCH</code> fixes. It adds
-<code>r.VolumetricFog.UseUpScaledSizeVolumetricFog</code>, which renders fog at output rather than internal
-resolution, along with translucency fixes. It defaults to <code>0</code>, so it requires a rebuild. See
-<a href="../../Rendering/Upscalers/">Upscalers</a>.</p>
-<h3 id="does-vite-have-nanite-or-lumen">Does Vite have Nanite or Lumen?</h3>
-<p>No, and it will not. Those are UE5 systems built on UE5 assumptions. Vite's answers are hardware
-tessellation and LODs for geometry, and DDGI plus SSGI for global illumination.</p>
-<h2 id="physics">Physics</h2>
-<h3 id="why-physx-instead-of-chaos">Why PhysX instead of Chaos?</h3>
-<p>PhysX is faster and more predictable on the workloads Vite targets, and it keeps Apex Destruction and Apex
-Cloth &mdash; both removed in UE5 &mdash; available. See <a href="../../Physics/PhysX/">PhysX</a>.</p>
-<h3 id="how-do-i-get-deterministic-physics">How do I get deterministic physics?</h3>
-<p>Rebuild with <code>VITE_PHYSX_FIXED_TIMESTEP=1</code>, then enable
-<code>p.VitePhysXFixedTimestep.Enabled</code>. Without the compile-time switch the console variables do nothing. See
-<a href="../../Physics/Fixed-Timestep/">Fixed Timestep</a>.</p>
-<h3 id="i-need-thousands-of-physics-objects">I need thousands of physics objects</h3>
-<p>Use the <a href="../../Physics/Instanced-Physics/">PhysX Instanced Subsystem</a>. Conventional actor-per-body physics hits actor
-overhead, not solver limits, at a few thousand bodies. The subsystem removes that overhead by driving
-instanced mesh transforms directly.</p>
-<h2 id="performance">Performance</h2>
-<h3 id="where-do-i-start-optimising">Where do I start optimising?</h3>
-<p><code>stat unit</code>, and identify which of Game, Draw or GPU is the largest. Optimising the wrong one produces no
-frame time improvement at all. See <a href="../../Performance/Profiling/">Profiling</a>.</p>
-<h3 id="my-game-thread-is-the-bottleneck">My game thread is the bottleneck</h3>
-<p>The usual suspects, in rough order of frequency: Character Movement Components, animation evaluation,
-Blueprint tick logic, and actor tick overhead generally. See
-<a href="../../ProjectsAndDemos/400-Characters-CMC-Bench/">400 Characters CMC Bench</a> and
-<a href="../../EngineOverview/Performance-Targets/">Performance Targets</a>.</p>
-<h3 id="shader-compilation-is-taking-forever">Shader compilation is taking forever</h3>
-<p>Check what your permutation count actually is before assuming it is unavoidable. Every shading model in
-use, every enabled plugin and every quality level multiplies. <code>VITE_RT_PSO_DEBLOAT=1</code> already removes a
-large share of the ray tracing permutations, which is why it is the default. See
-<a href="../../Performance/Shader-Compilation-And-PSO/">Shader Compilation and PSO</a>.</p>
-<h3 id="shaders-behave-as-though-my-change-did-not-happen">Shaders behave as though my change did not happen</h3>
-<p>Stale cache. Try <code>recompileshaders changed</code> or <code>recompileshaders global</code> first &mdash; both are far cheaper
-than a full wipe. If neither helps, run <code>WipeShaderCache.bat</code>. See
-<a href="../../Tools/Cache-Management/">Cache Management</a>.</p>
-<h2 id="plugins">Plugins</h2>
-<h3 id="a-feature-is-missing-from-the-editor">A feature is missing from the editor</h3>
-<p>Check whether its plugin is enabled. Most bundled plugins default to off. Only RTXGI, NRD and the custom
-splash screen are on by default. See <a href="../../Plugins/Bundled-Plugins/">Bundled Plugins</a>.</p>
-<h3 id="can-i-get-plugin-x-bundled">Can I get plugin X bundled?</h3>
-<p>If it is 4.21&ndash;4.27 compatible, permissively licensed and worth its size and compile cost, propose it.
-UE5-only plugins are out of scope. See <a href="../../Plugins/Proposed-Plugins/">Proposed Plugins</a>.</p>
-<h3 id="the-debloat-script-removed-a-plugin-i-need">The debloat script removed a plugin I need</h3>
-<p><code>ExcludedPlugins.txt</code> is aggressive and includes plugins many projects use. If you ran in move mode, the
-files are in <code>ViteDebloat_Moved</code> next to the engine folder. If you ran in delete mode, they are gone and
-you need to restore from source control. See <a href="../../Performance/Debloat-Guide/">Debloat Guide</a>.</p>
-<h2 id="contributing">Contributing</h2>
-<h3 id="what-gets-a-pull-request-rejected-fastest">What gets a pull request rejected fastest?</h3>
-<p>Modifying an ABI: ray tracing payload bitfields, shader-visible enums, packed RHI or RenderCore bitmasks,
-reflection bitmask definitions, or any CPU/GPU shared struct layout. These are rejected regardless of the
-rest of the change. See <a href="../../Contributing/Coding-Guidelines/">Coding Guidelines</a>.</p>
-<h3 id="can-i-use-recursion-virtuals-or-templates">Can I use recursion, virtuals or templates?</h3>
-<p>Recursion is banned. New virtuals need strict justification. Templates are discouraged unless they earn
-their compile-time and binary-size cost. New Blueprint-exposed functions need explicit approval.</p>
-<h3 id="how-do-i-document-my-change">How do I document my change?</h3>
-<p>In the same pull request. New console variables go on the relevant feature page, new <code>VITE_*</code> switches go
-in <a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a>, and changed defaults go in
-<a href="../../Performance/Engine-Defaults/">Engine Defaults</a>. See
-<a href="../../Contributing/Documentation-Contributions/">Documentation Contributions</a>.</p>
-<h2 id="see-also">See also</h2>
+<p>控制台变量仍然存在且仍然有效。但没有任何渲染效果。请使用 <code>VITE_RT_PSO_DEBLOAT=0</code> 重新构建引擎以使用这些变量。请参阅<a href="../../Performance/Compile-Time-Switches/">编译时开关</a>和<a href="../../Rendering/Ray-Tracing/">光线追踪</a>。</p>
+<h3 id="_11">哪些光线追踪功能开箱即用？</h3>
+<p>反射、阴影、环境光遮蔽和天空光。这四项在默认版本中可用；其余功能会被编译排除。完整表格请参见<a href="../../Rendering/Ray-Tracing/">光线追踪</a>部分。</p>
+<h3 id="_12">我应该使用哪种全局光照？</h3>
+<p>对于大多数项目，建议使用 DDGI 和 SSGI。DDGI 提供低频间接反射，而 SSGI 则添加了其探测网格无法解析的接触尺度细节。如果物体静止不动，静态 DDGI 更经济高效且效果​​更佳。逐像素光线追踪全局光照仅供参考，默认情况下会被编译排除。请参见<a href="../../Rendering/Global-Illumination/">全局光照</a>部分。</p>
+<h3 id="smaa-taa">为什么选择 SMAA 而不是 TAA？</h3>
+<p>TAA 的重影、拖影和运动模糊是结构性问题，而非调优问题。SMAA 是空间抗锯齿，不存在这些问题。它是 Vite 推荐的默认设置，可通过 <code>r.Vite.SMAA.Mode</code> 启用。请参见<a href="../../Rendering/Anti-Aliasing/">抗锯齿</a>部分。</p>
+<h3 id="_13">我应该使用哪种超分辨率器？</h3>
+<p>如果您使用的是 NVIDIA 硬件并且项目面向 NVIDIA 用户，请使用 DLSS。FSR 或 XeSS 可以跨厂商兼容。NIS 是一个低成本的备选方案，它不包含时间组件。大多数项目应该提供不止一种升频器。请参阅<a href="../../Rendering/Upscalers/">超分辨率器</a>部分。</p>
+<h3 id="_14">启用超分辨率后，体积雾看起来有问题。</h3>
+<p><code>VITE_DLSS_PATCH</code> 可以修复这个问题。它添加了 <code>r.VolumetricFog.UseUpScaledSizeVolumetricFog</code>，该函数会以输出分辨率而不是内部分辨率渲染雾，同时还修复了半透明度问题。它的默认值为 <code>0</code>，因此需要重新构建。请参阅<a href="../../Rendering/Upscalers/">超分辨率器</a>部分。</p>
+<h3 id="vite-nanite-lumen">Vite 是否支持 Nanite 或 Lumen？</h3>
+<p>不支持，而且以后也不会支持。这些是基于 UE5 假设构建的 UE5 系统。Vite 的解决方案是使用硬件细分和 LOD 来处理几何体，并使用 DDGI 和 SSGI 来处理全局光照。</p>
+<h2 id="_15">物理引擎</h2>
+<h3 id="physx-chaos">为什么选择 PhysX 而不是 Chaos？</h3>
+<p>PhysX 在 Vite 的目标工作负载下速度更快、结果更可预测，并且保留了 UE5 中移除的 Apex Destruction 和 Apex Cloth。请参阅 <a href="../../Physics/PhysX/">PhysX</a>。</p>
+<h3 id="_16">如何获得确定性物理效果？</h3>
+<p>使用 <code>VITE_PHYSX_FIXED_TIMESTEP=1</code> 重新构建，然后启用 <code>p.VitePhysXFixedTimestep.Enabled</code>。如果没有编译时开关，控制台变量将不起作用。请参阅<a href="../../Physics/Fixed-Timestep/">固定时间步长</a>。</p>
+<h3 id="_17">我需要数千个物理对象</h3>
+<p>使用 <a href="../../Physics/Instanced-Physics/">PhysX 实例化子系统</a>。传统的逐个物体物理引擎在处理几千个物体时，会受到 Actor 的开销限制，而不是求解器的限制。该子系统通过直接驱动实例化网格变换来消除这种开销。</p>
+<h2 id="_18">性能</h2>
+<h3 id="_19">我应该从哪里开始优化？</h3>
+<p>统计单位（`stat unit），并确定游戏、绘制或 GPU 中哪个占用资源最多。优化错误的单位不会带来任何帧时间上的提升。请参阅<a href="../../Performance/Profiling/">性能分析</a>。</p>
+<h3 id="_20">我的游戏线程是瓶颈</h3>
+<p>常见的瓶颈，大致按出现频率排序：角色移动组件、动画评估、蓝图 tick 逻辑以及 Actor tick 开销。请参阅 <a href="../../ProjectsAndDemos/400-Characters-CMC-Bench/">400 个角色 CMC 基准测试</a>和<a href="../../EngineOverview/Performance-Targets/">性能目标</a>。</p>
+<h3 id="_21">着色器编译耗时过长</h3>
+<p>在假设无法避免之前，请检查您的排列计数。每个使用的着色模型、每个启用的插件和每个质量级别都会增加排列计数。<code>VITE_RT_PSO_DEBLOAT=1</code> 已经移除了大部分光线追踪排列，这也是它成为默认值的原因。请参阅<a href="../../Performance/Shader-Compilation-And-PSO/">着色器编译和 PSO</a>。</p>
+<h3 id="_22">着色器的行为就像我的更改没有生效一样</h3>
+<p>缓存过期。首先尝试运行 <code>recompileshaders changed</code> 或 <code>recompileshaders global</code> 命令——这两种方法都比完全清除缓存要省事得多。如果这两种方法都无效，请运行 <code>WipeShaderCache.bat</code>。请参阅<a href="../../Tools/Cache-Management/">缓存管理</a>部分。</p>
+<h2 id="_23">插件</h2>
+<h3 id="_24">编辑器中缺少某个功能</h3>
+<p>请检查该插件是否已启用。大多数捆绑插件默认处于关闭状态。只有 RTXGI、NRD 和自定义启动画面默认启用。请参阅<a href="../../Plugins/Bundled-Plugins/">已捆绑的插件</a>。</p>
+<h3 id="x">能否将插件 X 捆绑到项目中？</h3>
+<p>如果它与 4.21–4.27 版本兼容，采用宽松许可，并且其体积和编译成本与其价值相符，请提交申请。仅适用于 UE5 的插件不在本次讨论范围内。请参阅<a href="../../Plugins/Proposed-Plugins/">提议的插件</a>。</p>
+<h3 id="_25">精简脚本删除了我需要的插件</h3>
+<p><code>ExcludedPlugins.txt</code> 文件包含的插件很多，因此会进行大幅度的清理。如果您以移动模式运行脚本，这些文件会位于引擎文件夹旁边的 <code>ViteDebloat_Moved</code> 文件夹中。如果您以删除模式运行脚本，这些文件将被删除，您需要从源代码控制系统中恢复。请参阅<a href="../../Performance/Debloat-Guide/">精简指南</a>。</p>
+<h2 id="_26">贡献指南</h2>
+<h3 id="_27">哪些修改会导致拉取请求最快被拒绝？</h3>
+<p>修改 ABI：光线追踪有效载荷位域、着色器可见枚举、打包的 RHI 或 RenderCore 位掩码、反射位掩码定义，或任何 CPU/GPU 共享的结构体布局。无论其他更改如何，这些都会被拒绝。请参阅<a href="../../Contributing/Coding-Guidelines/">编码指南</a>。</p>
+<h3 id="_28">我可以使用递归、虚函数或模板吗？</h3>
+<p>禁止使用递归。新的虚函数需要严格的理由。除非模板的编译时成本和二进制文件大小的增加是值得的，否则不建议使用模板。新的蓝图公开函数需要获得明确批准。</p>
+<h3 id="_29">如何记录我的更改？</h3>
+<p>在同一个拉取请求中。新的控制台变量放在相关的功能页面，新的 <code>VITE_*</code> 开关放在<a href="../../Performance/Compile-Time-Switches/">编译时开关</a>页面，更改的默认值放在<a href="../../Performance/Engine-Defaults/">引擎默认值</a>页面。请参阅<a href="../../Contributing/Documentation-Contributions/">文档贡献</a>。</p>
+<h2 id="_30">另请参阅</h2>
 <ul>
-<li><a href="../Console-Variables/">Console Variables</a></li>
-<li><a href="../Glossary/">Glossary</a></li>
-<li><a href="../../Performance/Compile-Time-Switches/">Compile-Time Switches</a></li>
-<li><a href="../../GettingStarted/Build-Troubleshooting/">Build Troubleshooting</a></li>
+<li><a href="../Console-Variables/">控制台变量</a></li>
+<li><a href="../Glossary/">术语表</a></li>
+<li><a href="../../Performance/Compile-Time-Switches/">编译时开关</a></li>
+<li><a href="../../GettingStarted/Build-Troubleshooting/">构建故障排除</a></li>
 </ul>
               
             </div>
