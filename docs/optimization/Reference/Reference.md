@@ -30,7 +30,7 @@
     缓存过期。请参阅[缓存管理](../Tools/Cache-Management.md)。
 
 
-## See also
+## 另请参见
 
 - [入门](../GettingStarted/Getting-Started.md)
 - [性能和优化](../Performance/Performance.md)

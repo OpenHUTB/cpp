@@ -1,212 +1,180 @@
-# Frequently Asked Questions
+# 常见问题解答
 
-<tldr>
-<p>
-The questions that come up most often, with short answers and links to the full explanation.
-</p>
-</tldr>
+以下是常见问题，附有简短解答和完整解释的链接。
 
-## About the fork
+## 关于分支
 
-### Why 4.27 and not UE5?
+### 为什么选择 4.27 而不是 UE5？
 
-Because for a large class of projects UE5's headline features cost more than they return. Nanite, Lumen and
-Chaos each carry a base cost whether or not you exploit them, and UE5's core class and tick overhead is
-higher. Vite takes 4.27's lower baseline and adds the rendering technology that was actually worth having.
+因为对于很多项目来说，UE5 的主要功能带来的收益远大于成本。Nanite、Lumen 和 Chaos 本身都有基础成本，无论是否使用，而且 UE5 的核心类和 tick 开销也更高。Vite 以 4.27 较低的基准成本为基础，并添加了真正值得拥有的渲染技术。
 
-The detailed argument, with numbers, is in [Why NvRTX 4.27](../EngineOverview/Why-NvRTX-427.md) and
-[UE4 versus UE5 Cost Analysis](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md).
+详细的论证（包含数据）请参见[为什么选择 NvRTX 4.27](../EngineOverview/Why-NvRTX-427.md) 以及 [UE4 与 UE5 的成本分析](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md)。
 
-### Is Vite a drop-in replacement for stock 4.27?
 
-Close, but not exactly. Vite changes a number of engine defaults for performance &mdash; overlap event
-handling, scalability settings, tick behaviour, ray tracing culling and others. A project moving from stock
-4.27 will mostly work, but should read [Engine Defaults](../Performance/Engine-Defaults.md) to understand what changed.
+### Vite 可以直接替代 UE5 4.27 吗？
 
-### Can I use UE5 marketplace assets?
+差不多，但并不完全一样。Vite 为了提升性能，修改了一些引擎默认设置，例如重叠事件处理、可缩放性设置、帧刷新行为、光线追踪剔除等等。从 UE5 4.27 迁移过来的项目大部分都能正常运行，但建议阅读[引擎默认设置]((../Performance/Engine-Defaults.md))以了解具体更改。
 
-Not directly. The Asset Downgrader plugin converts UE5 assets to 4.27, stripping data that has no 4.27
-equivalent such as Nanite geometry. Features that do not exist in 4.27 cannot be ported, only removed. See
-[Migrating from UE5](../GettingStarted/Migrating-From-UE5.md).
 
-### What platforms does Vite support?
+### 我可以使用 UE5 商城资源吗？
 
-Windows 64-bit, primarily on DirectX 12. Other platforms inherit stock 4.27 support but are neither tested
-nor tuned. See [Platforms](../Platforms/Platforms.md).
+不能直接使用。资源降级插件会将 UE5 资源转换为 UE5 4.27 版本，并移除 UE5 4.27 版本中不存在的数据，例如 Nanite 几何体。UE5 4.27 版本中不存在的功能无法移植，只能移除。请参阅[从 UE5 迁移](../GettingStarted/Migrating-From-UE5.md)。
 
-## Setup and building
 
-### What toolchain do I need?
+### Vite 支持哪些平台？
 
-Vite is currently developed against Visual Studio 2026 with MSVC 14.50 and Windows SDK 10.0.26100.
+Windows 64 位系统，主要支持 DirectX 12。其他平台继承了 UE5 4.27 的支持，但未经测试和优化。请参阅[平台](../Platforms/Platforms.md)部分。
 
-<warning>
-<code>ViteSetup.bat</code>'s environment check still enforces Visual Studio 2022 with MSVC 14.44 and SDK
-10.0.26100.7705, and will fail on the newer toolchain. Build through the manual path or the individual
-menu options if you hit this. See <a href="../GettingStarted/Toolchain-Requirements.md">Toolchain Requirements</a>.
-</warning>
 
-### The build fails immediately on a fresh clone
+## 安装和构建
 
-Most often missing .NET Framework 4.5 reference assemblies, which recent Visual Studio installers no longer
-include by default. See [Build Troubleshooting](../GettingStarted/Build-Troubleshooting.md).
+### 我需要什么工具链？
 
-### Do I need to build from source?
+Vite 目前基于 Visual Studio 2026、MSVC 14.50 和 Windows SDK 10.0.26100 开发。
 
-Only if you need to modify engine C++ or change a [compile-time switch](../Performance/Compile-Time-Switches.md). For
-everything else an [installed build](../GettingStarted/Install-Binary-Build.md) is faster to get running and needs far less disk.
+**警告：** `ViteSetup.bat` 的环境检查仍然强制要求使用 Visual Studio 2022、MSVC 14.44 和 SDK 10.0.26100.7705，因此在新工具链上会失败。如果遇到此问题，请通过手动路径或单独的菜单选项进行构建。请参阅[工具链要求](../GettingStarted/Toolchain-Requirements.md)。
 
-### How long does a build take?
 
-A source build is hours on typical hardware, and an installed build is longer. Shader compilation dominates
-the first launch afterwards. See [Shader Compilation and PSO](../Performance/Shader-Compilation-And-PSO.md).
+### 在全新克隆的环境中，构建立即失败。
 
-### The engine takes too much disk space
+最常见的原因是缺少 .NET Framework 4.5 引用程序集，而最新的 Visual Studio 安装程序默认情况下不再包含这些程序集。请参阅[构建故障排除](../GettingStarted/Build-Troubleshooting.md)。
 
-Run the debloat suite in `devops\`. It moves platform binaries, templates, samples and optionally plugins
-out of the tree, with a dry-run mode and a recovery folder rather than deletion. See
-[Debloat Guide](../Performance/Debloat-Guide.md).
+### 我需要从源代码构建吗？
 
-## Rendering
+仅当您需要修改引擎 C++ 代码或更改[编译时开关](../Performance/Compile-Time-Switches.md)时才需要从源代码构建。对于其他所有情况，[安装构建](../GettingStarted/Install-Binary-Build.md)启动速度更快，并且占用磁盘空间更少。
 
-### I set a ray tracing console variable and nothing happened
 
-This is the single most common question, and the answer is almost always
-`VITE_RT_PSO_DEBLOAT`. It defaults to `1`, which compiles out the shader permutations for:
+### 构建需要多长时间？
+
+在典型的硬件上，从源代码构建需要几个小时，而安装构建则需要更长时间。着色器编译在之后的首次启动中占据主导地位。请参阅[着色器编译和 PSO](../Performance/Shader-Compilation-And-PSO.md)。
+
+
+### 引擎占用过多磁盘空间。
+
+在 `devops\` 目录下运行精简套件。它会将平台二进制文件、模板、示例以及（可选的）插件从代码树中移出，并提供试运行模式和恢复文件夹，而不是直接删除。请参阅[精简指南](../Performance/Debloat-Guide.md)。
+
+
+## 渲染
+
+### 我设置了一个光线追踪控制台变量，但没有任何反应。
+
+这是最常见的问题，答案几乎总是 `VITE_RT_PSO_DEBLOAT`。它的默认值为 `1`，会编译掉以下着色器排列组合：
 
 - RTXDI (`r.RayTracing.SampledDirectLighting`)
-- Path tracing
-- Ray-traced translucency and both caustics systems
-- Per-pixel ray-traced global illumination
-- The non-deferred reflection path, and with it reflected translucency and RT reflection captures
+- 路径追踪
+- 光线追踪半透明效果和焦散系统
+- 逐像素光线追踪全局光照
+- 非延迟反射路径，以及由此产生的反射半透明效果和光线追踪反射捕获
 
-The console variables still exist and still set. Nothing renders. Rebuild the engine with
-`VITE_RT_PSO_DEBLOAT=0` to use them. See [Compile-Time Switches](../Performance/Compile-Time-Switches.md) and
-[Ray Tracing](../Rendering/Ray-Tracing.md).
+控制台变量仍然存在且仍然有效。但没有任何渲染效果。请使用 `VITE_RT_PSO_DEBLOAT=0` 重新构建引擎以使用这些变量。请参阅[编译时开关](../Performance/Compile-Time-Switches.md)和[光线追踪](../Rendering/Ray-Tracing.md)。
 
-### Which ray tracing features work out of the box?
 
-Reflections, shadows, ambient occlusion and sky light. Those four are available in a default build; the
-rest are compiled out. Full table in [Ray Tracing](../Rendering/Ray-Tracing.md).
+### 哪些光线追踪功能开箱即用？
 
-### Which GI should I use?
+反射、阴影、环境光遮蔽和天空光。这四项在默认版本中可用；其余功能会被编译排除。完整表格请参见[光线追踪](../Rendering/Ray-Tracing.md)部分。
 
-For most projects, DDGI plus SSGI. DDGI provides the low-frequency indirect bounce and SSGI adds
-contact-scale detail its probe grid cannot resolve. Static DDGI is cheaper and correct if nothing moves.
-Per-pixel ray-traced GI is reference-only and compiled out by default. See
-[Global Illumination](../Rendering/Global-Illumination.md).
 
-### Why SMAA instead of TAA?
+### 我应该使用哪种全局光照？
 
-TAA's ghosting, smearing and motion softness are structural, not tuning problems. SMAA is spatial and does
-not have them. It is Vite's recommended default and is enabled with `r.Vite.SMAA.Mode`. See
-[Anti-Aliasing](../Rendering/Anti-Aliasing.md).
+对于大多数项目，建议使用 DDGI 和 SSGI。DDGI 提供低频间接反射，而 SSGI 则添加了其探测网格无法解析的接触尺度细节。如果物体静止不动，静态 DDGI 更经济高效且效果​​更佳。逐像素光线追踪全局光照仅供参考，默认情况下会被编译排除。请参见[全局光照](../Rendering/Global-Illumination.md)部分。
 
-### Which upscaler should I use?
 
-DLSS if you are on NVIDIA hardware and shipping to NVIDIA users. FSR or XeSS for cross-vendor coverage. NIS
-as a cheap fallback with no temporal component. Most projects should offer more than one. See
-[Upscalers](../Rendering/Upscalers.md).
+### 为什么选择 SMAA 而不是 TAA？
 
-### Volumetric fog looks wrong with upscaling enabled
+TAA 的重影、拖影和运动模糊是结构性问题，而非调优问题。SMAA 是空间抗锯齿，不存在这些问题。它是 Vite 推荐的默认设置，可通过 `r.Vite.SMAA.Mode` 启用。请参见[抗锯齿](../Rendering/Anti-Aliasing.md)部分。
 
-That is what `VITE_DLSS_PATCH` fixes. It adds
-`r.VolumetricFog.UseUpScaledSizeVolumetricFog`, which renders fog at output rather than internal
-resolution, along with translucency fixes. It defaults to `0`, so it requires a rebuild. See
-[Upscalers](../Rendering/Upscalers.md).
 
-### Does Vite have Nanite or Lumen?
+### 我应该使用哪种超分辨率器？
 
-No, and it will not. Those are UE5 systems built on UE5 assumptions. Vite's answers are hardware
-tessellation and LODs for geometry, and DDGI plus SSGI for global illumination.
+如果您使用的是 NVIDIA 硬件并且项目面向 NVIDIA 用户，请使用 DLSS。FSR 或 XeSS 可以跨厂商兼容。NIS 是一个低成本的备选方案，它不包含时间组件。大多数项目应该提供不止一种升频器。请参阅[超分辨率器](../Rendering/Upscalers.md)部分。
 
-## Physics
 
-### Why PhysX instead of Chaos?
+### 启用超分辨率后，体积雾看起来有问题。
 
-PhysX is faster and more predictable on the workloads Vite targets, and it keeps Apex Destruction and Apex
-Cloth &mdash; both removed in UE5 &mdash; available. See [PhysX](../Physics/PhysX.md).
+`VITE_DLSS_PATCH` 可以修复这个问题。它添加了 `r.VolumetricFog.UseUpScaledSizeVolumetricFog`，该函数会以输出分辨率而不是内部分辨率渲染雾，同时还修复了半透明度问题。它的默认值为 `0`，因此需要重新构建。请参阅[超分辨率器](../Rendering/Upscalers.md)部分。
 
-### How do I get deterministic physics?
 
-Rebuild with `VITE_PHYSX_FIXED_TIMESTEP=1`, then enable
-`p.VitePhysXFixedTimestep.Enabled`. Without the compile-time switch the console variables do nothing. See
-[Fixed Timestep](../Physics/Fixed-Timestep.md).
+### Vite 是否支持 Nanite 或 Lumen？
 
-### I need thousands of physics objects
+不支持，而且以后也不会支持。这些是基于 UE5 假设构建的 UE5 系统。Vite 的解决方案是使用硬件细分和 LOD 来处理几何体，并使用 DDGI 和 SSGI 来处理全局光照。
 
-Use the [PhysX Instanced Subsystem](../Physics/Instanced-Physics.md). Conventional actor-per-body physics hits actor
-overhead, not solver limits, at a few thousand bodies. The subsystem removes that overhead by driving
-instanced mesh transforms directly.
 
-## Performance
+## 物理引擎
 
-### Where do I start optimising?
+### 为什么选择 PhysX 而不是 Chaos？
 
-`stat unit`, and identify which of Game, Draw or GPU is the largest. Optimising the wrong one produces no
-frame time improvement at all. See [Profiling](../Performance/Profiling.md).
+PhysX 在 Vite 的目标工作负载下速度更快、结果更可预测，并且保留了 UE5 中移除的 Apex Destruction 和 Apex Cloth。请参阅 [PhysX](../Physics/PhysX.md)。
 
-### My game thread is the bottleneck
 
-The usual suspects, in rough order of frequency: Character Movement Components, animation evaluation,
-Blueprint tick logic, and actor tick overhead generally. See
-[400 Characters CMC Bench](../ProjectsAndDemos/400-Characters-CMC-Bench.md) and
-[Performance Targets](../EngineOverview/Performance-Targets.md).
+### 如何获得确定性物理效果？
 
-### Shader compilation is taking forever
+使用 `VITE_PHYSX_FIXED_TIMESTEP=1` 重新构建，然后启用 `p.VitePhysXFixedTimestep.Enabled`。如果没有编译时开关，控制台变量将不起作用。请参阅[固定时间步长](../Physics/Fixed-Timestep.md)。
 
-Check what your permutation count actually is before assuming it is unavoidable. Every shading model in
-use, every enabled plugin and every quality level multiplies. `VITE_RT_PSO_DEBLOAT=1` already removes a
-large share of the ray tracing permutations, which is why it is the default. See
-[Shader Compilation and PSO](../Performance/Shader-Compilation-And-PSO.md).
 
-### Shaders behave as though my change did not happen
+### 我需要数千个物理对象
 
-Stale cache. Try `recompileshaders changed` or `recompileshaders global` first &mdash; both are far cheaper
-than a full wipe. If neither helps, run `WipeShaderCache.bat`. See
-[Cache Management](../Tools/Cache-Management.md).
+使用 [PhysX 实例化子系统](../Physics/Instanced-Physics.md)。传统的逐个物体物理引擎在处理几千个物体时，会受到 Actor 的开销限制，而不是求解器的限制。该子系统通过直接驱动实例化网格变换来消除这种开销。
 
-## Plugins
 
-### A feature is missing from the editor
+## 性能
 
-Check whether its plugin is enabled. Most bundled plugins default to off. Only RTXGI, NRD and the custom
-splash screen are on by default. See [Bundled Plugins](../Plugins/Bundled-Plugins.md).
+### 我应该从哪里开始优化？
 
-### Can I get plugin X bundled?
+统计单位（`stat unit），并确定游戏、绘制或 GPU 中哪个占用资源最多。优化错误的单位不会带来任何帧时间上的提升。请参阅[性能分析](../Performance/Profiling.md)。
 
-If it is 4.21&ndash;4.27 compatible, permissively licensed and worth its size and compile cost, propose it.
-UE5-only plugins are out of scope. See [Proposed Plugins](../Plugins/Proposed-Plugins.md).
 
-### The debloat script removed a plugin I need
+### 我的游戏线程是瓶颈
 
-`ExcludedPlugins.txt` is aggressive and includes plugins many projects use. If you ran in move mode, the
-files are in `ViteDebloat_Moved` next to the engine folder. If you ran in delete mode, they are gone and
-you need to restore from source control. See [Debloat Guide](../Performance/Debloat-Guide.md).
+常见的瓶颈，大致按出现频率排序：角色移动组件、动画评估、蓝图 tick 逻辑以及 Actor tick 开销。请参阅 [400 个角色 CMC 基准测试](../ProjectsAndDemos/400-Characters-CMC-Bench.md)和[性能目标](../EngineOverview/Performance-Targets.md)。
 
-## Contributing
 
-### What gets a pull request rejected fastest?
+### 着色器编译耗时过长
 
-Modifying an ABI: ray tracing payload bitfields, shader-visible enums, packed RHI or RenderCore bitmasks,
-reflection bitmask definitions, or any CPU/GPU shared struct layout. These are rejected regardless of the
-rest of the change. See [Coding Guidelines](../Contributing/Coding-Guidelines.md).
+在假设无法避免之前，请检查您的排列计数。每个使用的着色模型、每个启用的插件和每个质量级别都会增加排列计数。`VITE_RT_PSO_DEBLOAT=1` 已经移除了大部分光线追踪排列，这也是它成为默认值的原因。请参阅[着色器编译和 PSO](../Performance/Shader-Compilation-And-PSO.md)。
 
-### Can I use recursion, virtuals or templates?
 
-Recursion is banned. New virtuals need strict justification. Templates are discouraged unless they earn
-their compile-time and binary-size cost. New Blueprint-exposed functions need explicit approval.
+### 着色器的行为就像我的更改没有生效一样
 
-### How do I document my change?
+缓存过期。首先尝试运行 `recompileshaders changed` 或 `recompileshaders global` 命令——这两种方法都比完全清除缓存要省事得多。如果这两种方法都无效，请运行 `WipeShaderCache.bat`。请参阅[缓存管理](../Tools/Cache-Management.md)部分。
 
-In the same pull request. New console variables go on the relevant feature page, new `VITE_*` switches go
-in [Compile-Time Switches](../Performance/Compile-Time-Switches.md), and changed defaults go in
-[Engine Defaults](../Performance/Engine-Defaults.md). See
-[Documentation Contributions](../Contributing/Documentation-Contributions.md).
 
-## See also
+## 插件
 
-- [Console Variables](./Console-Variables.md)
-- [Glossary](./Glossary.md)
-- [Compile-Time Switches](../Performance/Compile-Time-Switches.md)
-- [Build Troubleshooting](../GettingStarted/Build-Troubleshooting.md)
+### 编辑器中缺少某个功能
+
+请检查该插件是否已启用。大多数捆绑插件默认处于关闭状态。只有 RTXGI、NRD 和自定义启动画面默认启用。请参阅[已捆绑的插件](../Plugins/Bundled-Plugins.md)。
+
+
+### 能否将插件 X 捆绑到项目中？
+
+如果它与 4.21–4.27 版本兼容，采用宽松许可，并且其体积和编译成本与其价值相符，请提交申请。仅适用于 UE5 的插件不在本次讨论范围内。请参阅[提议的插件](../Plugins/Proposed-Plugins.md)。
+
+
+### 精简脚本删除了我需要的插件
+
+`ExcludedPlugins.txt` 文件包含的插件很多，因此会进行大幅度的清理。如果您以移动模式运行脚本，这些文件会位于引擎文件夹旁边的 `ViteDebloat_Moved` 文件夹中。如果您以删除模式运行脚本，这些文件将被删除，您需要从源代码控制系统中恢复。请参阅[精简指南](../Performance/Debloat-Guide.md)。
+
+
+## 贡献指南
+
+### 哪些修改会导致拉取请求最快被拒绝？
+
+修改 ABI：光线追踪有效载荷位域、着色器可见枚举、打包的 RHI 或 RenderCore 位掩码、反射位掩码定义，或任何 CPU/GPU 共享的结构体布局。无论其他更改如何，这些都会被拒绝。请参阅[编码指南](../Contributing/Coding-Guidelines.md)。
+
+
+### 我可以使用递归、虚函数或模板吗？
+
+禁止使用递归。新的虚函数需要严格的理由。除非模板的编译时成本和二进制文件大小的增加是值得的，否则不建议使用模板。新的蓝图公开函数需要获得明确批准。
+
+
+### 如何记录我的更改？
+
+在同一个拉取请求中。新的控制台变量放在相关的功能页面，新的 `VITE_*` 开关放在[编译时开关](../Performance/Compile-Time-Switches.md)页面，更改的默认值放在[引擎默认值](../Performance/Engine-Defaults.md)页面。请参阅[文档贡献](../Contributing/Documentation-Contributions.md)。
+
+
+## 另请参阅
+
+- [控制台变量](./Console-Variables.md)
+- [术语表](./Glossary.md)
+- [编译时开关](../Performance/Compile-Time-Switches.md)
+- [构建故障排除](../GettingStarted/Build-Troubleshooting.md)
