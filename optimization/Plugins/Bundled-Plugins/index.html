@@ -121,14 +121,11 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="_1">已捆绑的插件</h1>
-<p>Everything Vite adds on top of stock UE 4.27, with versions and default enablement. Stock 4.27 plugins are
-not listed &mdash; only Vite's additions and the vendor integrations.</p>
-<p>Versions are as of the July major integration. Check the <code>.uplugin</code> file for the authoritative value in
-your tree.</p>
-<p><img alt="" src="../../../img/optimization/VitePlugins.png" /></p>
-<p><em>资源管理器中 Engine/Plugins/Runtime/VitePlugins 目录的内容</em></p>
-<p><em>Vite 自身添加的插件位于 <code>Engine\Plugins\Runtime\VitePlugins</code> 目录下。NVIDIA 提供的厂商集成插件则位于 <code>Engine\Plugins\Runtime\Nvidia</code> 目录下。</em></p>
-<h2 id="_2">放大和帧生成</h2>
+<p>Vite 在 UE 4.27 原版基础上添加的所有内容，包括版本和默认启用状态。原版 4.27 插件未列出，仅列出 Vite 添加的内容和厂商集成。</p>
+<p>版本信息截至 7 月份的主要版本更新。请查看 <code>.uplugin</code> 文件以获取您插件树中的权威版本。</p>
+<p><img alt="" src="../../../img/optimization/VitePlugins.png" />
+<em>Vite 自身添加的插件位于 <code>Engine\Plugins\Runtime\VitePlugins</code> 目录下。NVIDIA 提供的厂商集成插件则位于 <code>Engine\Plugins\Runtime\Nvidia</code> 目录下。</em></p>
+<h2 id="_2">超分辨率和帧生成</h2>
 <table>
 <thead>
 <tr>
@@ -140,27 +137,27 @@ your tree.</p>
 </thead>
 <tbody>
 <tr>
-<td>NVIDIA DLSS Super Resolution / Ray Reconstruction / DLAA</td>
+<td>NVIDIA DLSS 超分辨率/光线重建/DLAA / DLAA</td>
 <td>8.7.0 (NGX 310.7.0)</td>
-<td>Off</td>
+<td>关闭</td>
 <td><code>Runtime\Nvidia\DLSS</code></td>
 </tr>
 <tr>
-<td>NVIDIA DLSS Frame Generation (Streamline)</td>
+<td>NVIDIA DLSS 帧生成 (Streamline)</td>
 <td>1.3.0-SL2.4.0</td>
-<td>Off</td>
+<td>关闭</td>
 <td><code>Runtime\Nvidia\Streamline</code></td>
 </tr>
 <tr>
 <td>NVIDIA NIS</td>
 <td>1.2.1</td>
-<td>Off</td>
+<td>关闭</td>
 <td><code>Runtime\Nvidia\NIS</code></td>
 </tr>
 <tr>
-<td>NVIDIA RTX Dynamic Vibrance (DeepDVC)</td>
+<td>NVIDIA RTX 动态色彩 (DeepDVC)</td>
 <td>1.3.0-SL2.4.0</td>
-<td>Off</td>
+<td>关闭</td>
 <td><code>Runtime\Nvidia\StreamlineDeepDVC</code></td>
 </tr>
 <tr>
@@ -182,15 +179,14 @@ your tree.</p>
 <td><code>Runtime\VitePlugins\XeSS_UE4.27_Plugin_v3.0.5</code></td>
 </tr>
 <tr>
-<td>Movie Render Queue DLSS/DLAA support</td>
+<td>影片渲染队列 DLSS/DLAA 支持</td>
 <td>2.3.3</td>
 <td>&mdash;</td>
 <td><code>Runtime\Nvidia\DLSSMoviePipelineSupport</code></td>
 </tr>
 </tbody>
 </table>
-<p>FSR 4 uses the native ffx-api and is DX12-only. It was backported to 4.27 specifically for Vite. Full
-detail in <a href="../../Rendering/Upscalers/">Upscalers</a>.</p>
+<p>FSR 4 使用原生 ffx-api，仅支持 DX12。它已针对 Vite 特别移植到 4.27 版本。详情请参阅<a href="../../Rendering/Upscalers/">超分辨率</a>部分。</p>
 <h2 id="_3">光线追踪和渲染</h2>
 <table>
 <thead>
@@ -203,15 +199,15 @@ detail in <a href="../../Rendering/Upscalers/">Upscalers</a>.</p>
 </thead>
 <tbody>
 <tr>
-<td>NVIDIA RTX Global Illumination (RTXGI)</td>
+<td>NVIDIA RTX 全局光照 (RTXGI)</td>
 <td>1.1.50</td>
-<td><strong>On</strong></td>
+<td><strong>开启</strong></td>
 <td><code>Runtime\Nvidia\RTXGI</code></td>
 </tr>
 <tr>
-<td>NVIDIA Real-Time Denoiser (NRD/ReLAX)</td>
+<td>NVIDIA 实时降噪器 (NRD/ReLAX)</td>
 <td>2.10.00-relax</td>
-<td><strong>On</strong></td>
+<td><strong>开启</strong></td>
 <td><code>Runtime\Nvidia\NRD</code></td>
 </tr>
 <tr>
@@ -227,15 +223,14 @@ detail in <a href="../../Rendering/Upscalers/">Upscalers</a>.</p>
 <td><code>Runtime\Nvidia\Ansel</code></td>
 </tr>
 <tr>
-<td>Graphics Card Info Utilities</td>
+<td>显卡信息工具</td>
 <td>1.0</td>
-<td>Off</td>
+<td>关闭</td>
 <td><code>Runtime\Nvidia\GraphicsCardInfoUtils</code></td>
 </tr>
 </tbody>
 </table>
-<p>RTXGI provides the DDGI implementation that is Vite's recommended dynamic GI solution. NRD/ReLAX denoises ray-traced output. Both being on by default is deliberate: they are the basis of Vite's recommended lighting setup. See <a href="../../Rendering/Global-Illumination/">Global Illumination</a> and
-<a href="../../Rendering/DDGI-Dynamic/">Dynamic DDGI</a>.</p>
+<p>RTXGI 提供 DDGI 实现，这是 Vite 推荐的动态全局光照解决方案。NRD/ReLAX 用于对光线追踪输出进行降噪。两者默认开启是有意为之：它们是 Vite 推荐光照设置的基础。请参阅<a href="../../Rendering/Global-Illumination/">全局光照</a>和<a href="../../Rendering/DDGI-Dynamic/">动态 DDGI</a>。</p>
 <h2 id="_4">头发</h2>
 <table>
 <thead>
@@ -256,13 +251,12 @@ detail in <a href="../../Rendering/Upscalers/">Upscalers</a>.</p>
 <tr>
 <td>Groom (HairStrands)</td>
 <td>1.0</td>
-<td>Off</td>
+<td>关闭</td>
 <td><code>Runtime\HairStrands</code></td>
 </tr>
 </tbody>
 </table>
-<p>Two independent hair systems with different authoring pipelines. See
-<a href="../../Rendering/Hair-Rendering/">Hair Rendering</a>.</p>
+<p>两个独立的毛发系统，采用不同的制作流程。参见<a href="../../Rendering/Hair-Rendering/">毛发渲染</a>部分。</p>
 <h2 id="_5">物理和破坏</h2>
 <table>
 <thead>
@@ -275,19 +269,19 @@ detail in <a href="../../Rendering/Upscalers/">Upscalers</a>.</p>
 </thead>
 <tbody>
 <tr>
-<td>Blast (runtime)</td>
+<td>Blast（运行时）</td>
 <td>1.0</td>
-<td>Off</td>
+<td>关闭</td>
 <td><code>GameWorks\Blast</code></td>
 </tr>
 <tr>
-<td>Blast Plugin (authoring)</td>
+<td>Blast 插件（创作）</td>
 <td>0.1</td>
-<td>Off</td>
+<td>关闭</td>
 <td><code>Experimental\BlastPlugin</code></td>
 </tr>
 <tr>
-<td>PhysX Instanced Subsystem</td>
+<td>PhysX 实例子系统</td>
 <td>1.11</td>
 <td>&mdash;</td>
 <td><code>Runtime\VitePlugins\PhysXInstancedSubsystem</code></td>
@@ -300,26 +294,21 @@ detail in <a href="../../Rendering/Upscalers/">Upscalers</a>.</p>
 </tr>
 </tbody>
 </table>
-<p>Apex Destruction, Apex Cloth and PhysX Vehicles are stock 4.27 plugins that Vite retains &mdash; they were
-removed in UE5 when Chaos replaced PhysX. See <a href="../../Physics/Destruction-And-Cloth/">Destruction and Cloth</a>.</p>
-<p>Kawaii Physics is a UE5 secondary-motion bone solver backported to Vite. It gives hair, cloth and
-accessories physical follow-through from a single animation node, far more cheaply than a full cloth
-simulation.</p>
-<p>The PhysX Instanced Subsystem manages large numbers of PhysX-backed instanced bodies through a world
-subsystem, writing poses back into ISM/HISM instance transforms rather than spawning individual actors.
-See <a href="../../Physics/Instanced-Physics/">Instanced Physics</a>.</p>
-<h2 id="animation">Animation</h2>
+<p>Apex Destruction、Apex Cloth 和 PhysX Vehicles 是 Vite 保留的 4.27 版本自带插件——它们在 UE5 中被移除，因为 Chaos 取代了 PhysX。参见<a href="../../Physics/Destruction-And-Cloth/">破坏与布料</a>。</p>
+<p>Kawaii Physics 是一个从 UE5 移植到 Vite 的辅助运动骨骼解算器。它能够通过单个动画节点为头发、布料和配饰提供物理跟随效果，比完整的布料模拟成本低得多。</p>
+<p>PhysX Instanced Subsystem 通过世界子系统管理大量基于 PhysX 的实例化物体，并将姿态写入 ISM/HISM 实例变换，而不是生成单个 Actor。参见<a href="../../Physics/Instanced-Physics/">实例化物理子系统</a>。</p>
+<h2 id="_6">动画</h2>
 <table>
 <thead>
 <tr>
-<th>Plugin</th>
-<th>Version</th>
-<th>Path</th>
+<th>插件</th>
+<th>版本</th>
+<th>路径</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Animation Compression Library (ACL)</td>
+<td>动画压缩库 (Animation Compression Library, ACL)</td>
 <td>2.1.0</td>
 <td><code>Runtime\VitePlugins\ACLPlugin</code></td>
 </tr>
@@ -330,20 +319,15 @@ See <a href="../../Physics/Instanced-Physics/">Instanced Physics</a>.</p>
 </tr>
 </tbody>
 </table>
-<p>ACL replaces Unreal's built-in animation compression with a substantially better size/quality curve. On a
-project with a large animation set the memory saving is significant, and it is one of the cheapest wins
-available &mdash; see <a href="../../EngineOverview/Performance-Targets/">Performance Targets</a>.</p>
-<p>Motion Symphony provides motion matching and pose matching, the Ubisoft-style approach to animation
-synthesis. It is the closest 4.27 equivalent to UE5's Motion Matching.
-<a href="https://www.wikiful.com/@AnimationUprising/motion-symphony/motion-matching">Documentation</a> ·
-<a href="https://github.com/Animation-Uprising/MotionSymphony_ExampleProject/tree/main">Sample project</a></p>
-<h2 id="gameplay">Gameplay</h2>
+<p>ACL 以更优的尺寸/质量曲线取代了虚幻引擎内置的动画压缩。对于拥有大量动画的项目，内存节省非常显著，而且它是性价比最高的优化方案之一——详见<a href="../../EngineOverview/Performance-Targets/">性能目标</a>。</p>
+<p>Motion Symphony 提供动作匹配和姿势匹配功能，这是育碧式（Ubisoft, Ubiquity Software, 无处不在）的动画合成方法。它是 4.27 版本中最接近 UE5 动作匹配功能的组件。<a href="https://www.wikiful.com/@AnimationUprising/motion-symphony/motion-matching">文档</a>· <a href="https://github.com/Animation-Uprising/MotionSymphony_ExampleProject/tree/main">示例项目</a></p>
+<h2 id="gameplay">游戏玩法（Gameplay）</h2>
 <table>
 <thead>
 <tr>
-<th>Plugin</th>
-<th>Version</th>
-<th>Path</th>
+<th>插件</th>
+<th>版本</th>
+<th>路径</th>
 </tr>
 </thead>
 <tbody>
@@ -359,19 +343,15 @@ synthesis. It is the closest 4.27 equivalent to UE5's Motion Matching.
 </tr>
 </tbody>
 </table>
-<p>Abilities is a lighter alternative to <code>GameplayAbilities</code> for projects that want an ability system without
-GAS's complexity and replication model.</p>
-<p>Flecs ECS is an engine-level integration of the Flecs entity component system, providing a world subsystem,
-Blueprint entity handles, an ISM-based rendering demo and optional Flecs Explorer support. It is off by
-default. Useful when actor-per-entity overhead is the bottleneck &mdash; see the
-<a href="../../EngineOverview/UE4-Versus-UE5-Cost-Analysis/">UE4 vs UE5 cost analysis</a> on core class base costs.</p>
-<h2 id="debug-and-profiling">Debug and profiling</h2>
+<p>Abilities 是 <code>GameplayAbilities</code> 的一个轻量级替代方案，适用于那些希望拥有技能系统但又不想面对 GAS 的复杂性和复制模型的项目。</p>
+<p>Flecs ECS 是 Fl​​ecs 实体组件系统的引擎级集成，提供世界子系统、蓝图实体句柄、基于 ISM 的渲染演示以及可选的 Flecs Explorer 支持。默认情况下，它处于关闭状态。当每个实体对应一个 Actor 的开销成为瓶颈时，它非常有用——请参阅 <a href="../../EngineOverview/UE4-Versus-UE5-Cost-Analysis/">UE4 与 UE5</a> 核心类基成本的对比分析。</p>
+<h2 id="_7">调试和性能分析</h2>
 <table>
 <thead>
 <tr>
-<th>Plugin</th>
-<th>Version</th>
-<th>Path</th>
+<th>插件</th>
+<th>版本</th>
+<th>路径</th>
 </tr>
 </thead>
 <tbody>
@@ -397,25 +377,23 @@ default. Useful when actor-per-entity overhead is the bottleneck &mdash; see the
 </tr>
 </tbody>
 </table>
-<p>ImGui gives you immediate-mode debug UI that works in the viewport and in standalone builds, where Slate
-debug widgets are awkward. ImGui Tools builds functional development tools on top of it.</p>
-<p>The GPA plugin integrates Intel Graphics Performance Analyzers into the editor. Automatron improves
-automated testing for C++ and Blueprints. See <a href="../../Performance/Profiling/">Profiling</a>.</p>
-<h2 id="content-and-utilities">Content and utilities</h2>
+<p>ImGui 提供即时模式调试 UI，可在视口和独立构建中使用，而 Slate 调试组件在这些情况下则显得笨拙。ImGui Tools 基于 ImGui 构建了功能开发工具。</p>
+<p>GPA 插件将 Intel 图形性能分析器集成到编辑器中。Automatron 改进了 C++ 和蓝图的自动化测试。请参阅<a href="../../Performance/Profiling/">性能分析</a>部分。</p>
+<h2 id="_8">内容和实用工具</h2>
 <table>
 <thead>
 <tr>
-<th>Plugin</th>
-<th>Version</th>
-<th>Default</th>
-<th>Path</th>
+<th>插件</th>
+<th>版本</th>
+<th>默认</th>
+<th>路径</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Custom Splash Preload Screen</td>
+<td>自定义启动画面预加载画面</td>
 <td>1.0</td>
-<td><strong>On</strong></td>
+<td><strong>开启</strong></td>
 <td><code>Runtime\PostSplashScreen</code></td>
 </tr>
 <tr>
@@ -427,51 +405,46 @@ automated testing for C++ and Blueprints. See <a href="../../Performance/Profili
 <tr>
 <td>Shallow Water</td>
 <td>1.0</td>
-<td>Off</td>
+<td>关闭</td>
 <td><code>Experimental\ShallowWater</code></td>
 </tr>
 </tbody>
 </table>
-<p>The splash screen plugin displays a custom screen after the system splash during engine preinit, covering
-the gap before the first frame.</p>
-<p>Impostor Baker generates impostors for use as distant mesh LODs &mdash; the standard technique for
-rendering large numbers of distant trees or props cheaply, and worth reaching for before accepting a draw
-call cost you cannot afford.</p>
-<h2 id="default-enablement-summary">Default enablement summary</h2>
-<p>Only three bundled plugins are on by default:</p>
+<p>启动画面插件会在引擎预初始化期间，在系统启动画面之后显示一个自定义屏幕，填补第一帧之前的空白。</p>
+<p>Impostor Baker 会生成用于远景网格 LOD 的虚拟模型——这是渲染大量远景树木或道具的常用低成本技术，值得优先考虑，避免承担无法承受的绘制调用成本。</p>
+<h2 id="_9">默认启用概要</h2>
+<p>默认情况下仅启用三个捆绑插件：</p>
 <table>
 <thead>
 <tr>
-<th>Plugin</th>
-<th>Why</th>
+<th>插件</th>
+<th>用途</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td>RTXGI</td>
-<td>Provides DDGI, Vite's recommended dynamic GI</td>
+<td>提供 DDGI，Vite 推荐的动态全局光照</td>
 </tr>
 <tr>
 <td>NRD</td>
-<td>Denoises ray-traced output, needed by the ray tracing suite</td>
+<td>对光线追踪输出进行降噪，光线追踪套件需要此功能</td>
 </tr>
 <tr>
-<td>Custom Splash Preload Screen</td>
-<td>Cosmetic, negligible cost</td>
+<td>自定义启动画面</td>
+<td>外观装饰，成本极低</td>
 </tr>
 </tbody>
 </table>
-<p>Everything else is opt-in. If a feature appears not to work, check that its plugin is enabled before
-debugging further &mdash; and for ray tracing features, check the
-<a href="../../Rendering/Ray-Tracing/">compile-time switch availability table</a> as well.</p>
-<h2 id="see-also">See also</h2>
+<p>其他所有功能均为可选。如果某个功能似乎无法正常工作，请先检查其插件是否已启用，然后再进行进一步调试——对于光线追踪功能，还需查看<a href="../../Rendering/Ray-Tracing/">编译时开关可用性表</a>。</p>
+<h2 id="_10">另请参阅</h2>
 <ul>
-<li><a href="../Plugins/">Plugins</a></li>
-<li><a href="../Proposed-Plugins/">Proposed Plugins</a></li>
-<li><a href="../../Rendering/Upscalers/">Upscalers</a></li>
-<li><a href="../../Rendering/Hair-Rendering/">Hair Rendering</a></li>
-<li><a href="../../Physics/Instanced-Physics/">Instanced Physics</a></li>
-<li><a href="../../Performance/Debloat-Guide/">Debloat Guide</a></li>
+<li><a href="../Plugins/">插件</a></li>
+<li><a href="../Proposed-Plugins/">推荐的插件</a></li>
+<li><a href="../../Rendering/Upscalers/">超分辨率</a></li>
+<li><a href="../../Rendering/Hair-Rendering/">毛发渲染</a></li>
+<li><a href="../../Physics/Instanced-Physics/">实例化物理</a></li>
+<li><a href="../../Performance/Debloat-Guide/">精简指南</a></li>
 </ul>
               
             </div>
