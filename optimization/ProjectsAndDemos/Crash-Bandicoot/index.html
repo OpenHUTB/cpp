@@ -122,39 +122,27 @@
               
                 <h1 id="_1">古惑狼：时空扭曲</h1>
 <p>这是基于虚幻引擎 4.26 制作的《古惑狼3：时空穿梭》中“古墓探险者”关卡的社区重制版。这是一个完整的游戏关卡，而不是一个灯光场景。</p>
-<p><img alt="" src="../../../img/optimization/CrashBandicootRemake.png" /></p>
-<p><em>古墓丽影关卡重制版正在引擎中运行。这是一个完整的可玩关卡，而不是一个光照场景，这使得它的帧成本曲线更接近于一个真实的项目。</em></p>
-<h2 id="source">Source</h2>
+<p><img alt="" src="../../../img/optimization/CrashBandicootRemake.png" />
+<em>古墓丽影关卡重制版正在引擎中运行。这是一个完整的可玩关卡，而不是一个光照场景，这使得它的帧成本曲线更接近于一个真实的项目。</em></p>
+<h2 id="_2">来源</h2>
 <p><a href="https://github.com/dyanikoglu/CrashBandicoot-Timetwister">dyanikoglu/CrashBandicoot-Timetwister</a></p>
-<h2 id="why-it-is-here">Why it is here</h2>
-<p>Most of the projects in this section are technology demonstrations: a scene that exists to show one
-rendering feature. This one is a playable level with movement, collision, hazards, collectibles and a
-camera system, which makes it a different kind of reference.</p>
-<p>It is useful for two things:</p>
+<h2 id="_3">入选理由</h2>
+<p>本部分的大部分项目都是技术演示：一个场景，旨在展示某一项渲染功能。而这个项目则是一个可玩关卡，包含移动、碰撞、障碍物、收集品和摄像机系统，因此它是一种不同的参考案例。</p>
+<p>它有两个用途：</p>
 <ul>
-<li><strong>Gameplay-shaped profiling.</strong> A real level has a frame cost profile that a lighting scene does not:
-  actor ticks, animation, collision queries and gameplay logic competing with rendering. That is the shape
-  most projects actually have. See <a href="../../Performance/Profiling/">Profiling</a>.</li>
-<li><strong>Demonstrating 4.x sufficiency.</strong> Stylized platformers are precisely the genre where UE5's headline
-  features add cost without adding much, and where 4.27's lower base cost is the better trade. See
-  <a href="../../EngineOverview/Why-NvRTX-427/">Why NvRTX 4.27</a>.</li>
+<li><strong>游戏玩法驱动的性能分析。</strong> 一个真实的关卡拥有与光照场景不同的帧成本特性：角色帧数、动画、碰撞查询和游戏逻辑都会与渲染竞争。这才是大多数项目实际的性能特点。参见<a href="../../Performance/Profiling/">性能分析</a>部分。</li>
+<li><strong>证明 4.x 版本足以胜任。</strong> 风格化的平台游戏正是 UE5 的主要功能会增加成本但实际提升并不显著的类型，而 4.27 版本更低的基础成本才是更佳的选择。参见<a href="../../EngineOverview/Why-NvRTX-427/">为何选择 NvRTX 4.27</a>。</li>
 </ul>
-<h2 id="version-note">Version note</h2>
-<p><note>
-The project targets Unreal Engine 4.26, not 4.27. Opening it in Vite will prompt an engine version
-conversion. Expect to resolve some asset and API differences; the 4.26 to 4.27 gap is small but not zero.
-</note></p>
-<p>This is a much easier conversion than coming from UE5, which requires the Asset Downgrader &mdash; see
-<a href="../../GettingStarted/Migrating-From-UE5/">Migrating from UE5</a>.</p>
-<h2 id="licensing">Licensing</h2>
-<p>This is a third-party community project, not a Vite deliverable. It is a fan remake of copyrighted
-material; treat it as a reference to study rather than a source of assets to reuse. See the repository for
-its own terms.</p>
-<h2 id="see-also">See also</h2>
+<h2 id="_4">版本说明</h2>
+<p><strong>注意：</strong> 本项目的目标引擎版本为虚幻引擎 4.26，而非 4.27。在 Vite 中打开时会提示引擎版本转换。预计会解决一些资源和 API 的差异；4.26 和 4.27 之间的差异虽小但并非为零。</p>
+<p>相比从 UE5 迁移，这要容易得多，后者需要使用资源降级工具——请参阅<a href="../../GettingStarted/Migrating-From-UE5/">从 UE5 迁移</a>。</p>
+<h2 id="_5">许可</h2>
+<p>这是一个第三方社区项目，并非 Vite 的官方交付内容。它是对受版权保护素材的粉丝重制；请将其视为参考资料进行研究，而非可重复使用的资源。请参阅代码库了解其相关条款。</p>
+<h2 id="_6">另请参阅</h2>
 <ul>
-<li><a href="../../Performance/Profiling/">Profiling</a></li>
-<li><a href="../../EngineOverview/Why-NvRTX-427/">Why NvRTX 4.27</a></li>
-<li><a href="../../GettingStarted/First-Project/">First Project</a></li>
+<li><a href="../../Performance/Profiling/">性能分析</a></li>
+<li><a href="../../EngineOverview/Why-NvRTX-427/">为何选择 NvRTX 4.27</a></li>
+<li><a href="../../GettingStarted/First-Project/">第一个项目</a></li>
 </ul>
               
             </div>
