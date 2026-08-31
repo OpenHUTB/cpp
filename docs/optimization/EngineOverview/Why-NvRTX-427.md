@@ -1,103 +1,72 @@
-# Why NvRTX 4.27
+# 为何选择 NvRTX 4.27
 
-<tldr>
-<p>
-Unreal Engine 4.27 is the last iteration with an <b>engine-agnostic ray tracing pipeline</b>, closer in
-design to other AAA engines. From UE 5.1 onward, BLAS/TLAS management, culling and ray hit shading became
-progressively coupled to Lumen, Nanite, VSM and GPU Scene, and the PhysX API was removed.
-</p>
-</tldr>
+虚幻引擎 4.27 是最后一个采用与引擎无关的光线追踪管线的版本，其设计更接近其他 AAA 级引擎。从 UE 5.1 开始，BLAS/TLAS 管理、剔除和光线命中着色逐渐与 Lumen、Nanite、VSM 和 GPU Scene 等组件耦合，并且 PhysX API 被移除。
 
-Choosing a base version is the single most consequential decision in a long-lived engine fork. This page
-sets out why Vite is built on NvRTX 4.27 Caustics rather than a UE5 branch.
+对于一个长期存在的引擎分支来说，选择一个基础版本是至关重要的决定。本页阐述了 Vite 为何基于 NvRTX 4.27 Caustics 而非 UE5 分支构建。
 
-## The ray tracing pipeline argument
 
-Unreal Engine 4.27 has an agnostic ray tracing pipeline. Acceleration structures are built and updated in a
-way that is not tied to any particular lighting solution, so a third-party GI or reflection technique can be
-integrated by hooking into the scene representation the renderer already maintains.
+## 光线追踪管线论证
 
-From UE 5.1 onward, the default rendering path &mdash; including ray tracing scene construction and update
-&mdash; became increasingly integrated around Lumen, Nanite, Virtual Shadow Maps and Temporal Super
-Resolution. Concretely:
+虚幻引擎 4.27 采用与引擎无关的光线追踪管线。加速结构的构建和更新方式与任何特定的光照解决方案无关，因此可以通过接入渲染器已维护的场景表示来集成第三方全局光照或反射技术。
 
-- **BLAS/TLAS management** was adapted to support GPU Scene, Nanite fallback meshes and streamed ray
-  tracing geometry.
-- **Culling** was reworked around the same systems.
-- **Ray hit shading** increasingly relied on Lumen's separate Surface Cache and mesh-card representation
-  rather than shading the actual hit surface.
+从 UE 5.1 开始，默认渲染路径（包括光线追踪场景的构建和更新）越来越围绕 Lumen、Nanite、虚拟阴影贴图和时间超分辨率技术进行集成。具体来说：
 
-Each of these is a reasonable decision in service of Lumen. Together they mean that integrating an
-alternative RTGI or reflection technique stops being a matter of consuming the scene and becomes a matter of
-fighting the scene. That is the concrete reason DDGI integrates cleanly into 4.27 and awkwardly into 5.x.
+- **BLAS/TLAS 管理** 经过调整，以支持 GPU 场景、Nanite 回退网格和流式光线追踪几何体。
+- **剔除机制** 也围绕相同的系统进行了重构。
+- **光线命中着色** 越来越依赖于 Lumen 的独立表面缓存和网格卡表示，而不是对实际的命中表面进行着色。
 
-In parallel, as PhysX was deprecated in favour of Chaos, the remaining PhysX-specific APIs and compatibility
-code were gradually removed &mdash; which independently rules out the UE5 branches for a fork whose physics
-argument depends on PhysX.
+这些决策都是为了更好地服务于 Lumen 而做出的合理选择。它们共同意味着，集成其他 RTGI 或反射技术不再是简单地使用场景，而是需要与场景进行对抗。这正是 DDGI 能够顺利集成到 4.27 版本，却难以集成到 5.x 版本的原因所在。
 
-> For detailed reasoning and proofs, see the Technical Reference document on moving Vite base to UE4 Latest.
-> [4.27 versus 5.0](https://docs.google.com/document/d/1gA0MGkzeWWzKkgwBDOP5xRPouSKaOIW6xlPZ2q6BXO0/edit?usp=sharing).
->
-{style="note"}
+与此同时，随着 PhysX 被 Chaos 取代，剩余的 PhysX 特定 API 和兼容性代码也逐渐被移除——这本身就排除了依赖 PhysX 的 UE5 分支的可能性。
 
-## Why the NvRTX Caustics branch specifically
+**笔记：** 有关详细的推理和证明，请参阅关于将 Vite 基础迁移到 UE4 最新版本的技术参考文档。 [4.27 和 5.0 的对比](https://docs.google.com/document/d/1gA0MGkzeWWzKkgwBDOP5xRPouSKaOIW6xlPZ2q6BXO0/edit?usp=sharing)。
 
-NvRTX 4.27 Caustics is NVIDIA's ray tracing branch of Unreal Engine 4.27.1. On top of Epic's 4.27 it adds:
 
-- DirectX 12 and DXR improvements, and a range of ray tracing performance optimisations tested against
-  real Marketplace content rather than synthetic scenes.
-- DLSS, NVIDIA Reflex and improved denoisers.
-- Ray-traced mesh caustics and water caustics.
-- Enhanced translucency, including hybrid translucency modes that let rasterised and ray-traced
-  translucency coexist.
-- Multi-bounce refraction optimisation with absorption and total internal reflection.
-- ReStir GI with a new SVGF-based denoiser, emissive material support and a reservoir-resampling final
-  gather.
-- Engine-side DDGI upgrades, including DDGI-lit ray-traced reflections.
+## 为什么特别推荐 NvRTX Caustics 分支？
 
-That last item matters more than it sounds. The stock 4.27 launcher DDGI plugin is a plugin; the NvRTX
-integration reaches into the ray tracing pipeline, which is what makes probe-based ray-traced reflections
-possible. See [DDGI Dynamic](../Rendering/DDGI-Dynamic.md).
+NvRTX 4.27 Caustics 是 NVIDIA 基于虚幻引擎 4.27.1 的光线追踪分支。它在 Epic 4.27 的基础上新增了以下功能：
 
-Starting from a branch that already had this work done saved the fork a very large amount of integration
-effort, and meant the ray tracing features were already validated against shipped NVIDIA sample content.
+- DirectX 12 和 DXR 的改进，以及一系列光线追踪性能优化，这些优化均针对真实商城内容而非合成场景进行了测试。
+- DLSS、NVIDIA Reflex 和改进的降噪器。
+- 光线追踪网格焦散和水体焦散。
+- 增强的半透明效果，包括允许光栅化和光线追踪半透明共存的混合半透明模式。
+- 包含吸收和全内反射的多重反射折射优化。
+- 带有基于 SVGF 的全新降噪器、自发光材质支持和储层重采样最终聚集的 ReStir GI。
+- 引擎端 DDGI 升级，包括 DDGI 光线追踪反射。
 
-## What has been merged on top
+最后一点比听起来更重要。4.27 版本自带的 DDGI 启动器插件只是一个插件；而 NvRTX 集成则深入到光线追踪管线，这使得基于探针的光线追踪反射成为可能。参见 [动态 DDGI](../Rendering/DDGI-Dynamic.md)。
 
-Vite is not frozen at its base. The following are fully merged:
+由于该分支已经完成了这项工作，因此节省了大量的集成工作，并且光线追踪功能已经过 NVIDIA 官方示例内容的验证。
 
-| Source | What it contributes                                                                   |
+## 顶部已合并的内容
+
+Vite 的底部并未冻结。以下内容已完全合并：
+
+| 来源 | 贡献内容                                                                   |
 |---|---------------------------------------------------------------------------------------|
-| Epic UE 4.27 Plus | Ongoing EpicGames fixes & updates to 4.27, plus the last toolchain compliance updates |
-| NvRTX 5.0 | Further NVIDIA rendering work backported down                                         |
-| AMD GPUOpen engine branches | FSR, AMD-specific rendering optimisations highly relevant to console GPUs             |
-| UE 5.0&ndash;5.8 | 300+ backports in release; 1,000+ at internal staging                                 |
+| Epic UE 4.27 Plus | Epic Games 对 4.27 版本持续进行的修复和更新，以及最新的工具链兼容性更新 |
+| NvRTX 5.0 | 进一步向下移植 NVIDIA 渲染工作                                         |
+| AMD GPUOpen 引擎分支 | FSR，针对主机 GPU 的 AMD 特定渲染优化             |
+| UE 5.0&ndash;5.8 | 正式版包含 300 多个向下移植项；内部测试版包含 1000 多个向下移植项                                 |
 
-Backports are generally not straight cherry-picks. They are adapted properly to Vite codebase, 
-by engineers with several years of experience with Unreal Engine private forks. 
-[Backporting Workflow](../Contributing/Backporting.md) page documents the process.
 
-## The counter-argument, and the answer
+向后移植通常并非简单的代码移植。它们由拥有多年虚幻引擎私有分支经验的工程师根据 Vite 代码库进行适当的适配。[向后移植工作流程](../Contributing/Backporting.md)页面记录了整个过程。
 
-The obvious objection is that Unreal Engine 4 is a dead codebase. In practice it is not. Recent and upcoming
-AAA releases on UE4 include Stellar Blade (4.26, 2024),
-Days Gone Remastered (4.11, 2025), Delta Force (4.22, 2026), Mortal Kombat 1 (4.27, 2023),
-Mario &amp; Luigi: Brothership (4.26, 2024), Princess Peach: Showtime! (4.26, 2024), Pikmin 4 (4.26, 2023), 
-and Square Enix's Final Fantasy VII Rebirth (4.26, 2024)
-Dragon Quest VII Reimagined (4.27, 2026) and Final Fantasy VII: Revelation (4.27, 2027).
 
-All of them ship PhysX. These teams stayed on UE4 to retain specific features and hit fidelity and
-performance targets &mdash; the same reasoning Vite is built on. UE4 also continues to receive updates from
-major studios via the 4.27 Plus branch, and remains a priority target for Nintendo platforms.
+## 反驳观点及解答
 
-The difference between "using a deprecated codebase" and "maintaining a fork" is whether anyone is still
-improving it. Vite's plan is continued optimisation of core systems, rendering core modernisation, UI work
-and toolchain updates &mdash; see [Release Notes](Release-Notes.md) for what that has produced so far.
+显而易见的反对意见是虚幻引擎 4 已经过时了。但实际上并非如此。近期和即将推出的基于虚幻引擎 4 的 AAA 级游戏包括：《星际之刃》（4.26，2024）、《往日不再：重制版》（4.11，2025）、《三角洲特种部队》（4.22，2026）、《真人快打 1》（4.27，2023）、《马里奥与路易吉：兄弟情》（4.26，2024）以及《碧琪公主：秀场！》。 《皮克敏4》（4.26，2024）、《皮克敏4》（4.26，2023）、Square Enix 的《最终幻想VII：重生》（4.26，2024）、《勇者斗恶龙VII：重制版》（4.27，2026）和《最终幻想VII：启示录》（4.27，2027）。
 
-## See also
+所有这些游戏都支持 PhysX 物理引擎。这些团队之所以继续使用 UE4 引擎，是为了保留特定功能并达到预期的保真度和性能目标——这也是 Vite 引擎的开发理念。UE4 引擎也继续通过 4.27 Plus 分支获得各大工作室的更新，并且仍然是任天堂平台的优先开发目标。
 
-- [UE4 versus UE5 Cost Analysis](UE4-Versus-UE5-Cost-Analysis.md)
-- [Performance Targets](Performance-Targets.md)
-- [Ray Tracing](../Rendering/Ray-Tracing.md)
-- [PhysX Overview](../Physics/PhysX.md)
-- [Backporting Workflow](../Contributing/Backporting.md)
+
+“使用已弃用的代码库”和“维护一个分支”之间的区别在于是否还有人在对其进行改进。Vite 的计划是持续优化核心系统、实现渲染核心现代化、改进用户界面和更新工具链——请参阅[发布说明](Release-Notes.md)了解目前为止的成果。
+
+
+## 另请参阅
+
+- [UE4 与 UE5 成本分析](UE4-Versus-UE5-Cost-Analysis.md)
+- [性能目标](Performance-Targets.md)
+- [光线追踪](../Rendering/Ray-Tracing.md)
+- [PhysX 概述](../Physics/PhysX.md)
+- [反向移植工作流程](../Contributing/Backporting.md)
