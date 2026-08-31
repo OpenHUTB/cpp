@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
       <link rel="shortcut icon" href="../../../img/favicon.ico" />
-    <title>Proposed Plugins - 引擎优化文档</title>
+    <title>提议的插件 - 引擎优化文档</title>
     <link rel="stylesheet" href="../../../css/theme.css" />
     <link rel="stylesheet" href="../../../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
@@ -13,7 +13,7 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Proposed Plugins";
+        var mkdocs_page_name = "\u63d0\u8bae\u7684\u63d2\u4ef6";
         var mkdocs_page_input_path = "optimization/Plugins/Proposed-Plugins.md";
         var mkdocs_page_url = null;
       </script>
@@ -110,7 +110,7 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href="../../.." class="icon icon-home" aria-label="Docs"></a></li>
-      <li class="breadcrumb-item active">Proposed Plugins</li>
+      <li class="breadcrumb-item active">提议的插件</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/OpenHUTB/cpp/edit/master/docs/optimization/Plugins/Proposed-Plugins.md"> 编辑页面</a>
     </li>
@@ -120,152 +120,120 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="proposed-plugins">Proposed Plugins</h1>
-<p><tldr></p>
-<p>
-Candidates for bundling into the engine, plus recommended plugins that projects should add themselves.
-Everything here must be compatible with UE 4.21&ndash;4.27 &mdash; UE5-only plugins are out of scope.
-</p>
-<p></tldr></p>
-<p>Not everything useful belongs in the engine repository. A plugin bundled with Vite increases the size of
-every clone, the length of every build and the surface area of every integration. This page tracks what has
-been proposed and which tier it belongs in.</p>
-<p><img alt="" src="../../../img/optimization/Plugins1.png" /></p>
-<p><em>资源管理器视图显示引擎/插件/运行时/VitePlugins 目录下的集成插件文件夹</em></p>
-<p><em>插件已实时集成到 <code>Engine\Plugins\Runtime\VitePlugins</code> 中。</em></p>
-<h2 id="tiers">Tiers</h2>
-<p><deflist>
-<def title="Engine repository">
-Core functionality and native runtime. Small, fast to compile, useful to nearly everyone. These get
-bundled &mdash; see <a href="Bundled-Plugins.md">Bundled Plugins</a>.
-</def>
-<def title="Staples">
-Relevant to general game production, frequently used in AAA, representing major functionality. Worth
-bundling if licensing and size allow; otherwise documented so teams can add them.
-</def>
-<def title="Common use">
-Non-essential or high-level tooling, typically Blueprint extensions. Projects add these themselves.
-</def>
-</deflist></p>
-<h2 id="staple-plugins">Staple plugins</h2>
-<h3 id="physx-instanced-subsystem-integrated-free">PhysX Instanced Subsystem &mdash; integrated, free</h3>
-<p>A world subsystem plus instanced actor workflow for managing large numbers of PhysX-backed instanced
-bodies. Instead of spawning thousands of separate <code>AActor</code> / <code>UPrimitiveComponent</code> objects, you keep one or
-a few instanced mesh actors for rendering while the subsystem creates and updates per-instance PhysX rigid
-bodies, writing their poses back into ISM/HISM instance transforms.</p>
-<p>Integrated at version 1.11. See <a href="Instanced-Physics.md">Instanced Physics</a>.</p>
-<p><a href="https://github.com/Dragomirson/PhysXInstancedSubsystem">Repository</a> ·
-<a href="https://drive.google.com/file/d/1NulunBP2Qre5vLyYnkiqywovsycNuWdQ/view">Demo project</a></p>
-<h3 id="houdini-engine-integrated-commercialfree-use">Houdini Engine &mdash; integrated, commercial/free use</h3>
-<p>Procedural workflow through Houdini Digital Assets. Artists adjust asset parameters interactively in the
-editor and use Unreal assets as inputs; Houdini's procedural engine cooks the asset and the result appears
-in the editor without baking.</p>
-<p><a href="https://github.com/sideeffects/HoudiniEngineForUnreal/tree/Houdini20.0-Unreal4.27">HoudiniEngineForUnreal, Houdini 20.0 / Unreal 4.27 branch</a></p>
-<h3 id="motion-symphony-integrated">Motion Symphony &mdash; integrated</h3>
-<p>Ubisoft-style motion matching and pose matching. Bundled at 1.09; see
-<a href="../Bundled-Plugins/">Bundled Plugins</a>.</p>
-<h3 id="popcornfx-commercialfree-use">PopcornFX &mdash; commercial/free use</h3>
-<p>Proprietary particle system used in several AAA titles including Blizzard games and racing titles. Version
-2.18.6 is the latest fully 4.27-compatible release. Better GPU performance than Niagara.</p>
-<p><a href="https://github.com/PopcornFX/UnrealEnginePopcornFXPlugin">Repository</a> ·
-<a href="https://github.com/PopcornFX/UnrealEnginePopcornFXPlugin/archive/refs/tags/v2.18.6.zip">v2.18.6 download</a></p>
-<p>A patched build by bunnyofficial fixes a compile error:
-<a href="https://drive.google.com/file/d/1hckpY_1zSLsW6mBqBlDeEgPVSijg9Z_y/view?usp=drive_link">patched version</a>.</p>
-<h3 id="azure-playfab-commercialfree-use">Azure PlayFab &mdash; commercial/free use</h3>
-<p>Backend platform for live games: player authentication, data storage, matchmaking, multiplayer networking,
-analytics and LiveOps such as events and A/B testing, on Azure infrastructure.</p>
-<p><img alt="" src="../../../img/optimization/Plugins2.png" /></p>
-<p><em>Azure PlayFab 后端服务概述</em></p>
-<p><a href="https://github.com/PlayFab/UnrealMarketplacePlugin">PlayFab Unreal Marketplace Plugin</a></p>
-<h3 id="wwise-commercialfree-use">Wwise &mdash; commercial/free use</h3>
-<p>The de facto standard audio middleware for games, with hundreds of shipped titles.</p>
-<p><a href="https://www.audiokinetic.com/en/public-library/2025.1.3_9039/?source=UE4&amp;id=index.html">Wwise Unreal integration</a></p>
-<h3 id="asset-downgrader-paid">Asset Downgrader &mdash; paid</h3>
-<p>Downgrades assets to 5.6.1, 5.5.4, 5.4.4, 5.3.2, 5.2.1, 5.1.1, 5.0.3, 4.27 and 4.26. It first upgrades
-assets to the source version (5.6), then applies patches to the <code>.uasset</code> files to make them compatible
-with the target version, minus the newer data &mdash; Nanite data is stripped for a 4.27 downgrade, for
-example.</p>
-<p><warning>
-Features that do not exist in the older version cannot be ported: Nanite on masked materials, new material
-nodes and new Niagara modules among them. The downgrader moves data, not capability.
-</warning></p>
-<p><img alt="" src="../../../img/optimization/AssetDwongrader.png" /></p>
-<p><em>Asset Downgrader 插件界面显示目标版本选择</em></p>
-<p><em>Target versions the downgrader supports, from 5.6.1 down to 4.26.</em></p>
-<p>This is the practical route for using UE5 marketplace content in Vite. See
-<a href="Migrating-From-UE5.md">Migrating from UE5</a>. The author, Ciprian Stanciu, is active on the Vite Discord and
-has provided direct help on several Vite projects.</p>
+                <h1 id="_1">提议的插件</h1>
+<p>此处列出了可打包到引擎中的插件候选列表，以及推荐项目自行添加的插件。所有插件必须兼容 UE 4.21 至 4.27 版本——仅适用于 UE5 的插件不在讨论范围内。</p>
+<p>并非所有有用的插件都应该放在引擎仓库中。与 Vite 打包的插件会增加每个克隆项目的大小、每次构建所需的时间以及每次集成所需的工作量。此页面用于跟踪已提交的插件及其所属层级。
+<img alt="" src="../../../img/optimization/Plugins1.png" />
+<em>资源管理器视图显示<code>Engine\Plugins\Runtime\VitePlugins</code> 目录下的集成插件文件夹</em></p>
+<h2 id="_2">层级</h2>
+<ul>
+<li>
+<p>引擎仓库</p>
+<p>核心功能和原生运行时。体积小、编译速度快，几乎适用于所有人。这些功能会被打包——参见<a href="../Bundled-Plugins/">已捆绑的插件</a>。</p>
+</li>
+<li>
+<p>基础功能</p>
+<p>与通用游戏制作相关，常用于 AAA 级游戏，代表主要功能。如果许可和大小允许，则值得打包；否则，应提供文档以便团队自行添加。</p>
+</li>
+<li>
+<p>常用功能</p>
+<p>非必要或高级工具，通常是蓝图扩展。项目自行添加这些功能。</p>
+</li>
+</ul>
+<h2 id="_3">常用插件</h2>
+<h3 id="physx">PhysX 实例化子系统 — 集成，免费</h3>
+<p>一个世界子系统，外加实例化 Actor 工作流程，用于管理大量基于 PhysX 的实例化刚体。无需生成数千个独立的 <code>AActor</code>/<code>UPrimitiveComponent</code> 对象，只需保留一个或几个实例化网格 Actor 用于渲染，子系统即可创建和更新每个实例的 PhysX 刚体，并将其姿态写回 ISM/HISM 实例变换。</p>
+<p>已在 1.11 版本集成。参见<a href="Instanced-Physics.md">实例​​化物理</a>。</p>
+<p><a href="https://github.com/Dragomirson/PhysXInstancedSubsystem">仓库</a> ·
+<a href="https://drive.google.com/file/d/1NulunBP2Qre5vLyYnkiqywovsycNuWdQ/view">演示项目</a></p>
+<h3 id="houdini">Houdini 引擎 — 集成，可商用/免费使用</h3>
+<p>通过 Houdini 数字资产实现程序化工作流程。艺术家在编辑器中交互式地调整资产参数，并使用虚幻引擎资产作为输入；Houdini 的程序化引擎会处理资产，结果无需烘焙即可显示在编辑器中。</p>
+<p><a href="https://github.com/sideeffects/HoudiniEngineForUnreal/tree/Houdini20.0-Unreal4.27">HoudiniEngineForUnreal，Houdini 20.0 / Unreal 4.27 分支</a></p>
+<h3 id="motion-symphony">Motion Symphony — 集成</h3>
+<p>育碧（Ubisoft）风格的动作匹配和姿势匹配。已包含在 1.09 版本中；请参阅<a href="../Bundled-Plugins/">已捆绑的插件</a>。</p>
+<h3 id="popcornfx">PopcornFX — 商用/免费使用</h3>
+<p>专有粒子系统，已应用于包括暴雪游戏和赛车游戏在内的多款 AAA 级游戏中。2.18.6 版本是最新完全兼容 4.27 版本的版本。GPU 性能优于 Niagara。</p>
+<p><a href="https://github.com/PopcornFX/UnrealEnginePopcornFXPlugin">仓库</a> ·
+<a href="https://github.com/PopcornFX/UnrealEnginePopcornFXPlugin/archive/refs/tags/v2.18.6.zip">v2.18.6 下载</a></p>
+<p>bunnyofficial 提供的补丁版本修复了一个编译错误：<a href="https://drive.google.com/file/d/1hckpY_1zSLsW6mBqBlDeEgPVSijg9Z_y/view?usp=drive_link">补丁版本</a>。</p>
+<h3 id="azure-playfab">Azure PlayFab — 商用/免费使用</h3>
+<p>用于实时游戏的后端平台：玩家身份验证、数据存储、匹配、多人网络、分析和 LiveOps（例如活动和 A/B 测试），基于 Azure 基础架构。
+<img alt="" src="../../../img/optimization/Plugins2.png" />
+<em>Azure PlayFab 后端服务概述</em></p>
+<p><a href="https://github.com/PlayFab/UnrealMarketplacePlugin">PlayFab Unreal Marketplace 插件</a></p>
+<h3 id="wwise">Wwise — 商用/免费使用</h3>
+<p>游戏音频中间件的事实标准，数百款游戏已采用 Wwise。</p>
+<p><a href="https://www.audiokinetic.com/en/public-library/2025.1.3_9039/?source=UE4&amp;id=index.html">Wwise 与 Unreal 集成</a></p>
+<h3 id="asset-downgrader">资产降级器（Asset Downgrader） — 付费</h3>
+<p>将资源降级到 5.6.1、5.5.4、5.4.4、5.3.2、5.2.1、5.1.1、5.0.3、4.27 和 4.26 版本。它首先将资源升级到源版本 (5.6)，然后对 <code>.uasset</code> 文件应用补丁，使其与目标版本兼容，但会移除较新的数据——例如，降级到 4.27 版本时会移除 Nanite 数据。</p>
+<p><strong>警告</strong>： 旧版本中不存在的功能无法移植：例如，蒙版材质上的 Nanite、新的材质节点和新的 Niagara 模块。降级器仅迁移数据，不迁移功能。
+<img alt="" src="../../../img/optimization/AssetDwongrader.png" /></p>
+<p><em>Asset Downgrader 插件界面显示目标版本选择，降级工具支持的目标版本从 5.6.1 降级到 4.26。</em></p>
+<p>这是在 Vite 中使用 UE5 商城内容的实用方法。请参阅<a href="Migrating-From-UE5.md">从 UE5 迁移</a>。作者 Ciprian Stanciu 活跃于 Vite Discord 社区，并为多个 Vite 项目提供过直接帮助。</p>
 <p><img alt="" src="../../../img/optimization/CiprianStanciu.png" /></p>
 <p><em>Vite Discord 上的 Asset Downgrader 作者</em></p>
-<h3 id="htn-planner-fab-paid">HTN Planner &mdash; FAB / paid</h3>
-<p>Hierarchical Task Network AI framework for Unreal. Goal-driven strategy built by separating <em>what</em> to do
-from <em>how</em> to do it. Version 1.18.3 was recently backported to 4.27.</p>
+<h3 id="htn-planner-fab">HTN Planner — FAB / 付费</h3>
+<p>适用于 Unreal 的分层任务网络 AI 框架。目标驱动型策略，将“做什么”与“怎么做”分离。1.18.3 版本最近已向后移植到 4.27 版本。</p>
 <p><img alt="" src="../../../img/optimization/HTN.png" /></p>
-<p><em>Unreal 编辑器中的 HTN Planner 任务网络</em></p>
-<p><em>A hierarchical task network separates the goal from the method used to reach it, which is what makes plans
-composable across agents.</em></p>
-<p><a href="https://maksmaisak.github.io/htn/front.html">HTN plugin for Unreal Engine</a></p>
-<h2 id="common-use-plugins">Common use plugins</h2>
-<p>These are recommended but not bundled. Add them per project.</p>
-<h3 id="ffmpeg-media-player">FFMPEG Media Player</h3>
-<p>Support for more video formats and alpha videos than the stock media framework.</p>
+<p><em>Unreal 编辑器中的 HTN （hierarchical task network ）Planner 任务网络。层级式任务网络将目标与实现目标的方法分离，这使得计划能够在不同智能体之间进行组合。</em></p>
+<p><a href="https://maksmaisak.github.io/htn/front.html">适用于虚幻引擎的 HTN 插件</a></p>
+<h2 id="_4">常用插件</h2>
+<p>这些插件推荐使用，但未包含在项目中。请根据项目需要单独添加。</p>
+<h3 id="ffmpeg">FFMPEG 媒体播放器</h3>
+<p>支持比原生媒体框架更多的视频格式和 Alpha 通道视频。</p>
 <p><a href="https://github.com/bakjos/FFMPEGMedia">bakjos/FFMPEGMedia</a></p>
-<h3 id="ui-navigation">UI Navigation</h3>
-<p>Blueprint-driven UI navigation for gamepad and keyboard menu traversal.</p>
-<p><a href="https://github.com/goncasmage1/UINavigation/tree/4.27_3.0">goncasmage1/UINavigation, 4.27 branch</a></p>
-<h3 id="multiplayer-movement-smn2">Multiplayer Movement (SMN2)</h3>
-<p>Blueprint multiplayer movement. Officially supported to 4.26 but compiles and works on 4.27, and can be
-extended further. Deprecated upstream.</p>
+<h3 id="ui">UI 导航</h3>
+<p>基于蓝图的 UI 导航，支持游戏手柄和键盘菜单浏览。</p>
+<p><a href="https://github.com/goncasmage1/UINavigation/tree/4.27_3.0">goncasmage1/UINavigation, 4.27 分支</a></p>
+<h3 id="smn2">多人游戏移动 (SMN2)</h3>
+<p>蓝图多人游戏移动。官方支持到 4.26 版本，但也能在 4.27 版本上编译运行，并且可以进一步扩展。上游已弃用。</p>
 <p><a href="https://github.com/Reddy-dev/SMN2">Reddy-dev/SMN2</a></p>
-<h3 id="root-motion-source">Root Motion Source</h3>
-<p>Fully functional on 4.26 and 4.27, and effectively the 4.x equivalent of UE5's Motion Warping. In stock
-UE4, root motion source is only correctly networked through GAS; this plugin overrides that and exposes
-full root motion source functionality directly in Blueprints.</p>
-<p>Field testing on a laggy network reports that following normal CMC logic gives clean results without
-jitter or server-side corrections during root motion animations.</p>
+<h3 id="root-motion-source">Root Motion Source（根运动源）</h3>
+<p>在 4.26 和 4.27 版本上功能齐全，相当于 UE5 的运动扭曲功能。在原生 UE4 中，根运动源只能通过 GAS 正确连接；此插件覆盖了这一限制，并将完整的根运动源功能直接暴露在蓝图中。</p>
+<p>在网络延迟较高的环境下进行的现场测试表明，遵循正常的 CMC 逻辑可以在根运动动画期间获得清晰的结果，不会出现抖动或服务器端校正。</p>
 <p><img alt="" src="../../../img/optimization/Plugins3.png" /></p>
 <p><em>根运动源（Root Motion Source）蓝图节点</em></p>
 <p><a href="https://github.com/VJien/RootMotionSource">VJien/RootMotionSource</a> ·
 <a href="https://supervj.top/2022/03/24/RootMotionSource/?highlight=root+motion+source">write-up</a></p>
-<h2 id="proposing-a-plugin">Proposing a plugin</h2>
-<p>Before proposing, check:</p>
+<h2 id="_5">提交一个插件提议</h2>
+<p>提交提案前，请检查：</p>
 <table>
 <thead>
 <tr>
-<th>Criterion</th>
-<th>Requirement</th>
+<th>标准</th>
+<th>要求</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Engine version</td>
-<td>Compatible with 4.21&ndash;4.27. UE5-only is out of scope.</td>
+<td>引擎版本</td>
+<td>兼容 4.21–4.27 版本。仅限 UE5 版本不在考虑范围内。</td>
 </tr>
 <tr>
-<td>Licensing</td>
-<td>Redistributable, or clearly documented as something users obtain themselves</td>
+<td>许可</td>
+<td>可再分发，或明确说明用户需自行获取。</td>
 </tr>
 <tr>
-<td>Size</td>
-<td>Bundled plugins are cloned by everyone. Large binary dependencies need justification.</td>
+<td>大小</td>
+<td>捆绑插件会被所有人克隆。大型二进制依赖项需要说明理由。</td>
 </tr>
 <tr>
-<td>Compile cost</td>
-<td>Adds to every engine build. See <a href="Shader-Compilation-And-PSO.md">Shader Compilation and PSO</a>.</td>
+<td>编译成本</td>
+<td>增加每次引擎构建的成本。请参阅<a href="Shader-Compilation-And-PSO.md">着色器编译和 PSO</a>。</td>
 </tr>
 <tr>
-<td>Overlap</td>
-<td>Does it duplicate something already bundled or stock?</td>
+<td>重复</td>
+<td>是否与已捆绑或默认功能重复？</td>
 </tr>
 </tbody>
 </table>
-<p>Then say which tier you think it belongs in and why.</p>
-<h2 id="see-also">See also</h2>
+<p>然后说明你认为它应该属于哪个层级，并解释原因。</p>
+<h2 id="_6">另请参阅</h2>
 <ul>
-<li><a href="../Bundled-Plugins/">Bundled Plugins</a></li>
-<li><a href="../Plugins/">Plugins</a></li>
-<li><a href="Migrating-From-UE5.md">Migrating from UE5</a></li>
-<li><a href="Contributing.md">Contributing</a></li>
+<li><a href="../Bundled-Plugins/">已捆绑的插件</a></li>
+<li><a href="../Plugins/">插件</a></li>
+<li><a href="Migrating-From-UE5.md">从 UE5 迁移</a></li>
+<li><a href="Contributing.md">贡献</a></li>
 </ul>
               
             </div>
