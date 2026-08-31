@@ -10,7 +10,7 @@ Vite 将各类厂商技术（NVIDIA、AMD、Intel）、反向移植的 UE5 插�
 | 主题 | 覆盖内容 |
 |---|---|
 | [已捆绑的插件](./Bundled-Plugins.md) | Vite 在原生 4.27 基础上增加的所有内容，包含版本及启用状态 |
-| [提议的插件](./Proposed-Plugins.md) | 候选集成并推荐的外部插件 |
+| [推荐的插件](./Proposed-Plugins.md) | 候选集成并推荐的外部插件 |
 
 ## 插件生效的位置
 
@@ -64,12 +64,12 @@ Vite 将各类厂商技术（NVIDIA、AMD、Intel）、反向移植的 UE5 插�
 
 项目插件应放置在 `<Project>\Plugins` 目录下（与标准 Unreal 引擎的规范一致）。供整个团队使用的引擎插件应放置在 [Engine\Plugins\Runtime\VitePlugins](https://github.com/GapingPixel/UnrealEngineVite-PhysX/tree/ueVite26-AugustMajor-release/Engine/Plugins/Runtime/VitePlugins) 目录下；此类插件需要重新构建引擎并进行重新分发。
 
-若希望将插件打包集成到 Vite 中，该插件必须兼容 4.21–4.27 版本。仅支持 UE5 的插件不在纳入范围内。请参阅[提议的插件](./Proposed-Plugins.md)以了解相关标准及当前的候选列表。
+若希望将插件打包集成到 Vite 中，该插件必须兼容 4.21–4.27 版本。仅支持 UE5 的插件不在纳入范围内。请参阅[推荐的插件](./Proposed-Plugins.md)以了解相关标准及当前的候选列表。
 
 
 ## 另请参阅
 
 - [Bundled 插件](./Bundled-Plugins.md)
-- [提议的插件](./Proposed-Plugins.md)
+- [推荐的插件](./Proposed-Plugins.md)
 - [Debloat 指南](../Performance/Debloat-Guide.md)
 - [超分辨率](../Rendering/Upscalers.md)

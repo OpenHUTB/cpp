@@ -113,4 +113,4 @@
 - [引擎概述](./Engine-Overview.md)
 - [反向移植工作流](../Contributing/Backporting.md)
 - [已捆绑的插件](../Plugins/Bundled-Plugins.md)
-- [提议的插件](../Plugins/Proposed-Plugins.md)
+- [推荐的插件](../Plugins/Proposed-Plugins.md)

@@ -1,159 +1,138 @@
 # 已捆绑的插件
 
+Vite 在 UE 4.27 原版基础上添加的所有内容，包括版本和默认启用状态。原版 4.27 插件未列出，仅列出 Vite 添加的内容和厂商集成。
 
-Everything Vite adds on top of stock UE 4.27, with versions and default enablement. Stock 4.27 plugins are
-not listed &mdash; only Vite's additions and the vendor integrations.
-
-
-Versions are as of the July major integration. Check the `.uplugin` file for the authoritative value in
-your tree.
+版本信息截至 7 月份的主要版本更新。请查看 `.uplugin` 文件以获取您插件树中的权威版本。
 
 ![](../../img/optimization/VitePlugins.png)
-
-*资源管理器中 Engine/Plugins/Runtime/VitePlugins 目录的内容*
-
 *Vite 自身添加的插件位于 `Engine\Plugins\Runtime\VitePlugins` 目录下。NVIDIA 提供的厂商集成插件则位于 `Engine\Plugins\Runtime\Nvidia` 目录下。*
 
 
-## 放大和帧生成
+## 超分辨率和帧生成
 
 | 插件 | 版本 | 默认值 | 路径 |
 |---|---|---|---|
-| NVIDIA DLSS Super Resolution / Ray Reconstruction / DLAA | 8.7.0 (NGX 310.7.0) | Off | `Runtime\Nvidia\DLSS` |
-| NVIDIA DLSS Frame Generation (Streamline) | 1.3.0-SL2.4.0 | Off | `Runtime\Nvidia\Streamline` |
-| NVIDIA NIS | 1.2.1 | Off | `Runtime\Nvidia\NIS` |
-| NVIDIA RTX Dynamic Vibrance (DeepDVC) | 1.3.0-SL2.4.0 | Off | `Runtime\Nvidia\StreamlineDeepDVC` |
+| NVIDIA DLSS 超分辨率/光线重建/DLAA / DLAA | 8.7.0 (NGX 310.7.0) | 关闭 | `Runtime\Nvidia\DLSS` |
+| NVIDIA DLSS 帧生成 (Streamline) | 1.3.0-SL2.4.0 | 关闭 | `Runtime\Nvidia\Streamline` |
+| NVIDIA NIS | 1.2.1 | 关闭 | `Runtime\Nvidia\NIS` |
+| NVIDIA RTX 动态色彩 (DeepDVC) | 1.3.0-SL2.4.0 | 关闭 | `Runtime\Nvidia\StreamlineDeepDVC` |
 | AMD FSR 4 | 4.1.1 | &mdash; | `Runtime\VitePlugins\FSR4-427` |
 | AMD AntiLag 2 | 2.0.4 | &mdash; | `Runtime\VitePlugins\AntiLag2.0.4` |
 | Intel XeSS | 3.0.5 | &mdash; | `Runtime\VitePlugins\XeSS_UE4.27_Plugin_v3.0.5` |
-| Movie Render Queue DLSS/DLAA support | 2.3.3 | &mdash; | `Runtime\Nvidia\DLSSMoviePipelineSupport` |
+| 影片渲染队列 DLSS/DLAA 支持 | 2.3.3 | &mdash; | `Runtime\Nvidia\DLSSMoviePipelineSupport` |
 
-FSR 4 uses the native ffx-api and is DX12-only. It was backported to 4.27 specifically for Vite. Full
-detail in [Upscalers](../Rendering/Upscalers.md).
+FSR 4 使用原生 ffx-api，仅支持 DX12。它已针对 Vite 特别移植到 4.27 版本。详情请参阅[超分辨率](../Rendering/Upscalers.md)部分。
+
 
 ## 光线追踪和渲染
 
 | 插件 | 版本 | 默认 | 路径 |
 |---|---|---|---|
-| NVIDIA RTX Global Illumination (RTXGI) | 1.1.50 | **On** | `Runtime\Nvidia\RTXGI` |
-| NVIDIA Real-Time Denoiser (NRD/ReLAX) | 2.10.00-relax | **On** | `Runtime\Nvidia\NRD` |
+| NVIDIA RTX 全局光照 (RTXGI) | 1.1.50 | **开启** | `Runtime\Nvidia\RTXGI` |
+| NVIDIA 实时降噪器 (NRD/ReLAX) | 2.10.00-relax | **开启** | `Runtime\Nvidia\NRD` |
 | NVIDIA Reflex | &mdash; | &mdash; | `Runtime\Nvidia\Reflex` |
 | NVIDIA Ansel | &mdash; | &mdash; | `Runtime\Nvidia\Ansel` |
-| Graphics Card Info Utilities | 1.0 | Off | `Runtime\Nvidia\GraphicsCardInfoUtils` |
+| 显卡信息工具 | 1.0 | 关闭 | `Runtime\Nvidia\GraphicsCardInfoUtils` |
 
-RTXGI provides the DDGI implementation that is Vite's recommended dynamic GI solution. NRD/ReLAX denoises ray-traced output. Both being on by default is deliberate: they are the basis of Vite's recommended lighting setup. See [Global Illumination](../Rendering/Global-Illumination.md) and
-[Dynamic DDGI](../Rendering/DDGI-Dynamic.md).
+RTXGI 提供 DDGI 实现，这是 Vite 推荐的动态全局光照解决方案。NRD/ReLAX 用于对光线追踪输出进行降噪。两者默认开启是有意为之：它们是 Vite 推荐光照设置的基础。请参阅[全局光照](../Rendering/Global-Illumination.md)和[动态 DDGI](../Rendering/DDGI-Dynamic.md)。
+
 
 ## 头发
 
 | 插件 | 版本 | 默认 | 路径 |
 |---|---|---|---|
 | TressFX 5.0 | 5.0 | &mdash; | `Runtime\TressFX` |
-| Groom (HairStrands) | 1.0 | Off | `Runtime\HairStrands` |
+| Groom (HairStrands) | 1.0 | 关闭 | `Runtime\HairStrands` |
 
-Two independent hair systems with different authoring pipelines. See
-[Hair Rendering](../Rendering/Hair-Rendering.md).
+两个独立的毛发系统，采用不同的制作流程。参见[毛发渲染](../Rendering/Hair-Rendering.md)部分。
+
 
 ## 物理和破坏
 
 | 插件 | 版本 | 默认值 | 路径 |
 |---|---|---|---|
-| Blast (runtime) | 1.0 | Off | `GameWorks\Blast` |
-| Blast Plugin (authoring) | 0.1 | Off | `Experimental\BlastPlugin` |
-| PhysX Instanced Subsystem | 1.11 | &mdash; | `Runtime\VitePlugins\PhysXInstancedSubsystem` |
+| Blast（运行时） | 1.0 | 关闭 | `GameWorks\Blast` |
+| Blast 插件（创作） | 0.1 | 关闭 | `Experimental\BlastPlugin` |
+| PhysX 实例子系统 | 1.11 | &mdash; | `Runtime\VitePlugins\PhysXInstancedSubsystem` |
 | Kawaii Physics | 1.18.0 | &mdash; | `Runtime\VitePlugins\KawaiiPhysics` |
 
-Apex Destruction, Apex Cloth and PhysX Vehicles are stock 4.27 plugins that Vite retains &mdash; they were
-removed in UE5 when Chaos replaced PhysX. See [Destruction and Cloth](../Physics/Destruction-And-Cloth.md).
+Apex Destruction、Apex Cloth 和 PhysX Vehicles 是 Vite 保留的 4.27 版本自带插件——它们在 UE5 中被移除，因为 Chaos 取代了 PhysX。参见[破坏与布料](../Physics/Destruction-And-Cloth.md)。
 
-Kawaii Physics is a UE5 secondary-motion bone solver backported to Vite. It gives hair, cloth and
-accessories physical follow-through from a single animation node, far more cheaply than a full cloth
-simulation.
+Kawaii Physics 是一个从 UE5 移植到 Vite 的辅助运动骨骼解算器。它能够通过单个动画节点为头发、布料和配饰提供物理跟随效果，比完整的布料模拟成本低得多。
 
-The PhysX Instanced Subsystem manages large numbers of PhysX-backed instanced bodies through a world
-subsystem, writing poses back into ISM/HISM instance transforms rather than spawning individual actors.
-See [Instanced Physics](../Physics/Instanced-Physics.md).
 
-## Animation
+PhysX Instanced Subsystem 通过世界子系统管理大量基于 PhysX 的实例化物体，并将姿态写入 ISM/HISM 实例变换，而不是生成单个 Actor。参见[实例化物理子系统](../Physics/Instanced-Physics.md)。
 
-| Plugin | Version | Path |
+
+## 动画
+
+| 插件 | 版本 | 路径 |
 |---|---|---|
-| Animation Compression Library (ACL) | 2.1.0 | `Runtime\VitePlugins\ACLPlugin` |
+| 动画压缩库 (Animation Compression Library, ACL) | 2.1.0 | `Runtime\VitePlugins\ACLPlugin` |
 | Motion Symphony | 1.09 | `Runtime\VitePlugins\MotionSymphony` |
 
-ACL replaces Unreal's built-in animation compression with a substantially better size/quality curve. On a
-project with a large animation set the memory saving is significant, and it is one of the cheapest wins
-available &mdash; see [Performance Targets](../EngineOverview/Performance-Targets.md).
+ACL 以更优的尺寸/质量曲线取代了虚幻引擎内置的动画压缩。对于拥有大量动画的项目，内存节省非常显著，而且它是性价比最高的优化方案之一——详见[性能目标](../EngineOverview/Performance-Targets.md)。
 
-Motion Symphony provides motion matching and pose matching, the Ubisoft-style approach to animation
-synthesis. It is the closest 4.27 equivalent to UE5's Motion Matching.
-[Documentation](https://www.wikiful.com/@AnimationUprising/motion-symphony/motion-matching) ·
-[Sample project](https://github.com/Animation-Uprising/MotionSymphony_ExampleProject/tree/main)
+Motion Symphony 提供动作匹配和姿势匹配功能，这是育碧式（Ubisoft, Ubiquity Software, 无处不在）的动画合成方法。它是 4.27 版本中最接近 UE5 动作匹配功能的组件。[文档](https://www.wikiful.com/@AnimationUprising/motion-symphony/motion-matching)· [示例项目](https://github.com/Animation-Uprising/MotionSymphony_ExampleProject/tree/main)
 
-## Gameplay
 
-| Plugin | Version | Path |
+## 游戏玩法（Gameplay）
+
+| 插件 | 版本 | 路径 |
 |---|---|---|
 | Abilities (SplashAbilities) | 1.1 | `Runtime\VitePlugins\SplashAbilities` |
 | Flecs ECS | 1.0 (Flecs 3.2.12) | `Runtime\FlecsECS` |
 
-Abilities is a lighter alternative to `GameplayAbilities` for projects that want an ability system without
-GAS's complexity and replication model.
+Abilities 是 `GameplayAbilities` 的一个轻量级替代方案，适用于那些希望拥有技能系统但又不想面对 GAS 的复杂性和复制模型的项目。
 
-Flecs ECS is an engine-level integration of the Flecs entity component system, providing a world subsystem,
-Blueprint entity handles, an ISM-based rendering demo and optional Flecs Explorer support. It is off by
-default. Useful when actor-per-entity overhead is the bottleneck &mdash; see the
-[UE4 vs UE5 cost analysis](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md) on core class base costs.
+Flecs ECS 是 Fl​​ecs 实体组件系统的引擎级集成，提供世界子系统、蓝图实体句柄、基于 ISM 的渲染演示以及可选的 Flecs Explorer 支持。默认情况下，它处于关闭状态。当每个实体对应一个 Actor 的开销成为瓶颈时，它非常有用——请参阅 [UE4 与 UE5](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md) 核心类基成本的对比分析。
 
-## Debug and profiling
 
-| Plugin | Version | Path |
+## 调试和性能分析
+
+| 插件 | 版本 | 路径 |
 |---|---|---|
 | Dear ImGui | 0.1.0 | `Runtime\VitePlugins\UnrealImGui` |
 | ImGui Tools | 1.0 | `Runtime\VitePlugins\ImGuiTools` |
 | Intel GPA | 1.0 | `Runtime\VitePlugins\GPAPlugin` |
 | Automatron | 1.1a | `Runtime\VitePlugins\Automatron` |
 
-ImGui gives you immediate-mode debug UI that works in the viewport and in standalone builds, where Slate
-debug widgets are awkward. ImGui Tools builds functional development tools on top of it.
+ImGui 提供即时模式调试 UI，可在视口和独立构建中使用，而 Slate 调试组件在这些情况下则显得笨拙。ImGui Tools 基于 ImGui 构建了功能开发工具。
 
-The GPA plugin integrates Intel Graphics Performance Analyzers into the editor. Automatron improves
-automated testing for C++ and Blueprints. See [Profiling](../Performance/Profiling.md).
+GPA 插件将 Intel 图形性能分析器集成到编辑器中。Automatron 改进了 C++ 和蓝图的自动化测试。请参阅[性能分析](../Performance/Profiling.md)部分。
 
-## Content and utilities
 
-| Plugin | Version | Default | Path |
+## 内容和实用工具
+
+| 插件 | 版本 | 默认 | 路径 |
 |---|---|---|---|
-| Custom Splash Preload Screen | 1.0 | **On** | `Runtime\PostSplashScreen` |
+| 自定义启动画面预加载画面 | 1.0 | **开启** | `Runtime\PostSplashScreen` |
 | Impostor Baker | 1.0 | &mdash; | `Experimental\ImpostorBaker` |
-| Shallow Water | 1.0 | Off | `Experimental\ShallowWater` |
+| Shallow Water | 1.0 | 关闭 | `Experimental\ShallowWater` |
 
-The splash screen plugin displays a custom screen after the system splash during engine preinit, covering
-the gap before the first frame.
+启动画面插件会在引擎预初始化期间，在系统启动画面之后显示一个自定义屏幕，填补第一帧之前的空白。
 
-Impostor Baker generates impostors for use as distant mesh LODs &mdash; the standard technique for
-rendering large numbers of distant trees or props cheaply, and worth reaching for before accepting a draw
-call cost you cannot afford.
+Impostor Baker 会生成用于远景网格 LOD 的虚拟模型——这是渲染大量远景树木或道具的常用低成本技术，值得优先考虑，避免承担无法承受的绘制调用成本。
 
-## Default enablement summary
 
-Only three bundled plugins are on by default:
+## 默认启用概要
 
-| Plugin | Why |
+默认情况下仅启用三个捆绑插件：
+
+| 插件 | 用途 |
 |---|---|
-| RTXGI | Provides DDGI, Vite's recommended dynamic GI |
-| NRD | Denoises ray-traced output, needed by the ray tracing suite |
-| Custom Splash Preload Screen | Cosmetic, negligible cost |
+| RTXGI | 提供 DDGI，Vite 推荐的动态全局光照 |
+| NRD | 对光线追踪输出进行降噪，光线追踪套件需要此功能 |
+| 自定义启动画面 | 外观装饰，成本极低 |
 
-Everything else is opt-in. If a feature appears not to work, check that its plugin is enabled before
-debugging further &mdash; and for ray tracing features, check the
-[compile-time switch availability table](../Rendering/Ray-Tracing.md) as well.
+其他所有功能均为可选。如果某个功能似乎无法正常工作，请先检查其插件是否已启用，然后再进行进一步调试——对于光线追踪功能，还需查看[编译时开关可用性表](../Rendering/Ray-Tracing.md)。
 
-## See also
 
-- [Plugins](./Plugins.md)
-- [Proposed Plugins](./Proposed-Plugins.md)
-- [Upscalers](../Rendering/Upscalers.md)
-- [Hair Rendering](../Rendering/Hair-Rendering.md)
-- [Instanced Physics](../Physics/Instanced-Physics.md)
-- [Debloat Guide](../Performance/Debloat-Guide.md)
+## 另请参阅
+
+- [插件](./Plugins.md)
+- [推荐的插件](./Proposed-Plugins.md)
+- [超分辨率](../Rendering/Upscalers.md)
+- [毛发渲染](../Rendering/Hair-Rendering.md)
+- [实例化物理](../Physics/Instanced-Physics.md)
+- [精简指南](../Performance/Debloat-Guide.md)
