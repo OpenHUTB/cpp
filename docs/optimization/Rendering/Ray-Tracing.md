@@ -1,13 +1,13 @@
 # 光线追踪
 
-Vite 内置了 NvRTX 4.27 Caustics 和 NvRTX 5.0 的光线追踪套件。在默认版本中，反射、阴影、环境光遮蔽和天空光可用；其余效果会被 `VITE_RT_PSO_DEBLOAT` 编译移除。在调试看似无效的控制台变量之前，请先阅读下方的可用性表格。
+Vite 内置了 NvRTX 4.27 Caustics 和 NvRTX 5.0 的光线追踪套件。在默认构建中，反射、阴影、环境光遮蔽和天光可用；其余效果会被 `VITE_RT_PSO_DEBLOAT` 编译移除。在调试看似无效的控制台变量之前，请先阅读下方的可用性表格。
 
 Vite 中的光线追踪是一个与引擎无关的管线：加速结构独立于任何单一的光照解决方案，因此每个效果都可以单独启用或禁用。UE 4.27 采用了这种架构，而 UE 5.1 及更高版本则摒弃了这种架构——参见[为什么使用 NvRTX 4.27](../EngineOverview/Why-NvRTX-427.md)。
 
 
 ## 可用性
 
-编译时开关 `VITE_RT_PSO_DEBLOAT` 默认值为 `1`，它会移除 Vite 推荐配置之外的效果的着色器排列组合。光线追踪 PSO 必须编译并绑定，无论其控制台变量是否设置，因此将未使用的效果编译在内存中会白白浪费着色器构建时间、包大小和管线创建时间。
+编译时开关 `VITE_RT_PSO_DEBLOAT` 默认值为 `1`，它会移除 Vite 推荐配置之外的效果的着色器排列组合。光线追踪 PSO 必须编译并绑定，无论其控制台变量是否设置，因此把未使用的效果保留在编译产物里，只会白白浪费着色器构建时间、包体积和管线创建时间。
 
 实际后果是：**设置已编译移除的效果的控制台变量看似成功，但实际上不会渲染任何内容**。
 
@@ -16,7 +16,7 @@ Vite 中的光线追踪是一个与引擎无关的管线：加速结构独立于
 | 反射 | `r.RayTracing.Reflections` | 可用 | [RT 反射](./RT-Reflections.md) |
 | 阴影 | `r.RayTracing.Shadows` | 可用 | [RT 阴影和 AO](./RT-Shadows-And-Ambient-Occlusion.md) |
 | 环境光遮蔽 | `r.RayTracing.AmbientOcclusion` | 可用 | [RT 阴影和 AO](./RT-Shadows-And-Ambient-Occlusion.md) |
-| 天空光 | `r.RayTracing.SkyLight` | 可用 | 此页面 |
+| 天光 | `r.RayTracing.SkyLight` | 可用 | 此页面 |
 | 半透明 | `r.RayTracing.Translucency` | 已编译 | [RT 半透明和焦散](./RT-Translucency-And-Caustics.md) |
 | 网格焦散 | `r.RayTracing.MeshCaustics.Enable` | 已编译 | [RT 半透明和焦散](./RT-Translucency-And-Caustics.md) |
 | 水焦散 | `r.RayTracing.WaterCaustics.Type` | 已编译 | [RT 半透明和焦散](./RT-Translucency-And-Caustics.md) |
@@ -26,7 +26,10 @@ Vite 中的光线追踪是一个与引擎无关的管线：加速结构独立于
 | 路径追踪 | `ShowFlag.PathTracing`（视图模式） | 已编译 | [路径追踪](./Path-Tracing.md) |
 
 
-要使用编译输出集中的任何内容，请使用 `VITE_RT_PSO_DEBLOAT=0` 重新构建。请参阅[编译时开关](../Performance/Compile-Time-Switches.md)。
+要使用被编译掉的那一组效果，请使用 `VITE_RT_PSO_DEBLOAT=0` 重新构建。请参阅[编译时开关](../Performance/Compile-Time-Switches.md)。
+
+**可用不等于已启用。** 在当前版本中，`r.RayTracing.Reflections`、`r.RayTracing.Shadows`、`r.RayTracing.AmbientOcclusion` 与 `r.RayTracing.Translucency` 的默认值都是 `0`，因此可用效果一开始都是关闭的。原版 4.27 中，反射、环境光遮蔽与半透明默认为 `-1`，交由后处理体积决定，阴影为 `1`。取值为 `0` 时后处理体积里的设置会被忽略：把 CVar 设为 `1` 可开启效果，设为 `-1` 则交还给后处理体积。参见[引擎默认值变更](../Performance/Engine-Defaults.md)。
+动态 DDGI 是例外，它通过 `BaseEngine.ini` 里的 `r.GlobalIllumination.ExperimentalPlugin=True` 默认开启。
 
 即使反射可用，也存在一个额外的注意事项：debloat 开关会强制使用排序延迟反射算法，并编译掉旧的非延迟路径。
 
@@ -77,7 +80,7 @@ r.RayTracing.Culling.Angle=1
 
 1. 减少启用的效果数量。关闭效果的成本总是比优化效果的成本更低。
 2. 降低效果分辨率——大多数效果都支持半分辨率或四分之一分辨率的缓冲区。
-3. 减少采样数和最大反弹深度。
+3. 减少采样数和最大弹射深度。
 4. 减少每个图元参与光线追踪的几何体数量。
 
 ## AMD 硬件
@@ -120,23 +123,23 @@ Vite 集成了 AMD GPUOpen RT 优化以及多项针对游戏主机的 AMD RDNA �
 
 *三星将 Xclipse 960 描述为一种全新的架构，而非为其分配一个公开的 AMD RDNA 版本号。
 
-*原生 Vite 在 Android 系统上**不**支持光线追踪，但此信息仅供未来 Vite 主要版本参考，当前的优化适用于任何未来的渲染路径。
+原版 Vite 在 Android 上**不**支持光线追踪。此表仅供未来 Vite 主要版本参考；当前的 RDNA 优化会延续到这些 GPU 上未来的任何渲染路径。
 
 
 ## 逐像素光线追踪全局光照 (GI)
 
 **注意：** 默认编译时已移除。需要 `VITE_RT_PSO_DEBLOAT=0`。请参阅[编译时开关](../Performance/Compile-Time-Switches.md)。
 
-与 DDGI 不同，Vite 保留了逐像素光线追踪全局光照路径，并包含 NvRTX ReStir GI 的改进：新的基于 SVGF 的降噪器、储层重采样最终聚集、自发光材质支持、四分之一和八分之一分辨率模式、金属材质支持以及用于改善法线细节的球谐函数。
+与 DDGI 不同，Vite 保留了逐像素光线追踪全局光照路径，并包含 NvRTX ReSTIR GI 的改进：新的基于 SVGF 的降噪器、蓄水池重采样最终聚集、自发光材质支持、四分之一和八分之一分辨率模式、金属材质支持以及用于改善法线细节的球谐函数。
 
 
-它能生成出色的参考图像。但它的计算成本也远高于 DDGI，并且重新引入了降噪和时间稳定性问题；DDGI 的存在正是为了避免这些问题。正是由于这种权衡，精简开关默认会将其移除。这种逐像素光线追踪全局光照解决方案比 HWRT Lumen 具有更高的保真度，但成本也略高一些。
+它能生成出色的参考图像，保真度高于硬件光追的 Lumen，成本也略高一些。但它的计算成本远高于 DDGI，并且重新引入了降噪和时间稳定性问题；DDGI 的存在正是为了避免这些问题。正是这种取舍，让精简开关默认把它移除。它是 [Vite ReSTIR](https://vitestudio-tech.github.io/UnrealEngineVite-Docs/tech/restir.html) 的基础——后者把这条路径发展为生产级 GI 与实时路径追踪方案。
 
 如果您使用此功能，以下是一些关键控制项：
 
 - `r.RayTracing.GlobalIllumination.FinalGather.UseReservoirResampling 0/1` — 切换新的最终聚集采样器，该采样器可显著降低采样噪声，并在降噪前产生更稳定的结果，从而允许更低的每像素采样数。
 - `r.DiffuseIndirect.Denoiser 2` — 选择新的 SVGF 降噪器。
-- `r.RayTracing.GlobalIllumination.EvalSkyLight 0/1` — 包含天空光贡献。天空光 Actor 的**影响全局光照**标志也必须设置。
+- `r.RayTracing.GlobalIllumination.EvalSkyLight 0/1` — 包含天光贡献。天光 Actor 的**影响全局光照**标志也必须设置。
 - `r.DiffuseIndirect.ApplyAO` — 将环境光遮蔽 (AO) 应用于间接光照结果。显著增强光照细节，强烈建议在使用此路径时启用此功能。 
 
 通常情况下，每个像素采样 4 次，`r.RayTracing.GlobalIllumination.ScreenPercentage` 设置为 12.5 可产生合理的结果。
