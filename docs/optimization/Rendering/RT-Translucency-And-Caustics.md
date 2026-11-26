@@ -5,13 +5,13 @@
 这些特性源自 NVIDIA 的 NvRTX 4.27 焦散分支，Vite 正是基于此分支。它们是渲染器中参数最多的部分，因此本页以参考文档的形式呈现，而非叙述。
 
 
-**警告：** 本页所有内容均在默认版本中编译完成。当 `VITE_RT_PSO_DEBLOAT` 设置为 1（默认值）时，光线追踪半透明、网格焦散和水焦散的着色器变体将被移除。它们的控制台变量将成功设置，但不会渲染任何内容。要使用这些特效，请使用 `VITE_RT_PSO_DEBLOAT=0` 重新编译。请参阅[编译时开关](../Performance/Compile-Time-Switches.md)。
+**警告：** 本页所有内容在默认构建里都会被编译掉。当 `VITE_RT_PSO_DEBLOAT` 为 `1`（默认值）时，光线追踪半透明、网格焦散与水焦散的着色器排列会被移除；它们的控制台变量照样能设置成功，但什么也不会渲染。要使用这些效果，请用 `VITE_RT_PSO_DEBLOAT=0` 重新构建。请参阅[编译时开关](../Performance/Compile-Time-Switches.md)。
 
 
 
 这些是光线追踪套件中最耗费资源的特效，在 4K 分辨率下，它们都无法满足 Vite 的[性能目标](../EngineOverview/Performance-Targets.md)。此处记录这些特效是因为 NvRTX 系列提供了这些特效，并且某些项目会在过场动画、宣传素材或特定场景中使用它们。
 
-**注意：** 所有从 NvRTX Caustics 分支继承的 RTX 特性代码和美术资源均受 [GameWorks 许可协议](https://developer.nvidia.com/gameworks-source-sdk-eula)保​​护。
+**注意：** 所有从 NvRTX Caustics 分支继承的 RTX 特性代码和美术资源均受 [GameWorks 许可协议](https://developer.nvidia.com/gameworks-source-sdk-eula)保护。
 
 
 ## 半透明模式
@@ -20,7 +20,8 @@ UE4 默认的光线追踪半透明效果会强制**所有**半透明效果都通
 
 | `r.RayTracing.Translucency` | 模式 |
 |---|---|
-| `0` | UE4 原生光线追踪半透明关闭 |
+| `-1` | 使用后处理体积的设置 |
+| `0` | UE4 原生光线追踪半透明关闭（默认） |
 | `1` | UE4 原生光线追踪半透明开启 |
 | `2` | 混合半透明 1 — 仅光线追踪半透明反射 |
 | `3` | 混合半透明 2 — 光线追踪半透明反射和折射 |
