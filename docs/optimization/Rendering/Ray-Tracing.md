@@ -23,7 +23,7 @@ Vite 中的光线追踪是一个与引擎无关的管线：加速结构独立于
 | 采样直接光照 (RTXDI) | `r.RayTracing.SampledDirectLighting` | 已编译 | [RTXDI](./RTXDI.md) |
 | 逐像素全局光照 | `r.RayTracing.GlobalIllumination` | 已编译 | 本页 |
 | 反射捕捉和探测 | `r.RayTracing.Reflections.RayTraceEnvironmentCaptures` | 已编译 | [RT 反射](./RT-Reflections.md) |
-| 路径追踪 | `r.PathTracing` | 已编译 | [路径追踪](./Path-Tracing.md) |
+| 路径追踪 | `ShowFlag.PathTracing`（视图模式） | 已编译 | [路径追踪](./Path-Tracing.md) |
 
 
 要使用编译输出集中的任何内容，请使用 `VITE_RT_PSO_DEBLOAT=0` 重新构建。请参阅[编译时开关](../Performance/Compile-Time-Switches.md)。
