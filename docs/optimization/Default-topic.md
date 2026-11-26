@@ -1,16 +1,13 @@
 # 引擎优化入门
 
-<tldr>
-<p>
-Unreal Engine Vite 是 Unreal Engine 4.27 的性能优先分支，构建于 NvRTX 与 Plus 分支之上。
-它保留 PhysX，并加入 DDGI、RTXDI、曲面细分、SMAA 与 HBAO+，
-面向主机级硬件，追求原生分辨率下的高帧率。
-</p>
+!!! note "概要"
 
-初次接触？请先读[Vite 简介](./GettingStarted/Introduction-to-Vite.md)，然后
-[从源码构建引擎](./GettingStarted/Build-From-Source.md)。
+    Unreal Engine Vite 是 Unreal Engine 4.27 的性能优先分支，构建于 NvRTX 与 Plus 分支之上。
+    它保留 PhysX，并加入 DDGI、RTXDI、曲面细分、SMAA 与 HBAO+，
+    面向主机级硬件，追求原生分辨率下的高帧率。
 
-</tldr>
+    初次接触？请先读 [Vite 简介](./GettingStarted/Introduction-to-Vite.md)，然后
+    [从源码构建引擎](./GettingStarted/Build-From-Source.md)。
 
 ---
 
