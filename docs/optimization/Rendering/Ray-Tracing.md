@@ -30,7 +30,7 @@ Vite 中的光线追踪是一个与引擎无关的管线：加速结构独立于
 
 即使反射可用，也存在一个额外的注意事项：debloat 开关会强制使用排序延迟反射算法，并编译掉旧的非延迟路径。
 
-动态 DDGI 是一个独立的系统，它通过 `r.GlobalIllumination.ExperimentalPlugin` 而不是 `r.RayTracing.*` 组启用，并且**不受** debloat 开关的影响。请参阅[动态 DDGI](./DDGI-Dynamic.md)。这是《黑神话：悟空》所用的渲染堆栈。
+动态 DDGI 是一个独立的系统，它通过 `r.GlobalIllumination.ExperimentalPlugin` 而不是 `r.RayTracing.*` 组启用，并且**不受** debloat 开关的影响。请参阅[动态 DDGI](./DDGI-Dynamic.md)。这些效果来自 NVIDIA 的 UE RTX 分支，与《黑神话：悟空》在 UE5 上交付的完整光线追踪模式同属一个技术谱系。
 [![《黑神话：悟空》光线追踪对比](https://img.youtube.com/vi/A5boaueGopg/0.jpg)](https://www.youtube.com/watch?v=A5boaueGopg)
 
 ## 启用和禁用
@@ -61,11 +61,15 @@ r.RayTracing.Translucency=0
 
 光线追踪的成本与加速结构中的几何体数量成正比，因此在降低效果质量之前，剔除是首先应该考虑的因素。
 
-```c++
-GEngine->Exec(nullptr, TEXT("r.RayTracing.Culling.UseMinDrawDistance 1"));
+```ini
+; Config/DefaultEngine.ini
+[SystemSettings]
+r.RayTracing.Culling=1
+r.RayTracing.Culling.Radius=10000
+r.RayTracing.Culling.Angle=1
 ```
 
-这使得光线追踪剔除能够遵循每个图元的最小绘制距离，这在包含大量细小网格的场景中是一个成本低廉且通常安全的改进。
+剔除默认关闭，与原版 4.27 一致。开启后，摄像机后方、距离超过半径（此处为 100 m）或小于角度阈值的物体会离开加速结构。直接可见的画面不受影响，但这些物体在反射与光线追踪阴影中的表现会受影响，因此要检查玩家身后的镜面和大型投影物。参见[引擎默认值变更](../Performance/Engine-Defaults.md#光线追踪剔除)。
 
 
 除了剔除之外，以下是一些常用的优化方法，大致按有效性排序：
