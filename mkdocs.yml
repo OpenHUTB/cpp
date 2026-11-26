@@ -54,6 +54,7 @@ nav:
 - 引擎 C++ 开发教程: './tutorial/add_actor_subclass.md'
 - 引擎源码解析: './engine/game_mode.md'
 - 引擎优化入门: './optimization/Default-topic.md'
+- 手册导读: './optimization/summary.md'
 - 引擎概述: './optimization/EngineOverview/Engine-Overview.md'
 - 渲染: './optimization/Rendering/Rendering.md'
 - 物理: './optimization/Physics/Physics.md'
