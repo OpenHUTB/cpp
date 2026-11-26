@@ -31,10 +31,10 @@ UE 5.1 及更高版本的 NvRTX 分支将 RTXDI **集成到了** Lumen 中。Vit
 
 ### 启用 RTXDI
 
-1. 将 `GlobalDefinitions.Add("VITE_RT_PSO_DEBLOAT=0");` 添加到目标文件中，然后重新构建引擎。请参阅[编译时开关](../Performance/Compile-Time-Switches.md)。
+1. 将 `GlobalDefinitions.Add("VITE_RT_PSO_DEBLOAT=0");` 添加到目标构建文件（`*.Target.cs`）中，然后重新构建引擎。请参阅[编译时开关](../Performance/Compile-Time-Switches.md)。
 
 2. 设置控制台变量：
-```json
+```ini
 ; Config/DefaultEngine.ini
 [/Script/Engine.RendererSettings]
 r.RayTracing.SampledDirectLighting=1
@@ -65,6 +65,13 @@ RTXDI 是一个专用工具。只有当场景中存在足够多的光源，以�
 **RT 阴影：** RTXDI 会在采样过程中进行自身的可见性测试，因此其与 `r.RayTracing.Shadows` 的关系需要根据具体场景进行测量，而非想当然。同时启用两者并非总是最佳方案。
 
 **降噪：** RTXDI 的输出经过降噪处理。与 [DDGI](./DDGI-Dynamic.md) 不同，RTXDI 的输出被描述为比 MegaLights 的噪声更小，而非完全无噪。DDGI 本身就是无噪的。在包含许多小型明亮光源的快速运动场景中，您可能需要花一些时间来调整降噪设置。
+
+## Vite 的 RTXDI 工作
+
+| 版本 | 变更 |
+|---|---|
+| LTS | 采样光照支持光照材质函数（AMD 补丁）；ReGIR 每单元格样本数默认 64 |
+| 8 月主要版本 | NvRTX 5.0 更新：修订后的 ReGIR 计算、采样光照会尊重关闭阴影的光源、ReLAX 降噪器历史默认值 |
 
 ## 另请参阅
 
