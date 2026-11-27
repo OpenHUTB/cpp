@@ -1,6 +1,6 @@
 # 插件
 
-Vite 将各类厂商技术（NVIDIA、AMD、Intel）、反向移植的 UE5 插件以及第三方扩展直接集成在引擎目录结构中。其中大部分插件位于 [Engine\Plugins\Runtime\VitePlugins](https://github.com/GapingPixel/UnrealEngineVite-PhysX/tree/ueVite26-AugustMajor-release/Engine/Plugins/Runtime/VitePlugins) 目录下。
+Vite 将各类厂商技术（NVIDIA、AMD、Intel）、向后移植的 UE5 插件以及第三方扩展直接集成在引擎目录结构中。其中大部分插件位于 [Engine\Plugins\Runtime\VitePlugins](https://github.com/GapingPixel/UnrealEngineVite-PhysX/tree/ueVite26-AugustMajor-release/Engine/Plugins/Runtime/VitePlugins) 目录下。
 
 原生 UE 4.27 附带了大量插件，Vite 保留了其中的绝大多数。此外，Vite 还集成了一些额外的插件，包括 UE 4.27 上游版本中不存在的插件、仅适用于 UE5 的插件，以及通常需要手动集成的厂商 SDK。
 

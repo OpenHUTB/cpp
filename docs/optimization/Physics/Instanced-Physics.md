@@ -13,7 +13,7 @@ PhysX 实例化子系统将渲染和物理计算分离。渲染通过单个实�
 | 插件 | `Engine/Plugins/Runtime/VitePlugins/PhysXInstancedSubsystem` |
 | 模块 | `PhysXInstancedSubsystem` |
 | 子系统 | `UPhysXInstancedWorldSubsystem`（可更新的世界子系统） |
-| 参与者 | `APhysXInstancedMeshActor` |
+| Actor | `APhysXInstancedMeshActor` |
 | 组件 | `UPhysXInstancedStaticMeshComponent` |
 | 作者 | NordVader Inc. |
 
@@ -28,11 +28,11 @@ PhysX 实例化子系统将渲染和物理计算分离。渲染通过单个实�
 
 **工作量按帧分配。** 创建 PhysX 物体、施加力和使物体寿命到期等操作都会排队并根据每帧的限制进行处理，因此在一帧中生成一万个实例不会产生一万个物体的卡顿。
 
-## 设置参与者
+## 设置 Actor
 
-将`APhysXInstancedMeshActor`放置在关卡中，并在 **Phys X 实例** 下的详细信息面板中配置它。
+将`APhysXInstancedMeshActor`放置在关卡中，并在 **PhysX 实例** 下的详细信息面板中配置它。
 
-### 配置实例化物理参与者
+### 配置实例化物理 Actor
 
 1. 设置**静态网格（Static Mesh）**，并根据需要覆盖材质。
 
@@ -53,7 +53,7 @@ PhysX 实例化子系统将渲染和物理计算分离。渲染通过单个实�
 
 自动停止是使大规模模拟承担得起的因素。它检测有效停止移动的实例，并对它们执行消耗更小的操作。
 
-在 **Phys X实例（Phys X Instance）>运行时（Runtime）>自动停止配置（Auto Stop Config）** 中配置：
+在 **PhysX 实例（PhysX Instance）>运行时（Runtime）>自动停止配置（Auto Stop Config）** 中配置：
 
 | 设置 | 默认 | 用途 |
 |---|---|---|
@@ -84,7 +84,7 @@ PhysX 实例化子系统将渲染和物理计算分离。渲染通过单个实�
 另外两条规则用于捕捉那些永远不会自行停止的实例：
 
 - **最大下落时间（Max Fall Time）** 在实例连续下落超过阈值时间后触发停止动作。用于捕捉穿透世界几何体而下落的物体。
-- **与参与者最大距离（Max Distance From Actor）** 在实例距离其所有者超过阈值时触发。用于捕捉由于不良冲力而被发射的物体。
+- **与 Actor 最大距离（Max Distance From Actor）** 在实例距离其所有者超过阈值时触发。用于捕捉由于不良冲力而被发射的物体。
 
 另外，**自定义 Kill Z（Use Custom Kill Z）** 配合 **自定义 Kill Z** 高度和 **丢失实例操作（Lost Instance Action）** 处理那些下落到世界 Z 阈值以下的实例。
 
@@ -105,7 +105,7 @@ PhysX 实例化子系统将渲染和物理计算分离。渲染通过单个实�
 |---|---|
 | 关闭（Off） | 从不 |
 | 仅模拟实体 | 仅实际动态的物体 |
-| 自动（按速度） | 在超过 **最小 CCD 速度** 时启用（默认2000厘米/秒），可选择由最大CCD速度限制 |
+| 自动（按速度） | 在超过 **最小 CCD 速度** 时启用（默认 2000 厘米/秒），可选择由最大CCD速度限制 |
 | 所有实体 | 始终 |
 
 按速度自动选择是碎片的正确默认设置：移动缓慢的碎片完全跳过 CCD，只有快速的碎片才需要处理。
@@ -130,7 +130,7 @@ Request.LifetimeAction = EPhysXInstanceStopAction::ConvertToStorage;
 const FPhysXSpawnInstanceResult Result = Subsystem->SpawnPhysicsInstance(Request);
 ```
 
-**参与者模式（Actor Mode）** 决定实例的落点：`AlwaysCreateNew` 会生成一个新的参与者，`FindOrCreateByMeshAndMats` 会重用具有匹配网格和材质的现有参与者，而 `UseExplicitActor` 则针对您提供的参与者。通常选择 `FindOrCreateByMeshAndMats` —— 它将实例数量尽可能集中在少数 ISM 组件中，从而提高渲染效率。
+**Actor 模式（Actor Mode）** 决定实例的落点：`AlwaysCreateNew` 会生成一个新的 Actor，`FindOrCreateByMeshAndMats` 会重用具有匹配网格和材质的现有 Actor，而 `UseExplicitActor` 则针对您提供的 Actor。通常选择 `FindOrCreateByMeshAndMats` —— 它将实例数量尽可能集中在少数 ISM 组件中，从而提高渲染效率。
 
 对于已存在于组件上的大量实例的批量注册，`RegisterInstancesBatch` 会将工作分散到多个帧中进行。
 
@@ -162,9 +162,9 @@ Subsystem->AddRadialImpulse(
 
 | 设置 | 默认值 | 效果 |
 |---|---|---|
-| 每帧最大添加参与者数 `MaxAddActorsPerFrame` | `64` | 每帧添加到 PhysX 场景中的实体数量。`0` 表示无限制。 |
+| 每帧最大添加 Actor 数 `MaxAddActorsPerFrame` | `64` | 每帧添加到 PhysX 场景中的实体数量。`0` 表示无限制。 |
 | 每帧最大实例任务数 `MaxInstanceTasksPerFrame` | `4096` | 每帧排队的力/冲击/睡眠/唤醒操作数量。`0` 表示无限制。 |
-| 每节拍最大生命周期到期处理数量 `MaxLifetimeExpirationsPerTick` | `4096` | 每节拍处理的生命周期到期数量。`0` 表示无限制。 |
+| 每个 Tick 最大生命周期到期处理数量 `MaxLifetimeExpirationsPerTick` | `4096` | 每个 Tick 处理的生命周期到期数量。`0` 表示无限制。 |
 
 这三者都是子系统的配置属性，因此可以在 `DefaultGame.ini` 中设置，并可针对每个平台进行调整。
 
@@ -177,7 +177,7 @@ Subsystem->AddRadialImpulse(
 
 **使用此方法处理** 碎片、弹壳、脱离后的可破坏碎片、被撞倒的道具、散落的杂物，以及任何你希望有数百甚至数千个模拟对象的情况。
 
-**不要将其用于** 需要自身游戏逻辑、组件、复制或蓝图行为的对象。那些是参与者（Actors），应保持为参与者。 
+**不要将其用于** 需要自身游戏逻辑、组件、复制或蓝图行为的对象。那些是 Actor，应保持为 Actor。 
 
 **注意** ISM索引的变化。移除一个可视实例会改变之后实例的索引。子系统会修复自身的映射，但你在自己代码中缓存的任何索引现在都是错误的。请缓存句柄。
 
