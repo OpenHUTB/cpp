@@ -69,11 +69,11 @@ GenerateProjectFiles.bat
 
 ### 3. 构建
 
-打开 `UE4.sln` 文件，如果尚未设置，请将 **UE4** 设置为启动项目。构建适用于 **Win64** 的**开发编辑器（Development Editor）**配置。
+打开 `UE4.sln`，如果尚未设置，请把 **UE4** 设为启动项目。以 **Win64** 平台、**开发编辑器（Development Editor）**配置进行构建。
 
 ![](../../img/optimization/VSBuildUE4.jpg)
 
-*在 Visual Studio 解决方案资源管理器中，选中 UE4 项目并打开“生成”命令。请在**Engine**下构建 **UE4**，而不是在解决方案下构建。构建整个解决方案会编译编辑器构建不需要的程序目标。*
+*在 Visual Studio 解决方案资源管理器中选中 UE4 项目，再执行「生成」命令。请在 **Engine** 下构建 **UE4**，不要构建整个解决方案——那会编译编辑器构建用不到的程序目标。*
 
 
 在命令行中，等效命令是：
@@ -100,7 +100,7 @@ reg add "HKCU\Software\Epic Games\Unreal Engine\Builds" /v UE_ViteFork /t REG_SZ
 
 ## 构建时间
 
-编译时间主要取决于核心数量。作为参考，在 Ryzen 9 9950X3D 上完整构建代码库大约需要 15 分钟；移除捆绑的 Vite 插件后，时间缩短至约 12 分钟，其中 Houdini 插件占用了大部分时间。如果您更注重迭代速度而非插件覆盖率，请参阅[精简指南](Debloat-Guide.md)。
+编译时间主要取决于核心数。作为参考，Ryzen 9 9950X3D 上完整构建代码库约需 15 分钟；移除随附的 Vite 插件后缩短到约 12 分钟，其中 Houdini 插件占了大头。如果更看重迭代速度而非插件覆盖，请参阅[精简指南](../Performance/Debloat-Guide.md)。
 
 
 ## 生成可安装版本
