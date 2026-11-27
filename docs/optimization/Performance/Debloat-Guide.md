@@ -1,21 +1,27 @@
 # 精简指南
 
+!!! note "概要"
+    `devops\` 下的脚本由单个 `config.txt` 驱动，用来移除你用不到的引擎内容。所有操作默认**试运行**、默认**移动而不是删除**；自 7 月主要版本起还会做一次引用检查，确认精简后的树仍能编译。[ViteSetup](../Tools/ViteSetup.md) 的 Express 路径会替你跑同一套脚本。
+
 
 `devops\` 目录下的三个脚本，由一个 `config.txt` 文件驱动，用于移除您不需要的引擎内容。所有操作默认都以**试运行**的方式进行，并**将内容移动到其他位置而非删除**，因此即使出错也可以恢复。
 
-完整的虚幻引擎 4.27 源代码树支持 Epic 提供的所有平台、工作流程和模板。一个仅限 Win64 平台的项目仅占用其中一小部分资源。精简代码可以释放磁盘空间并缩短构建时间。
+完整的虚幻引擎 4.27 源代码树支持 Epic 提供的所有平台、工作流程和模板。只做 Win64 的项目只用到其中一小部分。ViteSetup 估算，一个完整的 Windows 源码树构建完约占 137 GB；精简能回收其中很大一部分，并缩短构建时间。
 
 原始 Vite 精简脚本由 Bikouz 编写。
 
-## 该套件
+## 脚本套件
 
 | 脚本 | 用途 |
 |---|---|
 | `ueVite-debloat-SetupSlim.bat` | 仅针对 Win64 平台运行引擎依赖项设置，因此不会下载不必要的平台依赖项。 |
 | `ueVite-debloat-StripExecute.bat` | 移除平台二进制文件、非 Windows 工具、模板、示例内容以及（可选）插件。 |
 | `ueVite-debloat-StripDebugSymbols.bat` | 根据 `ExcludedPdbs.txt` 移除调试符号。 |
+| `ueVite-debloat-ValidateRefs.ps1` | 检查树里剩下的模块是否引用了已被移走的模块，并能把缺失的移回来。7 月主要版本起提供 |
+| `ViteSpaceReport.ps1` | 在 setup 之前按依赖清单估算下载体积，之后测量实际大小。ViteSetup 在用。7 月主要版本起提供 |
+| `ueVite-ApplyVitePluginDefaults.bat` | 应用或还原 Vite 的引擎插件配置，见[引擎默认更改](Engine-Defaults.md#已禁用的插件)。7 月主要版本起提供 |
 
-这三个脚本都位于引擎根目录下的 `devops\` 目录中，并读取 `devops\config.txt` 文件。您可以将备用配置路径作为第一个参数传递。
+所有脚本都在引擎根目录的 `devops\` 下。移除类脚本读取 `devops\config.txt`；也可以把备用配置路径作为第一个参数传进去。
 
 ## 安全模型
 
@@ -31,6 +37,8 @@
 
 **脚本会验证引擎目录。** 在执行任何操作之前，脚本会确认 `Engine\Binaries\` 目录是否存在。
 
+**运行结束会检查引用。** 默认 `VALIDATE_REFERENCES=1`，一次移除结束后会扫描树里剩下的 `.Build.cs` 与 `.uplugin`，看有没有模块指向已经移进 `MOVE_DIR` 的东西。干净的结果会打印「No dangling references in the editor build」；否则会列出每个缺失模块以及是谁在引用它。
+
 ## 配置
 
 `devops\config.txt` 使用 `KEY=VALUE` 行。用 `#` 注释掉一行可以**保留**其目标；取消注释可以**启用**可选目标。这种反转值得注意：取消注释 **STRIP** 行意味着要删除该行。  
@@ -41,6 +49,7 @@
 MODE=move
 MOVE_DIR=..\ViteDebloat_Moved
 DRYRUN=1
+VALIDATE_REFERENCES=1
 ```
 
 `MOVE_DIR` 指向引擎根目录，因此默认值是引擎的同级文件夹。
@@ -165,6 +174,19 @@ STRIP=FeaturePacks\StarterContent.upack
 对于全新克隆，请运行 `ueVite-debloat-SetupSlim.bat` 而不是 `Setup.bat`，这样就不会一开始就下载不需要的平台依赖项。
 
 
+## Express 路径会移除什么
+
+ViteSetup 的 Express 路径除了让你看一遍试运行输出，不会再询问，直接移走：
+
+- 除 Win64 外的每个平台文件夹
+- 调试符号（`.pdb`）
+- Starter Content 与 Mobile Starter Content
+- NVIDIA 示例工程 `NGXTest` 与 `RTXGI_Test` 
+- 除第三人称、C++ 与蓝图之外的每个模板
+- **`Engine\Plugins\Runtime\VitePlugins` 下除 ACL 与 MotionSymphony 之外的每个插件**
+
+最后一项要特别检查：它会移走 FSR 4、Anti-Lag 2、XeSS、PhysX Instanced Subsystem、KawaiiPhysics、ImGui、GPA、Automatron 与 SplashAbilities。项目用到其中任何一个，就走 Custom 路径，或者从 `ViteDebloat_Moved` 把文件夹拷回来。之后 Express 还会再提供一轮可选的清理，覆盖插件清单、UnrealFileServer、非 Windows 工具与平台二进制。
+
 ## 调试符号
 
 `ueVite-debloat-StripDebugSymbols.bat` 会根据 `ExcludedPdbs.txt` 文件中的设置移除 PDB 文件。调试符号会占用源代码构建磁盘空间的很大一部分。
@@ -177,6 +199,14 @@ STRIP=FeaturePacks\StarterContent.upack
 
 如果您使用的是删除（`delete`）模式，则恢复意味着重新克隆或重新运行 `Setup.bat`。
 
+如果只想恢复构建真正需要的部分，用校验脚本：
+
+```
+powershell -NoProfile -ExecutionPolicy Bypass -File devops\ueVite-debloat-ValidateRefs.ps1 -Restore
+```
+
+`-Restore` 会把编辑器构建引用到的模块移回来；`-RestoreAll` 还会恢复程序、模板与游戏目标需要的模块。
+
 ## 此操作不会做什么
 
 精简插件可以减少磁盘占用空间，并通过插件阶段缩短构建时间。但它**不会**提高运行时性能——即使插件存在但已禁用，运行时也不会消耗任何资源。
@@ -185,6 +215,7 @@ STRIP=FeaturePacks\StarterContent.upack
 
 ## 另请参阅
 
+- [ViteSetup](../Tools/ViteSetup.md)
 - [从源代码构建](../GettingStarted/Build-From-Source.md)
 - [引擎默认设置更改](../Performance/Engine-Defaults.md)
 - [捆绑插件](../Plugins/Bundled-Plugins.md)
