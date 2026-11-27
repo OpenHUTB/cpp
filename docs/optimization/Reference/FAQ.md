@@ -6,24 +6,24 @@
 
 ### 为什么选择 4.27 而不是 UE5？
 
-因为对于很多项目来说，UE5 的主要功能带来的收益远大于成本。Nanite、Lumen 和 Chaos 本身都有基础成本，无论是否使用，而且 UE5 的核心类和 tick 开销也更高。Vite 以 4.27 较低的基准成本为基础，并添加了真正值得拥有的渲染技术。
+因为对于很多项目来说，UE5 的主要功能带来的收益远大于成本。Nanite、Lumen 和 Chaos 本身都有基础成本，无论是否使用，而且 UE5 的核心类和 Tick 开销也更高。Vite 以 4.27 较低的基准成本为基础，并添加了真正值得拥有的渲染技术。
 
 详细的论证（包含数据）请参见[为什么选择 NvRTX 4.27](../EngineOverview/Why-NvRTX-427.md) 以及 [UE4 与 UE5 的成本分析](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md)。
 
 
-### Vite 可以直接替代 UE5 4.27 吗？
+### Vite 可以直接替代 UE 4.27 吗？
 
-差不多，但并不完全一样。Vite 为了提升性能，修改了一些引擎默认设置，例如重叠事件处理、可缩放性设置、帧刷新行为、光线追踪剔除等等。从 UE5 4.27 迁移过来的项目大部分都能正常运行，但建议阅读[引擎默认设置]((../Performance/Engine-Defaults.md))以了解具体更改。
+差不多，但并不完全一样。Vite 为了提升性能，修改了一些引擎默认设置，例如重叠事件处理、可缩放性设置、帧刷新行为、光线追踪剔除等等。从 UE5 4.27 迁移过来的项目大部分都能正常运行，但建议阅读[引擎默认设置](../Performance/Engine-Defaults.md)以了解具体更改。
 
 
 ### 我可以使用 UE5 商城资源吗？
 
-不能直接使用。资源降级插件会将 UE5 资源转换为 UE5 4.27 版本，并移除 UE5 4.27 版本中不存在的数据，例如 Nanite 几何体。UE5 4.27 版本中不存在的功能无法移植，只能移除。请参阅[从 UE5 迁移](../GettingStarted/Migrating-From-UE5.md)。
+不能直接使用。资源降级插件会将 UE5 资源转换为 UE 4.27 版本，并移除 UE 4.27 版本中不存在的数据，例如 Nanite 几何体。UE5 4.27 版本中不存在的功能无法移植，只能移除。请参阅[从 UE5 迁移](../GettingStarted/Migrating-From-UE5.md)。
 
 
 ### Vite 支持哪些平台？
 
-Windows 64 位系统，主要支持 DirectX 12。其他平台继承了 UE5 4.27 的支持，但未经测试和优化。请参阅[平台](../Platforms/Platforms.md)部分。
+Windows 64 位系统，主要支持 DirectX 12。其他平台继承了 UE 4.27 的支持，但未经测试和优化。请参阅[平台](../Platforms/Platforms.md)部分。
 
 
 ## 安装和构建
@@ -84,19 +84,19 @@ Vite 目前基于 Visual Studio 2026、MSVC 14.50 和 Windows SDK 10.0.26100 开
 TAA 的重影、拖影和运动模糊是结构性问题，而非调优问题。SMAA 是空间抗锯齿，不存在这些问题。它是 Vite 推荐的默认设置，可通过 `r.Vite.SMAA.Mode` 启用。请参见[抗锯齿](../Rendering/Anti-Aliasing.md)部分。
 
 
-### 我应该使用哪种超分辨率器？
+### 我应该使用哪种超分器？
 
-如果您使用的是 NVIDIA 硬件并且项目面向 NVIDIA 用户，请使用 DLSS。FSR 或 XeSS 可以跨厂商兼容。NIS 是一个低成本的备选方案，它不包含时间组件。大多数项目应该提供不止一种升频器。请参阅[超分辨率器](../Rendering/Upscalers.md)部分。
+如果您使用的是 NVIDIA 硬件并且项目面向 NVIDIA 用户，请使用 DLSS。FSR 或 XeSS 可以跨厂商兼容。NIS 是一个低成本的备选方案，它不包含时间组件。大多数项目应该提供不止一种超分器。请参阅[超分器](../Rendering/Upscalers.md)部分。
 
 
 ### 启用超分辨率后，体积雾看起来有问题。
 
-`VITE_DLSS_PATCH` 可以修复这个问题。它添加了 `r.VolumetricFog.UseUpScaledSizeVolumetricFog`，该函数会以输出分辨率而不是内部分辨率渲染雾，同时还修复了半透明度问题。它的默认值为 `0`，因此需要重新构建。请参阅[超分辨率器](../Rendering/Upscalers.md)部分。
+`VITE_DLSS_PATCH` 可以修复这个问题。它添加了 `r.VolumetricFog.UseUpScaledSizeVolumetricFog`，该函数会以输出分辨率而不是内部分辨率渲染雾，同时还修复了半透明度问题。它的默认值为 `0`，因此需要重新构建。请参阅[超分器](../Rendering/Upscalers.md)部分。
 
 
 ### Vite 是否支持 Nanite 或 Lumen？
 
-不支持，而且以后也不会支持。这些是基于 UE5 假设构建的 UE5 系统。Vite 的解决方案是使用硬件细分和 LOD 来处理几何体，并使用 DDGI 和 SSGI 来处理全局光照。
+不支持，而且以后也不会支持。这些是基于 UE5 假设构建的 UE5 系统。Vite 的解决方案是使用硬件曲面细分和 LOD 来处理几何体，并使用 DDGI 和 SSGI 来处理全局光照。
 
 
 ## 物理引擎
@@ -120,12 +120,12 @@ PhysX 在 Vite 的目标工作负载下速度更快、结果更可预测，并�
 
 ### 我应该从哪里开始优化？
 
-统计单位（`stat unit），并确定游戏、绘制或 GPU 中哪个占用资源最多。优化错误的单位不会带来任何帧时间上的提升。请参阅[性能分析](../Performance/Profiling.md)。
+运行 `stat unit`，并确定游戏、绘制或 GPU 中哪个占用资源最多。优化错误的单位不会带来任何帧时间上的提升。请参阅[性能分析](../Performance/Profiling.md)。
 
 
 ### 我的游戏线程是瓶颈
 
-常见的瓶颈，大致按出现频率排序：角色移动组件、动画评估、蓝图 tick 逻辑以及 Actor tick 开销。请参阅 [400 个角色 CMC 基准测试](../ProjectsAndDemos/400-Characters-CMC-Bench.md)和[性能目标](../EngineOverview/Performance-Targets.md)。
+常见的瓶颈，大致按出现频率排序：角色移动组件、动画评估、蓝图 Tick 逻辑以及 Actor Tick 开销。请参阅 [400 个角色 CMC 基准测试](../ProjectsAndDemos/400-Characters-CMC-Bench.md)和[性能目标](../EngineOverview/Performance-Targets.md)。
 
 
 ### 着色器编译耗时过长
