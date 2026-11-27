@@ -17,9 +17,8 @@ Vite 已针对以下工具链组合进行验证。第一行是当前推荐的工
 | Visual Studio 2022 (latest)  | 14.44 | 10.0.26100 | 支持。与 Epic 的 UE 4.27 Plus 分支验证的最新工具链更新相匹配。                |
 | Visual Studio 2019 / 2022    | 14.29 | 10.0.18362 | 最大稳定性。最旧的支持组合；如果您的项目需要原始工具链，请使用。 |
 
-!!! 警告
-
-  `ViteSetup.bat` 助手目前强制要求使用 Visual Studio 2022、MSVC 14.44 和 Windows SDK 10.0.26100 子版本 7705 或更高版本，否则将无法继续运行。如果您使用的是 VS 2026 / MSVC 14.50 工具链，请手动运行构建步骤，而不是通过助手运行，或者更新脚本顶部的 `REQUIRED_*` 变量。请参阅 [ViteSetup 助手](../Tools/ViteSetup.md)。
+!!! warning
+    `ViteSetup.bat` 助手目前强制要求 Visual Studio 2022、MSVC 14.44 和 Windows SDK 10.0.26100 子版本 7705 或更高版本，否则会拒绝继续运行。如果您使用 VS 2026 / MSVC 14.50 工具链，请手动执行构建步骤而不经过助手，或更新脚本顶部的 `REQUIRED_*` 变量。参见 [ViteSetup 助手](../Tools/ViteSetup.md)。
 
 
 ## 所需组件
@@ -32,7 +31,7 @@ Vite 已针对以下工具链组合进行验证。第一行是当前推荐的工
 - .NET Framework 4.6.2 目标包 — UnrealBuildTool 和 AutomationTool 所需
 - .NET Framework 4.5 目标包 — SwarmAgent、SwarmCoordinator、NetworkProfiler 和 UnrealControls 所需
 
-要跳过手动组件选择，请通过 Visual Studio 26 安装程序的 **导入配置**选项下载并导入 [Vite VSConfig](https://drive.google.com/file/d/1NwpPUiM_7yVI_kjhW94kYxvVP42ViV3Q/view?usp=sharing) 文件。
+要跳过手动组件选择，请通过 Visual Studio 2026 安装程序的 **导入配置**选项下载并导入 [Vite VSConfig](https://drive.google.com/file/d/1NwpPUiM_7yVI_kjhW94kYxvVP42ViV3Q/view?usp=sharing) 文件。
 
 ### 移除冲突的工具集
 
@@ -97,8 +96,8 @@ Visual Studio 2022 和 2026 安装程序不再包含 4.5 目标包，但引擎�
 </Configuration>
 ```
 
-!!! 警告
-    对 `BuildConfiguration.xml` 的更改将在下次构建时生效，但编辑后应重新生成项目文件，以便 IDE 和 UBT 保持一致。
+!!! warning
+    对 `BuildConfiguration.xml` 的更改会在下次构建时生效；但编辑后应重新生成项目文件，让 IDE 与 UBT 保持一致。
 
 
 ## 验证您的工具链
