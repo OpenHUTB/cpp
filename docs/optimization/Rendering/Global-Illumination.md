@@ -1,7 +1,6 @@
 # 全局光照
 
-Vite推荐的GI设置是动态**动态漫反射全局光照**（Dynamic Diffuse Global Illumination, DDGI）加**屏幕空间全局光照**（Screen Space Global Illumination, SSGI）。DDGI 可以无噪声地解析世界尺度的反射；SSGI 可以填充探针体积过于粗糙而无法捕捉的高频接触细节。
-使用 <code>r.GlobalIllumination.ExperimentalPlugin 1</code> 和 <code>r.SSGI.Enable 1</code> 启用。
+Vite 推荐的 GI 组合是**动态 DDGI 加 SSGI**。DDGI 无噪声地解析世界尺度的弹射；SSGI 补上探针体积太粗、抓不到的高频接触细节。DDGI 默认开启（`r.GlobalIllumination.ExperimentalPlugin 1`），再叠加 `r.SSGI.Enable 1` 即可。
 
 
 全局光照是 Vite 作为独立分支存在的最大原因。本页解释了这些选项以及如何在它们之间进行选择；各个技术都有自己的页面。
@@ -11,15 +10,15 @@ Vite推荐的GI设置是动态**动态漫反射全局光照**（Dynamic Diffuse 
 | 解决方案                          | 成本                 | 需要 DXR | 动态照明 | 最适合                                                          |
 |-----------------------------------|----------------------|---|---|-------------------------------------------------------------------|
 | [动态 DDGI](./DDGI-Dynamic.md)   | 低                  | 是 | 完全动态 | 几乎所有的东西                                                 |
-| [静态 DDGI](./DDGI-Static.md)     | 运行时接近于零 | No | 烘焙 | 低端和无 DXR 硬件                                       |
+| [静态 DDGI](./DDGI-Static.md)     | 运行时接近于零 | 否 | 烘焙 | 低端和无 DXR 硬件                                       |
 | [SSGI](./SSGI.md)                   | 低                  | 否 | 完全动态 | 高频细节，与 DDGI 一起运行                 |
 | [Per-pixel RT GI](./Ray-Tracing.md) | 高                 | 是 | 完全动态 | GPU 比 PS5 快得多，参考                     |
-| 路径追踪                      | 极端主义者                | 是 | 完全动态 | RTX 5080 及以上，Ground Truth 参考                        |
-| 烘焙光照贴图                   | 运行时为零      | 否 | 仅静态 | 全静态场景，始终使用 CPU LightMass 以获得最高质量 |
+| [路径追踪](./Path-Tracing.md)                      | 极高                | 是 | 完全动态 | RTX 5080 及以上，真值参考                        |
+| 烘焙光照贴图                   | 运行时为零      | 否 | 仅静态 | 全静态场景，使用 CPU Lightmass 以获得最高质量 |
 
 
-!!! 注意
-    Vite 包括多个辅助间接反弹解决方案，例如距离场反弹和 IBL 捕获（Vite 特定添加）。除了非常具体的目标平台或专门的设置之外，很少考虑上面列出的解决方案。
+!!! note "注意"
+    Vite 还包括若干次级间接弹射方案，例如距离场弹射和 Vite 特有的局部 IBL 捕获。除了非常具体的目标平台或专门的设置之外，很少考虑上面列出的解决方案。
 
 
 ## 为什么选择 DDGI 而不是 Lumen
