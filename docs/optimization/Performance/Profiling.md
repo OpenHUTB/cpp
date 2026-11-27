@@ -1,9 +1,12 @@
 # 性能分析
 
+!!! note "概要"
+    先找瓶颈再优化。`stat unit` 会告诉你哪个线程在限制帧时间，后面的一切都从这个答案展开。
+
 在对场景进行优化之前，请先找到性能瓶颈。`stat unit` 命令可以告诉你哪个线程限制了帧数；后面的一切优化操作都由此展开。
 
 
-模拟引擎的性能分析工具已经非常成熟，并且文档齐全。本页面将介绍如何在达到机器人模拟的[性能目标](../EngineOverview/Performance-Targets.md)下使用这些工具，以及值得关注的特殊事项。
+虚幻引擎 4.27 的性能分析工具已经非常成熟，文档也齐全。本页讲如何在 Vite 的[性能目标](../EngineOverview/Performance-Targets.md)下使用它们，以及 Vite 特有的、值得盯住的地方。
 
 
 ## 首先使用 `stat unit` 命令
@@ -32,7 +35,7 @@ Game、Draw 和 GPU 中最大的那个就是你的瓶颈。帧时间大致等于
 
 2. 注意 Game、Draw 和 GPU 中哪个最接近 Frame。
 
-3. 使用 `r.ScreenPercentage 50` 进行确认。如果帧时间显著下降，则说明您受限于 GPU 的像素级性能。如果帧时间几乎没有变化，则说明您不受 GPU 限制。
+3. 用 `r.ScreenPercentage 50` 确认。帧时间明显下降，说明瓶颈在 GPU 的像素开销上；几乎不变，则不是。开着 FSR、DLSS 或 XeSS 时改用 `r.Upscaler.ScreenPercentageOverride 50`——这些插件会忽略 `r.ScreenPercentage`。
 
 4. 请参阅下面的相关内容。
 
@@ -54,8 +57,6 @@ stat slate       // UI 成本
 **参与者的节拍计数：** 每个节拍操作的参与者都会消耗资源，即使是那些节拍操作本身没有任何作用的参与者也不例外。`stat engine`会报告节拍计数。禁用不需要节拍操作的参与者的节拍功能，并在节拍函数（`Tick`）内部使用节拍间隔而不是提前退出。
 
 **角色移动：** 角色移动组件（Character Movement Component, CMC）开销很大，并且会随着角色数量的增加而急剧增加。[400 角色 CMC 基准测试](../ProjectsAndDemos/400-Characters-CMC-Bench.md)演示程序正是为了精确地衡量这一点而存在的。如果你有很多角色，这很可能就是你的主要开销。
-
-![](../../img/optimization/400CharCMCBench.png)
 
 **物理引擎。** 另请参阅[PhysX](../Physics/PhysX.md)。注意物理引擎的运行时间占游戏线程运行时间的比例。大量的模拟物体应该移动到[实例化的子系统](../Physics/Instanced-Physics.md)中。
 
@@ -96,7 +97,7 @@ r.ScreenPercentage 50  // 像素成本界限的 A/B 测试
 | 基础通道 | 由材料复杂性和透支驱动 |
 | 阴影深度 | 由阴影投射光数和级联配置驱动 |
 | 半透明性 | 由透支驱动。颗粒是常见原因。 |
-| SMAA | 小而固定。如果很大，请检查`r.Vite.SMAA.Mode`。 |
+| SMAA | 开销小而固定。如果异常大，检查 `r.SMAA.Quality`。 |
 
 ## 查看模式
 
@@ -123,26 +124,25 @@ Viewport 视图模式通常比配置文件捕获更快地定位问题：
 - 关卡流式传输和资源加载。
 - 垃圾回收。
 
-## 根据目标进行性能分析
+## 对照目标做性能分析
 
-只有结合预算，才能更好地理解某个数字。模拟引擎的[性能目标](../EngineOverview/Performance-Targets.md)为您提供了一个示例：
+一个数字只有对着预算看才有意义。Vite 的[性能目标](../EngineOverview/Performance-Targets.md)给了你这份预算：
 
 | 目标 | 帧预算 |
 |---|---|
 | 风格化 4K120 | 8.3&nbsp;ms |
-| 高性能 4K60 | 16.6&nbsp;ms |
-| 高保真 4K30 | 33.3&nbsp;ms |
-| 全高清 1440p30 | 33.3&nbsp;ms |
-
-![](../../img/optimization/ChaosVsPhysX3000.png)
-*模拟 3000 个立方体，虚幻引擎 5.7 Chaos 帧率为 33.26 FPS，对比 PhysX 3.4 帧率为 157.88 FPS。*
+| 性能 高端 4K60 | 16.6&nbsp;ms |
+| 保真 高端 4K30 | 33.3&nbsp;ms |
+| 保真 全 RT 1440p30 | 33.3&nbsp;ms |
 
 在符合最低配置要求的硬件上，使用开发或测试版本（而非编辑器）进行性能分析，并选择能够代表最坏情况的游戏场景（而非空关卡）。仅编辑器开销就可能达到几毫秒，而空关卡中的性能分析无法反映最终交付的帧性能。
 
 
 ## 另请参阅
 
+- [PS5 CPU FPU](PS5-CPU-FPU.md)
 - [性能目标](../EngineOverview/Performance-Targets.md)
 - [UE4 与 UE5 成本分析](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md)
 - [引擎默认设置变更](./Engine-Defaults.md)
 - [着色器编译和 PSO](./Shader-Compilation-And-PSO.md)
+- [编译器资源管理器](Compiler-Explorer.md)
