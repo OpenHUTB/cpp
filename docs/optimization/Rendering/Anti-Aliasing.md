@@ -16,11 +16,11 @@ Vite 新增了 **SMAA**（子像素形态抗锯齿，Subpixel Morphological Anti
 
 | 方法 | 枚举 | `r.DefaultFeature.AntiAliasing` | 说明                                                                                                |
 |---|---|---|------------------------------------------------------------------------------------------------------|
-| None | `AAM_None` | 0 | 启用抗锯齿。可用于比较和调试抗锯齿伪影。                                       |
-| FXAA | `AAM_FXAA` | 1 | 低成本的后处理滤镜。模糊纹理细节和边缘。Vite 实现了更高画质的选项。 |
-| TemporalAA | `AAM_TemporalAA` | 2 | Vite 相比 UE4 的 TAA 具有更高的画质和稳定性。更好的抗锯齿处理，但会牺牲一些图像质量。 |
-| MSAA | `AAM_MSAA` | 3 | 仅前向着色。采样数通过 `r.MSAACount` 获取。 .                                                |
-| **SMAA** | `AAM_SMAA` | **4** | Vite 的 SMAA 实现比其他原生形态学抗锯齿方案更快、质量更高。        |
+| None | `AAM_None` | 0 | 不做抗锯齿，画面有锯齿。适合做对比，也适合调试抗锯齿伪影。                                       |
+| FXAA | `AAM_FXAA` | 1 | 低成本的后处理滤镜，会把纹理细节和边缘一起模糊掉。Vite 的 FXAA 比原生实现质量更高、速度更快（3 月主要版本）。 |
+| TemporalAA | `AAM_TemporalAA` | 2 | 相比 UE4 的 TAA，画质与稳定性都有改进。锯齿消除得干净，代价是牺牲一些锐度。 |
+| MSAA | `AAM_MSAA` | 3 | 仅支持前向着色。采样数由 `r.MSAACount` 设置。 |
+| **SMAA** | `AAM_SMAA` | **4** | Vite 推荐的方法。纯空间处理，不依赖历史缓冲区，提供四档质量。 |
 
 ## SMAA
 
@@ -96,5 +96,5 @@ Vite 在**色调映射之前**应用 SMAA，这与在色调映射之后运行的
 
 - [渲染](../Rendering/Rendering.md)
 - [超分辨率和帧生成](Upscalers.md)
-- [性能目标](Performance-Targets.md)
+- [性能目标](../EngineOverview/Performance-Targets.md)
 - [色彩管理](Color-Management.md)
