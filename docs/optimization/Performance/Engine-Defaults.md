@@ -1,5 +1,8 @@
 # 引擎默认更改
 
+!!! note "概要"
+    Vite 修改了虚幻引擎 4.27 的一批默认值以提升性能。这些改动会直接影响你的项目——其中一些改变的是运行时行为，不只是开销。在断定某个东西坏了之前，先读这一页。
+
 为了提升性能，Vite 修改了虚幻引擎 4.27 的一些默认设置。这些修改会直接影响您的项目——其中一些会改变运行时行为，而不仅仅是成本。在断定项目出现问题之前，请先阅读此页面。
 
 虚幻引擎的默认设置旨在确保所有功能开箱即用，这意味着它们启用了大多数项目永远不会用到的功能。Vite 修改了其中一些设置以提升性能，其原则是：您需要的功能应该是您主动开启的，而不是您忘记关闭的。
@@ -8,66 +11,79 @@
 
 ## 运行时行为变更
 
-**警告：** 这些更改不仅会改变性能，还会改变行为。如果游戏逻辑依赖于默认设置，则需要进行调整。
+!!! warning
+    这些改动改变的是行为，不只是性能。如果游戏逻辑依赖原生默认值，就需要处理。
 
-### 默认情况下禁用重叠事件 <span id='disabled_overlap'></span>
+### 默认关闭重叠事件
 
-除非显式启用，否则基本组件不再生成重叠事件。
+除非显式启用，基本组件（Primitive Component）不再生成重叠事件。
 
-生成重叠事件会消耗所有组件的资源，无论是否有任何组件绑定到该事件。在默认项目中，大多数基本组件生成的重叠事件都没有被任何组件监听。
+只要有这个开关，生成重叠事件就有开销，不管有没有东西监听。原生项目里，大多数图元生成的重叠事件根本没人听。
 
-**这意味着**：需要重叠事件的组件必须显式设置**生成重叠事件**。触发器体积、拾取检测以及任何由 `OnComponentBeginOverlap` 驱动的组件都需要设置此标志。这很可能是项目迁移后“我的触发器停止工作”问题的原因。
+**这对你意味着什么：** 需要重叠事件的组件必须显式勾选 **Generate Overlap Events**。触发体积、拾取检测，以及任何由 `OnComponentBeginOverlap` 驱动的逻辑都要打开这个标志。项目迁移后「我的触发器不工作了」，最可能就是这个原因。
 
-![](../../img/optimization/OverlapEventsDisabled.png)
+例外是 `ACharacter`：自 3 月主要版本起，它的胶囊组件保持重叠事件开启，因为大多数项目都依赖它处理角色。想关掉的话，`Character.cpp` 里那一行有标记。
 
-*[提交差异](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/02d7c0ad0a7542b382a70dc3e37877d6ec052d76)：将 PrimitiveComponent.cpp 中的 SetGenerateOverlapEvents(true) 替换为 bGenerateOverlapEvents = false，应用于每个项目中的每个基本组件。*
+*`UPrimitiveComponent` 里的一行改动，作用于每个项目里的每个图元。*
+
+[提交](https://github.com/GapingPixel/UnrealEngineVite-PhysX/commit/02d7c0ad0a7542b382a70dc3e37877d6ec052d76)
 
 
 ### 优化 Actor 运行时
 
 Actor 运行时默认值已更改，以减少 `AActor::InitializeDefaults` 中每个 Actor 的开销：
 
-| 默认 | 库存的 4.27 | Vite | 原因 |
+| 默认值 | 原生 4.27 | Vite | 原因 |
 |---|---|---|---|
-| `SetCanBeDamaged` | `true` | `false` | 仅使用伤害系统的参与者需要此设置 |
-| `bRelevantForNetworkReplays` | `true` | `false` | 除非需要，否则将参与者排除在演示网络录制之外 |
-| `bRelevantForLevelBounds` | `true` | `false` | 避免对未定义边界的参与者进行边界迭代 |
+| `SetCanBeDamaged` | `true` | `false` | 只有用到伤害系统的 Actor 才需要它 |
+| `bRelevantForNetworkReplays` | `true` | `false` | 除非特意需要，否则不把 Actor 纳入演示录制 |
+| `bRelevantForLevelBounds` | `true` | `false` | 避免对没有定义边界的 Actor 做关卡边界遍历 |
 
-![](../../img/optimization/OptimizedActorRuntime.png)
+*大型网格、阻挡体积与必须定义世界边界的植被，需要把 `bRelevantForLevelBounds` 设回 `true`。*
 
-*[提交 Actor.cpp 中的差异](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/970cbb989c3712f13be1fa370b778e769e5d864c)：更改 SetCanBeDamaged、bRelevantForNetworkReplays 和 bRelevantForLevelBounds 的默认值。大型网格、阻挡体积和必须定义世界边界的植被需要将 `bRelevantForLevelBounds` 设置为 `true`。*
+[提交](https://github.com/GapingPixel/UnrealEngineVite-PhysX/commit/970cbb989c3712f13be1fa370b778e769e5d864c)
 
 ### 骨骼网格体优化配置
 
 骨骼网格体是大多数项目中 CPU 占用率最高的组件之一，因此 `USkeletalMeshComponent` 默认提供的是性能优化配置，而非 Epic 提供的完整功能配置。游戏内资源通常包含大量骨骼网格体，因此为每个组件启用优化设置并不实际；可行的做法是将性能较低的配置设为默认，并在需要时启用性能较高的配置。
 
-| 默认 | 库存的 4.27 | Vite |
+| 默认值 | 原生 4.27 | Vite |
 |---|---|---|
 | `VisibilityBasedAnimTickOption` | `AlwaysTickPoseAndRefreshBones` | `OnlyTickPoseWhenRendered` |
 | `bEnableUpdateRateOptimizations` | `false` | `true` |
 | `bHasCustomNavigableGeometry` | `Yes` | `No` |
 | `bDisablePostProcessBlueprint` | `false` | `true` |
 | `bUpdateOverlapsOnAnimationFinalize` | `true` | `false` |
+| `bSkipKinematicUpdateWhenInterpolating` | `false` | `true` |
+| `bSkipBoundsUpdateWhenInterpolating` | `false` | `true` |
 
-![](../../img/optimization/SkeletalMeshesOptimizedConfig.png)
+*每一行改动的末尾注释都保留着 Epic 的原值，不用翻上游就能恢复原生行为。*
 
-*SkeletalMeshComponent.cpp 中的[提交差异](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/33fe7c638829b8120e8a02ecc639acda761df835)显示了与 Epic 原版相比的五个已更改的默认值。每行更改的内容都会在末尾的注释中保留 Epic 的原始值，因此无需咨询上游即可恢复库存行为。*
+[提交](https://github.com/GapingPixel/UnrealEngineVite-PhysX/commit/33fe7c638829b8120e8a02ecc639acda761df835)
 
 `VisibilityBasedAnimTickOption` 是需要关注的选项。`OnlyTickPoseWhenRendered` 表示屏幕外的参与者将完全停止评估其姿势；读取未渲染参与者骨骼变换或插槽的游戏玩法（例如武器枪口位置、IK 目标、远处参与者上的连接点）必须将组件设置回 `AlwaysTickPose` 或 `AlwaysTickPoseAndRefreshBones`。
 
-`bDisablePostProcessBlueprint = true` 是第二个选项：后处理动画蓝图（通常用于 IK 和骨骼校正）将不再运行，除非为每个组件重新启用。
+`bDisablePostProcessBlueprint = true` 是第二项：后期处理动画蓝图（常用于 IK 与骨骼校正）不再运行，除非为每个组件重新打开。
 
-![](../../img/optimization/SkeletalMeshDefault.png)
-
-*SkeletalMeshComponent.cpp 构造函数显示了周围的默认块。有关这些默认值设置位置的上下文，请参阅 `SkeletalMeshComponent.cpp` 中的构造函数块。*
+两个 `bSkip...WhenInterpolating` 开关只在开启更新率优化时才有意义，而 Vite 也默认开启了它：在动画只是插值而不是求值的那几帧，运动学物理体与边界不更新，等到下一次求值 tick 再补上。对于每帧都必须跟着姿势走的运动学物理体（比如近距离命中检测用的那个），请把这两个开关关掉。
 
 
-### 已禁用生成光照贴图 UV
+### 默认不生成光照贴图 UV
 
-默认情况下，静态网格体导入不再生成光照贴图 UV（[提交差异](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/acce6fbe432fe9fe5a2536f0979befd5dcd741d1)）。
+静态网格体导入默认不再生成光照贴图 UV（[提交](https://github.com/GapingPixel/UnrealEngineVite-PhysX/commit/acce6fbe432fe9fe5a2536f0979befd5dcd741d1)）。
 
 大多数 Vite 项目使用 [DDGI](../Rendering/DDGI-Dynamic.md) 而非烘焙光照，因此为每个导入的网格体生成光照贴图 UV 会浪费导入时间和 UV 通道。如果您的项目使用烘焙光照，请在静态网格体导入选项中启用此设置。
 
+
+### 动画默认用 ACL 压缩
+
+`BaseEngine.ini` 把默认的骨骼与曲线压缩设置指向 [Animation Compression Library](../Plugins/Bundled-Plugins.md)（`/ACLPlugin/ACLAnimBoneCompressionSettings` 与 `ACLAnimCurveCompressionSettings`），新导入的动画因此走 ACL。这也是 ACL 插件默认开启、并且 [ViteSetup](../Tools/ViteSetup.md) 的 Express 精简会保留它的原因。已有动画仍使用保存时的压缩设置。
+
+### 独立运行与打包版本帧率上限 120
+
+`Engine/Config/BaseGameUserSettings.ini` 里的 `FrameRateLimit=120.0` 把独立运行与打包版本限制在 120 FPS，以获得稳定的帧节奏（自 7 月主要版本起）。
+
+**这对你意味着什么：** 跑得比 120 FPS 快的基准测试（包括好几个[演示项目](../ProjectsAndDemos.md)）在解除上限前只会报 120。运行时用 `t.MaxFPS 0` 解除上限，或者在项目的 `DefaultGameUserSettings.ini` 里改 `FrameRateLimit`。
 
 ## 可扩展性
 
