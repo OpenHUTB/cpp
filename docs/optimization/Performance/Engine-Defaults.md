@@ -71,76 +71,133 @@ Actor 运行时默认值已更改，以减少 `AActor::InitializeDefaults` 中�
 
 ## 可扩展性
 
-阴影质量 4（Shadow Quality 4）用于中等阴影设置，在可扩展性范围的中间位置提高阴影质量（[提交差异](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/1718cd66e08a2b47222f895162e3be2b2c98ee6a)）。
+Vite 重新平衡了 `Engine/Config/BaseScalability.ini` 里的阴影可扩展性分组。原生 4.27 从 Low 几乎没有阴影，一路铺到 Epic 与 Cinematic 非常昂贵；Vite 把这个跨度收窄了：Low 有可用的阴影，High 与 Epic 更便宜，Medium 保持不变。
 
+| 分组 | `r.ShadowQuality`（原生 → Vite） | 相对原生的其他变化 |
+|---|---|---|
+| Low（`@0`） | 0 → **2** | 四个级联而不是一个，最大阴影分辨率 1024，距离场与胶囊体阴影开启，光照函数开启，光源保留完整绘制距离 |
+| Medium（`@1`） | 3 → 3 | 无 |
+| High（`@2`） | 5 → **4** | 阴影距离缩放 0.85 → 0.75，级联过渡 0.8 → 0.7 |
+| Epic（`@3`） | 5 → 5 | 最多 8 个级联而不是 10 个，半径阈值 0.01 → 0.02，距离缩放 1.0 → 0.85，体积雾网格 16 px × 64 层而不是 8 px × 128 |
+| Cinematic | 5 → 5 | 最大阴影分辨率 4096 → 2048，体积雾网格 8 px 而不是 4 px，历史未命中的超采样 4 次而不是 16 |
 
+如果项目靠原生的 Epic 或 Cinematic 阴影预算来出预告片或离线截图，请在项目的 `DefaultScalability.ini` 里覆盖这些值，而不是改引擎文件。
+
+## 切换回原生游戏默认值
+
+上面这些重叠与骨骼网格体默认值最容易弄坏迁移过来的项目。自 8 月主要版本起，引擎根目录的 `ViteDefaults.bat` 可以在 Vite 与原生 UE 4.27 之间切换这些默认值，不用手改引擎源码：
+
+```
+ViteDefaults.bat                                  :: interactive menu showing the current state
+ViteDefaults.bat -DetectOnly                      :: report the current state only
+ViteDefaults.bat -SetOverlap ue427 -SetSkm vite   :: stock overlap, Vite skeletal mesh defaults
+```
+
+它会改写 `PrimitiveComponent.cpp` 与 `SkeletalMeshComponent.cpp`，所以之后要重新编译编辑器。能改项目里的组件就优先改项目；把引擎默认值切回去，等于把开销重新摊到每个关卡的每个图元或骨骼网格体上。
 
 ## 已禁用的插件
 
-4.27 版本默认启用的一些插件已被禁用（[提交差异 1](https://github.com/GapingPixel/UnrealEngineVite-PhysX/commit/e9aebc2ef9f8acb7326a7e989f288ef68969342f) &middot;
-[提交差异 2](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/6c5948bf12ea61f82784193ccaa5d43c4f574ae9)）。这可以减少编辑器启动时间、模块加载数量和打包后的构建文件大小。
+Vite 的插件配置会关掉大多数 Win64 项目从不加载的引擎插件，从而缩短编辑器启动时间、减少模块加载数量、减小打包体积。这份配置如何落到你的代码树，取决于版本：
 
-**如果您需要使用 VR 插件，则必须重新启用它们。**
+| 版本 | 配置的应用方式 |
+|---|---|
+| LTS 至 6 月主要版本 | 直接内置在源码树里：插件以 `EnabledByDefault = false` 随附 |
+| 7 月主要版本起 | 源码树保留原生 4.27 的值以维持兼容。运行 `devops\ueVite-ApplyVitePluginDefaults.bat` 应用配置 |
 
+配置清单在 `devops\ViteEnginePluginDefaults.txt`，关掉 39 个引擎插件，打开 1 个：
 
-## 节拍优化
+- **关闭：** Paper2D；CLion、CodeLite 与 KDevelop 源码访问器；Plastic SCM 与 Subversion 源码管理；Chaos Cloth、Chaos Editor、Chaos Niagara 与 Chaos 求解器插件；Alembic 导入器；Facial Animation；Crypto Keys；Android、Apple 与 WMF 媒体播放；OpenXR、Oculus VR 与 SteamVR；以及 Google Cloud Messaging、Google PAD、Chunk Downloader、Mobile Patching Utils 等移动服务。
+- **开启：** Blast，也就是 Vite 的[破碎](../Physics/Destruction-And-Cloth.md)路径。
 
-### SpeedTree 节拍
-
-[LevelTick.cpp](https://github.com/OpenHUTB/engine/tree/hutb/Engine/Source/Runtime/Engine/Private/LevelTick.cpp) 中的 [SpeedTree 节拍已优化](https://github.com/GapingPixel/UE5-PhysX-Vite/blob/3e4a16aa89de4f4c37da300c945d6a14dc62edd7/Engine/Source/Runtime/Engine/Private/LevelTick.cpp#L1709)。无论项目是否使用 SpeedTree 资源，SpeedTree 节拍都会运行，因此每个项目都能从中节省资源。
-![](../../img/optimization/SpeedTreeTick.png)
-*LevelTick.cpp 显示了世界节拍中的 UpdateSpeedTreeWind 调用。`Scene->UpdateSpeedTreeWind` 在世界节拍中 — 无条件地在 stock 4.27 中。*
-
-### Niagara 节拍
-
-Niagara 插件启用时会发出节拍信号。如果您不使用 Niagara 插件，请在项目关卡中禁用它；Cascade 在 4.27 版本中仍然可用。
-
-## 光线追踪剔除
-
-光线追踪剔除会考虑每个图元的最小绘制距离（[提交差异](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/595f376f6de0912606b05768739aa3d24ac4f61a)）：
-
-```c++
-GEngine->Exec(nullptr, TEXT("r.RayTracing.Culling.UseMinDrawDistance 1"));
+```
+devops\ueVite-ApplyVitePluginDefaults.bat            :: apply the Vite profile
+devops\ueVite-ApplyVitePluginDefaults.bat --dryrun   :: report what would change
+devops\ueVite-ApplyVitePluginDefaults.bat --stock    :: restore the stock 4.27 values
 ```
 
-对于有很多小细节网格的场景来说，这是一种廉价且通常安全的解决方案，因为几何体太小以至于无法绘制，在加速结构中也太小以至于无关紧要。
+`--yes` 跳过确认提示。脚本只改 `.uplugin` 文件，因此在 `.uproject` 里显式点名某个插件的项目不受影响。
 
+**VR 插件要单独注意**，需要就必须重新打开；Windows 上通过 Media Framework 播视频的项目，WMF Media 也一样。
 
-## 编辑器体验优化
+[提交 1](https://github.com/GapingPixel/UnrealEngineVite-PhysX/commit/e9aebc2ef9f8acb7326a7e989f288ef68969342f) &middot;
+[提交 2](https://github.com/GapingPixel/UnrealEngineVite-PhysX/commit/6c5948bf12ea61f82784193ccaa5d43c4f574ae9)
 
-这些优化不会影响运行时性能，但会改变编辑器的行为：
+## 可以关掉的 Tick
 
-- 动画资源始终在新标签页中打开
-  ([提交差异](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/8bdae919e6eae61a27ef8d09d38027592a473d8c))
-- 用于禁用新插件弹出窗口的配置变量
-  ([提交差异](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/9af0349c1832b7094ceae7f47ba8ca5d261e0e69))
-- `bDisableAllTutorialAlerts=True`
-  ([提交差异](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/d9fd593e11581fd93d0ff60b2933794f150b4780))
-- 从更高版本的引擎中安全移植的各种功能
-  ([提交差异](https://github.com/GapingPixel/UE5-PhysX-Vite/commit/fe7a6f4d7c54d8725d6308820d5b4fd546b9ff49))
+### Niagara
 
-## 您可以自行进行一些可选的精简操作
+插件启用时 Niagara 就会 Tick。不用就在项目级别关掉 Niagara 插件；4.27 里 Cascade 仍然可用。
 
-出于兼容性考虑，这些操作无法在分支发布版本中禁用，但可以针对单个项目进行设置。
+## 光线追踪效果默认关闭
 
-**移除 Vite 插件。** 移除已添加的 Vite 插件可以缩短编译时间。在 Ryzen 9 9950X3D 上测试：完整代码库编译耗时 15 分钟，移除 Vite 插件后仅需 12 分钟。Houdini 是最大的单一贡献者。
+原生 4.27 让后期处理体积决定光追反射、半透明与环境光遮蔽是否运行（`-1`），并把光追阴影打开（`1`）。从 LTS 起的每个 Vite 版本都把四项设为 `0`：
 
-有关工具，请参阅[精简指南](Debloat-Guide.md)。
+| CVar | 原生 4.27 | Vite |
+|---|---|---|
+| `r.RayTracing.Reflections` | `-1`（后期处理体积决定） | `0` |
+| `r.RayTracing.Translucency` | `-1`（后期处理体积决定） | `0` |
+| `r.RayTracing.AmbientOcclusion` | `-1`（后期处理体积决定） | `0` |
+| `r.RayTracing.Shadows` | `1` | `0` |
+
+值为 `0` 时，这些效果的后期处理体积设置会被忽略；在体积里开过它们的项目，迁到 Vite 后一个都跑不起来。把 CVar 设为 `-1` 恢复原生行为，设为 `1` 则强制开启：
+
+```ini
+; Config/DefaultEngine.ini
+[/Script/Engine.RendererSettings]
+r.RayTracing.Reflections=-1
+r.RayTracing.AmbientOcclusion=-1
+```
+
+光追半透明默认也被 `VITE_RT_PSO_DEBLOAT` 编译移除了，所以它的 CVar 只在关掉这个开关的构建里才有意义。它的帮助文本仍把 `-1` 写成默认值，代码里其实是 `0`。
+
+## 光线追踪剔除：未改动，但值得开启
+
+Vite 在这里保留原生 4.27 的行为：`r.RayTracing.Culling` 默认 `0`，因此不管光追图元在相机哪个方位，都留在加速结构里。在大场景里，打开它是最便宜的光追优化之一：
+
+```ini
+; Config/DefaultEngine.ini
+[SystemSettings]
+r.RayTracing.Culling=1
+r.RayTracing.Culling.Radius=10000
+r.RayTracing.Culling.Angle=1
+```
+
+开启后，**相机后方**的物体如果距离超过 `r.RayTracing.Culling.Radius`（默认 10000，即 100 m），或投影角度小于 `r.RayTracing.Culling.Angle`，就会被剔除。相机前方的物体永远不会被剔除，所以直接可见的画面不变，但被剔除的物体会从反射与光追阴影里消失。开启后记得检查玩家身后的镜面与大型投影物。
+
+!!! note
+    UE5 的 `r.RayTracing.Culling.UseMinDrawDistance` 在 4.27 与 Vite 中都不存在。
+
+## 编辑器默认值
+
+这些不影响运行时性能，但会改变编辑器行为，设置在 `Engine/Config/BaseEditorSettings.ini` 与 `BaseEditorPerProjectUserSettings.ini`：
+
+| 设置 | Vite 默认值 | 作用 |
+|---|---|---|
+| `bDisableAllTutorialAlerts` | `True` | 编辑器里不弹教学提示 |
+| `bShowNewPluginsPopup` | `True` | 设为 `False` 可关掉「有新插件可用」弹窗 |
+| `bSendUsageData`、`bSendUnattendedBugReports` | `False` | 编辑器不上报使用数据，也不发送无人值守崩溃报告 |
+| `bEnableAsyncTextureCompilation` | `True` | 纹理在后台编译，不阻塞编辑器 |
+| `bCopyStarterContentPreference` | `False` | 新项目不附带 Starter Content |
+| `bGenerateLightmapUVs` | `False` | 见[默认不生成光照贴图 UV](#默认不生成光照贴图-uv) |
+
+编辑器的新闻推送也被移除，动画资源始终在新标签页打开——这是从 UE5 移植过来的行为（[提交](https://github.com/GapingPixel/UnrealEngineVite-PhysX/commit/8bdae919e6eae61a27ef8d09d38027592a473d8c)）。
+
+## 可以自行选择的精简
+
+这些出于兼容性考虑没法在分支发布版里关掉，但单个项目可以用。
+
+**移除 Vite 插件。** 移除新增的 Vite 插件能缩短编译时间。在 Ryzen 9 9950X3D 上、Houdini Engine 还随附时测得：完整仓库 15 分钟，去掉 Vite 插件 12 分钟，Houdini 是最大的单一贡献项。6 月主要版本移除了 Houdini，所以现在的差距更小。
+
+工具见[精简指南](Debloat-Guide.md)。
 
 ## 迁移现有项目
 
-### 将迁移后的项目与 Vite 默认设置进行比较
-
-1. 测试每个触发体积和重叠驱动的交互。重叠事件是最常见的故障点。
-
-2. 检查使用引导/跟随骨骼网格设置的角色是否存在曲线传播缺失的情况。
-
-3. 如果项目烘焙了光照，请重新启用光照贴图 UV 生成，并确认现有网格仍然具有有效的光照贴图 UV。
-
-4. 重新启用项目所需的所有插件，特别是 VR 插件。
-
-5. 检查缩放设置，因为中等阴影现在与默认设置有所不同。
-
+1. 测试每个触发体积和由重叠驱动的交互。重叠事件是最常见的故障点。
+2. 检查使用 leader/follower 骨骼网格体配置的角色，曲线的传播是否还在。
+3. 如果项目烘焙光照，重新打开光照贴图 UV 生成，并确认已有网格体的光照贴图 UV 仍然有效。
+4. 重新启用项目需要的插件，尤其是 VR 与 WMF Media。
+5. 复查可扩展性设置，因为 Low、High、Epic、Cinematic 的阴影现在都与原生不同。
+6. 如果项目靠后期处理体积来开光追反射、半透明或 AO，把这些 CVar 设为 `-1`，见[光线追踪效果默认关闭](#光线追踪效果默认关闭)。
 
 ## 另请参阅
 
