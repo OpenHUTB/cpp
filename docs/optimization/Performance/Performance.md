@@ -13,7 +13,7 @@ Vite 的性能优化并非后期制作。[性能目标](../EngineOverview/Perfor
 | 主题 | 涵盖内容 |
 |---|---|
 | [性能分析](Profiling.md) | 找出帧的实际运行位置 |
-| [PS5 CPU FPU](PS5-CPU-FPU.md) | 削减过的 Zen 2 FPU、4700S 替身，以及仍然双管线发射的 SIMD |
+
 | [引擎默认设置变更](Engine-Defaults.md) | Vite 相对于 4.27 版本的更改及其对项目的影响 |
 | [编译时开关](Compile-Time-Switches.md) | `VITE_*` 宏，包括用于移除光线追踪效果的宏 |
 | [着色器编译和 PSO](Shader-Compilation-And-PSO.md) | 排列组合数量、编译时间与管线状态 |
@@ -44,4 +44,4 @@ Vite 的性能优化并非后期制作。[性能目标](../EngineOverview/Perfor
 - [UE4 与 UE5 成本分析](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md)
 - [渲染](../Rendering/Rendering.md)
 - [物理](../Physics/Physics.md)
-- [编译器资源管理器](Compiler-Explorer.md)
+
