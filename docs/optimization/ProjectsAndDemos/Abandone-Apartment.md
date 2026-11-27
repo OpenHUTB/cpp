@@ -1,4 +1,4 @@
-﻿# 废弃的公寓场景
+# 废弃的公寓场景
 
 室内照明场景。室内是全局光照最难处理的情况，这使其成为评估全局光照的最有用场所。
 ![](../../img/optimization/AbandonedAppartment.png)
@@ -16,7 +16,7 @@
 
 | 方法 | 在室内的行为 |
 |---|---|
-| [静态 DDGI](../Rendering/DDGI-Static.md) | 烘焙探针数据。成本最低，如果没有物体移动，则是正确的。 |
+| [静态 DDGI](../Rendering/DDGI-Static.md) | 预计算的探针数据。成本最低；只要场景里没有物体移动，结果就是对的。 |
 | [动态 DDGI](../Rendering/DDGI-Dynamic.md) | Probes update at runtime. Handles time of day and moving occluders. |
 | [SSGI](../Rendering/SSGI.md) | 添加探针网格无法解析的接触尺度细节。 |
 | 逐像素光线追踪全局光照 (GI) | 参考级质量，帧速率下成本过高，默认情况下会被编译禁用。 |
