@@ -1,35 +1,32 @@
 # Vite 简介
 
-<tldr>
-<p>
-Vite 是 Unreal Engine 4.27 面向生产的分支，基于 NVIDIA 的 NvRTX Caustics 分支。它保留了 PhysX 3.4 和与引擎无关的光线追踪管线，并用在高帧速率下达到本机分辨率的更轻的替代方案取代了 Epic 的 UE5 功能堆栈（Lumen、Nanite、VSM、TSR、Chaos）。
-</p>
-</tldr>
+!!! note "概要"
+    Vite 是 Unreal Engine 4.27 面向生产的分支，基于 NVIDIA 的 NvRTX Caustics 分支。它保留 PhysX 3.4 和与引擎无关的光线追踪管线，用更轻的方案取代 Epic 的 UE5 功能堆栈（Lumen、Nanite、VSM、TSR、Chaos），目标是在高帧率下达到原生分辨率。
 
-Unreal Engine Vite 专为专业游戏开发而构建，支持当前正在制作的游戏。其长期目标是不断发展的现代引擎，提供与专有的内部引擎竞争的 CPU 和渲染吞吐量，并针对当代控制台硬件提供持续的性能、稳定性和图形管线工作。
+Unreal Engine Vite 面向专业游戏开发，服务正在制作中的游戏。它的长期目标是成为持续演进的现代引擎：在 CPU 与渲染吞吐上能同专有内部引擎竞争，并针对当代主机硬件持续投入性能、稳定性与图形管线。
 
 
-目标足够具体，可以证伪：**在每毫秒保真度和模拟规模上击败 Epic 的 UE5**，并在这两个方面与专有 AAA 引擎竞争。每毫秒的保真度是[性能目标](../EngineOverview/Performance-Targets.md)和[UE4 与 UE5 成本分析](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md)衡量的。模拟规模是[物理](../ProjectsAndDemos/Physics-Cube-Bench.md)和[角色](../ProjectsAndDemos/400-Characters-CMC-Bench.md)基准测试所测量的。 Vite 目前没有获胜的地方，本手册是这么说的。
+目标足够具体，可以证伪：**在每毫秒保真度与模拟规模上击败 Epic 的 UE5**，并在这两项上与专有 AAA 引擎竞争。每毫秒保真度由[性能目标](../EngineOverview/Performance-Targets.md)和[UE4 与 UE5 成本分析](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md)衡量，模拟规模由[物理](../ProjectsAndDemos/Physics-Cube-Bench.md)和[角色](../ProjectsAndDemos/400-Characters-CMC-Bench.md)基准衡量。Vite 赢不了的地方，本手册也会直说。
 
 ## 设计论证
 
-Epic 的虚幻引擎 5.7 和 5.8 使用 Lumen、Nanite、虚拟阴影贴图、时间超分辨率和 Chaos，在 PlayStation 5 上以 720p–1080p 的动态内部分辨率实现大约 60 FPS。这就是引擎上发布的游戏在实践中所展示的内容。
+Epic 的虚幻引擎 5.7 与 5.8 使用 Lumen、Nanite、虚拟阴影贴图（VSM）、时间超分辨率（TSR）和 Chaos，在 PlayStation 5 上以 720p–1080p 的动态内部分辨率跑到约 60 FPS。引擎上已发行的游戏，实际表现就是如此。
 
 
-虚拟化方法——虚拟几何、阴影和纹理，加上重建分辨率——增加了处理、流媒体和内存开销。时间重建、去噪和随机采样会引入噪声、重影、不稳定性和模糊。相对于 UE4，Substrate、GPU 场景、RDG、较重的着色器模型和一般功能扩展会增加基本渲染器开销、着色器排列计数、字节码大小、PSO 计数、编译时间和缓存大小。除了混沌之外，CPU 成本还通过更繁重的场景维护、GPU 场景上传、流明更新、Nanite 流、VSM 失效、世界分区以及渲染线程和 RHI 工作负载而增加。
+虚拟化路线——虚拟几何、虚拟阴影与虚拟纹理，再加上重建分辨率——增加了处理、流送与内存开销。时间重建、去噪和随机采样会引入噪声、重影、抖动与模糊。相对 UE4，Substrate、GPU Scene、RDG、更重的着色模型以及一般性的功能膨胀，会抬高基础渲染开销、着色器排列数、字节码体积、PSO 数量、编译时间与缓存体积。除 Chaos 之外，CPU 成本还因更重的场景维护、GPU Scene 上传、Lumen 更新、Nanite 流送、VSM 失效、世界分区以及渲染线程与 RHI 负载而上升。
 
 
-与此同时，硬件正在向另一个方向发展。 Nintendo Switch 2 的预计使用寿命为七到八年。功能远不如 PS5 的掌上电脑现已成为主流市场，包括 Valve 的 Steam Deck 和 Steam Machine。人工智能需求下，硬件成本不断上涨。在此背景下，UE5 的性能目标看起来与游戏实际运行的机器越来越不一致，而且渲染堆栈可以说更适合电影、虚拟制作和高端 PC，而不是跨大众市场硬件的可持续长期游戏开发。
+与此同时，硬件正朝另一个方向走。Nintendo Switch 2 的预计生命周期为七到八年。性能远不如 PS5 的掌机已经进入主流，包括 Valve 的 Steam Deck 与 Steam Machine。AI 需求推高硬件成本。在这种背景下，UE5 的性能目标与游戏实际要跑的机器越来越脱节，整套渲染堆栈也更适合影视、虚拟制作和高端 PC，而不是面向大众市场硬件的长期游戏开发。
 
 Vite 采取相反的立场：优先考虑高视觉保真度，同时在控制台级硬件上以高原生分辨率保持严格的帧时间预算。
 
-!!! 注意
-    在 Vite 中运行的具有光线追踪全局光照、光线追踪反射和曲面细分的场景优于 UE 5.7 中完全没有光线追踪、Lumen、Nanite 或曲面细分的相同场景。这在 RTX 4080 Super 和 RDNA2 RX 6700（相当于 PS5）上保持 4K 原生分辨率，在 Steam Deck 硬件上保持原生分辨率。
+!!! note
+    在 Vite 中运行的带光线追踪全局光照、光线追踪反射与曲面细分的场景，优于 UE 5.7 里完全没有光线追踪、Lumen、Nanite 或曲面细分的同一场景。这在 RTX 4080 Super 和 RDNA2 RX 6700（相当于 PS5）上能保持 4K 原生分辨率，在 Steam Deck 硬件上也能保持原生分辨率。
 
 
 ## Vite 是由什么组成的
 
-Vite 最初是 NvRTX 4.27 Caustics 的一个分支，它在 Epic 标准 4.27 分支上添加了 DX12、光线追踪和渲染改进，以及 DLSS、NVIDIA Reflex、改进的降噪器和全面的光线追踪支持，包括 DDGI-lit 光线追踪反射。
+Vite 最初从 NvRTX 4.27 Caustics 分支而来。NvRTX 在 Epic 标准 4.27 上加入了 DX12、光线追踪与渲染改进，以及 DLSS、NVIDIA Reflex、改进的降噪器和完整的光线追踪支持，包括由 DDGI 照明的光线追踪反射。
 
 在该基础之上：
 
@@ -38,9 +35,9 @@ Vite 最初是 NvRTX 4.27 Caustics 的一个分支，它在 Epic 标准 4.27 分
 - 集成了 AMD 引擎分支的渲染功能。
 - 发布分支中有 300 多个从 UE 5.0 到 5.8 时代的向后移植，其中 1,200 多个集成在内部暂存分支中。
 
-集成工作由具有丰富虚幻引擎源代码经验的引擎程序员完成，他们使用适当的代码保护、托管着色器排列以及将每个精心挑选的 UE5 更改手动调整为 Vite 代码库，而不是盲目合并。
+集成工作由熟悉虚幻引擎源码的引擎程序员完成：他们使用适当的代码保护与托管着色器排列，把每个精选的 UE5 改动手工适配进 Vite 代码库，而不是盲目合并。
 
-借助 PhysX 以及组合的 DDGI 和 SSGI 光照管线，Vite 与用于启动 *The Finals* 的定制虚幻引擎构建非常相似。
+凭借 PhysX 加上 DDGI 与 SSGI 组合的光照管线，Vite 与用来推出《总决赛》（*The Finals*）的定制虚幻引擎构建非常相似。
 
 ## Headline 特色
 
