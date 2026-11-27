@@ -36,7 +36,7 @@
 
 ### Houdini 引擎 — 集成，可商用/免费使用
 
-通过 Houdini 数字资产实现程序化工作流程。艺术家在编辑器中交互式地调整资产参数，并使用虚幻引擎资产作为输入；Houdini 的程序化引擎会处理资产，结果无需烘焙即可显示在编辑器中。
+通过 Houdini 数字资产实现程序化工作流程。艺术家在编辑器中交互式地调整资产参数，并使用虚幻引擎资产作为输入；Houdini 的程序化引擎会处理资产，结果无需预计算就能显示在编辑器中。
 
 [HoudiniEngineForUnreal，Houdini 20.0 / Unreal 4.27 分支](https://github.com/sideeffects/HoudiniEngineForUnreal/tree/Houdini20.0-Unreal4.27)
 
