@@ -1,5 +1,10 @@
 # 着色模型
 
+!!! note "概要"
+    Vite 在 4.27 原生着色模型之外新增了三种：用于高保真皮肤与角色表面的 **Callisto BRDF**、用于风格化非写实渲染的 **Toon**，以及 **Lit Reactive**。三者都会复用现有的材质引脚，动手前先读引脚映射表。
+
+    **自 7 月主要版本起，Callisto BRDF 与 Toon 默认不参与编译**。要用它们，请以 `VITE_SHADINGMODEL_CALLISTO=1` 或 `VITE_SHADINGMODEL_TOON=1` 构建，详见[编译时开关](../Performance/Compile-Time-Switches.md)。
+
 Vite 为 4.27 版本的默认着色模型集新增了三种着色模型：**Callisto BRDF** 用于高保真度的皮肤和角色表面，**Toon** 用于风格化的非写实渲染，以及 **Lit Reactive**。每种模型都会重新利用现有的材质引脚，因此在创建之前请务必阅读引脚映射表。
 
 着色模型可以从材质详情面板中的**着色模型（Shading Model）** 下拉菜单中选择，也可以通过**着色模型（Shading Model）** 材质表达式逐像素地进行驱动。所有 Unreal Engine 4.27 的默认着色模型仍然可用。
