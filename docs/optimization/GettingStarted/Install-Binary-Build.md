@@ -42,7 +42,7 @@
     注册是按用户进行的，写在 HKCU 注册表里。每个需要这个引擎的 Windows 用户账户都要运行一次 `RegistryAdd.bat`。
 
 
-## 将项目指向构建
+## 让项目指向该构建
 
 在文本编辑器中打开您的 `.uproject` 文件并设置引擎关联：
 
@@ -55,12 +55,12 @@
 }
 ```
 
-已安装的构建归档文件中打包的项目已设置此项。如果您右键单击 `.uproject` 文件并选择**Switch Unreal Engine version（切换虚幻引擎版本）**，则在构建注册后，UE_ViteFork 将出现在列表中。
+构建归档里自带的项目已经设好这一项。右键单击 `.uproject` 文件并选择 **Switch Unreal Engine version（切换虚幻引擎版本）**，注册完成后 `UE_ViteFork` 就会出现在列表里。
 
 
 ## 移动或删除构建
 
-注册表项存储的是绝对路径，因此移动引擎文件夹会破坏它。如果您移动构建：
+注册表项存的是绝对路径，移动引擎文件夹会使其失效。如果确实要移动：
 
 1. 从原位置运行 `RegistryRemove.bat`，或手动删除 `UE_ViteFork` 值。
 
@@ -69,12 +69,12 @@
 3. 从新位置运行 `RegistryAdd.bat`。
 
 
-要彻底卸载，请运行 `RegistryRemove.bat`，然后删除文件夹。除了 `%LOCALAPPDATA%\UnrealEngine` 和 `%APPDATA%\Unreal Engine` 下的用户专属 Unreal 目录之外，引擎目录和单个 HKCU 注册表值之外不会写入任何内容。
+要彻底卸载，先运行 `RegistryRemove.bat`，再删除文件夹。除此之外，只会写入引擎目录、一个 HKCU 注册表值，以及 `%LOCALAPPDATA%\UnrealEngine` 和 `%APPDATA%\Unreal Engine` 下的用户级 Unreal 目录。
 
 
-## 同时运行源码构建版本与安装版构建版本
+## 同时运行源码构建与已安装构建
 
-你可以同时安装这两个版本。只要它们以不同的名称进行注册，便属于独立的引擎关联；因此，如果你希望同时使用源码构建版本和已安装版本，请在注册前修改其中一个版本的 `ENGINE_ASSOCIATION` 值。请注意，这两个版本共用同一用户级的 Unreal 目录，因此编辑器布局及部分设置将在两者间通用。
+两个版本可以同时安装。只要注册名不同，它们就是独立的引擎关联；所以若想并用源码构建与已安装构建，请在注册前改掉其中一个的 `ENGINE_ASSOCIATION` 值。注意两者共享同一用户级 Unreal 目录，编辑器布局和部分设置会通用。
 
 ## 另请参阅
 
