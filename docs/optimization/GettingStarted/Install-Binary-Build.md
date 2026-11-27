@@ -2,12 +2,12 @@
 
 解压 `UE_ViteFork.7z`，运行 `RegistryAdd.bat` 注册引擎，运行 `MakeShortcut.bat` 创建桌面启动快捷方式，然后在您的 `.uproject` 文件中设置 `"EngineAssociation": "UE_ViteFork"`。
 
-“已安装版本”是指编辑器的一种预编译、可分发的副本。它的运行方式与通过 Epic Games Launcher 安装的版本相同：您可以打开并打包（Cook）项目，但无法修改引擎源码或进行源码级调试。对于美术师、设计师以及任何想要评估此分支版本的人员来说，这是理想的选择。
+「已安装版本」是编辑器的一份预编译、可分发包。它和通过 Epic Games Launcher 安装的版本用法相同：可以打开项目、烘焙资源（Cook）并打包，但无法修改引擎源码，也不能做源码级调试。美术、设计师以及任何想评估这个分支的人，都适合用它。
 
-“已安装版本”是由团队基于源码构建版本生成的。如果您需要自行制作，请参阅[已安装版本](../Tools/Installed-Builds.md)相关文档。
+「已安装版本」由团队基于源码构建生成。如需自行制作，见[已安装版本](../Tools/Installed-Builds.md)。
 
 
-## 构建归档文件的内容
+## 构建归档包含的内容
 
 打包后的 Vite 构建文件解压到一个包含以下内容的文件夹中：
 
@@ -28,20 +28,21 @@
 
 ### 安装并注册已安装的构建
 
-1. 将 `UE_ViteFork.7z` 解压到不包含空格或非 ASCII 字符的路径，例如 `D:\Engines\UE_ViteFork`。避免解压到 `Program Files` 文件夹；编辑器会写入到它自己的目录，而且权限提示很麻烦。
+1. 把 `UE_ViteFork.7z` 解压到不含空格或非 ASCII 字符的路径，例如 `D:\Engines\UE_ViteFork`。不要解压到 `Program Files`：编辑器会往自己的目录写文件，权限提示很麻烦。
 
 2. 如果构建版本中包含单独的 `ExcludedPlugins.7z` 文件，并且您需要这些插件，请将其解压到同一文件夹。
 
-3. 运行 `RegistryAdd.bat`。此操作会将引擎路径写入 `HKCU\Software\Epic Games\Unreal Engine\Builds`，并命名为 `UE_ViteFork`，同时删除指向同一文件夹的过时 GUID 键值条目。
+3. 运行 `RegistryAdd.bat`。它会把引擎路径写入 `HKCU\Software\Epic Games\Unreal Engine\Builds`，注册名为 `UE_ViteFork`，同时清理指向同一文件夹的过时 GUID 条目。
 
 4. 运行 `MakeShortcut.bat` 在引擎文件夹旁边创建 `UEViteFork.lnk` 文件。
 
 5. 通过快捷方式启动编辑器，或直接运行 `Engine\Binaries\Win64\UE4Editor.exe`。
 
-**警告：** 注册是按用户进行的，使用 HKCU 注册表。每个需要引擎的 Windows 用户帐户都必须运行一次 `RegistryAdd.bat` 文件。
+!!! warning
+    注册是按用户进行的，写在 HKCU 注册表里。每个需要这个引擎的 Windows 用户账户都要运行一次 `RegistryAdd.bat`。
 
 
-## 将项目指向构建
+## 让项目指向该构建
 
 在文本编辑器中打开您的 `.uproject` 文件并设置引擎关联：
 
@@ -54,12 +55,12 @@
 }
 ```
 
-已安装的构建归档文件中打包的项目已设置此项。如果您右键单击 `.uproject` 文件并选择**Switch Unreal Engine version（切换虚幻引擎版本）**，则在构建注册后，UE_ViteFork 将出现在列表中。
+构建归档里自带的项目已经设好这一项。右键单击 `.uproject` 文件并选择 **Switch Unreal Engine version（切换虚幻引擎版本）**，注册完成后 `UE_ViteFork` 就会出现在列表里。
 
 
 ## 移动或删除构建
 
-注册表项存储的是绝对路径，因此移动引擎文件夹会破坏它。如果您移动构建：
+注册表项存的是绝对路径，移动引擎文件夹会使其失效。如果确实要移动：
 
 1. 从原位置运行 `RegistryRemove.bat`，或手动删除 `UE_ViteFork` 值。
 
@@ -68,12 +69,12 @@
 3. 从新位置运行 `RegistryAdd.bat`。
 
 
-要彻底卸载，请运行 `RegistryRemove.bat`，然后删除文件夹。除了 `%LOCALAPPDATA%\UnrealEngine` 和 `%APPDATA%\Unreal Engine` 下的用户专属 Unreal 目录之外，引擎目录和单个 HKCU 注册表值之外不会写入任何内容。
+要彻底卸载，先运行 `RegistryRemove.bat`，再删除文件夹。除此之外，只会写入引擎目录、一个 HKCU 注册表值，以及 `%LOCALAPPDATA%\UnrealEngine` 和 `%APPDATA%\Unreal Engine` 下的用户级 Unreal 目录。
 
 
-## 同时运行源码构建版本与安装版构建版本
+## 同时运行源码构建与已安装构建
 
-你可以同时安装这两个版本。只要它们以不同的名称进行注册，便属于独立的引擎关联；因此，如果你希望同时使用源码构建版本和已安装版本，请在注册前修改其中一个版本的 `ENGINE_ASSOCIATION` 值。请注意，这两个版本共用同一用户级的 Unreal 目录，因此编辑器布局及部分设置将在两者间通用。
+两个版本可以同时安装。只要注册名不同，它们就是独立的引擎关联；所以若想并用源码构建与已安装构建，请在注册前改掉其中一个的 `ENGINE_ASSOCIATION` 值。注意两者共享同一用户级 Unreal 目录，编辑器布局和部分设置会通用。
 
 ## 另请参阅
 
