@@ -18,7 +18,7 @@ Windows 10 或 11 x64。建议使用具有光线追踪功能的 GPU，但不是�
 | GPU (完整的 RT 套件) | RTX 2060 / RX 6600              | RTX 3070 / RX 6700 XT 或更好 |
 | VRAM | 6&nbsp;GB                       | 8&nbsp;GB 或更多 |
 
-动态 DDGI 适用于 GTX 1060 6 GB 级 GPU 及以上。在此之下，或者在任何不支持光线追踪的 GPU 上，使用[静态 DDGI](../Rendering/DDGI-Static.md)，它将辐照度烘焙到探测体积中，并且没有运行时光线追踪成本。
+动态 DDGI 适用于 GTX 1060 6 GB 级 GPU 及以上。在此之下，或者在任何不支持光线追踪的 GPU 上，使用[静态 DDGI](../Rendering/DDGI-Static.md)，它把辐照度预计算进探针体积，运行时没有光线追踪开销。
 
 ### 测试硬件
 
