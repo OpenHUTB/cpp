@@ -1,5 +1,8 @@
 # 性能和优化
 
+!!! note "概要"
+    Vite 的存在就是为了在主机级硬件上达到原生分辨率、高帧率的目标。本节讲怎么测量有没有达到、Vite 已经替你改了什么，以及还剩下哪些可调的杠杆。
+
 Vite 的目标是在主机级硬件上实现原生分辨率和高帧率。本节将介绍如何衡量是否达到这些目标，Vite 已经为您做了哪些调整，以及还有哪些可以改进的地方。
 
 Vite 的性能优化并非后期制作。[性能目标](../EngineOverview/Performance-Targets.md)就是规范，本节的所有内容都是为了帮助您确保达到这些目标。
@@ -10,6 +13,7 @@ Vite 的性能优化并非后期制作。[性能目标](../EngineOverview/Perfor
 | 主题 | 涵盖内容 |
 |---|---|
 | [性能分析](Profiling.md) | 找出帧的实际运行位置 |
+| [PS5 CPU FPU](PS5-CPU-FPU.md) | 削减过的 Zen 2 FPU、4700S 替身，以及仍然双管线发射的 SIMD |
 | [引擎默认设置变更](Engine-Defaults.md) | Vite 相对于 4.27 版本的更改及其对项目的影响 |
 | [编译时开关](Compile-Time-Switches.md) | `VITE_*` 宏，包括用于移除光线追踪效果的宏 |
 | [着色器编译和 PSO](Shader-Compilation-And-PSO.md) | 排列计数、编译时间和管线状态 |
@@ -32,10 +36,6 @@ Vite 的性能优化并非后期制作。[性能目标](../EngineOverview/Perfor
 在此基础上，Vite 还进行了针对性优化：[优化了 SSAO 路径](../Rendering/Ambient-Occlusion.md)、[精简了光线追踪 PSO](Compile-Time-Switches.md)、减少了引擎节拍运行时间，并[更改了默认设置](Engine-Defaults.md)。
 
 
-!!! 笔记
-
-    "Engine Tick Reductions"（引擎Tick削减）指的是通过减少或优化每帧执行的Tick（更新）操作，来降低CPU（尤其是游戏线程）的负载，从而提升游戏性能的一系列策略
-
 这意味着，在您进行任何优化之前，大部分性能优势就已经唾手可得。您的任务主要是避免浪费这些优势。
 
 ## 另请参阅
@@ -44,3 +44,4 @@ Vite 的性能优化并非后期制作。[性能目标](../EngineOverview/Perfor
 - [UE4 与 UE5 成本分析](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md)
 - [渲染](../Rendering/Rendering.md)
 - [物理](../Physics/Physics.md)
+- [编译器资源管理器](Compiler-Explorer.md)
