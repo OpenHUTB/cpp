@@ -1,35 +1,40 @@
 # 控制台变量
 
-此列表包含 Vite 特有的控制台变量以及您最常用的默认变量，并按子系统分组。这是一个精选列表，并非完整列表——如需查看完整列表，请使用`help`或控制台的自动补全功能。
+!!! note "概要"
+    Vite 特有的控制台变量，以及最常用的原生变量，按子系统分组。这是精选列表而非完整清单——完整集合请用 `help` 或控制台的自动补全查询。
 
-**警告**：此列表中的几个光线追踪变量在默认构建中会**被编译掉**。它们会成功设置，但不会渲染任何内容。每个变量的可用性都有说明；请参阅[编译时开关](../Performance/Compile-Time-Switches.md)。
+!!! warning
+    本列表中有几个光线追踪变量在默认构建里**被编译掉**。它们能设置成功，但不会渲染任何内容。每个变量都标注了可用性，详见[编译时开关](../Performance/Compile-Time-Switches.md)。
 
 
 您可以在运行时通过控制台设置变量，也可以在 `Config\DefaultEngine.ini` 文件中永久设置这些变量：
 
 ```ini
 [/Script/Engine.RendererSettings]
-r.Vite.SMAA.Mode=1
+r.SMAA.Quality=2
 r.HBAO.Enable=1
 ```
 
-## Vite 特有的
+## Vite 特有变量
 
-这些在 UE 4.27 版本中不存在。
+这些变量在原生 UE 4.27 中不存在。
 
 | 变量 | 默认值 | 用途 |
 |---|---|---|
-| `r.Vite.SMAA.Mode` | 1 | SMAA 抗锯齿质量。`0` = 低，`1` = 高。参见[抗锯齿](../Rendering/Anti-Aliasing.md)。  |
-| `r.Vite.SSAO` | &mdash; | Vite 的优化 SSAO 路径。参见[环境光遮蔽](../Rendering/Ambient-Occlusion.md)。  |
-| `r.AntiAliasing.SMAA.Debug` | &mdash; | SMAA 调试可视化 |
-| `p.VitePhysXFixedTimestep.Enabled` | 0 | 启用固定时间步长物理效果 |
-| `p.VitePhysXFixedTimestep.DeltaTime` | 1/60 | 固定步长持续时间（秒） |
-| `p.VitePhysXFixedTimestep.MaxTimesteps` | &mdash; | 每帧最大步数 |
-| `p.VitePhysXFixedTimestep.MaxCumulativeExtraSteps` | &mdash; | 累积追赶步数上限 |
-| `p.VitePhysXFixedTimestep.LimitType` | &mdash; | 过载处理方式 |
-| `p.VitePhysXFixedTimestep.InterpolationMode` | &mdash; | 固定步长之间的渲染插值 |
+| `r.SMAA.Quality` | 2 | SMAA 质量。0 = 低，1 = 中，2 = 高，3 = 极高。8 月大版本（August Major）及之后；更早的版本使用 `r.Vite.SMAA.Mode`（0 = 低，1 = 高）。参见[抗锯齿](../Rendering/Anti-Aliasing.md)。 |
+| `r.SMAA.EdgeMode` | 0 | SMAA 边缘检测。0 = 颜色，1 = 亮度。8 月大版本及之后。 |
+| `r.SMAA.DebugVisualization` | 0 | SMAA 调试视图，非 Shipping 构建。1 = 边缘，2 = 混合权重，3 = 高亮结果。更早的版本使用 `r.AntiAliasing.SMAA.Debug`。 |
+| `r.Vite.SSAO` | 1 | Vite 优化的 SSAO 路径，仅限开发构建；Shipping 和 Test 锁定为 `VITE_O_SSAO`。参见[环境光遮蔽](../Rendering/Ambient-Occlusion.md)。 |
+| `r.SSGI.SkipSSAO` | 1 | 当 SSGI 会在该帧提供环境光遮蔽遮罩时跳过 SSAO。9 月大版本（September Major）及之后。参见 [SSGI](../Rendering/SSGI.md)。 |
+| `p.VitePhysXFixedTimestep.Enabled` | 0 | 启用固定时间步长物理 |
+| `p.VitePhysXFixedTimestep.DeltaTime` | 0.01667（1/60） | 固定步长持续时间（秒） |
+| `p.VitePhysXFixedTimestep.MaxTimesteps` | 16 | 每个游戏 Tick 的最大固定步数 |
+| `p.VitePhysXFixedTimestep.MaxCumulativeExtraSteps` | 50 | 触发限制策略前的过载预算 |
+| `p.VitePhysXFixedTimestep.LimitType` | 0 | 0 = 钳制固定步数，1 = 回退到可变子步 |
+| `p.VitePhysXFixedTimestep.InterpolationMode` | 1 | 0 = 关闭，1 = 按组件，2 = 始终 |
 
-**注意：** `p.VitePhysXFixedTimestep.*` 变量需要使用 `VITE_PHYSX_FIXED_TIMESTEP=1` 进行构建。请参阅[固定时间步长](../Physics/Fixed-Timestep.md)。
+!!! note
+    `p.VitePhysXFixedTimestep.*` 变量需要启用了 `VITE_PHYSX_FIXED_TIMESTEP=1` 的构建。参见[固定时间步长](../Physics/Fixed-Timestep.md)。
 
 
 ## 光线追踪
@@ -51,13 +56,13 @@ r.HBAO.Enable=1
 
 | 变量 | 用途 |
 |---|---|
-| `r.RayTracing.Culling` | 光线追踪实例剔除模式 |
-| `r.RayTracing.Culling.Radius` | 剔除距离 |
-| `r.RayTracing.Culling.Angle` | 角度剔除阈值 |
+| `r.RayTracing.Culling` | `0`（默认）关闭，`1` 按距离和立体角剔除相机后方的物体 |
+| `r.RayTracing.Culling.Radius` | 超过该距离后，相机后方的物体被剔除。默认 10000（100 米）。 |
+| `r.RayTracing.Culling.Angle` | 投影角度阈值，低于该值且位于相机后方的物体被剔除。默认 1。 |
 | `r.RayTracing.SceneCaptures` | 是否使用场景捕获构建光线追踪场景 |
 | `r.RayTracing.PreGather` | 预收集通道控制 |
 
-剔除设置是光线追踪性能最有效的调节手段之一，Vite 修改了其中一些默认设置——请参阅[引擎默认设置](../Performance/Engine-Defaults.md)。
+剔除设置是光线追踪性能最有效的调节手段之一。Vite 保持原生 4.27 的取值，即剔除关闭；何时开启请参阅[引擎默认设置](../Performance/Engine-Defaults.md#光线追踪剔除)。
 
 
 ### 天空光照
@@ -136,22 +141,23 @@ RTXGI 插件默认启用。请参阅[动态 DDGI](../Rendering/DDGI-Dynamic.md) 
 
 | 变量 | 默认值 | 用途 |
 |---|---|---|
-| `r.HBAO.Enable` | 0 | 启用 HBAO+。乘以屏幕空间 AO 缓冲区。 |
+| `r.HBAO.Enable` | 0 | 启用 HBAO+。叠加到屏幕空间 AO 缓冲之上。 |
 | `r.HBAO.HighPrecisionDepth` | 0 | 0 = FP16 内部深度，1 = FP32。使用 FP32 可避免远处物体出现自遮挡条带。 |
 | `r.HBAO.GBufferNormals` | 1 | 0 = 从深度重建法线，1 = 获取 GBuffer 法线 |
 
 HBAO+ 在后处理体积中提供了额外的体积级设置：幂指数（默认值 2.0）、半径（2.0）、偏移量（0.1）、小尺度 AO（1.0）、模糊半径（2 像素）、模糊锐度（16.0）、最大视深（9500）、深度锐度（50.0）以及前景和背景 AO 距离。
 
-**注意：** `r.HBAO.Enable` 帮助文本将 HBAO+ 描述为仅适用于 DX11。此信息已过时；目前已有可用的 D3D12 实现。请参阅[环境光遮蔽 (Ambient Occlusion)](../Rendering/Ambient-Occlusion.md)。
+!!! note
+    `r.HBAO.Enable` 的帮助文本称 HBAO+ 仅支持 DX11，这已经过时；D3D12 实现是可用且能工作的。参见[环境光遮蔽](../Rendering/Ambient-Occlusion.md)。
 
 
 ## 曲面细分
 
 | 变量 | 默认值 | 用途 |
 |---|---|---|
-| `r.TessellationAdaptivePixelsPerTriangle` | 48.0 | 全局细分因子乘数。数值越低，三角形越多。 |
+| `r.TessellationAdaptivePixelsPerTriangle` | 48.0 | 自适应曲面细分的三角形目标面积（像素）。数值越低，三角形越多。 |
 
-参见[细分曲面](../Rendering/Tessellation.md).
+参见[曲面细分](../Rendering/Tessellation.md)。
 
 ## 头发
 
@@ -167,15 +173,16 @@ HBAO+ 在后处理体积中提供了额外的体积级设置：幂指数（默�
 
 | 变量 | 用途 |
 |---|---|
-| `r.RayTracing.VolumeFogMode` | 光线追踪体积雾模式 |
+| `r.RayTracing.VolumeFogMode` | 光线追踪阴影时，体积雾中光源的处理方式 |
 | `r.VolumetricFog.UseUpScaledSizeVolumetricFog` | 以输出分辨率而非内部分辨率渲染体积雾 |
 
-**注意：** `r.VolumetricFog.UseUpScaledSizeVolumetricFog` 仅在 `VITE_DLSS_PATCH=1` 的版本中存在。它的作用是在放大时修复体积雾的分辨率。请参阅[超分辨率](../Rendering/Upscalers.md)部分。
+!!! note
+    `r.VolumetricFog.UseUpScaledSizeVolumetricFog` 只存在于 `VITE_DLSS_PATCH=1` 的构建中。它的作用是在超分时修正体积雾的分辨率。参见[超分器](../Rendering/Upscalers.md)。
 
 
 ## 性能分析
 
-标准的虚幻引擎，但值得集中展示：
+这些是标准虚幻引擎命令，但值得集中列在一起：
 
 | 命令 | 显示 |
 |---|---|
@@ -202,7 +209,8 @@ HBAO+ 在后处理体积中提供了额外的体积级设置：幂指数（默�
 | `<variable>` 不带值 | 打印当前值和帮助文本 |
 | `DumpConsoleCommands` | 列出命令 |
 
-**警告：** 引擎中的帮助文本有时会过时——例如，HBAO+ 声称仅支持 DX11。当行为与帮助文本不一致时，以源代码为准。
+!!! warning
+    引擎里的帮助文本偶尔会过时——HBAO+ 的「仅 DX11」就是一例。行为与帮助文本冲突时，以源码为准。
 
 
 ## 另请参阅
@@ -210,4 +218,4 @@ HBAO+ 在后处理体积中提供了额外的体积级设置：幂指数（默�
 - [编译时开关](../Performance/Compile-Time-Switches.md)
 - [引擎默认设置](../Performance/Engine-Defaults.md)
 - [性能分析](../Performance/Profiling.md)
-- [术语表](../Reference/Glossary.md)
+- [术语表](Glossary.md)
