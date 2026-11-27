@@ -33,7 +33,7 @@
 
 **移动目标不能位于引擎目录树内。** 脚本会拒绝，因为位于目录树内的移动目标会被后续的迭代捕获。
 
-**脚本拒绝使用根目录。** 它会同时检查引擎目录和移动目标。
+**拒绝驱动器根目录。** 引擎根目录与移动目标都会检查。
 
 **脚本会验证引擎目录。** 在执行任何操作之前，脚本会确认 `Engine\Binaries\` 目录是否存在。
 
@@ -114,7 +114,7 @@ STRIP=Engine\Binaries\Win64\UnrealFileServer.exe
 #STRIP=Engine\Source\Programs\UnrealFileServer
 ```
 
-UnrealFileServer 为远程设备提供已处理和暂存的文件，并支持网络即时处理 (Cook-on-the-Fly)。如果您仅针对本地 Win64 进行开发和打包，不部署到远程设备，不使用网络即时处理，也不通过文件服务器工作流程面向主机或移动设备，则可以安全地移除它。
+UnrealFileServer 为远程设备提供已烘焙、已暂存的文件，并支撑网络 Cook-on-the-Fly（边运行边烘焙资源）。如果你只针对本地 Win64 开发与打包，不部署到远程设备，不用网络 Cook-on-the-Fly，也不通过文件服务器流程面向主机或移动设备，就可以安全地移除它。
 
 默认情况下，目标平台为预编译的二进制文件；源文件夹将被保留，以便稍后重新编译该工具。
 
@@ -124,16 +124,17 @@ UnrealFileServer 为远程设备提供已处理和暂存的文件，并支持网
 STRIP=Samples\StarterContent
 STRIP=Samples\MobileStarterContent
 STRIP=FeaturePacks\StarterContent.upack
-#STRIP=Samples\NGXTest
+STRIP=FeaturePacks\MobileStarterContent.upack
+STRIP=Samples\NGXTest
+STRIP=Samples\RTXGI_Test
 #STRIP=Samples\PixelStreaming
-#STRIP=Samples\RTXGI_Test
 ```
 
-根据精简策略，初始内容已被移除。默认情况下，分支特定的测试样本会被保留——特别是 `RTXGI_Test`，它在验证 [DDGI](../Rendering/DDGI-Dynamic.md) 时非常有用。
+Starter Content 按精简策略移除。NVIDIA 的测试示例属于演示内容，默认被移除；要保留就把对应行注释掉。`RTXGI_Test` 在验证 [DDGI](../Rendering/DDGI-Dynamic.md) 时特别有用。Pixel Streaming 是可用功能而不是演示，所以保留。
 
 树中不存在的条目会被跳过并显示一条通知，这不会造成任何影响。
 
-## 插件通过
+## 插件清理
 
 默认情况下禁用，因为每个项目的插件需求各不相同：
 
@@ -147,11 +148,11 @@ STRIP=FeaturePacks\StarterContent.upack
 系统首先会在脚本目录下查找该文件，然后在引擎根目录下查找。
 
 
-!!! 警告
+!!! warning
 
-启用此渲染通道前，请阅读 `ExcludedPlugins.txt` 文件。该文件包含您的项目可能需要的插件条目，例如 `Engine/Plugins/Runtime/GameplayAbilities/`、`Engine/Plugins/Runtime/ApexDestruction/`、`Engine/Plugins/Runtime/HairStrands/`、`Engine/Plugins/Runtime/Nvidia/`（包含 [DLSS 和 Streamline 插件](../Rendering/Upscalers.md)）以及 `Engine/Plugins/Runtime/PhysXVehicles/`。
+    启用这一轮插件清理前，请先读 `ExcludedPlugins.txt`。里面有些条目你的项目可能正需要：`Engine/Plugins/Runtime/GameplayAbilities/`、`Engine/Plugins/Runtime/ApexDestruction/`、`Engine/Plugins/Runtime/HairStrands/`、`Engine/Plugins/Runtime/Nvidia/`（[DLSS 与 Streamline 插件](../Rendering/Upscalers.md)就在这里）与 `Engine/Plugins/Runtime/PhysXVehicles/` 都在清单上。
 
-    运行此渲染通道前，请注释掉您使用的所有插件对应的行。
+        运行这一轮清理前，请把你要用的插件对应的行注释掉。
 
     
 
@@ -209,9 +210,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File devops\ueVite-debloat-Valida
 
 ## 此操作不会做什么
 
-精简插件可以减少磁盘占用空间，并通过插件阶段缩短构建时间。但它**不会**提高运行时性能——即使插件存在但已禁用，运行时也不会消耗任何资源。
+精简可以减少磁盘占用，并通过插件清理缩短构建时间。但它**不会**提高运行时性能——即使插件存在但已禁用，运行时也不会消耗任何资源。
 
-有关运行时性能，请参阅[性能分析](../Performance/Profiling.md)和[引擎默认更改](../Performance/Engine-Defaults.md)。关于构建时间，移除添加的 Vite 插件可以在 15 分钟的完整构建过程中节省大约 3 分钟；请参阅[着色器编译和PSO](../Performance/Shader-Compilation-And-PSO.md)。
+有关运行时性能，请参阅[性能分析](../Performance/Profiling.md)和[引擎默认更改](../Performance/Engine-Defaults.md)。关于构建时间，在 Houdini Engine 还随附时，移除新增的 Vite 插件能在 15 分钟的完整构建里省下约 3 分钟；6 月主要版本移除 Houdini 后，这个差距变小了。详见[着色器编译和PSO](../Performance/Shader-Compilation-And-PSO.md)。
 
 ## 另请参阅
 
