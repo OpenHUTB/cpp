@@ -1,13 +1,11 @@
 # 从源代码构建
 
-!!! 注意
+!!! note
+    `Setup.bat`（询问是否覆盖时选 `N`）→ `GenerateProjectFiles.bat` → 在 `Development Editor` 配置下构建 `UE4`
 
-    `Setup.bat`（询问是否覆盖时选择`N`）→ `GenerateProjectFiles.bat` → 在“Development Editor”中构建 “UE4”
+本页介绍在 Windows 上从源代码构建引擎。先安装[工具链](Toolchain-Requirements.md)——几乎所有针对 Vite 报告的构建失败，最终都被证明是工具链问题，而不是代码问题。
 
-本页介绍了在 Windows 上从源代码构建引擎。首先安装[工具链](Toolchain-Requirements.md)——几乎所有针对Vite报告的构建失败都被证明是工具链问题，而不是代码问题。
-
-如果您以前从未从源代码构建过虚幻引擎，请参阅 Epic 的 [Visual Studio 4.27 设置指南](https://dev.epicgames.com/documentation/en-us/unreal-engine/setting-up-visual-studio-development-environment-for-cplusplus-projects-in-unreal-engine?application_version=4.27)
-仍然是最好的背景读物。
+如果您从未从源代码构建过虚幻引擎，Epic 的 [Visual Studio 4.27 设置指南](https://dev.epicgames.com/documentation/en-us/unreal-engine/setting-up-visual-studio-development-environment-for-cplusplus-projects-in-unreal-engine?application_version=4.27) 仍是最好的背景读物。
 
 ## 使用 ViteSetup 进行引导式构建
 
@@ -23,9 +21,10 @@ ViteSetup.bat
 ViteSetup.bat menu
 ```
 
-对于首次构建，建议使用助手，因为它可以在您花费二十分钟编译之前发现缺失的先决条件。请参阅 [ViteSetup 助手](ViteSetup.md)，了解其所有屏幕和选项的完整说明。
+首次构建建议使用助手：它能在你花二十分钟编译之前先发现缺失的先决条件。所有界面与选项的完整说明见 [ViteSetup 助手](../Tools/ViteSetup.md)。
 
-**注意：** 助手会强制执行其工具链要求，没有任何例外。如果拒绝继续，它会准确地打印出缺少哪个组件。
+!!! note
+    助手会强制执行其工具链要求，没有例外。如果拒绝继续，它会明确打印出缺少哪个组件。
 
 
 ## 手动构建
@@ -38,9 +37,9 @@ ViteSetup.bat menu
 Setup.bat
 ```
 
-此分支已修复 GitDeps，因此无需手动编辑。当脚本询问是否覆盖本地更改时，请选择`否（N）`。
+此分支已修复 GitDeps，因此无需手动编辑。当脚本询问是否覆盖本地更改时，选 `否（N）`。
 
-`Setup.bat` 接受 `-exclude=` 参数，用于跳过不需要的平台和内容，从而大幅减少下载大小和磁盘占用。仅支持 Win64 的安装程序大致如下所示：
+`Setup.bat` 接受 `-exclude=` 参数，用于跳过不需要的平台和内容，从而大幅减少下载体积与磁盘占用。只保留 Win64 的命令大致如下：
 
 ```batch
 Setup.bat -exclude=Android -exclude=IOS -exclude=TVOS -exclude=Mac -exclude=MacOSX ^
@@ -50,7 +49,8 @@ Setup.bat -exclude=Android -exclude=IOS -exclude=TVOS -exclude=Mac -exclude=MacO
 ```
 
 
-**警告：** 不要排除 Win32 文件夹。Win64 安装版本依赖于位于 Win32 目录下的第三方工具，例如 `ARM\Win32\astcenc.exe`。
+!!! warning
+    不要排除 Win32 文件夹。Win64 安装依赖位于 Win32 目录下的第三方工具，例如 `ARM\Win32\astcenc.exe`。
 
 ViteSetup.bat 将这些工具以命名预设的形式呈现——**推荐 Win64、Win64 超精简版、Win64 + 模板/功能包、Win64 + Android、Win64 + Linux 和完整安装**——并通过其 **显示安装配置文件（Show setup profiles）** 菜单项打印出每个预设对应的 `Setup.bat` 命令行。
 
@@ -69,11 +69,11 @@ GenerateProjectFiles.bat
 
 ### 3. 构建
 
-打开 `UE4.sln` 文件，如果尚未设置，请将 **UE4** 设置为启动项目。构建适用于 **Win64** 的**开发编辑器（Development Editor）**配置。
+打开 `UE4.sln`，如果尚未设置，请把 **UE4** 设为启动项目。以 **Win64** 平台、**开发编辑器（Development Editor）**配置进行构建。
 
 ![](../../img/optimization/VSBuildUE4.jpg)
 
-*在 Visual Studio 解决方案资源管理器中，选中 UE4 项目并打开“生成”命令。请在**Engine**下构建 **UE4**，而不是在解决方案下构建。构建整个解决方案会编译编辑器构建不需要的程序目标。*
+*在 Visual Studio 解决方案资源管理器中选中 UE4 项目，再执行「生成」命令。请在 **Engine** 下构建 **UE4**，不要构建整个解决方案——那会编译编辑器构建用不到的程序目标。*
 
 
 在命令行中，等效命令是：
@@ -100,7 +100,7 @@ reg add "HKCU\Software\Epic Games\Unreal Engine\Builds" /v UE_ViteFork /t REG_SZ
 
 ## 构建时间
 
-编译时间主要取决于核心数量。作为参考，在 Ryzen 9 9950X3D 上完整构建代码库大约需要 15 分钟；移除捆绑的 Vite 插件后，时间缩短至约 12 分钟，其中 Houdini 插件占用了大部分时间。如果您更注重迭代速度而非插件覆盖率，请参阅[精简指南](Debloat-Guide.md)。
+编译时间主要取决于核心数。作为参考，Ryzen 9 9950X3D 上完整构建代码库约需 15 分钟；移除随附的 Vite 插件后缩短到约 12 分钟，其中 Houdini 插件占了大头。如果更看重迭代速度而非插件覆盖，请参阅[精简指南](../Performance/Debloat-Guide.md)。
 
 
 ## 生成可安装版本
