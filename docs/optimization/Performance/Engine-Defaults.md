@@ -61,7 +61,7 @@ Actor 运行时默认值已更改，以减少 `AActor::InitializeDefaults` 中�
 
 [提交](https://github.com/GapingPixel/UnrealEngineVite-PhysX/commit/33fe7c638829b8120e8a02ecc639acda761df835)
 
-`VisibilityBasedAnimTickOption` 是需要关注的选项。`OnlyTickPoseWhenRendered` 表示屏幕外的参与者将完全停止评估其姿势；读取未渲染参与者骨骼变换或插槽的游戏玩法（例如武器枪口位置、IK 目标、远处参与者上的连接点）必须将组件设置回 `AlwaysTickPose` 或 `AlwaysTickPoseAndRefreshBones`。
+`VisibilityBasedAnimTickOption` 是需要关注的选项。`OnlyTickPoseWhenRendered` 表示屏幕外的 Actor 会完全停止评估姿势；若玩法代码要读取未渲染 Actor 的骨骼变换或插槽（例如武器枪口位置、IK 目标、远处 Actor 上的连接点），必须把组件设回 `AlwaysTickPose` 或 `AlwaysTickPoseAndRefreshBones`。
 
 `bDisablePostProcessBlueprint = true` 是第二项：后期处理动画蓝图（常用于 IK 与骨骼校正）不再运行，除非为每个组件重新打开。
 
