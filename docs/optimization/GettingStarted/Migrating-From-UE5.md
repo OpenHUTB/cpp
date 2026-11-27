@@ -29,24 +29,24 @@
 | Niagara | 可迁移 | 可用；[PopcornFX](../Plugins/Proposed-Plugins.md) 是更快的替代方案 |
 | MetaSounds | 无对应项 | 声音提示（Sound Cues），或 [Wwise](../Plugins/Proposed-Plugins.md) |
 
-## 资产降级
+## 资源降级
 
-UE Downgrader 插件可将 UE 5.8 及更低版本的资源转换回 4.27 和 4.26。它的工作原理是首先将资源升级到其源版本（通常是最新的 UE5），然后对“.uasset”文件应用补丁，以便目标版本可以读取它们，减去旧格式无法表示的数据。例如，Nanite 数据在 4.27 降级期间被删除。
+UE Downgrader 插件可把 UE 5.8 及更低版本的资源转换回 4.27 与 4.26。它的做法是先把资源升到其源版本（通常是最新的 UE5），再对 `.uasset` 文件打补丁，让目标版本能够读取，同时剔除旧格式无法表示的数据。例如 Nanite 数据会在降到 4.27 时被去掉。
 
-该插件无法做的是为 4.27 中不存在的功能发明等效项。蒙版材料、新材料节点和新 Niagara 模块上的 Nanite 将无法在旅途中幸存。需要为重新创作这些内容的指定预算。
+插件做不到的是给 4.27 里不存在的功能凭空造出对应项。Nanite、遮罩材质、新材质节点和新 Niagara 模块上的内容，迁移后都无法保留；要为重做这些内容预留明确预算。
 
-该插件是商业的。其作者 Ciprian Stanciu 活跃于 [Vite Discord](https://discord.gg/n9zQrYFhMb)，并为多个 Vite 项目提供了直接支持。有一个工作流程的[视频演练](https://youtu.be/yXvJfDNfrSQ)。
+该插件为商业插件。作者 Ciprian Stanciu 活跃于 [Vite Discord](https://discord.gg/n9zQrYFhMb)，并为多个 Vite 项目提供直接支持。另有工作流程的[视频演示](https://youtu.be/yXvJfDNfrSQ)。
 
 ## 迁移代码
 
-这是 Vite 上比 Stock 4.27 更容易的部分。该分支故意向后移植 UE5 API 表面，以便 UE5 时代的代码编译时只需较少的更改：更新的容器类、游戏框架更新和游戏能力系统功能都存在。
+这部分在 Vite 上比原生 4.27 容易。该分支刻意向后移植 UE5 的 API 面，让 UE5 时代的代码只需较少改动即可编译：更新的容器类、游戏框架更新和游戏能力系统功能都已具备。
 
 你仍然会遇到分歧。按以下顺序完成它们：
 
-1. **物理.** 任何涉及“Chaos”命名空间、“FCaosScene”、几何集合或 Chaos 载具的内容都需要转移到 PhysX 等效项。这通常是最大的单个工作块。请参阅 [PhysX 概述](../Physics/PhysX.md)。
-2. **渲染.** 查询或驱动 Lumen、Nanite 或 VSM 控制台变量的代码没有目标。替换为 [Rendering](../Rendering/Rendering.md) 中的 Vite 等效项。
-3. **核心 API 漂移.** `FVector` 在 UE5 (`FVector3d`) 中是双精度，在 4.27 中是单精度。大世界坐标假设不成立。需要审核在大世界偏移量下执行精度敏感数学的任何代码。
-4. **模块和构建规则.** 引用仅限 UE5 的模块的 .build.cs 文件需要删除或替换这些依赖项。
+1. **物理。** 任何涉及 `Chaos` 命名空间、`FChaosScene`、几何集合（Geometry Collection）或 Chaos 车辆的内容，都需要迁到 PhysX 的对应实现。这通常是单项最大的工作量。参见 [PhysX 概述](../Physics/PhysX.md)。
+2. **渲染。** 查询或驱动 Lumen、Nanite、VSM 控制台变量的代码没有对应目标，请替换为[渲染](../Rendering/Rendering.md)中 Vite 的等效项。
+3. **核心 API 差异。** `FVector` 在 UE5（`FVector3d`）中是双精度，在 4.27 中是单精度，大世界坐标的假设不再成立。要审查所有在大世界偏移下做精度敏感运算的代码。
+4. **模块与构建规则。** 引用了 UE5 专属模块的 `.build.cs` 文件，需要删掉或替换这些依赖。
 
 ## 推荐的迁移顺序
 
@@ -56,9 +56,9 @@ UE Downgrader 插件可将 UE 5.8 及更低版本的资源转换回 4.27 和 4.2
 
 2. 移植不包含任何内容的 C++ 模块。在迁移任何资源之前，确保它们能够针对 Vite 进行编译。在此处检查物理和渲染 API 是否存在兼容性问题。
 
-3. 降级并导入一个具有代表性的小型内容片段——一个角色、一个场景和少量材质。验证其外观和行为是否正确。
+3. 降级并导入一个有代表性的小型内容切片——一个角色、一个场景和少量材质，确认外观与行为正确。
 
-4. 替换光照设置。Lumen 没有直接的转换；设置 [DDGI](../Rendering/DDGI-Dynamic.md) 体积并根据刚刚导入的内容片段进行调整。
+4. 替换光照设置。Lumen 没有直接对应物；设置 [DDGI](../Rendering/DDGI-Dynamic.md) 体积，再根据刚导入的切片调整。
 
 5. 重建物理设置。使用 [Apex Destruction](../Physics/Destruction-And-Cloth.md) 重新制作物体破坏效果，使用 [Apex Cloth](../Physics/Destruction-And-Cloth.md) 重新制作布料效果。
 
@@ -69,9 +69,10 @@ UE Downgrader 插件可将 UE 5.8 及更低版本的资源转换回 4.27 和 4.2
 
 ## 混合版本工作流程
 
-您不必立即移动所有人。一种常见的安排是程序员在 Vite 中工作，而美术师和内容创作者则继续使用 Epic Games Launcher 4.27 的库存安装，内容以单向流动。为此，启动器端用户需要独立的 [DDGI 1.1.5 插件](https://github.com/GapingPixel/UE4-RTXGI-1.1.5-Latest-Official)，以便照明看起来大致正确。这正是我们在 Vite Studio 所做的，到目前为止，建模、动画和声音设计工作没有出现任何问题。
+不必一夜之间让所有人迁过来。一种常见安排是：程序员在 Vite 里工作，美术与内容创作者继续用 Epic Games Launcher 装的原生 4.27，内容单向流动。为此，启动器端的用户需要独立的 [DDGI 1.1.5 插件](https://github.com/GapingPixel/UE4-RTXGI-1.1.5-Latest-Official)，让光照看起来大致正确。Vite Studio 就是这么做的，到目前为止建模、动画与声音设计都没有出问题。
 
-**警告：** 不要在 Vite 项目中使用启动器 DDGI 插件。 Vite 已经将 DDGI 作为引擎的一部分提供，两者会发生冲突。 Vite 中的 DDGI 比 Launcher 版本的 DDGI 插件处理得更好（由于引擎端/DDGI插件端均发生变化）。
+!!! warning
+    不要在 Vite 项目里使用启动器的 DDGI 插件。Vite 已把 DDGI 作为引擎的一部分提供，两者会冲突。Vite 内的 DDGI 也比 Launcher 版插件处理得更好，因为引擎端与 DDGI 插件端都有改动。
 
 
 ## 另请参阅
