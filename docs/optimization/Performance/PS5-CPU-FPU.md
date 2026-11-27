@@ -1,7 +1,6 @@
 # PS5 CPU FPU
 
-!!! note "概要"
-    PS5 的 Zen 2 删掉了 `FP3`，把 `FP2` 改成只做向量存储的端口，并且只保留**一条 256 位 FMA 管道**。AVX2 仍是 256 位，FMA 延迟也仍是约 5 个周期；Series X 的 Zen 2 没有做这刀削减。Vite 在 **AMD 4700S** 上验证受 FPU 限制的负载——首要是 **PhysX 3.4** 的现代化改造——这颗 CPU 搭载的正是进一步削减后的 Zen 2，既不是桌面的 Matisse，也不是 Series X。
+PS5 的 Zen 2 删掉了 `FP3`，把 `FP2` 改成只做向量存储的端口，并且只保留**一条 256 位 FMA 管道**。AVX2 仍是 256 位，FMA 延迟也仍是约 5 个周期；Series X 的 Zen 2 没有做这刀削减。Vite 在 **AMD 4700S** 上验证受 FPU 限制的负载——首要是 **PhysX 3.4** 的现代化改造——这颗 CPU 搭载的正是进一步削减后的 Zen 2，既不是桌面的 Matisse，也不是 Series X。
 
 4700S 放在实验室里，是为了它的 CPU，而不是 GPU。相比 Series X 的 Zen 2，它在 FPU 上又砍了一刀。实际用途是观察 PhysX 3.4 库中 FPU 一侧的改动在 PS5 级核心上的表现：island 求解、接触生成、约束准备与积分都是受 FMA 吞吐限制的工作，而这正是 Vite 现代化改造所针对的负载。
 
