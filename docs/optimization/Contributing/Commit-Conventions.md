@@ -73,7 +73,7 @@ Changes: UE5 API calls replaced with 4.27 equivalents in
 KawaiiPhysicsEditMode.cpp and AnimNode_KawaiiPhysics.cpp
 ```
 
-对于单个上游提交的反向移植，请链接提交本身，而不仅仅是代码仓库。请参阅[反向移植](Backporting.md)部分。
+对于单个上游提交的向后移植，请链接提交本身，而不仅仅是代码仓库。请参阅[向后移植](Backporting.md)部分。
 
 
 ## 提交正文
@@ -82,7 +82,7 @@ KawaiiPhysicsEditMode.cpp and AnimNode_KawaiiPhysics.cpp
 
 - 更改解决的问题
 - 任何声称是优化的更改，都应说明其影响程度
-- 任何添加的控制台变量或[编译时开关](Compile-Time-Switches.md)及其默认值
+- 任何添加的控制台变量或[编译时开关](../Performance/Compile-Time-Switches.md)及其默认值
 - 任何故意未完成的操作
 
 影响程度至关重要。以`[Optimization]`为前缀且没有具体数值的提交仅是一种断言，而非结果。请参阅[性能分析](../Performance/Profiling.md)部分，了解如何生成可信的更改前后对比。
@@ -95,7 +95,7 @@ KawaiiPhysicsEditMode.cpp and AnimNode_KawaiiPhysics.cpp
 | 未完成的工作应放在单独的分支上 | 不要将未完成的工作推送到共享分支 |
 | 记录剩余工作 | 在分支或提交正文中添加简短注释 |
 | 删除临时分支 | 一旦合并或放弃 |
-| 告知其他 fork 用户 | 以免浪费并行工作 |
+| 告知其他分支的用户 | 以免浪费并行工作 |
 
 ## 控制台变量和开关
 
