@@ -1,10 +1,10 @@
 # 从虚幻引擎 5 迁移
 
 
-使用[UE Downgrader](../Plugins/Proposed-Plugins.md)插件将资源向下移动，该插件支持 UE 5.8 及更低版本，直至回到 UE4。代码移动比原生 UE4 更容易，因为 Vite 向后移植了许多 UE5 容器、游戏框架和 GAS API。UE4 中不存在的功能（Nanite、Lumen、VSM、World Partition）没有等效项，需要设计决策，而不是转换。
+使用 [UE Downgrader](../Plugins/Proposed-Plugins.md) 插件把资源降级，它支持 UE 5.8 及更低版本，一直能回到 UE4。代码迁移比在原生 UE4 上更容易，因为 Vite 向后移植了许多 UE5 容器、游戏框架与 GAS API。UE4 里不存在的功能（Nanite、Lumen、VSM、World Partition）没有对应项，需要做设计决策，而不是靠转换。
 ![](../../img/optimization/UE_Downgrader_1.jpg)
-![](../../img/optimization/UE_Downgrader_1.jpg)
-![](../../img/optimization/UE_Downgrader_1.jpg)
+![](../../img/optimization/UE_Downgrader_2.jpg)
+![](../../img/optimization/UE_Downgrader_3.jpg)
 
 将项目从虚幻引擎 5 迁移到 Vite 是真正的迁移，而不是版本升级。本页列出了哪些内容可以干净地迁移，哪些内容需要替换，以及按什么顺序进行。
 
@@ -12,22 +12,22 @@
 
 | UE5 特性 | Vite 中的状态 | 该怎么办 |
 |---|----------------|---|
-| 静态网格物体、纹理、材质、动画 | 迁移      | 使用 UE Downgrader 插件降级 |
-| 蓝图 | 迁移      | 降级；逐个节点重新测试，某些仅 UE5 的节点没有目标 |
-| C++ 游戏代码 | 迁移      | Vite 向后移植了许多 UE5 API；见下文 |
-| 游戏能力系统 | 迁移      | Vite 包括从 UE5 反向移植的 GAS 更新 |
-| Nanite | 没有等同的  | 编写常规 LOD；使用[细分曲面](../Rendering/Tessellation.md)获取表面细节 |
-| 流明 | 替换       | 使用 [DDGI](../Rendering/DDGI-Dynamic.md)，可选择与 [SSGI](../Rendering/SSGI.md) 一起使用 |
-| 虚拟阴影贴图 | 没有等同的  | 级联阴影贴图，或[光线追踪阴影](../Rendering/RT-Shadows-And-Ambient-Occlusion.md) |
-| TSR | 替换       | [DLSS, FSR, XeSS](../Rendering/Upscalers.md), or native with [SMAA](../Rendering/Anti-Aliasing.md) |
-| MegaLights | 替换       | [RTXDI](../Rendering/RTXDI.md) |
-| Chaos physics | 替换       | [PhysX](../Physics/PhysX.md) |
-| Chaos Destruction | 替换       | [Apex Destruction](Destruction-And-Cloth.md) 和 [Blast](../Physics/Destruction-And-Cloth.md) |
-| Chaos Cloth | 替换       | [Apex Cloth](../Physics/Destruction-And-Cloth.md) |
-| Substrate | 没有等同的  | 标准材质模型，加上 [Callisto BRDF](../Rendering/Shading-Models.md) |
-| 世界分区 | 替换       | 世界构成和关卡流 |
-| Niagara | 迁移      | 可用的; [PopcornFX](../Plugins/Proposed-Plugins.md) 是更快的替代方案 |
-| MetaSounds | 没有等同的  | 声音提示，或 [Wwise](../Plugins/Proproped-Plugins.md) |
+| 静态网格体、纹理、材质、动画 | 可迁移 | 用 UE Downgrader 插件降级 |
+| 蓝图 | 可迁移 | 降级后逐个节点复测；部分 UE5 专属节点没有对应目标 |
+| C++ 游戏代码 | 可迁移 | Vite 向后移植了许多 UE5 API；见下文 |
+| 游戏能力系统 | 可迁移 | Vite 包含从 UE5 向后移植的 GAS 更新 |
+| Nanite | 无对应项 | 改用常规 LOD；表面细节用[曲面细分](../Rendering/Tessellation.md) |
+| Lumen | 需替换 | 改用 [DDGI](../Rendering/DDGI-Dynamic.md)，可选配合 [SSGI](../Rendering/SSGI.md) |
+| 虚拟阴影贴图 | 无对应项 | 改用级联阴影贴图，或[光线追踪阴影](../Rendering/RT-Shadows-And-Ambient-Occlusion.md) |
+| TSR | 需替换 | [DLSS、FSR、XeSS](../Rendering/Upscalers.md)，或用 [SMAA](../Rendering/Anti-Aliasing.md) 走原生渲染 |
+| MegaLights | 需替换 | [RTXDI](../Rendering/RTXDI.md) |
+| Chaos 物理 | 需替换 | [PhysX](../Physics/PhysX.md) |
+| Chaos Destruction | 需替换 | [Apex Destruction](../Physics/Destruction-And-Cloth.md) 与 [Blast](../Physics/Destruction-And-Cloth.md) |
+| Chaos Cloth | 需替换 | [Apex Cloth](../Physics/Destruction-And-Cloth.md) |
+| Substrate | 无对应项 | 标准材质模型，加上 [Callisto BRDF](../Rendering/Shading-Models.md) |
+| 世界分区 | 需替换 | World Composition 与关卡流送 |
+| Niagara | 可迁移 | 可用；[PopcornFX](../Plugins/Proposed-Plugins.md) 是更快的替代方案 |
+| MetaSounds | 无对应项 | 声音提示（Sound Cues），或 [Wwise](../Plugins/Proposed-Plugins.md) |
 
 ## 资产降级
 
