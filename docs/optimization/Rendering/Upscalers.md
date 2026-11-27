@@ -1,6 +1,9 @@
 # 超分辨率和帧生成
 
-Vite 捆绑了 DLSS 4.5（深度学习超采样，Deep Learning Super Sampling）、DLSS 帧生成、FSR2、FSR 4、XeSS 3 和 NIS 等功能。这些功能是可选的额外性能，并非渲染方案的核心。即使不启用任何这些功能，Vite 也能在原生分辨率下达到其[性能目标](../EngineOverview/Performance-Targets.md)。
+!!! note "概要"
+    Vite 捆绑了带光线重建与多帧生成的 NVIDIA DLSS 4.5、带 FSR 3.1 回退与不挑显卡的帧生成的 AMD FSR 4、带 XeFG 的 Intel XeSS 3.1、NVIDIA NIS，以及 Reflex 与 Anti-Lag 2 两套延迟 SDK。它们只是**可选的余量**，不是渲染方案：不启用其中任何一个，Vite 也能在原生分辨率下达到[性能目标](../EngineOverview/Performance-Targets.md)。
+
+Vite 捆绑了 DLSS 4.5、DLSS 帧生成、FSR 4、XeSS 3.1、NIS 等插件，以及 Reflex 与 Anti-Lag 2 两套延迟 SDK。这些功能是可选的额外余量，并非渲染方案的核心；即使全部不启用，Vite 也能在原生分辨率下达到其[性能目标](../EngineOverview/Performance-Targets.md)。
 请查看 [UpscalerTest 示例项目](https://github.com/ViteStudio-Tech/ueVite-UpscalerTest)。
 
 虚幻 5 将超分辨率视为强制性功能：其渲染器的设计理念是先以部分输出分辨率进行渲染，然后重建剩余部分。Vite 则采取相反的做法。其目标是原生分辨率，而超分辨率功能仅供希望将性能提升空间用于其他用途的用户使用。
@@ -10,20 +13,31 @@ Vite 捆绑了 DLSS 4.5（深度学习超采样，Deep Learning Super Sampling�
 
 ## 已捆绑的插件
 
-所有这些插件都位于引擎仓库的 `Engine/Plugins/Runtime` 目录下。默认情况下均未启用；请在 **编辑（Edit）> 插件（Plugins）** 中启用您的项目提供的插件。
+所有这些插件都位于引擎仓库的 `Engine/Plugins/Runtime` 目录下。默认情况下均未启用；请在 **编辑（Edit）> 插件（Plugins）** 中启用您的项目提供的插件。版本以 9 月主要版本为准。
 
 
 | 插件 | 版本 | 功能 | 位置 |
 |---|---|---|---|
-| NVIDIA DLSS | 8.7.0-NGX310.7.0 (DLSS 4.5) | 超分辨率、光线重建、DLAA | `Nvidia/DLSS` |
-| NVIDIA DLSS 帧生成 | 1.3.0-SL2.4.0 (Streamline) | 帧生成和 Reflex | `Nvidia/Streamline` |
-| NVIDIA DeepDVC | Streamline | 深度学习动态增强 | `Nvidia/StreamlineDeepDVC` |
-| NVIDIA NIS | &mdash; | 图像缩放、空间放大和锐化 | `Nvidia/NIS` |
-| DLSS 影片渲染管线支持 | &mdash; | DLSS 集成到影片渲染队列 | `Nvidia/DLSSMoviePipelineSupport` |
-| AMD FSR 4 | 4.1.1 | FidelityFX 超分辨率 4 和帧生成DX12 | `VitePlugins/FSR4-427` |
-| Intel XeSS | 3.0.5 | Xe 超采样 | `VitePlugins/XeSS_UE4.27_Plugin_v3.0.5` |
+| NVIDIA DLSS | 8.7.0-NGX310.7.0（DLSS 4.5 预设） | 超分辨率、光线重建、DLAA | `Nvidia/DLSS` |
+| NVIDIA DLSS 帧生成 | 基于 Streamline SDK 2.12.0 的 1.3.0 插件 | 帧生成，含多帧生成 | `Nvidia/Streamline` |
+| NVIDIA Reflex | 1.6 | 降低延迟 | `Nvidia/Reflex` |
+| NVIDIA RTX Dynamic Vibrance | 1.3.0（Streamline） | 深度学习动态鲜艳度 | `Nvidia/StreamlineDeepDVC` |
+| NVIDIA NIS | 1.2.1 | 图像缩放：空间放大与锐化 | `Nvidia/NIS` |
+| Movie Render Queue DLSS/DLAA 支持 | 2.3.3 | 影片渲染队列的 DLSS 集成 | `Nvidia/DLSSMoviePipelineSupport` |
+| AMD FSR 4 | 4.1.1 | FSR 4 机器学习超分，带 FSR 3.1 回退、原生 AA，以及与任意超分器配合的帧生成；DirectX 12 | `VitePlugins/FSR4-427/FSR4` |
+| AMD Anti-Lag 2 | 2.0.4 | AMD 显卡上降低延迟 | `VitePlugins/AntiLag2.0.4` |
+| Intel XeSS | 3.1.0 | Xe 超采样与 XeFG 帧生成 | `VitePlugins/XeSS_UE4.27_Plugin_v3.1.0` |
 
-FSR 4 和 XeSS 3 值得注意：它们都是向后移植的，在 4.27 版本中并不存在。FSR 4 使用原生 `ffx-api`，需要 DirectX 12。
+FSR 4 和 XeSS 3 值得注意：两者都是 4.27 原生版本里没有的向后移植。FSR 4 使用原生 `ffx-api`，并要求 DirectX 12。这套插件里的大部分由 6 月主要版本引入；8 月主要版本把 XeSS 换到 3.1.0，并把 DLSS 运行时换到 NGX 310.7.129。
+
+早期版本里的 FSR 2 插件仍留在仓库中（`VitePlugins/FSR2-427`），但它的描述文件已被改名为 `.uplugin.disabled`，引擎不会加载它。FSR 4 内置的 FSR 3.1 路径覆盖了它原本服务的硬件。
+
+!!! warning
+    [ViteSetup](../Tools/ViteSetup.md) 的 Express 路径会把 `Engine\Plugins\Runtime\VitePlugins` 下的所有插件（ACL 与 MotionSymphony 除外）移到 `ViteDebloat_Moved`，FSR 4、Anti-Lag 2 与 XeSS 都在其中。需要它们时请选 Custom 路径，或者从 `ViteDebloat_Moved` 里把文件夹拷回来。NVIDIA 那组插件不受影响。
+
+### 任意渲染分辨率
+
+`r.Upscaler.ScreenPercentageOverride` 让 FSR、DLSS 与 XeSS 接受任意内部渲染分辨率，而不只是各自的固定质量档。这些插件自己掌管屏幕百分比，会忽略 `r.ScreenPercentage`，所以要用这个变量来设：`0`（默认）表示仍由质量档预设决定，`1`–`100` 则强制为该屏幕百分比，并会被钳制到当前超分器支持的范围内。它适合做基准测试，也适合给玩家做一个分辨率滑条。
 
 
 ## 选择要打包的内容
