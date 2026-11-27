@@ -5,13 +5,13 @@
 这些特性源自 NVIDIA 的 NvRTX 4.27 焦散分支，Vite 正是基于此分支。它们是渲染器中参数最多的部分，因此本页以参考文档的形式呈现，而非叙述。
 
 
-**警告：** 本页所有内容均在默认版本中编译完成。当 `VITE_RT_PSO_DEBLOAT` 设置为 1（默认值）时，光线追踪半透明、网格焦散和水焦散的着色器变体将被移除。它们的控制台变量将成功设置，但不会渲染任何内容。要使用这些特效，请使用 `VITE_RT_PSO_DEBLOAT=0` 重新编译。请参阅[编译时开关](../Performance/Compile-Time-Switches.md)。
+**警告：** 本页所有内容在默认构建里都会被编译掉。当 `VITE_RT_PSO_DEBLOAT` 为 `1`（默认值）时，光线追踪半透明、网格焦散与水焦散的着色器排列会被移除；它们的控制台变量照样能设置成功，但什么也不会渲染。要使用这些效果，请用 `VITE_RT_PSO_DEBLOAT=0` 重新构建。请参阅[编译时开关](../Performance/Compile-Time-Switches.md)。
 
 
 
 这些是光线追踪套件中最耗费资源的特效，在 4K 分辨率下，它们都无法满足 Vite 的[性能目标](../EngineOverview/Performance-Targets.md)。此处记录这些特效是因为 NvRTX 系列提供了这些特效，并且某些项目会在过场动画、宣传素材或特定场景中使用它们。
 
-**注意：** 所有从 NvRTX Caustics 分支继承的 RTX 特性代码和美术资源均受 [GameWorks 许可协议](https://developer.nvidia.com/gameworks-source-sdk-eula)保​​护。
+**注意：** 所有从 NvRTX Caustics 分支继承的 RTX 特性代码和美术资源均受 [GameWorks 许可协议](https://developer.nvidia.com/gameworks-source-sdk-eula)保护。
 
 
 ## 半透明模式
@@ -20,7 +20,8 @@ UE4 默认的光线追踪半透明效果会强制**所有**半透明效果都通
 
 | `r.RayTracing.Translucency` | 模式 |
 |---|---|
-| `0` | UE4 原生光线追踪半透明关闭 |
+| `-1` | 使用后处理体积的设置 |
+| `0` | UE4 原生光线追踪半透明关闭（默认） |
 | `1` | UE4 原生光线追踪半透明开启 |
 | `2` | 混合半透明 1 — 仅光线追踪半透明反射 |
 | `3` | 混合半透明 2 — 光线追踪半透明反射和折射 |
@@ -37,8 +38,8 @@ UE4 默认的光线追踪半透明效果会强制**所有**半透明效果都通
 | 控制台变量 | 用途 |
 |---|---|
 | `r.RayTracing.Translucency.HybridLayers` | 追踪多少个重叠的光线追踪半透明层 |
-| `r.RayTracing.Translucency.HybridDepthThreshold` | 几何体被视为不同半透明层的世界空间分离阈值。阈值过小，混合半透明效果将不会显示，或者会出现 Z 冲突伪影；阈值过大，堆叠的层会错误地合并。 |
-| `r.RayTracing.Translucency.HalfRes` | 0 全透明，1 垂直半透明（交错），2 半棋盘格（四点），3 半棋盘格（垂直两点） |
+| `r.RayTracing.Translucency.HybridDepthThreshold` | 样本被视为不同半透明层所需的间距，按到摄像机距离的比例计。默认 0.0005，在距离 100 m 的表面上约 5 cm。过小则混合半透明不出现，或出现 Z 冲突伪影；过大则叠层错误合并。 |
+| `r.RayTracing.Translucency.HalfRes` | 0 全分辨率，1 垂直半分辨率（交错），2 半分辨率棋盘格（4 采样），3 半分辨率棋盘格（垂直 2 采样） |
 
 ### 模式 3 — 反射和折射
 
@@ -71,7 +72,7 @@ r.RayTracing.Translucency.MaxRefractionRays 5
 
 ### 启用半透明吸收
 
-1. 确保已启用光线追踪半透明。
+1. 确保光线追踪半透明已开启：将 `r.RayTracing.Translucency` 设为 `1`、`2` 或 `3`。取默认值 `0` 时，后处理体积里的设置会被忽略。
 
 2. 将 `r.RayTracing.Translucency.EnableAbsorption` 设置为 1，或在后处理体积中选中**启用吸收（Enable Absorption）**。
 
@@ -114,7 +115,7 @@ r.RayTracing.Translucency.MaxRefractionRays 5
 
 1. 启用光线追踪。
 
-2. 在后处理体积的**光线追踪网格焦散（Ray Tracing Mesh Caustics）**下选中**已启用（Enabled ）**，或设置 `r.RayTracing.MeshCaustics.Enable 1`。
+2. 在后处理体积的**光线追踪网格焦散（Ray Tracing Mesh Caustics）**下选中**已启用（Enabled）**，或设置 `r.RayTracing.MeshCaustics.Enable 1`。
 
 3. 在灯光属性中，选中**投射网格焦散（Cast Mesh Caustics）**。
 
@@ -128,10 +129,9 @@ r.RayTracing.Translucency.MaxRefractionRays 5
 
 | 控制台变量 | 用途 |
 |---|---|
-| `r.RayTracing.MeshCaustics.EnableTranslucentReflection` | 为透明物体启用反射焦散 |
-| `r.RayTracing.MeshCaustics.TranslucentReflectionMode` | 0 仅折射，1 折射加反射（第一次反弹），2 任意反弹次数均反射 |
-| `r.RayTracing.MeshCaustics.EnableDispersion` | 启用散射。需要材质根节点中**光线追踪焦散散射量（Ray Traced Caustics Dispersion Amount）**大于 0。 |
-| `r.RayTracing.MeshCaustics.DispersionSamples` | 用于散射的颜色样本 |
+| `r.RayTracing.MeshCaustics.TranslucentReflectionMode` | 半透明物体投射的焦散类型：`0` 始终折射，`1` 始终反射，`2` 随机。默认 `-1` 时使用后处理体积的设置。 |
+| `r.RayTracing.MeshCaustics.EnableDispersion` | 启用色散。需要材质根节点中**光线追踪焦散色散量（Ray Traced Caustics Dispersion Amount）**大于 0。 |
+| `r.RayTracing.MeshCaustics.DispersionSamples` | 用于色散的颜色样本 |
 | `r.RayTracing.MeshCaustics.SoftCausticsSample` | 软焦散的样本数量。需要光照设置中**网格焦散柔和度（Mesh Caustics Softness）**大于 0。 |
 | `r.RayTracing.MeshCaustics.EnableAdvancedSoftCaustics` | 更高质量的软焦散算法 |
 
@@ -152,13 +152,13 @@ r.RayTracing.Translucency.MaxRefractionRays 5
 | `r.RayTracing.MeshCaustics.AdaptiveVarianceGain` | 更高的值可以抑制闪烁 |
 | `r.RayTracing.MeshCaustics.EnableTemporalFilter` | 启用时间滤波以减少闪烁 |
 | `r.RayTracing.MeshCaustics.TemporalStrength` | 更高的值可以提高稳定性，但可能会引入延迟或重影 |
-| `r.RayTracing.MeshCaustics.MaxTraceDepth` | 限制反弹次数；提高半透明物体的性能 |
+| `r.RayTracing.MeshCaustics.MaxTraceDepth` | 限制弹射次数；提升半透明物体的性能 |
 
 ## 水体焦散效果
 
 为从池塘到开阔**海域**的各种水域渲染交互式焦散效果。支持所有四种光照类型、多光源、反射和折射焦散、色散、柔和焦散和级联焦散贴图。
 ![](../../img/optimization/WaterCaustics.jpg)
-*游泳池场景，泳池底部被光线追踪技术营造出水波纹效果，一个角色正在搅动水面。采用单向光源照射。由于焦散效果是逐帧追踪水面网格生成的，因此会随着水面扰动而变化。*
+*单个平行光下的游泳池场景。焦散会随水面扰动而变化，因为每帧都要对着水面网格重新追踪。*
 
 
 ### 启用水体焦散
@@ -196,7 +196,7 @@ r.RayTracing.Translucency.MaxRefractionRays 5
 
 将水体焦散限制在单个动态光源上可以显著提升性能；光源距离剔除和强度衰减功能完全受支持。
 
-焦散焦点取决于网格和法线强度：较大的波浪或较强的法线贴图值会产生更显著的焦散效果。要启用分散效果，请在后期处理体积中增加**分散强度（Dispersion Intensity）**并调整**分散偏移（Dispersion Offset）**。
+焦散焦点取决于网格和法线强度：较大的波浪或较强的法线贴图值会产生更显著的焦散效果。要启用色散，请在后处理体积中增加**色散强度（Dispersion Intensity）**并调整**色散偏移（Dispersion Offset）**。
 
 
 
@@ -208,7 +208,7 @@ NVIDIA 为以下功能提供了项目文件和打包演示：
 - [所有打包演示](https://drive.google.com/drive/folders/1yHFOtmZWVDof8GbfZJMeazfb927ahTDn?usp=sharing)
 
 
-特定场景：用于演示强折射的 POV-Ray 眼镜场景、棱镜分散演示、用于演示水体焦散的游泳池场景，以及混合了粒子、反射、折射、网格焦散和实时全局光照 (RTGI) 的办公室场景。另请参阅本手册中的[废弃公寓](../ProjectsAndDemos/Abandone-Apartment.md)和[阁楼](../ProjectsAndDemos/Attic-Scene.md)场景。
+特定场景：用于演示强折射的 POV-Ray 眼镜场景、棱镜色散演示、用于演示水体焦散的游泳池场景，以及混合了粒子、反射、折射、网格焦散和实时全局光照 (RTGI) 的办公室场景。另请参阅本手册中的[废弃公寓](../ProjectsAndDemos/Abandone-Apartment.md)和[阁楼](../ProjectsAndDemos/Attic-Scene.md)场景。
 ![](../../img/optimization/RTOfficeScene.jpg)
 *结合了体积光、半透明球体、光线追踪反射和折射的办公室场景，一次性运用了所有技术：粒子、半透明反射和折射、网格焦散和光线追踪全局光照都在单个帧中实现。*
 
