@@ -1,21 +1,27 @@
 # 精简指南
 
+!!! note "概要"
+    `devops\` 下的脚本由单个 `config.txt` 驱动，用来移除你用不到的引擎内容。所有操作默认**试运行**、默认**移动而不是删除**；自 7 月主要版本起还会做一次引用检查，确认精简后的树仍能编译。[ViteSetup](../Tools/ViteSetup.md) 的 Express 路径会替你跑同一套脚本。
+
 
 `devops\` 目录下的三个脚本，由一个 `config.txt` 文件驱动，用于移除您不需要的引擎内容。所有操作默认都以**试运行**的方式进行，并**将内容移动到其他位置而非删除**，因此即使出错也可以恢复。
 
-完整的虚幻引擎 4.27 源代码树支持 Epic 提供的所有平台、工作流程和模板。一个仅限 Win64 平台的项目仅占用其中一小部分资源。精简代码可以释放磁盘空间并缩短构建时间。
+完整的虚幻引擎 4.27 源代码树支持 Epic 提供的所有平台、工作流程和模板。只做 Win64 的项目只用到其中一小部分。ViteSetup 估算，一个完整的 Windows 源码树构建完约占 137 GB；精简能回收其中很大一部分，并缩短构建时间。
 
 原始 Vite 精简脚本由 Bikouz 编写。
 
-## 该套件
+## 脚本套件
 
 | 脚本 | 用途 |
 |---|---|
 | `ueVite-debloat-SetupSlim.bat` | 仅针对 Win64 平台运行引擎依赖项设置，因此不会下载不必要的平台依赖项。 |
 | `ueVite-debloat-StripExecute.bat` | 移除平台二进制文件、非 Windows 工具、模板、示例内容以及（可选）插件。 |
 | `ueVite-debloat-StripDebugSymbols.bat` | 根据 `ExcludedPdbs.txt` 移除调试符号。 |
+| `ueVite-debloat-ValidateRefs.ps1` | 检查树里剩下的模块是否引用了已被移走的模块，并能把缺失的移回来。7 月主要版本起提供 |
+| `ViteSpaceReport.ps1` | 在 setup 之前按依赖清单估算下载体积，之后测量实际大小。ViteSetup 在用。7 月主要版本起提供 |
+| `ueVite-ApplyVitePluginDefaults.bat` | 应用或还原 Vite 的引擎插件配置，见[引擎默认更改](Engine-Defaults.md#已禁用的插件)。7 月主要版本起提供 |
 
-这三个脚本都位于引擎根目录下的 `devops\` 目录中，并读取 `devops\config.txt` 文件。您可以将备用配置路径作为第一个参数传递。
+所有脚本都在引擎根目录的 `devops\` 下。移除类脚本读取 `devops\config.txt`；也可以把备用配置路径作为第一个参数传进去。
 
 ## 安全模型
 
@@ -27,9 +33,11 @@
 
 **移动目标不能位于引擎目录树内。** 脚本会拒绝，因为位于目录树内的移动目标会被后续的迭代捕获。
 
-**脚本拒绝使用根目录。** 它会同时检查引擎目录和移动目标。
+**拒绝驱动器根目录。** 引擎根目录与移动目标都会检查。
 
 **脚本会验证引擎目录。** 在执行任何操作之前，脚本会确认 `Engine\Binaries\` 目录是否存在。
+
+**运行结束会检查引用。** 默认 `VALIDATE_REFERENCES=1`，一次移除结束后会扫描树里剩下的 `.Build.cs` 与 `.uplugin`，看有没有模块指向已经移进 `MOVE_DIR` 的东西。干净的结果会打印「No dangling references in the editor build」；否则会列出每个缺失模块以及是谁在引用它。
 
 ## 配置
 
@@ -41,6 +49,7 @@
 MODE=move
 MOVE_DIR=..\ViteDebloat_Moved
 DRYRUN=1
+VALIDATE_REFERENCES=1
 ```
 
 `MOVE_DIR` 指向引擎根目录，因此默认值是引擎的同级文件夹。
@@ -105,7 +114,7 @@ STRIP=Engine\Binaries\Win64\UnrealFileServer.exe
 #STRIP=Engine\Source\Programs\UnrealFileServer
 ```
 
-UnrealFileServer 为远程设备提供已处理和暂存的文件，并支持网络即时处理 (Cook-on-the-Fly)。如果您仅针对本地 Win64 进行开发和打包，不部署到远程设备，不使用网络即时处理，也不通过文件服务器工作流程面向主机或移动设备，则可以安全地移除它。
+UnrealFileServer 为远程设备提供已烘焙、已暂存的文件，并支撑网络 Cook-on-the-Fly（边运行边烘焙资源）。如果你只针对本地 Win64 开发与打包，不部署到远程设备，不用网络 Cook-on-the-Fly，也不通过文件服务器流程面向主机或移动设备，就可以安全地移除它。
 
 默认情况下，目标平台为预编译的二进制文件；源文件夹将被保留，以便稍后重新编译该工具。
 
@@ -115,16 +124,17 @@ UnrealFileServer 为远程设备提供已处理和暂存的文件，并支持网
 STRIP=Samples\StarterContent
 STRIP=Samples\MobileStarterContent
 STRIP=FeaturePacks\StarterContent.upack
-#STRIP=Samples\NGXTest
+STRIP=FeaturePacks\MobileStarterContent.upack
+STRIP=Samples\NGXTest
+STRIP=Samples\RTXGI_Test
 #STRIP=Samples\PixelStreaming
-#STRIP=Samples\RTXGI_Test
 ```
 
-根据精简策略，初始内容已被移除。默认情况下，分支特定的测试样本会被保留——特别是 `RTXGI_Test`，它在验证 [DDGI](../Rendering/DDGI-Dynamic.md) 时非常有用。
+Starter Content 按精简策略移除。NVIDIA 的测试示例属于演示内容，默认被移除；要保留就把对应行注释掉。`RTXGI_Test` 在验证 [DDGI](../Rendering/DDGI-Dynamic.md) 时特别有用。Pixel Streaming 是可用功能而不是演示，所以保留。
 
 树中不存在的条目会被跳过并显示一条通知，这不会造成任何影响。
 
-## 插件通过
+## 插件清理
 
 默认情况下禁用，因为每个项目的插件需求各不相同：
 
@@ -138,11 +148,11 @@ STRIP=FeaturePacks\StarterContent.upack
 系统首先会在脚本目录下查找该文件，然后在引擎根目录下查找。
 
 
-!!! 警告
+!!! warning
 
-启用此渲染通道前，请阅读 `ExcludedPlugins.txt` 文件。该文件包含您的项目可能需要的插件条目，例如 `Engine/Plugins/Runtime/GameplayAbilities/`、`Engine/Plugins/Runtime/ApexDestruction/`、`Engine/Plugins/Runtime/HairStrands/`、`Engine/Plugins/Runtime/Nvidia/`（包含 [DLSS 和 Streamline 插件](../Rendering/Upscalers.md)）以及 `Engine/Plugins/Runtime/PhysXVehicles/`。
+    启用这一轮插件清理前，请先读 `ExcludedPlugins.txt`。里面有些条目你的项目可能正需要：`Engine/Plugins/Runtime/GameplayAbilities/`、`Engine/Plugins/Runtime/ApexDestruction/`、`Engine/Plugins/Runtime/HairStrands/`、`Engine/Plugins/Runtime/Nvidia/`（[DLSS 与 Streamline 插件](../Rendering/Upscalers.md)就在这里）与 `Engine/Plugins/Runtime/PhysXVehicles/` 都在清单上。
 
-    运行此渲染通道前，请注释掉您使用的所有插件对应的行。
+        运行这一轮清理前，请把你要用的插件对应的行注释掉。
 
     
 
@@ -165,6 +175,19 @@ STRIP=FeaturePacks\StarterContent.upack
 对于全新克隆，请运行 `ueVite-debloat-SetupSlim.bat` 而不是 `Setup.bat`，这样就不会一开始就下载不需要的平台依赖项。
 
 
+## Express 路径会移除什么
+
+ViteSetup 的 Express 路径除了让你看一遍试运行输出，不会再询问，直接移走：
+
+- 除 Win64 外的每个平台文件夹
+- 调试符号（`.pdb`）
+- Starter Content 与 Mobile Starter Content
+- NVIDIA 示例工程 `NGXTest` 与 `RTXGI_Test` 
+- 除第三人称、C++ 与蓝图之外的每个模板
+- **`Engine\Plugins\Runtime\VitePlugins` 下除 ACL 与 MotionSymphony 之外的每个插件**
+
+最后一项要特别检查：它会移走 FSR 4、Anti-Lag 2、XeSS、PhysX Instanced Subsystem、KawaiiPhysics、ImGui、GPA、Automatron 与 SplashAbilities。项目用到其中任何一个，就走 Custom 路径，或者从 `ViteDebloat_Moved` 把文件夹拷回来。之后 Express 还会再提供一轮可选的清理，覆盖插件清单、UnrealFileServer、非 Windows 工具与平台二进制。
+
 ## 调试符号
 
 `ueVite-debloat-StripDebugSymbols.bat` 会根据 `ExcludedPdbs.txt` 文件中的设置移除 PDB 文件。调试符号会占用源代码构建磁盘空间的很大一部分。
@@ -177,14 +200,23 @@ STRIP=FeaturePacks\StarterContent.upack
 
 如果您使用的是删除（`delete`）模式，则恢复意味着重新克隆或重新运行 `Setup.bat`。
 
+如果只想恢复构建真正需要的部分，用校验脚本：
+
+```
+powershell -NoProfile -ExecutionPolicy Bypass -File devops\ueVite-debloat-ValidateRefs.ps1 -Restore
+```
+
+`-Restore` 会把编辑器构建引用到的模块移回来；`-RestoreAll` 还会恢复程序、模板与游戏目标需要的模块。
+
 ## 此操作不会做什么
 
-精简插件可以减少磁盘占用空间，并通过插件阶段缩短构建时间。但它**不会**提高运行时性能——即使插件存在但已禁用，运行时也不会消耗任何资源。
+精简可以减少磁盘占用，并通过插件清理缩短构建时间。但它**不会**提高运行时性能——即使插件存在但已禁用，运行时也不会消耗任何资源。
 
-有关运行时性能，请参阅[性能分析](../Performance/Profiling.md)和[引擎默认更改](../Performance/Engine-Defaults.md)。关于构建时间，移除添加的 Vite 插件可以在 15 分钟的完整构建过程中节省大约 3 分钟；请参阅[着色器编译和PSO](../Performance/Shader-Compilation-And-PSO.md)。
+有关运行时性能，请参阅[性能分析](../Performance/Profiling.md)和[引擎默认更改](../Performance/Engine-Defaults.md)。关于构建时间，在 Houdini Engine 还随附时，移除新增的 Vite 插件能在 15 分钟的完整构建里省下约 3 分钟；6 月主要版本移除 Houdini 后，这个差距变小了。详见[着色器编译和PSO](../Performance/Shader-Compilation-And-PSO.md)。
 
 ## 另请参阅
 
+- [ViteSetup](../Tools/ViteSetup.md)
 - [从源代码构建](../GettingStarted/Build-From-Source.md)
 - [引擎默认设置更改](../Performance/Engine-Defaults.md)
 - [捆绑插件](../Plugins/Bundled-Plugins.md)
