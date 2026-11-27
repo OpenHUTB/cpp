@@ -152,7 +152,7 @@ r.RayTracing.Translucency.MaxRefractionRays 5
 | `r.RayTracing.MeshCaustics.AdaptiveVarianceGain` | 更高的值可以抑制闪烁 |
 | `r.RayTracing.MeshCaustics.EnableTemporalFilter` | 启用时间滤波以减少闪烁 |
 | `r.RayTracing.MeshCaustics.TemporalStrength` | 更高的值可以提高稳定性，但可能会引入延迟或重影 |
-| `r.RayTracing.MeshCaustics.MaxTraceDepth` | 限制反弹次数；提高半透明物体的性能 |
+| `r.RayTracing.MeshCaustics.MaxTraceDepth` | 限制弹射次数；提升半透明物体的性能 |
 
 ## 水体焦散效果
 
