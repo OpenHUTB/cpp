@@ -6,7 +6,7 @@
 Vite 内置了两款基于毛发的渲染系统：AMD **TressFX 5.0** 和 Epic 的 Groom（HairStrands）。TressFX 是 Vite 添加的；Groom 是 4.27 版本的自带系统。两者默认均处于禁用状态。
 
 
-毛发是最难渲染出逼真效果的表面之一。基于卡片的毛发渲染成本低廉且效果可预测，但在运动或掠射角度下始终无法准确呈现。基于毛发的渲染系统能够模拟并渲染每一根毛发，效果显著提升，但成本也更高。
+毛发是最难渲染出逼真效果的表面之一。基于卡片的毛发渲染成本低廉且效果可预测，但在运动或掠射角度下始终无法准确呈现。基于发丝的渲染能模拟并渲染单根纤维，效果显著提升，但成本也更高。
 
 
 ## 可用系统
@@ -24,7 +24,7 @@ Vite 内置了两款基于毛发的渲染系统：AMD **TressFX 5.0** 和 Epic �
 
 ## TressFX 5.0
 
-TressFX 是 AMD 的开源毛发系统。Vite 集成包含三个模块：TressFXCore 用于运行时模拟和渲染，`TressFXImportTranslator` 用于资源导入，`TressFXEditor` 用于创作工具。
+TressFX 是 AMD 的开源毛发系统。Vite 集成包含三个模块：`TressFXCore` 用于运行时模拟和渲染，`TressFXImportTranslator` 用于资源导入，`TressFXEditor` 用于创作工具。
 
 它将模拟（毛发响应头部运动、风力和碰撞）和渲染（与顺序无关的透明度、自阴影以及毛发所需的各向异性镜面反射）作为一个系统来处理。
 
@@ -33,9 +33,9 @@ TressFX 是 AMD 的开源毛发系统。Vite 集成包含三个模块：TressFXC
 
 | CVar | 默认 | 用途 |
 |---|---|---|
-| `r.TressFX.StrandsMode` | `0` | 调试可视化。`0` 关闭，`1` 模拟发束，`2` 渲染发束颜色受模拟影响，`3` 毛发 UV，`4` 毛发根部 UV，`5` 毛发种子，`6` 维度  |
+| `r.TressFX.StrandsMode` | `0` | 调试可视化。`0` 关闭，`1` 模拟发束，`2` 渲染发束并按模拟影响着色，`3` 毛发 UV，`4` 毛发根部 UV，`5` 毛发种子，`6` 维度  |
 | `r.TressFX.Interoplation.FrustumCulling` | `1` | 发束插值期间的视锥体剔除。实验性功能。 |
-| `r.TressFX.MorphTargetMeshVisualization` | `0` | 精确的透射率通道，改善小尺寸 TressFX 的渲染效果 |
+| `r.TressFX.MorphTargetMeshVisualization` | `0` | 调试视图：驱动发丝的形变目标网格 |
 
 !!! note
     `r.TressFX.Interoplation.FrustumCulling` 的拼写与源码里一致，`Interpolation` 里的字母也照原样颠倒。请原样使用这个字符串。
@@ -52,7 +52,7 @@ TressFX 是 AMD 的开源毛发系统。Vite 集成包含三个模块：TressFXC
 
 实用指南：
 
-- 仅对主角使用发丝渲染。群众角色和背景角色应使用卡式渲染。
+- 仅对主角使用发丝渲染。人群与背景角色应使用卡片渲染。
 - 积极使用 LOD（细节层次）。发丝数量应随距离大幅减少，在中距离切换到卡式渲染是正常的。
 - 使用实际的[抗锯齿](./Anti-Aliasing.md)配置进行测试。对于细小的几何体，抗锯齿方法的影响尤为显著，使用 TAA 抗锯齿效果尚可的头发，在 SMAA 抗锯齿下可能会出现闪烁。
 
