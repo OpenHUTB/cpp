@@ -12,12 +12,14 @@ Vite 重写了 UE4.27 原生屏幕空间 AO 通道的内存访问模式。它以
 
 | 控制 | 默认值 | 备注 |
 |---|---|---|
-| `VITE_O_SSAO`（编译时） | `1` | 最终发布的版本将锁定为该值 |
-| `r.Vite.SSAO`（运行时） | `VITE_O_SSAO` | 仅限开发版本。`0` = 原始 UE 路径，`1` = 优化路径 |
+| `VITE_O_SSAO`（编译时） | `1` | Shipping 与 Test 构建锁定为该值 |
+| `r.Vite.SSAO`（运行时） | `VITE_O_SSAO` | 仅限 Debug 与 Development 构建。`0` = 原始 UE 路径，`1` = 优化路径 |
 
 运行时 CVar 的存在是为了方便您在开发过程中将优化后的路径与默认路径进行 A/B 对比，这也是优化验证的方式。在最终发布版本中，CVar 完全不存在——路径已编译到程序中。请参阅[编译时开关](../Performance/Compile-Time-Switches.md)。
 
 UE4.27 的标准 SSAO 设置仍然适用，您可以在**Rendering Features（渲染特性）> 环境光遮蔽（Ambient Occlusion）**的后处理体积中找到它们：强度、半径、质量、功率、偏移、淡出距离等。
+
+启用 [SSGI](./SSGI.md) 且它确定会运行时，环境光遮蔽项由 SSGI 提供，SSAO 会被完全跳过（自 9 月主要版本起）。
 
 ## HBAO+
 
@@ -34,7 +36,7 @@ HBAO+ 会**乘以**屏幕空间 AO 缓冲区而不是替换它，因此启用后
 | `r.HBAO.HighPrecisionDepth` | `0` | `0` = 使用 FP16 内部深度，`1` = 使用 FP32。使用 FP32 可避免远处物体出现自遮挡条带。 |
 | `r.HBAO.GBufferNormals` | `1` | `0` = 从深度重建法线，`1` = 获取 GBuffer 法线 |
 
-**注意：** CVar 帮助文本将 HBAO+ 描述为仅适用于 DX11。Vite 同时在 D3D11 和 D3D12 上实现了它；帮助字符串继承自最初的 NVIDIA 集成，尚未更新。
+**注意：** CVar 帮助文本将 HBAO+ 描述为仅适用于 DX11。Vite 在 D3D11 与 D3D12 上都实现了它（D3D12 后端自 6 月主要版本起提供）；帮助字符串继承自最初的 NVIDIA 集成，尚未更新。
 
 
 ### 后处理体积设置
