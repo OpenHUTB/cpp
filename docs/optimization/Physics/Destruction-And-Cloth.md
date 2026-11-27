@@ -65,9 +65,8 @@ Blast 还支持运行时破碎，因此破碎模式取决于物体被击中的�
 
 从**Edit > Plugins > GameWorks**启用插件，然后使用 Blast 网格编辑器创建资源。
 
-!!! 注意
-
-    Blast 不能直接替代 Apex Destruction。资源类型、创建工作流程和运行时 API 都不同。建议每个项目选择一个，而不是混合使用，并且在新项目中优先选择 Blast。
+!!! note
+    Blast 不能直接替代 Apex Destruction。资源类型、创建工作流程和运行时 API 都不同。建议每个项目只选一个，不要混用，并且在新项目中优先选择 Blast。
 
 
 ## 选择
