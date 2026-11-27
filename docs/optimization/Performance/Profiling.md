@@ -58,6 +58,8 @@ stat slate       // UI 成本
 
 **角色移动：** 角色移动组件（Character Movement Component, CMC）开销很大，并且会随着角色数量的增加而急剧增加。[400 角色 CMC 基准测试](../ProjectsAndDemos/400-Characters-CMC-Bench.md)演示程序正是为了精确地衡量这一点而存在的。如果你有很多角色，这很可能就是你的主要开销。
 
+![](../../img/optimization/400CharCMCBench.png)
+
 **物理引擎。** 另请参阅[PhysX](../Physics/PhysX.md)。看物理耗时占游戏线程时间的比例。大量模拟刚体应当迁到[实例化物理子系统](../Physics/Instanced-Physics.md)。
 
 **重叠事件。** Vite 默认禁用图元组件的重叠事件，正是因为它们是常见的隐藏开销。另请参阅[引擎默认设置更改](../Performance/Engine-Defaults.md)。
@@ -135,14 +137,16 @@ Vite 项目里常见的卡顿来源：
 | 保真 高端 4K30 | 33.3&nbsp;ms |
 | 保真 全 RT 1440p30 | 33.3&nbsp;ms |
 
+![](../../img/optimization/ChaosVsPhysX3000.png)
+*模拟 3000 个立方体：虚幻引擎 5.7 搭配 Chaos 为 33.26 FPS，Vite 搭配 PhysX 3.4 为 157.88 FPS。*
+
 在符合最低配置要求的硬件上，使用开发或测试版本（而非编辑器）进行性能分析，并选择能够代表最坏情况的游戏场景（而非空关卡）。仅编辑器开销就可能达到几毫秒，而空关卡中的性能分析无法反映最终交付的帧性能。
 
 
 ## 另请参阅
 
-- [PS5 CPU FPU](PS5-CPU-FPU.md)
 - [性能目标](../EngineOverview/Performance-Targets.md)
 - [UE4 与 UE5 成本分析](../EngineOverview/UE4-Versus-UE5-Cost-Analysis.md)
 - [引擎默认设置变更](./Engine-Defaults.md)
 - [着色器编译和 PSO](./Shader-Compilation-And-PSO.md)
-- [编译器资源管理器](Compiler-Explorer.md)
+
