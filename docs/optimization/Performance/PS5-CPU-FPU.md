@@ -210,7 +210,7 @@ PxF64 X = PxF64(p.x) + PxF64(v.x) * dt;
 
 ### 针对 PS5 CPU 验证 PhysX 3.4 的 FPU 改动
 
-1. 先搁置会影响全局代码生成的改动。参见[编译时开关](Compile-Time-Switches.md)。
+1. 先确认会影响全局代码生成的改动。参见[编译时开关](Compile-Time-Switches.md)。
 2. 在 4700S 与一台桌面 Zen 2 机器上，用完全相同的 ISA 标志构建现代化后的 PhysX 3.4 库与引擎的 Test/Shipping 目标（内核 TU 使用 `/arch:AVX2` 或 `-mavx2 -mfma`）。
 3. 运行 FMA 探针：在信任这台机器之前，先确认 4700S 上每个独立 FMA 约为 1 周期。
 4. 给真实的 SDK 路径计时：`stat physics`、island/接触/求解器拆分、ETW。不要把 13700K 上的 Insights 抓取当作 PS5 的数据。
