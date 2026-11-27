@@ -2,7 +2,7 @@
 
 Vite 的渲染器是一个延迟渲染的 SM5 渲染器，采用与引擎无关的 DXR 光线追踪管线。全局光照使用 [DDGI](./DDGI-Dynamic.md) 而非 Lumen，几何细节使用[细分曲面](./Tessellation.md)而非 Nanite，抗锯齿默认使用原生分辨率的 [SMAA](./Anti-Aliasing.md) 而非时间重建。
 
-!!! 笔记
+!!! note
     “SM5 渲染器”指的是使用 Shader Model 5.0（着色器模型 5.0）这一图形特性级别来驱动渲染管线的渲染器。它定义了 GPU（显卡）需要支持哪些指令和功能，主要与 DirectX 11 API 绑定。
 
 
@@ -24,7 +24,7 @@ Vite 的渲染器是一个延迟渲染的 SM5 渲染器，采用与引擎无关�
 
 - [全局光照](./Global-Illumination.md) — 选择可用的全局光照解决方案
 - [动态 DDGI](./DDGI-Dynamic.md) — 实时光线追踪辐照度探针体积
-- [静态 DDGI](./DDGI-Static.md) — 烘焙时间近乎瞬时的烘焙探针体积
+- [静态 DDGI](./DDGI-Static.md) — 预计算耗时近乎瞬时的探针体积
 - [SSGI](./SSGI.md) — 屏幕空间全局光照（Screen-Space GI），以及它为何与 DDGI 并存
 
 ### 光线追踪

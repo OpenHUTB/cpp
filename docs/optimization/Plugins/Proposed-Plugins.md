@@ -28,7 +28,7 @@
 
 一个世界子系统，外加实例化 Actor 工作流程，用于管理大量基于 PhysX 的实例化刚体。无需生成数千个独立的 `AActor`/`UPrimitiveComponent` 对象，只需保留一个或几个实例化网格 Actor 用于渲染，子系统即可创建和更新每个实例的 PhysX 刚体，并将其姿态写回 ISM/HISM 实例变换。
 
-已在 1.11 版本集成。参见[实例​​化物理](Instanced-Physics.md)。
+已在 1.11 版本集成。参见[实例​​化物理](../Physics/Instanced-Physics.md)。
 
 
 [仓库](https://github.com/Dragomirson/PhysXInstancedSubsystem) ·
@@ -36,7 +36,7 @@
 
 ### Houdini 引擎 — 集成，可商用/免费使用
 
-通过 Houdini 数字资产实现程序化工作流程。艺术家在编辑器中交互式地调整资产参数，并使用虚幻引擎资产作为输入；Houdini 的程序化引擎会处理资产，结果无需烘焙即可显示在编辑器中。
+通过 Houdini 数字资产实现程序化工作流程。美术师在编辑器中交互式地调整资产参数，并使用虚幻引擎资产作为输入；Houdini 的程序化引擎会处理资产，结果无需预计算就能显示在编辑器中。
 
 [HoudiniEngineForUnreal，Houdini 20.0 / Unreal 4.27 分支](https://github.com/sideeffects/HoudiniEngineForUnreal/tree/Houdini20.0-Unreal4.27)
 
@@ -78,7 +78,7 @@ bunnyofficial 提供的补丁版本修复了一个编译错误：[补丁版本](
 
 *Asset Downgrader 插件界面显示目标版本选择，降级工具支持的目标版本从 5.6.1 降级到 4.26。*
 
-这是在 Vite 中使用 UE5 商城内容的实用方法。请参阅[从 UE5 迁移](Migrating-From-UE5.md)。作者 Ciprian Stanciu 活跃于 Vite Discord 社区，并为多个 Vite 项目提供过直接帮助。
+这是在 Vite 中使用 UE5 商城内容的实用方法。请参阅[从 UE5 迁移](../GettingStarted/Migrating-From-UE5.md)。作者 Ciprian Stanciu 活跃于 Vite Discord 社区，并为多个 Vite 项目提供过直接帮助。
 
 ![](../../img/optimization/CiprianStanciu.png)
 
@@ -139,7 +139,7 @@ bunnyofficial 提供的补丁版本修复了一个编译错误：[补丁版本](
 | 引擎版本 | 兼容 4.21–4.27 版本。仅限 UE5 版本不在考虑范围内。 |
 | 许可 | 可再分发，或明确说明用户需自行获取。 |
 | 大小 | 捆绑插件会被所有人克隆。大型二进制依赖项需要说明理由。 |
-| 编译成本 | 增加每次引擎构建的成本。请参阅[着色器编译和 PSO](Shader-Compilation-And-PSO.md)。 |
+| 编译成本 | 增加每次引擎构建的成本。请参阅[着色器编译和 PSO](../Performance/Shader-Compilation-And-PSO.md)。 |
 | 重复 | 是否与已捆绑或默认功能重复？ |
 
 然后说明你认为它应该属于哪个层级，并解释原因。
@@ -148,6 +148,6 @@ bunnyofficial 提供的补丁版本修复了一个编译错误：[补丁版本](
 
 - [已捆绑的插件](Bundled-Plugins.md)
 - [插件](Plugins.md)
-- [从 UE5 迁移](Migrating-From-UE5.md)
-- [贡献](Contributing.md)
+- [从 UE5 迁移](../GettingStarted/Migrating-From-UE5.md)
+- [贡献](../Contributing/Contributing.md)
 
