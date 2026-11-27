@@ -42,7 +42,7 @@
 
 ### Kismet /蓝图 API 添加
 
-未经明确批准，不得使用新的“BlueprintCallable”或“BlueprintPure”函数。每个蓝图公开的函数都会添加反射元数据、二进制大小和比本机 C++ 慢的调用路径。对于同一类型，必须保持蓝图原生化（Blueprint Nativization）系统的稳定。
+未经明确批准，不得使用新的“BlueprintCallable”或“BlueprintPure”函数。每个蓝图公开的函数都会添加反射元数据、二进制大小和比原生 C++ 慢的调用路径。对于同一类型，必须保持蓝图原生化（Blueprint Nativization）系统的稳定。
 
 ### 大量模板模式
 
