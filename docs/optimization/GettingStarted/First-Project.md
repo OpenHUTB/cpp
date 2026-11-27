@@ -4,7 +4,8 @@
 
 在 Vite 中创建项目的流程与在标准版 Unreal Engine 4.27 中完全相同。两者的区别在于默认渲染配置，因此本页面将重点介绍项目打开后应立即进行的操作。
 
-**注意：** 本手册仅说明 Vite 所做的更改，而非 Unreal Engine 本身的功能。对于未更改的部分（如项目结构、模板、内容浏览器、蓝图、材质、打包等），[模拟引擎的文档](https://openhutb.github.io/engine_doc/zh-CN/index.html)依然适用并可作为参考。
+!!! note
+    本手册仅说明 Vite 所做的更改，而非 Unreal Engine 本身的功能。对于未更改的部分（如项目结构、模板、内容浏览器、蓝图、材质、打包等），[虚幻引擎的文档](https://openhutb.github.io/engine_doc/zh-CN/index.html)依然适用，可作为参考。
 
 
 ## 创建项目
@@ -24,7 +25,8 @@
 
 ## 在构建内容前，请先了解默认设置
 
-**警告：** Vite 默认启用了全套光线追踪功能——包括阴影、反射、半透明效果和环境光遮蔽（Ambient Occlusion, AO）。这样设计是为了让新用户能立即体验这些功能，但也意味着相比标准的 4.27 版本，空项目会消耗更多性能资源。
+!!! warning
+    Vite 默认启用了全套光线追踪功能——包括阴影、反射、半透明效果和环境光遮蔽（Ambient Occlusion, AO）。这样设计是为了让新用户能立即体验这些功能，但也意味着相比标准的 4.27 版本，空项目会消耗更多性能资源。
 
 请尽早确定项目实际需要哪些效果，因为这将决定您的美术制作与性能预算规划。一款目标为 4K120 帧的风格化竞技游戏通常仅启用 DDGI；而一款追求高画质、目标为 4K60 帧的游戏，则可能会额外加入光线追踪反射和曲面细分（Tessellation）技术。请参阅[性能目标](../EngineOverview/Performance-Targets.md)部分，了解 Vite 针对优化的四种参考配置。
 
@@ -33,7 +35,7 @@
 
 ## 通过代码启用功能
 
-在示例项目中，设置这些功能的常规位置是角色类的构造函数或 `BeginPlay` 方法。Vite 示例项目正是这样做的。
+在示例项目里，设置这些功能的常见位置是角色类的构造函数或 `BeginPlay` 方法。Vite 示例项目正是这样做的。
 
 ```c++
 // Global illumination
@@ -49,7 +51,7 @@ IConsoleManager::Get().FindConsoleVariable(TEXT("r.RayTracing.SampledDirectLight
 IConsoleManager::Get().FindConsoleVariable(TEXT("r.RayTracing.MeshCaustics.Enable"))->Set(1);
 ```
 
-设置 `r.GlobalIllumination.ExperimentalPlugin 1` 可启用 DDGI。建议同时运行 SSGI，而非将其视为可选项：DDGI 负责处理全局尺度的光线反弹，而 SSGI 则用于补充高频接触细节——这些细节往往因探针体积（probe volumes）的精度限制而难以捕捉。请参阅[DDGI 与 SSGI 结合使用](../Rendering/SSGI.md)相关内容。
+设置 `r.GlobalIllumination.ExperimentalPlugin 1` 可启用 DDGI。建议同时运行 SSGI，而非将其视为可选项：DDGI 负责处理全局尺度的光线弹射，而 SSGI 则用于补充高频接触细节——这些细节往往因探针体积（probe volumes）的精度限制而难以捕捉。请参阅[DDGI 与 SSGI 结合使用](../Rendering/SSGI.md)相关内容。
 
 在生产环境中，建议在配置文件而非代码中设置这些参数，以便利用其可扩展性，并支持针对不同平台进行覆盖设置：
 
