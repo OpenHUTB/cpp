@@ -1,164 +1,148 @@
 # 引擎优化入门
 
-<tldr>
-<p>
-Unreal Engine Vite 是 Unreal Engine 4.27 的性能优先分支，基于 NvRTX 和 Plus 分支构建。
-它保留了 PhysX，添加了 DDGI、RTXDI、曲面细分、SMAA 和 HBAO+，并以原始分辨率为目标，
-在控制台级硬件上进行高帧速率渲染。
-</p>
+!!! note "概要"
 
-新手从[Vite简介](./GettingStarted/Introduction-to-Vite.md)开始，然后
-[从源代码构建引擎](./GettingStarted/Build-From-Source.md)。
+    Unreal Engine Vite 是 Unreal Engine 4.27 的性能优先分支，构建于 NvRTX 与 Plus 分支之上。
+    它保留 PhysX，并加入 DDGI、RTXDI、曲面细分、SMAA 与 HBAO+，
+    面向主机级硬件，追求原生分辨率下的高帧率。
 
-</tldr>
+    初次接触？请先读 [Vite 简介](./GettingStarted/Introduction-to-Vite.md)，然后
+    [从源码构建引擎](./GettingStarted/Build-From-Source.md)。
 
 ---
 
-欢迎使用虚幻引擎 Vite 手册。该网站记录了引擎分支本身：如何构建它，相对于原版虚幻引擎 4.27 有何变化、添加了哪些渲染和物理系统，以及如何让项目在其上交付。
+欢迎阅读 Unreal Engine Vite 手册。本站记录的是这个引擎分支本身：如何构建它、相对原版 Unreal Engine 4.27 改了什么、新增了哪些渲染与物理系统，以及如何在其上交付项目。
 
-Vite针对的是活跃生产中的团队。它不是一个研究分支或技术演示。每个功能
-此处记录的内容预计可以在真实硬件上的烘焙、打包和交付中保存下来，并且
-手册自始至终都是基于这一假设编写的。
+Vite 面向正在量产中的团队，而不是研究分支或技术演示。本手册记录的每项功能，都以能在真实硬件上通过资源烘焙（cooking）、打包（packaging）与真机交付（shipping）为前提；全书的写法也基于这一前提。
 
 ![](../img/optimization/StylizedRTDemo.png)
 
-<div class="div" style="text-align: center">
-<i>由 Dynamic DDGI 照亮的风格化场景，帧计数器读数为 811 FPS</i></div>
-<style>
-.div {
-    height: 20px;
-    line-height: 1px;
-}
-</style>
-
-
-*完全由动态光线追踪全局光照的风格化演示：在 RTX 4080 Super 上以 1440p 原生测得 811 FPS。虚幻引擎 5.7 中 Lumen 上的同一场景测得 324 FPS。*
+*完全由动态光线追踪全局光照点亮的风格化演示：在 RTX 4080 Super 上以 1440p 原生分辨率测得 811 FPS。同一场景在 Unreal Engine 5.7 的 Lumen 上测得 324 FPS。*
 
 ## Vite 的目的是什么
 
-虚幻引擎 5.7 和 5.8 的目标是在 PlayStation 5 上使用 Lumen、Nanite、虚拟阴影贴图、TSR 和 Chaos 技术，以 720p 到 1080p 的动态内部分辨率实现大约 60 FPS 的帧率。这套技术栈通过虚拟化和时间重建来提升画面保真度，但代价是处理、流式传输和内存开销，以及噪点、重影和模糊等问题，此外，渲染器本身的基础成本也很高，即使项目尚未构建任何内容，成本依然很高。
+Unreal Engine 5.7 与 5.8 的目标是：在 PlayStation 5 上借助 Lumen、Nanite、虚拟阴影贴图（Virtual Shadow Maps）、TSR 与 Chaos，以 720p–1080p 的动态内部分辨率跑到大约 60 FPS。这套技术栈依靠虚拟化与时间重建换取画面保真度，代价是处理、流送与内存开销，以及噪点、重影与模糊；此外，即使项目尚未搭建任何内容，渲染器本身的基础成本也很高。
 
-随着任天堂 Switch 2 的上市、Steam Deck 等掌机的普及以及硬件成本的上涨，这种权衡越来越难以满足游戏运行所需的硬件需求。Vite则采取了截然相反的策略：在保持高视觉保真度的同时，严格控制帧时间并实现高原生分辨率。
+随着 Nintendo Switch 2 上市、Steam Deck 这类掌机站稳脚跟、硬件成本上涨，这种取舍越来越难以装进游戏实际运行的硬件里。Vite 押的是相反的方向：保持高视觉保真度，严格控制帧时间，并以原生分辨率渲染。
 
-
-具体来说，UE4 的实际游戏帧率比 UE5.7 的预期功能集提升了 2.5 倍，并且有测量数据支持，而不是断言——请参阅 [UE4 与 UE5 的成本分析](./EngineOverview/UE4-Versus-UE5-Cost-Analysis.md) 以及[项目和演示](./ProjectsAndDemos.md)。
+具体来说，相对 UE 5.7 的目标功能集，实际游戏帧率最高可达 2.5 倍；这有实测数据支撑，而非断言——参见[UE4 与 UE5 成本分析](./EngineOverview/UE4-Versus-UE5-Cost-Analysis.md)与[项目与演示](./ProjectsAndDemos.md)。
 
 [![Vite ray-traced GI and ray-traced reflections](https://img.youtube.com/vi/2vfG3W-Gy5E/maxresdefault.jpg)](https://youtu.be/2vfG3W-Gy5E)
 
 ## 从哪里开始
 
-选择与您现在正在做的事情相匹配的切入点。
+选择与你现在要做的事最接近的入口。
 
 | 我想要&nbsp;&hellip; | 从这里开始 |
 |---|---|
-| 了解 Vite 是什么以及它是否适合我的项目 | [Vite 简介](./GettingStarted/Introduction-to-Vite.md) |
-| 让引擎在我的机器上运行 | [入门](./GettingStarted/Getting-Started.md) |
-| 从源代码编译引擎 | [从源代码构建](./GettingStarted/Build-From-Source.md) |
-| 修复编译或设置错误 | [构建故障排除](./GettingStarted/Build-Troubleshooting.md) |
-| 将现有的 UE5 项目移至 Vite 上 | [从虚幻引擎 5 迁移](./GettingStarted/Migrating-From-UE5.md) |
+| 了解 Vite 是什么、是否适合我的项目 | [Vite 简介](./GettingStarted/Introduction-to-Vite.md) |
+| 让引擎在我的机器上跑起来 | [入门](./GettingStarted/Getting-Started.md) |
+| 从源码编译引擎 | [从源码构建](./GettingStarted/Build-From-Source.md) |
+| 修复编译或环境配置错误 | [构建故障排除](./GettingStarted/Build-Troubleshooting.md) |
+| 把现有 UE5 项目迁移到 Vite 上 | [从 UE5 迁移](./GettingStarted/Migrating-From-UE5.md) |
 | 在没有 Lumen 的情况下照亮场景 | [全局光照](./Rendering/Global-Illumination.md) |
-| 在我的游戏代码中用 PhysX 替换 Chaos | [PhysX](./Physics/PhysX.md) |
+| 在游戏代码中用 PhysX 替换 Chaos | [PhysX](./Physics/PhysX.md) |
 | 查找控制台变量 | [控制台变量](./Reference/Console-Variables.md) |
-| 为 fork 做出贡献 | [贡献](./Contributing/Contributing.md) |
+| 为 fork 做贡献 | [贡献](./Contributing/Contributing.md) |
 
 ## Vite 所围绕的功能
 
 * 动态 DDGI
 
-    光线追踪辐照度探测体积。结构上无噪声，完全动态，在类似场景下帧速率约为硬件流明的两倍。另请参阅[动态 DDGI](./Rendering/DDGI-Dynamic.md)。
+    光线追踪辐照度探针体积。结构上没有噪点、完全动态，在可比场景中帧率约为硬件 Lumen 的两倍。参见[动态 DDGI](./Rendering/DDGI-Dynamic.md)。
 
 * 静态 DDGI
 
-    采用相同的探针表示方法，烘焙时间近乎瞬时。相比传统烘焙光照，反射保真度更高，对运动物体的覆盖范围更广。即使在完全不支持光线追踪的 GPU 上也能正常运行。另请参阅[静态 DDGI](./Rendering/DDGI-Static.md)。
+    沿用同一套探针表示，预计算近乎瞬时完成。相比传统烘焙光照，弹射保真度更高、对动态物体的覆盖更广，而且在完全不支持光线追踪的 GPU 上也能运行。参见[静态 DDGI](./Rendering/DDGI-Static.md)。
 
-* 优化 RT 反射
+* 优化的 RT 反射
 
-    在 PS5 级别的 GPU 上，可实现 4K 原生 60 帧。启用 DDGI 后，反射光线会采样探测器辐照度进行二次反射，而不是返回黑色。另请参阅[光线追踪反射](./Rendering/RT-Reflections.md)。
+    在 PS5 级 GPU 上可实现 4K 原生 60 帧。开启 DDGI 后，反射光线在二次弹射时会采样探针辐照度，而不是返回黑色。参见[光线追踪反射](./Rendering/RT-Reflections.md)。
 
 
 * UE4 时代的 SSGI
 
-    当 UE5 将 SSGI 集成到 Lumen 中时，其质量和性能有所下降，并且无法再与独立的全局光照解决方案并行运行。在 Vite 中，它可以与 DDGI 完美兼容。另请参阅[SSGI](./Rendering/SSGI.md)。
+    UE5 把 SSGI 并入 Lumen 时，其质量与性能都有所下降，并且无法再与独立的全局光照方案并行使用。在 Vite 中，它可以无附加条件地与 DDGI 并存。参见[SSGI](./Rendering/SSGI.md)。
 
 * PhysX 3.4
 
-    针对新版 Clang 重建了库，新增了 Blast 支持，并支持跨平台 GPU 加速粒子效果。在相同工作负载下，速度明显优于 Chaos。另请参阅[PhysX](./Physics/PhysX.md)。
+    针对新版 Clang 重建了库，新增 Blast 支持，并支持跨平台 GPU 加速粒子。在相同工作负载下明显快于 Chaos。参见[PhysX](./Physics/PhysX.md)。
 
 
-* Apex 破坏和布料
+* Apex 破坏与布料
 
-    这两个功能在 UE5 中均已被弃用并移除，现有资源没有迁移方案。但在 Vite 中它们仍然可以正常工作。请参阅[破坏和布料](./Physics/Destruction-And-Cloth.md)部分。
+    两者在 UE5 中均已弃用并移除，且现有资产没有迁移路径。在 Vite 中它们仍然可用。参见[破坏与布料](./Physics/Destruction-And-Cloth.md)。
 
 
 * RTXDI
 
-    与 5.1 及更高版本中集成在 Lumen 中的 MegaLights 相比，[RTXDI](./Rendering/RTXDI.md) 是一种噪音更低的替代方案。
+    与 5.1 及以后版本中 Lumen 内置的 MegaLights 相比，[RTXDI](./Rendering/RTXDI.md) 是噪点更少的一种替代方案。
 
-* 细分曲面（Tessellation）
+* 曲面细分（Tessellation）
 
-    基于距离和位移的几何细节：更平滑的表面、更清晰的轮廓和运行时高频细节，且无需 Nanite 的额外开销。另请参阅[细分曲面](./Rendering/Tessellation.md)。
+    基于距离与位移的几何细节：更平滑的表面、更干净的轮廓，以及运行期的高频细节，且没有 Nanite 的额外开销。参见[曲面细分](./Rendering/Tessellation.md)。
 
 
 ## 性能目标
 
-以下所有目标均包含光线追踪。完整详情和测量条件另请参阅[性能目标](./EngineOverview/Performance-Targets.md)。
+以下每个目标都包含光线追踪。完整细节与测量条件见[性能目标](./EngineOverview/Performance-Targets.md)。
 
-| PS5 级目标 | 它包括什么 |
+| PS5 级目标 | 包含内容 |
 |---|---|
-| **风格化的 4K 120 FPS** | RT DDGI，如风格化演示中所示。专为竞技性多人游戏而设计。 |
-| **性能、高端、4K 60 FPS** | DDGI、RT 反射和曲面细分，如 Unreal Tournament Vite 演示中所示。 |
-| **保真、高端、4K 30 FPS** | 相同的堆栈适用于具有高几何密度的大型开放世界。 |
-| **保真、全 RT、 1440p 30 FPS** | 在 DDGI 和 RT 反射之上添加 RTAO 和 RT 阴影。 |
+| **风格化，4K 120 FPS** | 光线追踪 DDGI，如风格化演示所示。面向竞技多人游戏。 |
+| **性能／高端，4K 60 FPS** | DDGI、RT 反射与曲面细分，如 Unreal Tournament Vite 演示所示。 |
+| **保真／高端，4K 30 FPS** | 同一套技术栈，面向几何密度很高的大型开放世界。 |
+| **保真／全 RT，1440p 30 FPS** | 在 DDGI 与 RT 反射之上，再加 RTAO 与 RT 阴影。 |
 
 ## 手册部分
 
 * 入门
 
-    安装、工具链设置、从源代码构建、创建您的第一个项目以及从虚幻引擎 5 迁移现有项目。请参阅[入门指南](./GettingStarted/Getting-Started.md)。
+    安装、工具链配置、从源码构建、创建第一个项目，以及把现有 UE5 项目迁移过来。参见[入门指南](./GettingStarted/Getting-Started.md)。
 
 
 * 引擎概述
 
-    该分支版本为何基于 NvRTX 4.27，其设计目标是什么，以及 UE4 和 UE5 之间可衡量的成本差异源自何处。请参阅[引擎概述](./EngineOverview/Engine-Overview.md)。
+    这个分支为什么以 NvRTX 4.27 为基础、它的设计目标是什么，以及 UE4 与 UE5 之间可量化的成本差距来自哪里。参见[引擎概述](./EngineOverview/Engine-Overview.md)。
 
 * 渲染
 
-    全局光照、光线追踪、着色模型、抗锯齿、放大、曲面细分、环境光遮蔽和色彩管理。这是手册中篇幅最长的部分，也是 Vite 与原版 4.27 版本差异最大的地方。另请参阅[渲染](./Rendering/Rendering.md)部分。
+    全局光照、光线追踪、着色模型、抗锯齿、超分辨率、曲面细分、环境光遮蔽与色彩管理。这是手册中篇幅最长的部分，也是 Vite 与原版 4.27 差异最大的地方。参见[渲染](./Rendering/Rendering.md)部分。
 
 
 * 物理
 
-    PhysX 3.4 作为发布版本的物理引擎后端：支持快速路径、固定时间步长、Apex 破坏、Apex 布料、爆炸以及大规模实例化刚体。另请参阅[物理](./Physics/Physics.md)部分。
+    PhysX 3.4 作为产品交付时的物理后端：快速路径、固定时间步长、Apex 破坏、Apex 布料、爆炸，以及大规模实例化刚体。参见[物理](./Physics/Physics.md)部分。
 
 * 性能与优化
 
-    分析工具、引擎默认设置、Vite 的开箱即用更改、着色器编译和 PSO 行为、可扩展性，以及如何精简引擎以加快迭代速度。请参阅[性能与优化](./Performance/Performance.md)部分。
+    分析工具、引擎默认设置、Vite 开箱即用的改动、着色器编译与 PSO 行为、可伸缩性，以及如何精简引擎以加快迭代。参见[性能与优化](./Performance/Performance.md)部分。
 
 * 平台
 
-    每个目标平台支持哪些功能、有哪些渲染器路径可用，以及 Vite 针对哪些硬件进行了优化。请参阅[平台](./Platforms/Platforms.md)部分。
+    各目标平台支持哪些功能、有哪些渲染器路径可用，以及 Vite 针对什么硬件做了优化。参见[平台](./Platforms/Platforms.md)部分。
 
 * 插件
 
-    引擎自带的插件，以及新插件的审核流程。请参阅[插件](./Plugins/Plugins.md)部分。
+    引擎自带的插件，以及新插件的审核流程。参见[插件](./Plugins/Plugins.md)部分。
 
 
 * 工具和自动化
 
-    ViteSetup.bat 助手负责安装引擎构建、打包和分发脚本以及缓存管理。请参阅[工具和自动化](./Tools/Tools.md)部分。
+    ViteSetup.bat 助手负责安装引擎构建、打包与分发脚本，以及缓存管理。参见[工具和自动化](./Tools/Tools.md)部分。
 
 
 * 项目和演示
 
-    提供可下载的示例项目和基准测试场景，以及它们所用的硬件参数。请参阅[项目和演示](./ProjectsAndDemos.md)。
+    可下载的示例项目与基准测试场景，以及它们所用的硬件参数。参见[项目和演示](./ProjectsAndDemos.md)。
 
 * 贡献
 
-    编码规范、提交和拉取请求约定，以及将 UE5 更改引入分支的向后移植工作流程。请参阅[贡献](./Contributing/Contributing.md)部分。
+    编码规范、提交与拉取请求约定，以及把 UE5 改动回移到分支的向后移植流程。参见[贡献](./Contributing/Contributing.md)部分。
 
 * 参考
 
-    控制台变量参考、编译时开关、术语表和常见问题解答。请参阅[参考文档](./Reference/Reference.md)。
+    控制台变量参考、编译时开关、术语表与常见问题。参见[参考文档](./Reference/Reference.md)。
 
 
 
@@ -169,8 +153,8 @@ Vite针对的是活跃生产中的团队。它不是一个研究分支或技术�
 | 引擎仓库 | [ViteStudio-Tech](https://github.com/ViteStudio-Tech) |
 | 社区 Discord | [discord.gg/n9zQrYFhMb](https://discord.gg/n9zQrYFhMb) |
 | 工作计划（Trello） | [UE Vite PhysX Studio 分支](https://trello.com/b/JKyBFS5X/ue-vite-physx-vite-studio-fork) |
-| 公共资产 | [谷歌云盘](https://drive.google.com/drive/folders/16FOkb5u6GSqHiWeAm50NaxZ19QFBwZeI?usp=sharing) |
-| 支持发展 | [ko-fi.com/vitestudio](https://ko-fi.com/vitestudio) |
+| 公共资源 | [Google Drive](https://drive.google.com/drive/folders/16FOkb5u6GSqHiWeAm50NaxZ19QFBwZeI?usp=sharing) |
+| 支持开发 | [ko-fi.com/vitestudio](https://ko-fi.com/vitestudio) |
 | 媒体更新 | [@theredpix](https://x.com/theredpix) |
 
-> Vite 由一个小型引擎程序员团队开源开发。如果您想贡献代码，请阅读[贡献指南](./Contributing/Contributing.md)并在 Discord 上申请 Forker 角色。
+> Vite 由一个精干的引擎程序员团队开源开发。如果你想参与代码贡献，请阅读[贡献指南](./Contributing/Contributing.md)，并在 Discord 上申请 Forker 角色。
