@@ -2,7 +2,7 @@
 
 本文档中使用的术语。Vite 特有的术语已标记；其余术语为本文档默认使用的标准 Unreal 或图形术语。
 
-## Vite 和 fork 术语
+## Vite 和分支术语
 
 * Vite
 
@@ -78,7 +78,7 @@
 
 * SMAA
 
-    亚像素形态学抗锯齿（Subpixel Morphological Anti-Aliasing, SMAA）。Vite 推荐的抗锯齿方法。它基于空间而非时间，因此不会像 TAA 那样引入重影和拖影。参见[抗锯齿](Anti-Aliasing.md)。
+    亚像素形态学抗锯齿（Subpixel Morphological Anti-Aliasing, SMAA）。Vite 推荐的抗锯齿方法。它基于空间而非时间，因此不会像 TAA 那样引入重影和拖影。参见[抗锯齿](../Rendering/Anti-Aliasing.md)。
 
 * TAA
 
@@ -105,7 +105,7 @@
 
 * DLSS
 
-    NVIDIA 深度学习超分辨率采样（NVIDIA Deep Learning Super Sampling, DLSS）。以较低分辨率渲染并使用 AI 模型进行重建。仅限 NVIDIA 硬件。Vite 捆绑了 4.5 版本。参见[超分辨率](../Rendering/Upscalers.md)部分。
+    NVIDIA 深度学习超级采样（NVIDIA Deep Learning Super Sampling, DLSS）。以较低分辨率渲染并使用 AI 模型进行重建。仅限 NVIDIA 硬件。Vite 捆绑了 4.5 版本。参见[超分辨率](../Rendering/Upscalers.md)部分。
 
 * DLAA
 
@@ -121,7 +121,7 @@
 
 * XeSS
 
-    Intel Xe 超采样（Xe Super Sampling, XeSS）。跨厂商，在 Intel Arc 硬件上速度更快。Vite 捆绑了 3.0.5 版本。
+    Intel Xe 超采样（Xe Super Sampling, XeSS）。跨厂商，在 Intel Arc 硬件上速度更快。Vite 捆绑了 3.1 版本。
 
 * NIS
 
