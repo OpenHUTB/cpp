@@ -9,7 +9,7 @@ Vite 是一个专注于特定方向的分支版本。其核心特色功能——
 | 平台 | 层次 | 说明                                                                  |
 |---|---|------------------------------------------------------------------------|
 | Windows 64 位 | **主要平台** | 构建与评估的基准平台                          |
-| Windows 32 位 | 仅支持文件 | Win64工具链所需；非最终发布目标                       |
+| Windows 32 位 | 仅支持文件 | Win64 工具链所需；非最终发布目标                       |
 | Linux | 继承支持 | 支持原生4.27功能。光线追踪套件未经测试。                        |
 | Mac | 继承支持 | 支持原生 4.27 功能。不支持 DXR，因此光线追踪套件不适用。   |
 | Android | 继承支持 | 继承了针对前向渲染路径（Forward Path）的Vite更新。                                 |
@@ -43,7 +43,7 @@ Vite 是一个专注于特定方向的分支版本。其核心特色功能——
 
 ## 图形 API
 
-| API | 状态 | 笔记 |
+| API | 状态 | 备注 |
 |---|---|---|
 | DirectX 12 | **主要** | DXR（以及所有光线追踪功能）运行所必需 |
 | DirectX 11 | 已支持 | 支持 HBAO+；不支持光线追踪 |
@@ -64,9 +64,9 @@ Vite 是一个专注于特定方向的分支版本。其核心特色功能——
 
 ### 可在 DX11 下运行的功能
 
-- [HBAO4+](../Rendering/Ambient-Occlusion.md) —— 尽管控制台变量的帮助文本提示其仅支持 DX11，但它实际上也有 D3D12 实现版本
+- [HBAO+](../Rendering/Ambient-Occlusion.md) —— 尽管控制台变量的帮助文本提示其仅支持 DX11，但它实际上也有 D3D12 实现版本
 - [SMAA](../Rendering/Anti-Aliasing.md)
-- [SSGI](SSGI.md)
+- [SSGI](../Rendering/SSGI.md)
 - [硬件曲面细分](../Rendering/Tessellation.md)
 - [Callisto BRDF 和卡通渲染（Toon shading）模型](../Rendering/Shading-Models.md)
 
