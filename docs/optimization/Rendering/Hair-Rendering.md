@@ -1,9 +1,12 @@
 # 毛发渲染
 
+!!! note "概要"
+    Vite 内置两套基于发丝的毛发系统：AMD **TressFX 5.0** 与 Epic 的 **Groom**（HairStrands）。TressFX 是 Vite 新增的，Groom 是 4.27 自带的。两者默认都关闭。
+
 Vite 内置了两款基于毛发的渲染系统：AMD **TressFX 5.0** 和 Epic 的 Groom（HairStrands）。TressFX 是 Vite 添加的；Groom 是 4.27 版本的自带系统。两者默认均处于禁用状态。
 
 
-毛发是最难渲染出逼真效果的表面之一。基于卡片的毛发渲染成本低廉且效果可预测，但在运动或掠射角度下始终无法准确呈现。基于毛发的渲染系统能够模拟并渲染每一根毛发，效果显著提升，但成本也更高。
+毛发是最难渲染出逼真效果的表面之一。基于卡片的毛发渲染成本低廉且效果可预测，但在运动或掠射角度下始终无法准确呈现。基于发丝的渲染能模拟并渲染单根纤维，效果显著提升，但成本也更高。
 
 
 ## 可用系统
@@ -16,9 +19,12 @@ Vite 内置了两款基于毛发的渲染系统：AMD **TressFX 5.0** 和 Epic �
 
 默认情况下，两种发型系统均未启用。请从**编辑(Edit) > 插件(Plugins)** 中启用其中一个；在同一个项目中启用两个发型系统意义不大。
 
+!!! note
+    自 7 月主要版本起，TressFX 也是一个编译时特性：要先用 `VITE_TRESSFX=1` 构建引擎，再启用插件。TressFX 的着色器不会包含在移动平台与 ES 3.1 平台上。详见[编译时开关](../Performance/Compile-Time-Switches.md)。
+
 ## TressFX 5.0
 
-TressFX 是 AMD 的开源毛发系统。Vite 集成包含三个模块：TressFXCore 用于运行时模拟和渲染，`TressFXImportTranslator` 用于资源导入，`TressFXEditor` 用于创作工具。
+TressFX 是 AMD 的开源毛发系统。Vite 集成包含三个模块：`TressFXCore` 用于运行时模拟和渲染，`TressFXImportTranslator` 用于资源导入，`TressFXEditor` 用于创作工具。
 
 它将模拟（毛发响应头部运动、风力和碰撞）和渲染（与顺序无关的透明度、自阴影以及毛发所需的各向异性镜面反射）作为一个系统来处理。
 
@@ -27,11 +33,14 @@ TressFX 是 AMD 的开源毛发系统。Vite 集成包含三个模块：TressFXC
 
 | CVar | 默认 | 用途 |
 |---|---|---|
-| `r.TressFX.StrandsMode` | `0` | 调试可视化。`0` 关闭，`1` 模拟发束，`2` 渲染发束颜色受模拟影响，`3` 毛发 UV，`4` 毛发根部 UV，`5` 毛发种子，`6` 维度  |
+| `r.TressFX.StrandsMode` | `0` | 调试可视化。`0` 关闭，`1` 模拟发束，`2` 渲染发束并按模拟影响着色，`3` 毛发 UV，`4` 毛发根部 UV，`5` 毛发种子，`6` 维度  |
 | `r.TressFX.Interoplation.FrustumCulling` | `1` | 发束插值期间的视锥体剔除。实验性功能。 |
-| `r.TressFX.MorphTargetMeshVisualization` | `0` | 精确的透射率通道，改善小尺寸 TressFX 的渲染效果 |
+| `r.TressFX.MorphTargetMeshVisualization` | `0` | 调试视图：驱动发丝的形变目标网格 |
 
-**注意：** `r.TressFX.Interoplation.FrustumCulling` 的拼写与源代码中所示一致，包括“Interpolation”中字母的转置。请使用字面字符串。
+!!! note
+    `r.TressFX.Interoplation.FrustumCulling` 的拼写与源码里一致，`Interpolation` 里的字母也照原样颠倒。请原样使用这个字符串。
+
+    引擎里这两个变量的帮助文本与实际作用对不上（写的是缓冲区交换和一个透射通道）。上面的说明以 `TressFXManager.cpp` 的代码为准。
 
 调试模式是诊断头发问题的最快方法。特别是模式 `2`——渲染发丝时会根据模拟效果着色——可以立即显示引导发丝分布是否合理，或者是否存在大片渲染发丝区域由过少的引导发丝驱动的情况。
 
@@ -43,7 +52,7 @@ TressFX 是 AMD 的开源毛发系统。Vite 集成包含三个模块：TressFXC
 
 实用指南：
 
-- 仅对主角使用发丝渲染。群众角色和背景角色应使用卡式渲染。
+- 仅对主角使用发丝渲染。人群与背景角色应使用卡片渲染。
 - 积极使用 LOD（细节层次）。发丝数量应随距离大幅减少，在中距离切换到卡式渲染是正常的。
 - 使用实际的[抗锯齿](./Anti-Aliasing.md)配置进行测试。对于细小的几何体，抗锯齿方法的影响尤为显著，使用 TAA 抗锯齿效果尚可的头发，在 SMAA 抗锯齿下可能会出现闪烁。
 
