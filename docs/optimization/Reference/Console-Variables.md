@@ -1,15 +1,17 @@
 # 控制台变量
 
-此列表包含 Vite 特有的控制台变量以及您最常用的默认变量，并按子系统分组。这是一个精选列表，并非完整列表——如需查看完整列表，请使用`help`或控制台的自动补全功能。
+!!! note "概要"
+    Vite 特有的控制台变量，以及最常用的原生变量，按子系统分组。这是精选列表而非完整清单——完整集合请用 `help` 或控制台的自动补全查询。
 
-**警告**：此列表中的几个光线追踪变量在默认构建中会**被编译掉**。它们会成功设置，但不会渲染任何内容。每个变量的可用性都有说明；请参阅[编译时开关](../Performance/Compile-Time-Switches.md)。
+!!! warning
+    本列表中有几个光线追踪变量在默认构建里**被编译掉**。它们能设置成功，但不会渲染任何内容。每个变量都标注了可用性，详见[编译时开关](../Performance/Compile-Time-Switches.md)。
 
 
 您可以在运行时通过控制台设置变量，也可以在 `Config\DefaultEngine.ini` 文件中永久设置这些变量：
 
 ```ini
 [/Script/Engine.RendererSettings]
-r.Vite.SMAA.Mode=1
+r.SMAA.Quality=2
 r.HBAO.Enable=1
 ```
 
@@ -19,17 +21,20 @@ r.HBAO.Enable=1
 
 | 变量 | 默认值 | 用途 |
 |---|---|---|
-| `r.Vite.SMAA.Mode` | 1 | SMAA 抗锯齿质量。`0` = 低，`1` = 高。参见[抗锯齿](../Rendering/Anti-Aliasing.md)。  |
-| `r.Vite.SSAO` | &mdash; | Vite 的优化 SSAO 路径。参见[环境光遮蔽](../Rendering/Ambient-Occlusion.md)。  |
-| `r.AntiAliasing.SMAA.Debug` | &mdash; | SMAA 调试可视化 |
-| `p.VitePhysXFixedTimestep.Enabled` | 0 | 启用固定时间步长物理效果 |
-| `p.VitePhysXFixedTimestep.DeltaTime` | 1/60 | 固定步长持续时间（秒） |
-| `p.VitePhysXFixedTimestep.MaxTimesteps` | &mdash; | 每帧最大步数 |
-| `p.VitePhysXFixedTimestep.MaxCumulativeExtraSteps` | &mdash; | 累积追赶步数上限 |
-| `p.VitePhysXFixedTimestep.LimitType` | &mdash; | 过载处理方式 |
-| `p.VitePhysXFixedTimestep.InterpolationMode` | &mdash; | 固定步长之间的渲染插值 |
+| `r.SMAA.Quality` | 2 | SMAA 质量。0 = 低，1 = 中，2 = 高，3 = 极高。8 月大版本（August Major）及之后；更早的版本使用 `r.Vite.SMAA.Mode`（0 = 低，1 = 高）。参见[抗锯齿](../Rendering/Anti-Aliasing.md)。 |
+| `r.SMAA.EdgeMode` | 0 | SMAA 边缘检测。0 = 颜色，1 = 亮度。8 月大版本及之后。 |
+| `r.SMAA.DebugVisualization` | 0 | SMAA 调试视图，非 Shipping 构建。1 = 边缘，2 = 混合权重，3 = 高亮结果。更早的版本使用 `r.AntiAliasing.SMAA.Debug`。 |
+| `r.Vite.SSAO` | 1 | Vite 优化的 SSAO 路径，仅限开发构建；Shipping 和 Test 锁定为 `VITE_O_SSAO`。参见[环境光遮蔽](../Rendering/Ambient-Occlusion.md)。 |
+| `r.SSGI.SkipSSAO` | 1 | 当 SSGI 会在该帧提供环境光遮蔽遮罩时跳过 SSAO。9 月大版本（September Major）及之后。参见 [SSGI](../Rendering/SSGI.md)。 |
+| `p.VitePhysXFixedTimestep.Enabled` | 0 | 启用固定时间步长物理 |
+| `p.VitePhysXFixedTimestep.DeltaTime` | 0.01667（1/60） | 固定步长持续时间（秒） |
+| `p.VitePhysXFixedTimestep.MaxTimesteps` | 16 | 每个游戏 Tick 的最大固定步数 |
+| `p.VitePhysXFixedTimestep.MaxCumulativeExtraSteps` | 50 | 触发限制策略前的过载预算 |
+| `p.VitePhysXFixedTimestep.LimitType` | 0 | 0 = 钳制固定步数，1 = 回退到可变子步 |
+| `p.VitePhysXFixedTimestep.InterpolationMode` | 1 | 0 = 关闭，1 = 按组件，2 = 始终 |
 
-**注意：** `p.VitePhysXFixedTimestep.*` 变量需要使用 `VITE_PHYSX_FIXED_TIMESTEP=1` 进行构建。请参阅[固定时间步长](../Physics/Fixed-Timestep.md)。
+!!! note
+    `p.VitePhysXFixedTimestep.*` 变量需要启用了 `VITE_PHYSX_FIXED_TIMESTEP=1` 的构建。参见[固定时间步长](../Physics/Fixed-Timestep.md)。
 
 
 ## 光线追踪
